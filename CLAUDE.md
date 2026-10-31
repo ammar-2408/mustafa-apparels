@@ -46,10 +46,10 @@ If a task needs one of these and it is not in `.claude/skills/`, install it your
 
 | Skill(s) | Source (trusted) | Install |
 |---|---|---|
-| GSAP core, timeline, ScrollTrigger, plugins, React | greensock (official) | `npx -y skills add greensock/gsap-skills --agent claude-code` |
-| React/Next.js best practices, web design guidelines, view transitions, composition patterns | vercel-labs (official) | `npx -y skills add vercel-labs/agent-skills --agent claude-code` |
-| Better Auth best practices, email & password | better-auth (official) | `npx -y skills add better-auth/skills --agent claude-code` |
-| frontend-design, webapp-testing, skill-creator | anthropics (official) | `npx -y skills add anthropics/skills --skill frontend-design --agent claude-code` (repeat with `webapp-testing`, `skill-creator`) |
+| `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, `gsap-plugins`, `gsap-react`, `gsap-performance`, `gsap-utils`, `gsap-frameworks` | greensock (official) | `npx -y skills add greensock/gsap-skills --agent claude-code` |
+| `vercel-react-best-practices`, `web-design-guidelines`, `vercel-react-view-transitions`, `vercel-composition-patterns` | vercel-labs (official) | `npx -y skills add vercel-labs/agent-skills --agent claude-code` |
+| `better-auth-best-practices`, `better-auth-security-best-practices`, `create-auth`, `email-and-password-best-practices`, `two-factor-authentication-best-practices`, `organization-best-practices` | better-auth (official) | `npx -y skills add better-auth/skills --agent claude-code` |
+| `frontend-design`, `webapp-testing`, `skill-creator` | anthropics (official) | `npx -y skills add anthropics/skills --skill frontend-design --agent claude-code` (repeat with `webapp-testing`, `skill-creator`) |
 
 **Rules for skills not in this registry:**
 - You may search https://skills.sh or the official plugin directory (`/plugin` → Discover) for a skill that fits.

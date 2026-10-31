@@ -17,7 +17,7 @@ Order matters: functionality and quality first, brand/motion/3D after the logo a
 - [ ] 0.9 GitHub Actions CI (`.github/workflows/ci.yml`) green on push
 - [ ] 0.10 Env validation with Zod (`packages/config/env.ts`) + `.env.example`
 - [ ] 0.11 Deploy both apps to the chosen host (preview from `develop`, production from `main`); preview `noindex`
-- [ ] 0.12 Install external skills (`bash scripts/install-skills.sh`) and commit the lock/registry update
+- [x] 0.12 Install external skills (`bash scripts/install-skills.sh`) and commit the lock/registry update
 
 ## Phase 1 — Data layer
 - [ ] 1.1 `packages/db`: Drizzle + Neon client, drizzle-kit config, first migration enabling `pg_trgm`
