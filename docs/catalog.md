@@ -78,7 +78,7 @@ Short description in plain English.
 | `price` | Empty | Set in admin |
 | `name` | Photo + collection file | `<Main colour> [detail] <Embroidered or Printed> <Fabric> <N>-Piece Suit`. Must be unique |
 | `slug` | From `name` + ID | Lowercase, hyphens, ends with the design ID |
-| `volume_style`, `dress_categories`, `collection_type`, `fabric`, `piece_details`, `season`, `outfit_style` | Collection file | Leave `outfit_style` empty with a `check:` if the file doesn't say |
+| `volume_style`, `dress_categories`, `collection_type`, `fabric`, `piece_details`, `season`, `outfit_style` | Collection file | `outfit_style` is optional. These are unstitched, so the tailor decides the cut: leave it empty unless the collection file gives one. Khaddar and Lajwanti are empty by the owner's decision |
 | `design` | Collection file + photo | See §4. The print type is read from the photo |
 | `main_color`, `color_family`, `accent_colors`, `motifs` | Photo | `main_color` is the descriptive name shown on the page. `color_family` is the filter value (§4) |
 | `photos[].file`, `videos[].file` | Folder | Relative to `Business data/Stock/` |
