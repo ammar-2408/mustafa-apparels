@@ -40,7 +40,8 @@ Don't use Light 300 under about 20px: it gets hard to read on phones.
 
 ## Spacing and shape
 
-- The docs set no custom spacing scale, so use Tailwind's default scale and avoid one-off values.
+- Use Tailwind's 4px scale, limited to 4, 8, 12, 16, 24, 32, 48, 64, 96 and 128px, with no one-off values (`docs/design.md` §1.4).
+- Tokens: `--space-gutter` for page side padding, `--space-grid` between product cards, `--space-section` between page sections.
 - Max content width: 1440px at `2xl`, 1760px at `4xl`. Layout per breakpoint: `docs/design.md` §2.
 - Touch targets are at least 44×44px. Respect safe areas with `env(safe-area-inset-*)`.
 - Radius is small or none (`--radius-sm: 2px`), to match the logo's angular shapes. Use `--shadow-soft` sparingly.
@@ -69,7 +70,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in whic
 | Home link `aria-label` | `Mustafa Apparels home` |
 | `theme_color`, `background_color` | `#FAF7EC` |
 
-## Tone for product descriptions
+## Tone for product descriptions (`docs/design.md` §1.5)
 
 Simple English, warm and friendly, as if a helpful shopkeeper were describing the suit. **1–2 short sentences** that name the fabric and the season, then say what you can see: the pieces, the print or embroidery, the colours.
 
