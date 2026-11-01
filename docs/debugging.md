@@ -93,7 +93,7 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | Symptom | Cause | Fix |
 |---|---|---|
 | "Invalid signature" | Params signed differ from params sent, clock skew | Sign exactly the params uploaded; timestamp from server |
-| Images blurry on large screens | Missing large widths in `sizes`/loader, or low-resolution source (KDR-7, KDR-8, Laj2–5) | Add 1920 width; correct `sizes` attribute. Source images can't be sharpened; replace them |
+| Images blurry on large screens | Missing large widths in `sizes`/loader, or low-resolution source (KDR-7, KDR-8, Laj1–5) | Add 1920 width; correct `sizes` attribute. Source images can't be sharpened; replace them |
 | Video won't autoplay on iPhone | Missing `muted` or `playsInline` | Both required on the element |
 | Video has sound | Wrong delivery URL | URL needs `ac_none` (`docs/integrations.md`) |
 | Slow first video play | Delivery version wasn't created at upload | Eager transformation on upload |
