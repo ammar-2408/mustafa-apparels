@@ -66,7 +66,7 @@ The owner has no written permission to use other fashion brands' names. So:
 | W1 | Home page | 3D/animated hero, featured suits, collections, contact strip. Content visible and usable even if WebGL is unavailable or reduced motion is on. |
 | W2 | Collection pages `/collections/[slug]` | Grid of published suits in a collection, 24 per page, with path-based pages: page 1 is `/collections/<slug>`, later pages are `/collections/<slug>/page/<n>`, and `/page/1` redirects to page 1 (ADR-017). Filters (volume style, dress category, fabric, design, season, outfit style, colour, price range; `docs/catalog.md` §4) and sort (newest, price ↑↓) run in the browser, and the URL updates (ADR-018). A filter value shows only when a published suit has it. Out-of-range page → 404. |
 | W3 | All suits `/shop` | Same as W2 across all collections (`/shop/page/<n>`), plus a collection filter. |
-| W4 | Product page `/products/[slug]` | Gallery (zoom, swipe on mobile) with muted video preview where one exists, name, design code, price (PKR), pieces with each piece's fabric and finish, colour, design, season, care instructions, availability, the same design in other colours, related suits, **Inquire** section. Old slug → permanent redirect to new slug. Unknown slug → 404. |
+| W4 | Product page `/products/[slug]` | Gallery (zoom, swipe on mobile) with muted video preview where one exists, name, design code, price (PKR), pieces with each piece's fabric, finish and length in metres (when known), colour, design, season, care instructions, availability, the same design in other colours, related suits, **Inquire** section. Old slug → permanent redirect to new slug. Unknown slug → 404. |
 | W5 | Inquire about a suit | Buttons: WhatsApp first (`wa.me` with pre-filled message incl. name, design code, link), Call (`tel:`), Email (`mailto:`). Optional form (name, phone, email, message) saved to DB and emailed to the shop. Rate-limited. |
 | W6 | Search `/search?q=` | Searches name, design code, description, collection, colour, fabric, design. Typo-tolerant. Suggestions while typing (debounced). Searching "dhanak" also finds Lajwanti suits, because their fabric is Dhanak. Results page is `noindex, follow`. |
 | W7 | Accounts | Sign up, log in, log out, forgot/reset password, email verification, profile edit, delete account. |
@@ -79,7 +79,7 @@ The owner has no written permission to use other fashion brands' names. So:
 | # | Feature | Acceptance criteria |
 |---|---|---|
 | A1 | Admin login | Separate app. Only `role = admin` can sign in. 2FA (TOTP) required. No public sign-up. |
-| A2 | Suits | List with search/filter; create, edit, duplicate, publish/unpublish, archive. Fields: name, slug (auto, editable), design code, description, price, compare-at price, collection, collection type, volume style, piece details, dress categories, fabric, design, season, outfit style, main colour, colour family, accent colours, motifs, same design in other colours, care instructions, availability, featured, SEO title/description. A draft may have no price; publishing requires a price, a colour, a main image and alt text on all media, and no banned brand names. |
+| A2 | Suits | List with search/filter; create, edit, duplicate, publish/unpublish, archive. Fields: name, slug (auto, editable), design code, description, price, compare-at price, collection, collection type, volume style, piece details (fabric, finish, optional length in metres), dress categories, fabric, design, season, outfit style, main colour, colour family, accent colours, motifs, same design in other colours, care instructions, availability, featured, SEO title/description. A draft may have no price; publishing requires a price, a colour, a main image and alt text on all media, and no banned brand names. |
 | A3 | Photos and videos | Drag-and-drop multi-upload, reorder, set main image (must be a photo), alt text required. Photos: JPEG/PNG/WebP, max 10 MB. Videos: MP4/MOV/WebM, max 50 MB and 60 seconds. Video poster picked automatically and changeable. |
 | A4 | Collections | Create, edit, reorder, hide. Slug changes create redirects. Starts with Dhanak, Khaddar, Lajwanti. |
 | A5 | Inquiries | List (new / contacted / closed), view, change status, quick WhatsApp/call/email reply links. |
@@ -137,6 +137,7 @@ Sitemap · llms.txt · Open Graph · robots.txt · JSON-LD. The canonical items 
 | Rights to the stock videos | Owner | Launch sign-off | — |
 | The name "Lajwanti": old posters and videos say "Lajwanti by" another brand, so the collection name may belong to it | Owner | Launch sign-off | Keep the collection name as the owner asked; confirm with the supplier |
 | Social links | Owner | Nothing; hidden when empty | Hidden |
+| Fabric length per piece (shirt, dupatta, trouser), which customers and tailors use to plan stitching | Owner | Nothing; hidden when empty | Hidden |
 
 ## 9. Future (v2+ candidates)
 
