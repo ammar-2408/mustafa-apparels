@@ -38,7 +38,10 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | "Hydration failed" | Server and client render different output (dates, `Math.random`, `window` checks during render, browser extensions) | Move browser-only logic into `useEffect`/client island; format dates with a fixed locale/timezone |
 | Admin change not visible on site | Revalidation call failed or wrong tag | Check admin logs for `/api/revalidate` response; verify HMAC secret matches in both apps; check tag names |
 | Works locally, 500 in prod | Missing env var, or Node-only API at the edge | Startup env validation message; check deploy logs; keep routes on Node runtime |
-| Public page became dynamic | `headers()`, `cookies()` or `connection()` in a shared layout, or `proxy.ts` matcher too wide | Move the read into a client island or a dynamic route; narrow the matcher. Test: `docs/testing-qa.md` Caching |
+| Public page became dynamic | `searchParams`, `headers()`, `cookies()` or `connection()` in a page or shared layout, or `proxy.ts` matcher too wide | Move the read into a client island or a dynamic route; narrow the matcher. Test: `docs/testing-qa.md` Caching |
+| Page content missing from the HTML, or rendered only in the browser | `useSearchParams` without a `<Suspense>` boundary | Wrap the client component that reads it in `<Suspense>` |
+| Missing page returns 200, or a redirect becomes a meta refresh | `loading.tsx` above the route: streaming had already started | Remove it from `(shop)` routes. Check with `curl -sI` |
+| `/page/<n>` still 404 after new suits are published | The cached 404 wasn't revalidated | Check the page reads tagged data before `notFound()`, and that the admin's `/api/revalidate` call succeeded |
 | Canonical missing in `curl` output | Set in a client component or via JS | Move to `generateMetadata`; never set SEO tags client-side |
 | Canonical appears in `<body>` | Streaming metadata for some user-agents | Configure `htmlLimitedBots`; re-run SEO suite |
 | Page blank with CSP errors in console | Tier mismatch (`docs/auth-security.md` §3.2): page needs a nonce it doesn't get, or a host is missing | Check which tier the route is in; add the missing host deliberately |
