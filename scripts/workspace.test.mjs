@@ -47,6 +47,11 @@ test('root test script runs the workspace project through Vitest', () => {
   assert.match(scripts.test, /^vitest run --project workspace && /);
 });
 
+test('root verify script runs lint, typecheck, test and build, stopping at the first failure', () => {
+  const { scripts } = readJson('package.json');
+  assert.equal(scripts.verify, 'pnpm lint && pnpm typecheck && pnpm test && pnpm build');
+});
+
 for (const pkg of ['apps/web', 'apps/admin', 'packages/config']) {
   test(`${pkg} tests run through Vitest with coverage`, () => {
     assert.equal(readJson(`${pkg}/package.json`).scripts.test, 'vitest run --coverage');

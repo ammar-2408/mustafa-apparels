@@ -8,7 +8,8 @@
     "lint": "eslint e2e playwright.config.ts && turbo run lint",
     "typecheck": "tsc -p e2e && turbo run typecheck",
     "test": "vitest run --project workspace && turbo run test",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "devDependencies": {
     "@mustafa/config": "workspace:*",
