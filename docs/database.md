@@ -52,9 +52,9 @@ Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `no
 |---|---|---|
 | id | text PK | |
 | name | text not null | Pattern: `Black Embroidered Dhanak 3-Piece Suit` |
-| slug | text unique not null | e.g. `black-embroidered-dhanak-3-piece-d-18` |
-| design_code | text, unique when set | Supplier code, e.g. `D-18`, `K-26A`. Shown to customers and included in WhatsApp messages |
-| import_key | text, unique when set | Stable source file key, e.g. `dhnk1`. Set by the import script so re-runs change nothing; null for products created in admin |
+| slug | text unique not null | e.g. `black-embroidered-dhanak-3-piece-dhn-01` |
+| design_code | text, unique when set | The shop's own code, e.g. `DHN-01`, `KDR-13`. Shown to customers and included in WhatsApp messages |
+| import_key | text, unique when set | The `design_id` from `catalog/`. Set by the import script so re-runs change nothing; null for products created in admin |
 | description | text | plain text / limited markdown, sanitized |
 | price | integer **nullable**, check ≥ 0 | **whole PKR** (no floats for money). Null only on drafts |
 | compare_at_price | integer nullable | shows "was" price; check > price |
@@ -62,10 +62,17 @@ Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `no
 | category_id | text → category, not null | The collection |
 | pieces | enum `two_piece` \| `three_piece`, not null | Filterable |
 | piece_details | jsonb default `[]` | `[{ "piece": "shirt", "fabric": "Dhanak", "finish": "Embroidered" }, ...]`. Pieces: `shirt`, `dupatta`, `trouser` |
-| fabric | text not null | Main fabric: `Dhanak`, `Khaddar`. Lajwanti suits are `Dhanak` |
-| colors | text[] default `{}` | Filterable |
-| work | text[] default `{}` | `embroidered`, `printed`, `plain_dyed`. Filterable |
-| season | enum `winter` \| `summer` \| `all_season`, nullable | |
+| collection_type | text nullable | Display tag, e.g. `Premium`. Not a filter |
+| dress_categories | text[] default `{}` | Filterable. Values: `docs/catalog.md` §4 |
+| fabric | text not null | Main fabric: `Dhanak`, `Khaddar`. Lajwanti suits are `Dhanak`. Filterable |
+| design | text[] default `{}` | Filterable. e.g. `Embroidered`, `Floral Print` |
+| season | enum `winter` \| `summer` \| `all_season`, nullable | Filterable |
+| outfit_style | text nullable | Filterable. e.g. `Traditional Suit` |
+| main_color | text nullable | Name shown on the page, e.g. `Sage green`. Required to publish |
+| color_family | text nullable | The filter value, e.g. `Green`. Required to publish |
+| accent_colors | text[] default `{}` | Print or embroidery colours |
+| motifs | text[] default `{}` | e.g. `paisley`. Search and description only |
+| related_design_codes | text[] default `{}` | The same design in other colours. Each is still its own product |
 | care_instructions | text | |
 | availability | enum `in_stock` \| `low_stock` \| `out_of_stock` | |
 | status | enum `draft` \| `published` \| `archived` | only `published` is public |
@@ -81,7 +88,7 @@ Check constraints on `product`:
 - `status <> 'published' OR price IS NOT NULL`: a published suit always has a price.
 - `compare_at_price IS NULL OR (price IS NOT NULL AND compare_at_price > price)`.
 
-There is **no sizes column**. Suits are unstitched.
+There is **no sizes column**. Suits are unstitched. Allowed filter values live in `docs/catalog.md` §4 and are enforced by `packages/validators`, not by database enums, so a new fabric or design needs no migration.
 
 **`product_media`** (photos and videos)
 | Column | Type | Notes |
@@ -127,12 +134,13 @@ There is no address or opening-hours setting. The shop is online-only with no fi
 | `product (status, category_id, published_at desc)` | collection pages |
 | `product (status, featured)` | home page |
 | `product (status, price)` | price sort/filter |
-| `product (status, pieces)` | pieces filter |
+| `product (status, pieces)` | volume style filter |
+| `product (status, fabric)`, `product (status, season)`, `product (status, outfit_style)`, `product (status, color_family)` | filters |
 | Partial unique `product (design_code)` where not null | design code lookup |
 | Partial unique `product (import_key)` where not null | safe re-import |
 | GIN `product.search_vector` | full-text search |
 | GIN trigram `product.name gin_trgm_ops` | typo-tolerant search |
-| GIN `product.colors`, `product.work` | filters |
+| GIN `product.design`, `product.dress_categories` | filters |
 | `product_media (product_id, sort_order)` | gallery |
 | `inquiry (status, created_at desc)` | admin inbox |
 | `slug_redirect (entity, old_slug)` unique | redirect lookups |
@@ -156,9 +164,12 @@ searchVector: tsvector('search_vector').generatedAlwaysAs(
     setweight(to_tsvector('simple', coalesce(${product.name}, '')), 'A') ||
     setweight(to_tsvector('simple', coalesce(${product.fabric}, '') || ' ' ||
               coalesce(${product.designCode}, '') || ' ' ||
-              immutable_array_to_string(${product.colors}, ' ') || ' ' ||
-              immutable_array_to_string(${product.work}, ' ')), 'B') ||
-    setweight(to_tsvector('simple', coalesce(${product.description}, '')), 'C')`
+              coalesce(${product.mainColor}, '') || ' ' ||
+              coalesce(${product.colorFamily}, '') || ' ' ||
+              immutable_array_to_string(${product.accentColors}, ' ') || ' ' ||
+              immutable_array_to_string(${product.design}, ' ')), 'B') ||
+    setweight(to_tsvector('simple', coalesce(${product.description}, '') || ' ' ||
+              immutable_array_to_string(${product.motifs}, ' ')), 'C')`
 ),
 ```
 - Use the `'simple'` text config (works for English and local fabric names like khaddar; no wrong stemming).
@@ -191,7 +202,7 @@ Rules: never edit an applied migration; never use `drizzle-kit push` on producti
 - Categories: Dhanak (`dhanak`), Khaddar (`khaddar`), Lajwanti (`lajwanti`). The owner can rename or add more.
 - Site settings: `shop_name` = Mustafa Apparels, `whatsapp` = `+923482799707`, `phone` = `+923069558717`, `service_area` = Pakistan, `email` = `ammarofficial321@gmail.com`.
 - First admin from `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD` env vars (forced to set up 2FA on first login). Idempotent: running twice changes nothing.
-- `--e2e` flag only: 12 demo suits with placeholder images, for tests. **Real stock comes through the import script** (Phase 5), never the seed.
+- `--e2e` flag only: 12 demo suits with placeholder images, for tests. **Real stock comes from `catalog/` through the import script** (`docs/catalog.md` §6), never the seed.
 
 ## 7. Data rules
 
@@ -213,4 +224,4 @@ Rules: never edit an applied migration; never use `drizzle-kit push` on producti
 
 `packages/validators/src/banned-terms.ts` holds the names of brands the shop has no permission to use: Elaf, Baroque, Maria B (also `Maria.B`, `MariaB`) and HS Fashion. The check ignores case and punctuation.
 
-It runs on every customer-facing text field: product name, slug, description, care instructions, media alt text, SEO fields and collection text. Add a name here when new stock arrives showing another brand. The owner can remove a name only with written permission from that brand.
+It runs on every customer-facing text field: product name, slug, description, care instructions, motifs, media alt text, SEO fields and collection text, and on every file in `catalog/` during import. Add a name here when new stock arrives showing another brand. The owner can remove a name only with written permission from that brand.
