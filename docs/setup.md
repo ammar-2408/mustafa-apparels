@@ -11,7 +11,7 @@ From zero to running locally. Going live on Netlify and connecting the domain is
 | Git | https://git-scm.com. On Windows install **Git for Windows**: Claude Code uses its Git Bash to run commands | `git --version` |
 | GitHub CLI | https://cli.github.com → `gh auth login` | `gh auth status` |
 | Claude Code | macOS/Linux/WSL: `curl -fsSL https://claude.ai/install.sh \| bash` · Windows PowerShell: `irm https://claude.ai/install.ps1 \| iex` | `claude --version` |
-| ffmpeg | Only for checking and preparing stock videos in Phase 5: `winget install Gyan.FFmpeg` | `ffmpeg -version` |
+| ffmpeg (optional) | Only for trimming videos, such as removing an end card: `winget install Gyan.FFmpeg`. Claude Code can check videos in a browser without it | `ffmpeg -version` |
 
 Claude Code needs a Claude subscription (Pro, Max, Team or Enterprise) or a Claude Console account. Official guide: https://code.claude.com/docs/en/quickstart
 
@@ -39,7 +39,8 @@ Generate secrets: `openssl rand -base64 32` → `BETTER_AUTH_SECRET`, `REVALIDAT
 
 ```
 Mustafa Apparels/
-├─ Business data/Stock/Dhanak | Khaddar | Lajwanti   ← raw photos/videos (git-ignored, read-only)
+├─ Business data/Stock/Dhanak | Khaddar | Lajwanti   ← collection file + photos + videos (git-ignored, read-only)
+├─ catalog/dhanak | khaddar | lajwanti                ← one details file per suit (in git)
 ├─ mustafa-apparels-logos/mustafa-apparels-logos/    ← logo, favicons, brand PDFs (in git)
 ├─ .claude/  .github/  docs/  scripts/
 └─ AGENTS.md  CLAUDE.md  README.md  .mcp.json  .env.example  .gitignore
@@ -61,13 +62,13 @@ pnpm dev                     # web → http://localhost:3000, admin → http://l
 
 ## 5. Import your stock (after Phase 4 exists)
 
-Your photos and videos in `Business data/` stay on your computer and out of GitHub. Only the import script uses them, and it never changes them:
+Your photos, videos and collection files in `Business data/` stay on your computer and out of GitHub. Each suit's details live in `catalog/`, which is in git. The import script reads both, and never changes `Business data/`:
 
 ```bash
-pnpm import:stock --dry-run   # shows what would be created; writes nothing
-pnpm import:stock             # uploads crops and videos; creates draft products with no price
+pnpm import:stock --dry-run   # checks catalog/ and the files; writes nothing
+pnpm import:stock             # uploads photos and videos; creates draft products with no price
 ```
-Then review each draft in admin, set its price and publish it. Details: `docs/project-implementation.md` Phase 5.
+Then clear any `check:` in the suit's catalog file, set its price in admin and publish it. Full flow, and how to add a new collection: `docs/catalog.md`.
 
 ## 6. Environment variables
 
