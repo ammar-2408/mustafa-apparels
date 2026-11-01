@@ -5,40 +5,81 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 | Service | Module | Purpose | Free plan | Failure behaviour |
 |---|---|---|---|---|
 | Neon PostgreSQL | `packages/db/client.ts` | All data | Yes | Pages show error boundary; health check alerts |
-| Cloudinary | `integrations/images.ts` | Upload signing, metadata check, delete, URL builder | Yes | Admin shows retry; storefront falls back to placeholder |
+| Cloudinary | `integrations/media.ts` | Upload signing, metadata check, delete, image and video URL builders | Yes | Admin shows retry; storefront falls back to placeholder |
 | Resend | `integrations/email.ts` | Verification, password reset, inquiry notifications | Yes | Inquiry still saved; error logged; reset/verify shows "try again" |
 | Upstash Redis | `integrations/rate-limit.ts` | Rate limits | Yes | Fail **open** for search, fail **closed** for login/reset/inquiry (in-memory fallback limiter) |
+| IndexNow | `integrations/indexnow.ts` | Tells Bing and others when a URL changes | Free | Logged; never blocks a save |
 | WhatsApp | `lib/contact-links.ts` | Click-to-chat links | Free | n/a |
-| Google Search Console | — | Indexing, sitemap | Free | n/a |
-| Analytics (privacy-friendly) | `lib/analytics.ts` | Events | Free tiers exist | Never blocks UI |
+| Google Analytics 4 | `apps/web/lib/analytics.ts` | Events and conversions (`docs/analytics.md`) | Free | Never blocks UI |
+| Google Search Console, Bing Webmaster Tools | — | Indexing, sitemap (`docs/seo-geo.md`) | Free | n/a |
 
 ## Cloudinary
-- Folder structure: `products/{productId}/{publicId}`, `categories/{categoryId}`, `brand/`.
-- Delivery URLs built with `f_auto,q_auto,c_fill,ar_3:4,w_{width}` via a custom `next/image` loader (`apps/web/lib/cloudinary-loader.ts`) so Next.js doesn't re-optimize images.
+
+### Folders and delivery
+- Folder structure: `products/{productId}/{publicId}`, `categories/{categoryId}`, `brand/`. Imported stock uses `products/imported/{import_key}`.
+- Image URLs: `f_auto,q_auto,c_fill,ar_3:4,w_{width}` via a custom `next/image` loader (`apps/web/lib/cloudinary-loader.ts`), so neither Next.js nor Netlify re-optimizes images.
 - Widths for `srcset`: 320, 480, 640, 828, 1080, 1440, 1920.
 - `next.config` `images.remotePatterns` allows only `res.cloudinary.com/<cloud_name>/**`.
 
+### Video
+- **Limits:** MP4, MOV, WebM; 50 MB; 60 seconds. Cloudinary's free plan caps a video at 100 MB, so our limit sits well under it.
+- **Upload:** signed direct upload with `resource_type=video`. Create the delivery version at upload as an eager transformation, so viewers don't trigger processing.
+- **Delivery:** one 720p H.264 MP4 with no audio:
+  `https://res.cloudinary.com/<cloud>/video/upload/ac_none,c_limit,w_720,q_auto,vc_h264/<public_id>.mp4`
+- **Poster:** `https://res.cloudinary.com/<cloud>/video/upload/so_0,f_auto,q_auto,c_limit,w_720/<public_id>.jpg`, or the admin's chosen `poster_public_id`.
+- **Playback rules:** `docs/design.md` §5.2.
+
+### Free plan budget
+
+25 credits a month, shared across storage, delivery and processing. One credit is 1,000 transformations, or 1 GB of storage, or 1 GB of bandwidth. Video processing is metered by seconds: Cloudinary's credit page gives 500 SD or 250 HD seconds per credit, though its pages describe the video rates differently, so check the dashboard.
+
+| Item | Rough use |
+|---|---|
+| Storing today's stock | About 0.2 credits a month (20 videos ≈ 115 MB, 30 cropped photos ≈ 30 MB) |
+| Processing today's 20 videos once | About 1 credit (200 seconds), one-off |
+| Everything else | Delivery |
+
+**Estimate (ours, not Cloudinary's):** about 2 MB per product view, so about 10,000 product views a month. Check **Dashboard → Usage** weekly once live, alongside Netlify. If usage passes 15 credits, lower the video bitrate or switch to tap-to-play before thinking about paid plans. Upgrading is the owner's decision.
+
 ## Resend
+
+- Sends from a verified subdomain: `Mustafa Apparels <no-reply@updates.mustafaapparels.com>`. Resend requires a verified domain, so this is set up at step 3.1, ahead of the login features. DNS steps: `docs/deployment.md` §5.
+- Replies go to the owner's Gmail (`Reply-To`). The inbox stays Gmail for now; Resend only sends.
+- Free plan: 3,000 emails a month, 100 a day, 3 domains. Plenty for this shop; check Resend's pricing page if volumes grow.
 - Templates in `packages/core/integrations/email-templates/` (React Email or plain HTML + text versions).
 - Emails: `verify-email`, `reset-password`, `new-inquiry` (to shop), `inquiry-received` (to customer, optional).
-- Sender: Resend test sender until a custom domain exists; then verify the domain (SPF/DKIM) for deliverability.
 
 ## WhatsApp, phone, email links
+
 ```ts
 // lib/contact-links.ts
 whatsappLink(number, text) // https://wa.me/<digits only, with country code 92...>?text=<encodeURIComponent(text)>
 telLink(number)            // tel:+92...
 mailtoLink(email, subject, body)
 ```
-Pre-filled WhatsApp text: `Hi! I'm interested in "<dress name>" (PKR <price>): <absolute product URL>`.
-Numbers come from `site_setting` (editable in admin), stored in E.164 format (`+923001234567`).
+Pre-filled WhatsApp text: `Hi! I'm interested in "<suit name>" (<design code>, PKR <price>): <absolute product URL>`.
+Numbers come from `site_setting` (editable in admin), stored in E.164 format: WhatsApp `+923482799707`, phone `+923069558717`. The email address is the owner's Gmail (`TODO-OWNER`). The site shows WhatsApp first, because that's where orders happen.
 
-## Analytics events
-`inquiry_submitted`, `whatsapp_click`, `call_click`, `email_click`, `search` (query length only, not the text), `wishlist_add`, `signup`. Cookieless provider preferred so no cookie banner is needed; host-provided analytics or a free self-hostable tool both work.
+## IndexNow
+
+- Key: `INDEXNOW_KEY`, 8–128 characters from a–z, A–Z, 0–9 and dashes. Hosted at `https://mustafaapparels.com/<key>.txt`, containing the key. It is public by design, so it isn't a secret.
+- When a product is published, unpublished or has its slug changed, the admin sends the URL after revalidation:
+  ```http
+  POST https://api.indexnow.org/indexnow
+  Content-Type: application/json; charset=utf-8
+
+  { "host": "mustafaapparels.com", "key": "<key>", "urlList": ["https://mustafaapparels.com/products/..."] }
+  ```
+- 200 and 202 count as success. 403, 422 and 429 are logged. A failure never blocks the admin's save.
+- Sends nothing unless `SITE_INDEXABLE=true`, so nothing is submitted before launch or from previews.
+
+## Analytics
+
+GA4 on the storefront only. Setup, events and privacy rules: `docs/analytics.md`.
 
 ## Future integrations (v2)
+
 - Local payment gateway + cart (requires PRD update and security review).
-- Delivery/courier booking.
-- Google Business Profile link + reviews.
+- Courier booking and tracking.
 - Instagram feed on home page (via official API, cached).
 - Cloudflare Turnstile on forms if spam appears.
