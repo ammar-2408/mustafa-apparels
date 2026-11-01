@@ -42,7 +42,9 @@ Every responsive test asserts: no horizontal overflow (`document.documentElement
 - Sort by price asc/desc, newest.
 - Slug change → old URL permanently redirects (301 or 308) to the new URL; chain of two renames still resolves in one hop; an old collection slug also redirects on its `/page/<n>` URLs.
 - Price formatting (PKR, no decimals), compare-at price shown only when higher.
-- 2-piece product shows shirt and trouser; 3-piece also shows dupatta; piece details render each fabric and finish.
+- 2-piece product shows shirt and trouser; 3-piece also shows dupatta; piece details render each fabric and finish, and length only when set. A zero, negative or over-10 `length_m` is rejected.
+- Filter chips show only values a published suit has, set the same filter as the full panel, and hide when they wouldn't narrow anything.
+- On phones the sticky WhatsApp bar stays visible on the product page without covering content. An out-of-stock suit keeps its page and its WhatsApp button.
 
 ### Publish rules
 - Draft with no price saves. Publishing with no price, no colour, no main image or missing alt text fails with a clear message, in Zod and in `core`.
