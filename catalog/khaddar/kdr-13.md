@@ -25,7 +25,6 @@ photos:
     alt: "Model wearing a beige 3-piece Khaddar suit with plum embroidered flowers, trailing vines, a wide plum hem, a plum floral printed dupatta and plain beige trousers"
 videos: []
 also_in_this_design: []
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A beige unstitched 3-piece Khaddar suit. Plum embroidered flowers and trailing vines fill the shirt above a wide plum hem, with a plum floral printed dupatta and beige dyed trousers.

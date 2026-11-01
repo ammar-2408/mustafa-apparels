@@ -27,6 +27,5 @@ videos: []
 also_in_this_design: []
 check:
   - "Lower resolution than most photos. Check sharpness once imported"
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A navy blue unstitched 3-piece Khaddar suit. Ivory chevrons and paisley scrolls fill the shirt, with orange bands at the hem, a patterned printed dupatta and dyed trousers.

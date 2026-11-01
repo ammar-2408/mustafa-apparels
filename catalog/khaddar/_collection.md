@@ -20,7 +20,7 @@ outfit_style:
 Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 
 - **Season:** Owner, 2026-11-01. The source file does not give a season.
-- **Outfit style:** Not in the source file. Empty, with a check: on each suit.
+- **Outfit style:** Left empty by the owner's decision, 2026-11-01: these are unstitched, so the customer's tailor decides the cut.
 - **Volume style, fabric, pieces and design:** from the source file. It says "Printed"; each suit file names the print type seen in its photo, because "Printed" isn't a filter value. KDR-01 is Embroidered only, and the KDR-02 and KDR-03 trousers are printed rather than premium dyed, as the owner confirmed on 2026-11-01.
 
 ## Suits

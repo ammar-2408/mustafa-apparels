@@ -27,7 +27,6 @@ videos:
   - file: Khaddar/KDR-3-VID.mp4
     alt: "Short video of the light beige embroidered khaddar 3-piece suit, muted"
 also_in_this_design: []
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A light beige unstitched 3-piece Khaddar suit. A rust brown embroidered rose stem runs down the shirt among rust brown and dusty blue roses with golden detailing, with a matching printed dupatta and trousers.

@@ -27,6 +27,5 @@ videos: []
 also_in_this_design: []
 check:
   - "Lower resolution than most photos. Check sharpness once imported"
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A black unstitched 3-piece Khaddar suit. Ochre gold vines and flowers climb the shirt above chevron bands, with a black and gold chevron printed dupatta and dyed trousers.

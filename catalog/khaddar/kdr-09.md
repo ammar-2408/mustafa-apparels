@@ -25,7 +25,6 @@ photos:
     alt: "Model holding a navy printed dupatta and wearing a navy 3-piece Khaddar suit with pink embroidery at the neckline, tulip and flower sprigs, a magenta hem border and plain royal blue trousers"
 videos: []
 also_in_this_design: [KDR-06]
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A navy unstitched 3-piece Khaddar suit. Pink embroidery sits at the neckline above tulip and flower sprigs and a magenta hem border, with a matching printed dupatta and royal blue dyed trousers. The same design also comes in red.

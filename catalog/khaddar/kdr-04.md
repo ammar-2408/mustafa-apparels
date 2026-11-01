@@ -27,7 +27,6 @@ videos:
   - file: Khaddar/KDR-4-VID.mp4
     alt: "Short video of the black floral embroidered khaddar 3-piece suit, muted"
 also_in_this_design: []
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A black unstitched 3-piece Khaddar suit. A copper leaf and flower print runs over the shirt below an embroidered neckline, with a matching printed dupatta and dyed trousers.

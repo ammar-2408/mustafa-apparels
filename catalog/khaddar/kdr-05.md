@@ -29,6 +29,5 @@ videos:
 also_in_this_design: []
 check:
   - "Video opens with a black film-strip border for the first second or so. Trim or accept"
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A dusty mauve brown unstitched 3-piece Khaddar suit. Cream embroidery shapes the neckline above a silver-grey floral print, with tiered sleeves, a matching printed dupatta and taupe dyed trousers.

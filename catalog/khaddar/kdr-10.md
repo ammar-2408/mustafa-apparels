@@ -25,7 +25,6 @@ photos:
     alt: "Model wearing a teal 3-piece Khaddar suit with peach roses and aqua embroidery, a matching printed dupatta with a copper floral border and plain teal trousers"
 videos: []
 also_in_this_design: []
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A teal unstitched 3-piece Khaddar suit. Peach roses and aqua embroidery fill the shirt, with a matching printed dupatta in a copper floral border and dyed trousers.

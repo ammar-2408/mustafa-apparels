@@ -25,7 +25,6 @@ photos:
     alt: "Model wearing a navy 3-piece Khaddar suit with a beige embroidered neckline, small flower sprigs, a wide beige hem, a beige printed dupatta and plain khaki trousers"
 videos: []
 also_in_this_design: [KDR-12]
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A navy unstitched 3-piece Khaddar suit. A beige embroidered neckline sits above small flower sprigs and a wide beige hem, with a beige printed dupatta and khaki dyed trousers. The same design also comes in plum.

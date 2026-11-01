@@ -25,7 +25,6 @@ photos:
     alt: "Model wearing a red 3-piece Khaddar suit with ivory embroidery at the neckline, tulip and flower sprigs, a lilac border at the hem, a matching printed dupatta and plain red trousers"
 videos: []
 also_in_this_design: [KDR-09]
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A red unstitched 3-piece Khaddar suit. Ivory embroidery sits at the neckline above tulip and flower sprigs and a lilac hem border, with a matching printed dupatta and dyed trousers. The same design also comes in navy.

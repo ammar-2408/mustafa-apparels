@@ -25,7 +25,6 @@ photos:
     alt: "Model wearing a camel 3-piece Khaddar suit with peach embroidery on the front, an all-over rose print, a matching printed dupatta with a dark border and rose printed trousers"
 videos: []
 also_in_this_design: []
-check:
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
+check: []
 ---
 A camel unstitched 3-piece Khaddar suit. Peach embroidery sits on the front of a rose printed shirt, with a matching printed dupatta and trousers.

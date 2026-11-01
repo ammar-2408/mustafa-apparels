@@ -29,6 +29,5 @@ videos:
 also_in_this_design: []
 check:
   - "The print in the video looks a little different from the photo. Confirm they show the same suit"
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A grey unstitched 3-piece Khaddar suit. Black round leaf clusters cover the shirt, with patterned cuffs, a black printed dupatta with rust motifs and plain dyed trousers.
