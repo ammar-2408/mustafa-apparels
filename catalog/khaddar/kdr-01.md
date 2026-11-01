@@ -13,7 +13,7 @@ piece_details:
   - { piece: shirt, fabric: Khaddar, finish: Embroidered }
   - { piece: dupatta, fabric: Khaddar, finish: Printed }
   - { piece: trouser, finish: Premium dyed }
-design: [Embroidered, All-Over Print]
+design: [Embroidered]
 season: Winter
 outfit_style:
 main_color: Grey
@@ -29,7 +29,6 @@ videos:
 also_in_this_design: []
 check:
   - "The print in the video looks a little different from the photo. Confirm they show the same suit"
-  - "Print type read from the photo: all-over. Confirm"
   - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A grey unstitched 3-piece Khaddar suit. Black round leaf clusters cover the shirt, with patterned cuffs, a black printed dupatta with rust motifs and plain dyed trousers.

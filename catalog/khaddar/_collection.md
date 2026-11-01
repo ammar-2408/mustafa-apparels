@@ -21,7 +21,7 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 
 - **Season:** Owner, 2026-11-01. The source file does not give a season.
 - **Outfit style:** Not in the source file. Empty, with a check: on each suit.
-- **Volume style, fabric, pieces and design:** from the source file. It says "Printed"; each suit file names the print type seen in its photo, because "Printed" isn't a filter value.
+- **Volume style, fabric, pieces and design:** from the source file. It says "Printed"; each suit file names the print type seen in its photo, because "Printed" isn't a filter value. KDR-01 is Embroidered only, and the KDR-02 and KDR-03 trousers are printed rather than premium dyed, as the owner confirmed on 2026-11-01.
 
 ## Suits
 
@@ -29,9 +29,9 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 |---|---|---|---|
 | KDR-01 | KDR-1.jpeg | KDR-1-VID.mp4 | Grey |
 | KDR-02 | KDR-2.jpeg | — | Camel |
-| KDR-03 | KDR-3.jpeg | KDR-3-VID.mp4 | Pale sage |
+| KDR-03 | KDR-3.jpeg | KDR-3-VID.mp4 | Light beige |
 | KDR-04 | KDR-4.jpeg | KDR-4-VID.mp4 | Black |
-| KDR-05 | KDR-5.jpeg | KDR-5-VID.mp4 | Dusty mauve |
+| KDR-05 | KDR-5.jpeg | KDR-5-VID.mp4 | Dusty mauve brown |
 | KDR-06 | KDR-6.jpeg | — | Red |
 | KDR-07 | KDR-7.jpeg | — | Navy blue |
 | KDR-08 | KDR-8.jpeg | — | Black |

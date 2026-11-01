@@ -26,7 +26,6 @@ photos:
 videos: []
 also_in_this_design: []
 check:
-  - "The collection file says the trouser is premium dyed, but this one looks printed. Confirm. Shown here as seen in the photo"
   - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A camel unstitched 3-piece Khaddar suit. Peach embroidery sits on the front of a rose printed shirt, with a matching printed dupatta and trousers.
