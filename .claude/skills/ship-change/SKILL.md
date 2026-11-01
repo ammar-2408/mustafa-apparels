@@ -34,7 +34,7 @@ All green. Read warnings — fix new ones rather than ignoring them.
 
 **Docs or skills only:** there's nothing for these to test. Before step 0.7 adds `pnpm verify`, run only what exists and say in the report what you couldn't run.
 
-**Keep public pages cached:** nothing in the diff may add per-request work (`searchParams`, `cookies()`, `headers()`, a nonce) to a public cached page without an ADR. Uncached pages cost Netlify compute credits.
+**Keep public pages cached:** nothing in the diff may add per-request work (`searchParams`, `cookies()`, `headers()`, a nonce) to a public cached page without an ADR. Uncached pages cost Netlify compute credits. In the browser, `useSearchParams` needs a `<Suspense>` boundary around its client component.
 
 ## 4. Docs and plan
 - Behaviour/schema/API/setup/env changed? Update the matching file in `docs/` (and `.env.example`).
@@ -46,7 +46,7 @@ git add <the files in this change>
 git commit -m "<type>(<scope>): <summary>" -m "<why, and what tests cover it>"
 ```
 - Types: feat, fix, test, refactor, perf, style, docs, chore, ci, build
-- Scopes: web, admin, db, core, auth, ui, seo, motion, 3d, e2e, deps
+- Scopes: web, admin, db, core, auth, ui, validators, config, catalog, seo, motion, 3d, e2e, deps
 - Summary ≤ 72 chars, present tense. Example: `feat(web): add inquiry form to product page`
 - The pre-commit hook re-runs lint/typecheck/tests; if it blocks, fix and retry (never `--no-verify`).
 - Never commit `.env*`, or anything from `Business data/`, including frames and screenshots. Never use `git add -f`.
