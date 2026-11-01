@@ -9,6 +9,8 @@ Source of truth: `docs/design.md` §1. If this skill and that doc disagree, the 
 
 **Style:** monochrome, minimal, editorial. The site stays quiet so the suits' colours and embroidery carry the page. **There is no accent colour; product photos supply the colour.** No dark mode in v1. Admin uses the same tokens.
 
+**Direction for the storefront: `docs/design.md` §9.1.** Very large headings set against tiny spaced labels, cloth and suits filling the frame, and generous empty space, on every page. It's a reference for look and motion only: keep our colours, font, logo and pages.
+
 ## Colour tokens
 
 Components use tokens, never hard-coded colours. Tokens live in `packages/config/tailwind` and `apps/*/app/globals.css`.
