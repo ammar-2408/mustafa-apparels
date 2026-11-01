@@ -39,6 +39,7 @@ All green. Read warnings — fix new ones rather than ignoring them.
 ## 4. Docs and plan
 - Behaviour/schema/API/setup/env changed? Update the matching file in `docs/` (and `.env.example`).
 - If this completes a step in `docs/project-implementation.md`, tick its box `[x]`.
+- If the report will carry a note for a future step ("check during X", "step X should..."), write it into that step in `docs/project-implementation.md` now, so it's in this commit and survives `/clear`. The report alone isn't enough.
 
 ## 5. Commit
 ```bash
