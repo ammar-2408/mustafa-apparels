@@ -25,12 +25,13 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 ## Phase 1 — Brand (logo is ready; see `docs/design.md` §1)
 - [ ] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists
-- [ ] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, in the Tailwind preset and `globals.css` + contrast unit test
+- [ ] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, spacing tokens (`docs/design.md` §1.4) and the custom breakpoints (`docs/design.md` §2), in the Tailwind preset and `globals.css` + contrast unit test
 - [ ] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()`, spaced-capitals label style
 - [ ] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
 - [ ] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests
 - [ ] 1.6 `packages/ui` primitives in the brand style: Button, Input, Dialog, with focus rings + tests
 - [ ] 1.7 Default Open Graph image wired up in `apps/web` (`/brand/social/og-share-image-1200x630.png`) + test
+- [ ] 1.8 `SITE_URL` + `canonicalUrl()` + `buildMetadata()` helpers in `apps/web/lib/seo.ts` + unit tests, incl. title suffix dropped past 60 and description trimmed at a word boundary to 160. Built here so every later page can use them
 
 ## Phase 2 — Data layer
 - [ ] 2.1 `packages/db`: Drizzle + Neon client, drizzle-kit config, first migration enabling `pg_trgm` and creating `immutable_array_to_string`
@@ -87,15 +88,16 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 5.3 Catalog Zod schema + test over the real `catalog/` files: taxonomy, banned names, unique IDs, names and slugs, empty price, two-way colour links
 - [ ] 5.4 `scripts/import-stock.ts --dry-run`: reads `catalog/`, checks each listed file exists, reports files no suit lists. Tests with fixture files
 - [ ] 5.5 Real run: crop in memory (`sharp`) where `crop` is set, upload to `products/imported/<design-id>/`, create **draft** products with no price; `import_key` prevents duplicates, and a re-run keeps prices and admin edits + re-run test. Add `pnpm import:stock`
-- [ ] 5.6 Check real imports in the admin and a local storefront at 3:4: sharpness (especially KDR-7, KDR-8, Laj1–5), framing, no logos left; adjust crops and re-run. Output a review table
+- [ ] 5.6 Check real imports in the admin: sharpness (especially KDR-7, KDR-8, Laj1–5), framing, no logos left; adjust crops and re-run. Output a review table. The 3:4 storefront check comes at step 6.14
 - [ ] 5.7 Owner: clear remaining `check:` items, set prices, choose what to publish (`TODO-OWNER`)
 
 ## Phase 6 — Storefront
-- [ ] 6.1 Root layout: header (`<Logo>`, nav, search, account), footer (primary white logo on ink), skip link, `.js` class
-- [ ] 6.2 Product card (3:4 image, name, pieces, price, wishlist toggle), no video + component tests
-- [ ] 6.3 `/shop` grid with pagination + filters from the taxonomy, hiding values with no published suit (`docs/catalog.md` §4) + sort (URL-driven) + E2E
-- [ ] 6.4 `/collections/[slug]` + page-number rules (`?page=1` 301, out-of-range 404) + E2E
-- [ ] 6.5 `/products/[slug]` product page: gallery (swipe/zoom), design code, pieces, fabric, colour, design, care, "Also in this design", related + slug 301 + 404
+- [ ] 6.1 Root layout: header (`<Logo>`, nav, search, account), footer (primary white logo on ink), skip link, `.js` class. Account state loads client-side after paint, so the layout never reads cookies
+- [ ] 6.2 Product card (3:4 image, name, pieces, price, wishlist toggle), no video. Wishlist state loads client-side + component tests
+- [ ] 6.3 `/shop` grid + `/shop/page/[n]` (ADR-017: static, self-canonical, `/page/1` 301, invalid or out-of-range 404) + E2E
+- [ ] 6.4 `/collections/[slug]` + `/collections/[slug]/page/[n]` with the same rules, and real text for each collection (drafted here, fabric facts checked by the owner) + E2E
+- [ ] 6.4a Filters and sort in the browser (ADR-018): cached `/api/suits`, taxonomy values with none hidden (`docs/catalog.md` §4), URL updates and Back, client-side paging while filtered, `useSearchParams` inside `<Suspense>` + E2E, incl. "page stays static"
+- [ ] 6.5 `/products/[slug]` product page: gallery (swipe/zoom), design code, pieces, fabric, colour, design, care, "Also in this design", related + permanent slug redirect + 404
 - [ ] 6.6 Product video tile: poster first, loads in view, muted, pause control, reduced motion and Save-Data rules (`docs/design.md` §5.2) + tests
 - [ ] 6.7 Contact buttons (WhatsApp first, Call, Email) on product page + sticky mobile WhatsApp bar
 - [ ] 6.8 Inquiry form + server action + rate limit + email (see feature-development.md example)
@@ -104,11 +106,10 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 6.11 Static pages: About, Contact (no map or address), How to Order, FAQ, Privacy (incl. GA4), Terms. Text in `TODO-OWNER` areas stays placeholder until the owner supplies it
 - [ ] 6.12 Branded 404 + error pages with correct status codes
 - [ ] 6.13 Home page layout sections, static (no motion yet)
-- [ ] 6.14 Responsive suite passes on all 6 device projects; a11y suite passes
+- [ ] 6.14 Responsive suite passes on all 6 device projects; a11y suite passes. Check real imports in a local storefront at 3:4: grid crop from the top, whole photo in the gallery
 
 ## Phase 7 — SEO, GEO and analytics
-- [ ] 7.1 `SITE_URL` + `canonicalUrl()` + `buildMetadata()` helpers + unit tests
-- [ ] 7.2 Metadata on every page (title, description, canonical, robots)
+- [ ] 7.2 Metadata on every page (title, description, canonical, robots), using the step 1.8 helpers: fill any gaps
 - [ ] 7.3 Canonical E2E suite: one tag, absolute, self, SSR in `<head>`, pagination self, target 200
 - [ ] 7.4 Open Graph + Twitter tags; dynamic OG images (collection, product), cached + tests
 - [ ] 7.5 JSON-LD: Product (no `brand`, `seller`), VideoObject, BreadcrumbList, ItemList, OnlineStore (no address or hours) + `serializeJsonLd` escaping test
