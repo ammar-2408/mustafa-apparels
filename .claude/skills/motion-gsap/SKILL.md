@@ -9,6 +9,8 @@ API reference: the official **gsap-skills** (install via CLAUDE.md registry) and
 
 Motion should feel **soft, fabric-like and premium**, and never slow a shopper down. Product video has its own rules: `docs/design.md` §5.2.
 
+**Direction: read `docs/design.md` §9.1 first.** It sets how much motion each page gets. The site should have more motion than the reference there, using these rules to stay fast on phones.
+
 ## Setup (once, `apps/web/components/motion/gsap.ts`)
 ```ts
 'use client';
@@ -45,13 +47,13 @@ All GSAP plugins are free to use. Import from this module only.
 7. **Lenis + ScrollTrigger**: one Lenis instance in a provider; `lenis.on('scroll', ScrollTrigger.update)`; drive Lenis from `gsap.ticker`; disable for reduced motion and on touch devices if it hurts native feel.
 8. **Route changes**: `ScrollTrigger.refresh()` after the new page's images load; `useGSAP` scope cleanup kills old triggers. Test: trigger count doesn't grow across navigations.
 9. **Pinning** only on `lg+`; mobile uses native horizontal scroll-snap carousels instead of pinned sections.
-10. **Page transitions**: prefer View Transitions (React `<ViewTransition>` / CSS) with a GSAP fallback overlay; Flip for card → product hero image.
-11. **Performance**: ≤ 1 scrubbed effect per viewport on mobile; parallax movement ≤ 15%; `will-change` only during animation; images in animated sections have explicit width/height (no CLS).
+10. **Page transitions** between every page: a short cream cover with the official MA submark, about 0.25 s in and 0.25 s out, and it never waits on slow data. Fade the submark; never stretch or redraw it. None with reduced motion. Prefer View Transitions (React `<ViewTransition>` / CSS) with a GSAP fallback overlay; Flip for card → product hero image.
+11. **Performance**: ≤ 1 scrubbed effect per viewport on mobile; no pinning, stacking cards or `backdrop-filter` blur on phones; parallax movement ≤ 15%; `will-change` only during animation; images in animated sections have explicit width/height (no CLS).
 12. **Tokens** (`docs/design.md` §5.1): durations `fast 0.25`, `base 0.6`, `slow 1.1`, `hero 1.6`; eases `power3.out` (enter), `power2.inOut` (move), `expo.out` (hero), `none` (scrubbed scroll); stagger 0.06–0.1 for grids, 0.02 for split characters.
 13. **Stay cached**: motion runs only on the client. It adds no per-request work to the page around it.
 
 ## Reusable components (build these, then reuse)
-`<Reveal>` (fade/slide on scroll) · `<SplitHeading>` · `<ImageReveal>` (clip-path) · `<Parallax strength>` · `<HorizontalGallery>` (pinned desktop / snap mobile) · `<MagneticButton>` (pointer:fine only) · `<PageTransition>`.
+`<Reveal>` (fade/slide on scroll) · `<SplitHeading>` · `<WordFill>` (words go from `--color-muted` to ink on scroll) · `<ImageReveal>` (clip-path) · `<StackingCards>` (desktop only) · `<Parallax strength>` · `<HorizontalGallery>` (pinned desktop / snap mobile) · `<MagneticButton>` (pointer:fine only) · `<PageTransition>`.
 
 ## Tests for every motion change
 - Component test: renders content visible when `matchMedia('(prefers-reduced-motion: reduce)')` matches.
