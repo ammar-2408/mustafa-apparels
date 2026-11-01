@@ -33,7 +33,7 @@ export async function updateProduct(raw: unknown): Promise<ActionResult<{ id: st
 - [ ] Only Drizzle parameterized queries; no string-built SQL
 - [ ] Errors returned as safe messages; no stack traces, SQL or "email not found"
 - [ ] Rate limit for public or expensive endpoints (login, signup, reset, inquiry, search, upload sign). If Upstash is down, fail **open** for search and **closed** for login, reset and inquiry
-- [ ] Public forms: honeypot, rate limit and time check (submitted < 2 s after render = bot)
+- [ ] Public forms: honeypot, rate limit and time check (submitted < 2 s after the form mounts = bot). Set the timestamp in the browser on mount, because a cached page's render time may be hours old
 - [ ] Secrets only from validated env; file imports `server-only`; nothing secret in `NEXT_PUBLIC_*`
 - [ ] No `dangerouslySetInnerHTML` (except `serializeJsonLd`)
 - [ ] Admin mutation writes `audit_log`
