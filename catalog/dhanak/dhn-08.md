@@ -13,7 +13,7 @@ piece_details:
   - { piece: shirt, fabric: Dhanak, finish: Embroidered }
   - { piece: dupatta, fabric: Dhanak, finish: Printed }
   - { piece: trouser, finish: Plain dyed }
-design: [Embroidered, Floral Print]
+design: [Embroidered]
 season: Winter
 outfit_style: Traditional Suit
 main_color: Dark brown
@@ -29,6 +29,5 @@ videos:
 also_in_this_design: []
 check:
   - "Video is landscape with blurred sides, so the suit looks small. Check how it looks on the product page"
-  - "Print type read from the photo: floral. Confirm"
 ---
 A dark brown unstitched 3-piece Dhanak suit. A copper embroidered panel runs down the front above flower motifs and a wide patterned hem, with a matching printed dupatta and plain dyed trousers.

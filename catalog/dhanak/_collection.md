@@ -21,7 +21,7 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 
 - **Season:** Owner, 2026-11-01. The source file does not give a season.
 - **Outfit style:** Tag in the source file.
-- **Volume style, fabric, pieces and design:** from the source file. It says "Printed"; each suit file names the print type seen in its photo, because "Printed" isn't a filter value.
+- **Volume style, fabric, pieces and design:** from the source file. It says "Printed"; each suit file names the print type seen in its photo, because "Printed" isn't a filter value. DHN-01 and DHN-08 are Embroidered only, as the owner confirmed on 2026-11-01.
 
 ## Suits
 
@@ -29,7 +29,7 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 |---|---|---|---|
 | DHN-01 | dhnk1.jpeg | — | Black |
 | DHN-02 | dhnk2.jpeg | dhnk2-VID.mp4 | Wine |
-| DHN-03 | dhnk3.jpeg | dhnk3-VID.mp4 | Sage green |
+| DHN-03 | dhnk3.jpeg | dhnk3-VID.mp4 | Dusty olive green |
 | DHN-04 | dhnk4.jpeg | dhnk4-VID.mp4 | Maroon |
 | DHN-05 | dhnk5.jpeg | dhnk5-VID.mp4 | Charcoal |
 | DHN-06 | dhnk6.jpeg | dhnk6-VID.mp4 | Mauve brown |

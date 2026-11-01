@@ -3,8 +3,8 @@ design_id: DHN-03
 collection: dhanak
 status: draft
 price:
-name: Sage Green Embroidered Dhanak 3-Piece Suit
-slug: sage-green-embroidered-dhanak-3-piece-dhn-03
+name: Dusty Olive Green Embroidered Dhanak 3-Piece Suit
+slug: dusty-olive-green-embroidered-dhanak-3-piece-dhn-03
 volume_style: 3 Piece
 dress_categories: [Unstitched Suits]
 collection_type: Premium
@@ -16,18 +16,17 @@ piece_details:
 design: [Embroidered, Floral Print]
 season: Winter
 outfit_style: Traditional Suit
-main_color: Sage green
+main_color: Dusty olive green
 color_family: Green
-accent_colors: [Gold, Yellow]
-motifs: [gold embroidered neckline, yellow flower border, trailing vines]
+accent_colors: [Antique gold]
+motifs: [antique gold embroidered neckline, golden flower border, trailing vines]
 photos:
   - file: Dhanak/dhnk3.jpeg
-    alt: "Model wearing a sage green 3-piece Dhanak suit with gold embroidery at the neckline, yellow flowers along the hem and sleeves, a matching printed dupatta and plain green trousers"
+    alt: "Model wearing a dusty olive green 3-piece Dhanak suit with antique gold embroidery at the neckline, golden flowers along the hem and sleeves, a matching printed dupatta and plain green trousers"
 videos:
   - file: Dhanak/dhnk3-VID.mp4
-    alt: "Short video of the sage green embroidered dhanak 3-piece suit, muted"
+    alt: "Short video of the dusty olive green embroidered dhanak 3-piece suit, muted"
 also_in_this_design: []
-check:
-  - "The video shows a darker green than the photo. Confirm the true colour, because customers will see both"
+check: []
 ---
-A sage green unstitched 3-piece Dhanak suit. Gold embroidery sits at the neckline and yellow flowers fill the hem and sleeves, with a matching printed dupatta and plain dyed trousers.
+A dusty olive green unstitched 3-piece Dhanak suit. Antique gold embroidery sits at the neckline and golden flowers fill the hem and sleeves, with a matching printed dupatta and plain dyed trousers.

@@ -13,7 +13,7 @@ piece_details:
   - { piece: shirt, fabric: Dhanak, finish: Embroidered }
   - { piece: dupatta, fabric: Dhanak, finish: Printed }
   - { piece: trouser, finish: Plain dyed }
-design: [Embroidered, Geometric Print]
+design: [Embroidered]
 season: Winter
 outfit_style: Traditional Suit
 main_color: Black
@@ -29,6 +29,5 @@ also_in_this_design: []
 check:
   - "Black poster border and a sliver of an old inset photo remain. Crop box set; confirm it after import"
   - "Video left out: dhnk1-VID.mp4 ends on a card showing another brand's logo and an old design code. It can return if re-exported without that card"
-  - "Print type read from the photo: geometric. Confirm"
 ---
 A black unstitched 3-piece Dhanak suit. The embroidered shirt has a beige diamond panel down the front and small flower sprigs below it, with a floral printed dupatta and plain dyed trousers.
