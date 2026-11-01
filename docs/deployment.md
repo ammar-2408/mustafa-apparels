@@ -178,7 +178,7 @@ Search engines must see one site. The admin never gets indexed, and the storefro
 
 | Before launch | At launch |
 |---|---|
-| Production has `SITE_INDEXABLE=false`, so `robots.txt` has `Disallow: /` and responses send `noindex` | Set `SITE_INDEXABLE=true` and `NEXT_PUBLIC_SITE_URL=https://mustafaapparels.com` on production, then redeploy |
+| Production has `SITE_INDEXABLE=false`, so `robots.txt` has `Disallow: /`, responses send `noindex`, and the admin sends nothing to IndexNow | Set `SITE_INDEXABLE=true` and `NEXT_PUBLIC_SITE_URL=https://mustafaapparels.com` on both production sites, then redeploy |
 | Branch deploys always `noindex` | Add the redirect below |
 
 Netlify's docs don't say that `.netlify.app` redirects to the primary domain on its own, so add it explicitly to `apps/web/netlify.toml`:
@@ -191,7 +191,7 @@ Netlify's docs don't say that `.netlify.app` redirects to the primary domain on 
 ```
 It only matches that host, so `develop--mustafa-apparels.netlify.app` keeps working. Test it at launch.
 
-The domain switch needs a production deploy: budget 15 credits for the web site.
+The domain switch needs a production deploy of both sites, because a changed environment variable only takes effect on the next deploy: budget 30 credits.
 
 ## 7. Roll back
 
