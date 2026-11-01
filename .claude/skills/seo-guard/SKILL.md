@@ -5,7 +5,9 @@ description: Technical SEO rules for this shop — metadata, one absolute self-r
 
 # SEO guard
 
-Reference: `docs/design.md` §8. Every rule here has a test in `e2e/seo/`.
+Reference: `docs/design.md` §8 and `docs/seo-geo.md`. Every rule here has a test in `e2e/seo/`.
+
+Never name another fashion brand in titles, descriptions, slugs, alt text or JSON-LD (`docs/database.md` §9).
 
 ## Adding or changing a public page — checklist
 1. Export `generateMetadata` (dynamic) or `metadata` (static) built **only** with `buildMetadata()` from `apps/web/lib/seo.ts`:
@@ -39,7 +41,7 @@ Reference: `docs/design.md` §8. Every rule here has a test in `e2e/seo/`.
 | Page 2 → page 1 | Page N → page N | `?page=2` canonical includes `?page=2`; `?page=1` → 301 to clean URL; invalid/out-of-range page → 404 |
 | Canonical → redirect/404 | Canonical returns 200 | Canonical uses the *current* slug; old slugs 301 via `slug_redirect`; deleted/unpublished items 404 and leave the sitemap |
 
-Also: filter/sort params (`?size=`, `?sort=`) canonicalize to the unfiltered page; lowercase slugs; no trailing slash; one URL per dress (no `/collections/x/dresses/y` duplicates).
+Also: filter/sort params (`?pieces=`, `?sort=`) canonicalize to the unfiltered page; lowercase slugs; no trailing slash; one URL per suit (`/products/[slug]`, with no `/collections/x/products/y` duplicates).
 
 ## Helpers (implement once in `apps/web/lib/seo.ts`, unit-test thoroughly)
 - `canonicalUrl(path, { page? })` → absolute URL, normalizes slashes/case, drops tracking/filter params, appends `?page=N` only for N > 1.
@@ -53,15 +55,15 @@ Also: filter/sort params (`?size=`, `?sort=`) canonicalize to the unfiltered pag
 | `/search` | `noindex, follow` |
 | `/account/*`, `/login`, `/register`, reset pages | `noindex, nofollow` |
 | Admin app (all) | `X-Robots-Tag: noindex, nofollow` header + `Disallow: /` |
-| Preview deployments | `X-Robots-Tag: noindex` header + `Disallow: /` |
+| Preview deployments, and production before launch (`SITE_INDEXABLE=false`) | `X-Robots-Tag: noindex` header + `Disallow: /` |
 
 ## Files
 - `app/sitemap.ts`: absolute URLs, `lastModified` from `updated_at`, only published/active items; revalidated with tag `products`.
-- `app/robots.ts`: production allows all except `/account`, `/api`, `/search`, auth pages; includes `Sitemap:`; non-production disallows all.
-- `app/llms.txt/route.ts`: `text/plain; charset=utf-8`; `# <SHOP_NAME>`, `> summary`, `## Collections`, `## Key pages`, `## Optional`; every link absolute and 200.
+- `app/robots.ts`: live production allows all except `/api`; includes `Sitemap:`; `SITE_INDEXABLE=false` disallows all. **Never disallow `/search`, `/account` or auth pages**: a crawler blocked from a page can't read its `noindex`.
+- `app/llms.txt/route.ts`: `text/plain; charset=utf-8`; `# Mustafa Apparels`, `> summary`, `## Collections`, `## Key pages`, `## Optional`; every link absolute and 200.
 - OG images: `opengraph-image.tsx` per route group (default, collection, product with photo + name + price).
 
 ## JSON-LD
-- Product: `Product` + `offers` (`price`, `priceCurrency: "PKR"`, `availability` schema.org URL, `url` = canonical) + `BreadcrumbList`.
+- Product: `Product` + `offers` (`price`, `priceCurrency: "PKR"`, `availability` schema.org URL, `url` = canonical, `seller` = Mustafa Apparels) + `BreadcrumbList`. **No `brand`.** Add `VideoObject` when the product has a video.
 - Collection: `BreadcrumbList` + `ItemList`.
-- Home/Contact: `ClothingStore` with `telephone`, `address`, `openingHoursSpecification`, `sameAs`.
+- Home/Contact: `OnlineStore` with `name`, `alternateName: "MA Apparels"`, `url`, `logo`, `contactPoint`, `areaServed: "PK"`, `sameAs`. **No `address` or opening hours**: the shop is online-only.
