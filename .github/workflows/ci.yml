@@ -17,7 +17,7 @@ permissions:
 
 env:
   APP_ENV: test
-  INTEGRATIONS_MODE: mock          # email/images/rate-limit use in-memory fakes
+  INTEGRATIONS_MODE: mock # email/images/rate-limit use in-memory fakes
   NEXT_PUBLIC_SITE_URL: http://localhost:3000
   WEB_URL: http://localhost:3000
   ADMIN_URL: http://localhost:3001
@@ -47,7 +47,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: shop_test
-        ports: ["5432:5432"]
+        ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 5s --health-timeout 5s --health-retries 10
@@ -69,7 +69,7 @@ jobs:
         if: always()
         with:
           name: coverage
-          path: "**/coverage/"
+          path: '**/coverage/'
           retention-days: 7
 
   e2e:
@@ -82,7 +82,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: shop_test
-        ports: ["5432:5432"]
+        ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 5s --health-timeout 5s --health-retries 10
@@ -98,7 +98,7 @@ jobs:
       - run: pnpm db:migrate
       - run: pnpm db:seed -- --e2e
       - run: pnpm build
-      - run: pnpm test:e2e         # Playwright webServer starts web (3000) + admin (3001)
+      - run: pnpm test:e2e # Playwright webServer starts web (3000) + admin (3001)
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -117,7 +117,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: shop_test
-        ports: ["5432:5432"]
+        ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 5s --health-timeout 5s --health-retries 10
@@ -131,4 +131,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:migrate && pnpm db:seed -- --e2e
       - run: pnpm build
-      - run: pnpm dlx @lhci/cli autorun   # reads .lighthouserc.json (budgets: perf ≥ 0.9, a11y ≥ 0.95, seo = 1)
+      - run: pnpm dlx @lhci/cli autorun # reads .lighthouserc.json (budgets: perf ≥ 0.9, a11y ≥ 0.95, seo = 1)

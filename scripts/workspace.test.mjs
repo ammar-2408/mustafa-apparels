@@ -1,10 +1,22 @@
 // Monorepo setup checks. Uses node:test until Vitest arrives in step 0.5.
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+import { ESLint } from 'eslint';
+import { getFileInfo } from 'prettier';
 
 const read = (file) => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 const readJson = (file) => JSON.parse(read(file));
+const fromRoot = (file) => fileURLToPath(new URL(`../${file}`, import.meta.url));
+
+const eslint = new ESLint({ cwd: fromRoot('') });
+const prettierIgnores = async (file) => {
+  const ignorePath = [fromRoot('.gitignore'), fromRoot('.prettierignore')];
+  return (await getFileInfo(fromRoot(file), { ignorePath })).ignored;
+};
 
 test('root package is private and pins the pnpm version CI uses', () => {
   const pkg = readJson('package.json');
@@ -44,7 +56,86 @@ test('build caches Next.js output but not its cache folder', () => {
 
 test('.gitignore keeps dependencies, Turbo cache, secrets and owner files out of git', () => {
   const lines = read('.gitignore').split(/\r?\n/);
-  for (const entry of ['node_modules/', '.turbo/', '.env', '.env.*', '!.env.example', 'Business data/']) {
+  for (const entry of [
+    'node_modules/',
+    '.turbo/',
+    '.env',
+    '.env.*',
+    '!.env.example',
+    'Business data/',
+  ]) {
     assert.ok(lines.includes(entry), `.gitignore is missing "${entry}"`);
+  }
+});
+
+test('.gitattributes keeps YAML files on LF', () => {
+  assert.ok(read('.gitattributes').split(/\r?\n/).includes('*.yaml text eol=lf'));
+});
+
+test('root ESLint applies a11y rules to UI code only', async () => {
+  const rule = 'jsx-a11y/anchor-is-valid';
+  for (const file of [
+    'apps/web/app/page.tsx',
+    'apps/admin/app/page.tsx',
+    'packages/ui/button.tsx',
+  ]) {
+    const { rules } = await eslint.calculateConfigForFile(file);
+    assert.ok(rules[rule], `${file} should have ${rule}`);
+  }
+  const { rules } = await eslint.calculateConfigForFile('scripts/x.mjs');
+  assert.equal(rules[rule], undefined);
+});
+
+test('format hook leaves sorted imports in Prettier style', () => {
+  const probe = 'scripts/hook-probe.tmp.mjs';
+  writeFileSync(fromRoot(probe), "import { z, a } from './b.mjs';\nexport { a, z };\n");
+  try {
+    spawnSync(process.execPath, [fromRoot('.claude/hooks/format-file.mjs')], {
+      cwd: fromRoot(''),
+      env: { ...process.env, CLAUDE_PROJECT_DIR: fromRoot('') },
+      input: JSON.stringify({ tool_input: { file_path: probe } }),
+    });
+    assert.equal(read(probe), "import { a, z } from './b.mjs';\nexport { a, z };\n");
+  } finally {
+    rmSync(fromRoot(probe));
+  }
+});
+
+test('root ESLint looks for Next.js routes inside the apps', async () => {
+  const { settings } = await eslint.calculateConfigForFile('apps/web/app/page.tsx');
+  assert.deepEqual(settings.next.rootDir, ['apps/*/']);
+});
+
+test('root ESLint ignores owner files and build output', async () => {
+  for (const file of ['Business data/x.ts', 'apps/web/.next/x.js', '.claude/skills/x/y.mjs']) {
+    assert.equal(await eslint.isPathIgnored(file), true, `${file} should be ignored`);
+  }
+  assert.equal(await eslint.isPathIgnored('.claude/hooks/lib.mjs'), false);
+});
+
+test('Prettier leaves docs, stock, owner files and generated files alone', async () => {
+  const ignored = [
+    'Business data/x.json',
+    'docs/x.md',
+    'AGENTS.md',
+    'catalog/dhanak/x.md',
+    '.claude/skills/x/y.mjs',
+    'mustafa-apparels-logos/x.json',
+    'pnpm-lock.yaml',
+    'skills-lock.json',
+  ];
+  for (const file of ignored) {
+    assert.equal(await prettierIgnores(file), true, `${file} should be ignored`);
+  }
+});
+
+test('Prettier still formats code and config files', async () => {
+  for (const file of [
+    'scripts/x.mjs',
+    '.claude/hooks/lib.mjs',
+    '.github/workflows/ci.yml',
+    'pnpm-workspace.yaml',
+  ]) {
+    assert.equal(await prettierIgnores(file), false, `${file} should be formatted`);
   }
 });

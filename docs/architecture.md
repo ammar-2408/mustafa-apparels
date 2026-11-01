@@ -120,7 +120,7 @@ flowchart LR
 │   ├── auth/        createAuth(options), requireUser(), requireAdmin()
 │   ├── validators/  product.ts, media.ts, banned-terms.ts, inquiry.ts, auth.ts, search.ts ...
 │   ├── ui/          primitives shared by both apps
-│   └── config/      eslint, tsconfig, tailwind preset, prettier
+│   └── config/      @mustafa/config: eslint, tsconfig, tailwind preset, prettier
 ├── catalog/         one details file per suit, grouped by collection (docs/catalog.md)
 ├── scripts/         import-stock.ts (Phase 5), install-skills.sh
 ├── e2e/             web/, admin/, seo/, a11y/, responsive/, security/
@@ -129,6 +129,14 @@ flowchart LR
 ├── docs/
 └── .claude/, .mcp.json, AGENTS.md, CLAUDE.md
 ```
+
+**Tooling versions:** workspace packages use the `@mustafa/*` scope. Don't raise these without checking the peer ranges:
+- **TypeScript stays on 6.0:** `typescript-eslint` 8 requires `<6.1.0`.
+- **ESLint stays on 9:** `eslint-plugin-jsx-a11y` and `eslint-plugin-react` don't support 10 yet. ESLint 9 is already out of support upstream, so move to 10 as soon as both plugins allow it. It only runs in development and CI, not in the shop.
+- **`next` is a dependency of `@mustafa/config`:** `eslint-config-next` loads its parser from `next` without declaring it. Keep this version the same as the apps'.
+- **Install scripts stay off unless reviewed** (`allowBuilds` in `pnpm-workspace.yaml`). A new package with one fails the install until it's listed.
+
+**Formatting:** Prettier skips all Markdown and `catalog/` (`.prettierignore`), so hand-written docs and suit files aren't rewritten.
 
 **Layering rule:** `app/` (routes, UI) → `packages/core` (logic) → `packages/db` (data).
 Pages and server actions stay thin: check auth, validate input, call `core`, return. Business rules live in `core` so they're unit-tested without a browser.

@@ -2,7 +2,8 @@
 // Never blocks; real lint errors are caught by `pnpm verify` and the commit gate.
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { readInput, relPath, run, root } from './lib.mjs';
+
+import { readInput, relPath, root, run } from './lib.mjs';
 
 const input = await readInput();
 const file = input?.tool_input?.file_path;
@@ -21,11 +22,12 @@ const ext = path.extname(rel).toLowerCase();
 const code = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'];
 const other = ['.json', '.md', '.css', '.yml', '.yaml', '.html'];
 
-if (code.includes(ext) || other.includes(ext)) {
-  run('pnpm', ['exec', 'prettier', '--write', rel]);
-}
+// Prettier last: ESLint's import sort can leave spacing that Prettier then cleans up.
 if (code.includes(ext)) {
   run('pnpm', ['exec', 'eslint', '--fix', rel]);
+}
+if (code.includes(ext) || other.includes(ext)) {
+  run('pnpm', ['exec', 'prettier', '--write', rel]);
 }
 
 process.exit(0);

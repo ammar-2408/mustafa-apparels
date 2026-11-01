@@ -2,7 +2,8 @@
 // Exit 2 blocks the commit and sends the failure output back to Claude.
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { readInput, run, block, root } from './lib.mjs';
+
+import { block, readInput, root, run } from './lib.mjs';
 
 const input = await readInput();
 const command = input?.tool_input?.command ?? '';
@@ -36,8 +37,14 @@ for (const name of ['lint', 'typecheck', 'test']) {
   if (!scripts[name]) continue;
   const result = run('pnpm', [name]);
   if (result.status !== 0) {
-    const output = `${result.stdout || ''}${result.stderr || ''}`.trim().split('\n').slice(-40).join('\n');
-    block(`Commit blocked: "pnpm ${name}" failed. Fix it, re-run, then commit again.\n----- last 40 lines -----\n${output}`);
+    const output = `${result.stdout || ''}${result.stderr || ''}`
+      .trim()
+      .split('\n')
+      .slice(-40)
+      .join('\n');
+    block(
+      `Commit blocked: "pnpm ${name}" failed. Fix it, re-run, then commit again.\n----- last 40 lines -----\n${output}`,
+    );
   }
 }
 

@@ -1,3 +1,7 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
+
+# Build scripts stay off unless reviewed. unrs-resolver only re-checks its prebuilt binding.
+allowBuilds:
+  unrs-resolver: false

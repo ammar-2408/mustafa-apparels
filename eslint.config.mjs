@@ -1,0 +1,13 @@
+// Root config: the Claude Code hooks run ESLint from here on any file in the repo.
+import base from '@mustafa/config/eslint/base';
+import next from '@mustafa/config/eslint/next';
+import { defineConfig } from 'eslint/config';
+
+export default defineConfig([
+  base,
+  {
+    files: ['apps/**', 'packages/ui/**'],
+    extends: [next],
+    settings: { next: { rootDir: ['apps/*/'] } },
+  },
+]);

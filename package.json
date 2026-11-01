@@ -10,6 +10,10 @@
     "test": "node --test scripts/workspace.test.mjs && turbo run test"
   },
   "devDependencies": {
-    "turbo": "^2.11.10"
+    "@mustafa/config": "workspace:*",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.10",
+    "typescript": "~6.0.3"
   }
 }

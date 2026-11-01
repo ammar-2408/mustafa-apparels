@@ -1,0 +1,11 @@
+# Prettier also reads .gitignore, which covers Business data/, node_modules/ and build output.
+
+# Docs and stock files are written by hand; reformatting them hides real changes in the diff.
+*.md
+catalog/
+
+# Installed or generated
+.claude/skills/
+mustafa-apparels-logos/
+pnpm-lock.yaml
+skills-lock.json
