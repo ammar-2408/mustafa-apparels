@@ -94,4 +94,6 @@ Every variable, and where it's set:
 
 The apps validate env at startup and refuse to run if something is missing.
 
-**Known issue:** `.claude/settings.json` denies Claude Code reading `.env.*`, which also catches `.env.example`, even though `AGENTS.md` allows that file. Step 0.10 adds the new variables to `.env.example`, so it needs you to allow the file or add them yourself.
+**`.env.example` is out of date** until step 0.10, which updates it to match this table: it still has the kit's `<SHOP_NAME>` placeholder and test sender, a `.netlify.app` production URL, and none of the variables added since. It also has `APP_ENV`, which CI uses. Step 0.10 keeps it for telling environments apart, and `SITE_INDEXABLE` alone decides indexing.
+
+**Claude Code's access:** it can read and edit `.env.example`. It's denied reading `.env`, `.env.local`, `.env.*.local`, `.env.development` and `.env.production`, in the root and in subfolders. Other names such as `.env.test` aren't covered by that rule, so don't put real secrets in them. All `.env*` files except the example stay git-ignored and blocked from editing by the `protect-files` hook.

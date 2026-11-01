@@ -19,7 +19,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 0.7 `pnpm verify` script (lint + typecheck + test + build)
 - [ ] 0.8 Husky + lint-staged pre-commit (format, lint staged files, typecheck), commitlint for Conventional Commits
 - [ ] 0.9 GitHub Actions CI (`.github/workflows/ci.yml`) green on push. Check whether branch protection on `main` is available for this repo; if not, use the fallback in `docs/deployment.md` §2
-- [ ] 0.10 Env validation with Zod (`packages/config/env.ts`) + `.env.example` with all variables from `docs/setup.md` §6. **Needs the owner:** `.env.example` is blocked for Claude Code by `.claude/settings.json`
+- [ ] 0.10 Env validation with Zod (`packages/config/env.ts`) + bring `.env.example` in line with `docs/setup.md` §6: real shop name and sender, production URLs, all new variables
 - [ ] 0.11 Two Netlify sites (`docs/deployment.md` §2): package directories, `netlify.toml` per app with the skip rule, `develop` branch deploys, production from `main`; `SITE_INDEXABLE=false`; previews `noindex`. Confirm Netlify supports the `.nvmrc` Node version. Check the credit balance after the first skipped build and record the result in `docs/deployment.md`
 - [x] 0.12 Install external skills (`bash scripts/install-skills.sh`) and commit the lock/registry update
 
