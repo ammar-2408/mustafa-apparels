@@ -114,7 +114,7 @@ Notes:
 
 ## 5. Photo and video rules
 
-These are the product-media rules. The `product-media` skill (Prompt 3 in `docs/claude-code-playbook.md`) is built from this section.
+These are the product-media rules. The `product-media` skill is built from this section.
 
 **Before a file goes in the catalog, open it:**
 
@@ -128,7 +128,7 @@ These are the product-media rules. The `product-media` skill (Prompt 3 in `docs/
 | Video with burned-in captions or borders | Keep, add `check:` |
 | Video that doesn't match the photo (colour, print) | Keep, add `check:` |
 
-**Checking videos:** look at several moments, including the very end, because end cards are easy to miss. Save frames only outside the repo and outside `Business data/`.
+**Checking videos:** look at several moments, including the very end, because end cards are easy to miss. The `product-media` skill has a script that builds these contact sheets in a browser. Save frames only outside the repo and outside `Business data/`.
 
 **File names today:** `dhnk1.jpeg` + `dhnk1-VID.mp4`; `KDR-1.jpeg` + `KDR-1-VID.mp4`; `Laj2.jpeg` + `Laj2vid.mp4` or `laj5vid.mp4`; and `Laj1.png`. Case, type and pattern differ, so `catalog/` lists exact file names and nothing relies on a pattern.
 

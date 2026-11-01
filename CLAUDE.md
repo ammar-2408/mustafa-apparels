@@ -41,8 +41,9 @@ Skills live in `.claude/skills/` (project) and `~/.claude/skills/` (user). Befor
 | `reference-to-code` | Turning a reference website or screenshot into original UI ("image to code") |
 | `security-check` | Any server action, route handler, auth, upload, or env change |
 | `db-change` | Any schema or migration change |
+| `product-media` | Photos, videos, `catalog/`, filter values, stock import, adding a collection |
 
-Two more are planned for this shop, created by Prompt 3 in `docs/claude-code-playbook.md`: `product-media` (photos, videos, catalog, stock import) and `brand-mustafa` (logo, tokens, tone). Until they exist, follow `docs/catalog.md` and `docs/design.md` §1.
+One more is planned for this shop, created by Prompt 3 in `docs/claude-code-playbook.md`: `brand-mustafa` (logo, tokens, tone). Until it exists, follow `docs/design.md` §1.
 
 ### External skills registry (install automatically when needed)
 
