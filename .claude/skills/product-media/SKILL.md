@@ -94,7 +94,7 @@ A black unstitched 3-piece Dhanak suit for winter. The embroidered shirt has a b
 - **`outfit_style`:** leave empty unless the collection file gives one. The customer's tailor decides the cut.
 - **`photos`:** `file`, `alt`, optional `crop`. **`videos`:** `file` and `alt` only, or `[]`. **`file`:** relative to `Business data/Stock/`. **`crop`:** pixels, applied in memory before upload.
 - **`alt`, photos and videos:** written by looking at that file, 3–200 characters. Describe the suit: colour, pieces, print, work. Never the person's identity, and never a brand.
-- **Body:** 1–2 short sentences in your own words, using only what's visible or in the collection file. No claims about softness, warmth, quality or stock unless the owner confirmed them. Tone: `brand-mustafa` skill.
+- **Body:** 1–2 short sentences in your own words that name the fabric and season, using only what's visible or in the collection file. No claims about softness, warmth, quality or stock unless the owner confirmed them. Tone: `brand-mustafa` skill.
 
 `_collection.md` has the shared values as frontmatter, a note on where each came from, a "Suits" table (design ID, photo, video, main colour) and a "Left out" list with reasons. Copy the shape of `catalog/dhanak/_collection.md`.
 
