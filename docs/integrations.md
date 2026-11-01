@@ -16,8 +16,10 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 ## Cloudinary
 
 ### Folders and delivery
-- Folder structure: `products/{productId}/{publicId}`, `categories/{categoryId}`, `brand/`. Imported stock uses `products/imported/{import_key}/`, where `import_key` is the suit's design ID (`docs/catalog.md` §6).
-- Image URLs: `f_auto,q_auto,c_fill,ar_3:4,w_{width}` via a custom `next/image` loader (`apps/web/lib/cloudinary-loader.ts`), so neither Next.js nor Netlify re-optimizes images.
+- Folder structure: `products/{publicId}`, `categories/{categoryId}`, `brand/`. Admin uploads can't use a product ID in the path, because a new product has no ID until it's saved. Imported stock uses `products/imported/{import_key}/`, where `import_key` is the suit's design ID (`docs/catalog.md` §6).
+- Image URLs, via a custom `next/image` loader (`apps/web/lib/cloudinary-loader.ts`), so neither Next.js nor Netlify re-optimizes images:
+  - **Grid cards:** `f_auto,q_auto,c_fill,g_north,ar_3:4,w_{width}`. `g_north` crops from the top: the default crops from the centre, which would cut the model's head off these tall photos.
+  - **Product gallery:** `f_auto,q_auto,c_limit,w_{width}`, so the whole photo shows (`docs/design.md` §2).
 - Widths for `srcset`: 320, 480, 640, 828, 1080, 1440, 1920.
 - `next.config` `images.remotePatterns` allows only `res.cloudinary.com/<cloud_name>/**`.
 
