@@ -89,7 +89,7 @@ Rules:
 - Touch targets ≥ 44×44px; hover effects have a tap/focus equivalent.
 - Test portrait **and** landscape on phones and tablets; respect safe areas (`env(safe-area-inset-*)`).
 - Product images: fixed **3:4** aspect ratio boxes (no layout shift), `next/image` + Cloudinary loader, `sizes` set per grid.
-- Cropped posters are full-length and often narrower than 3:4. Grid cards fill the box from the top. The product gallery shows the whole crop on the surface colour rather than cutting off the model. Check this with real imports at step 5.5.
+- Stock photos are full-length and tall, about 0.55 width to height, against 0.75 for a 3:4 box. Grid cards fill the box from the top, cutting off the lower part. The product gallery shows the whole photo on the surface colour rather than cutting off the model. Check this with real imports at step 5.6.
 
 ## 3. Page inventory
 
@@ -99,6 +99,10 @@ Rules:
 Admin design: clean, fast, no 3D; dense tables on desktop, card lists on mobile; same tokens.
 
 **Wording:** the site calls products "suits" or "unstitched suits", never "dresses". It never mentions other brands (`docs/prd.md` §2).
+
+**Filters:** volume style, dress category, fabric, design, season, outfit style, colour and price, from the fixed list in `docs/catalog.md` §4. A filter value shows only when a published suit has it, and a filter with one value or none is hidden. With 30 suits, that keeps the bar short; on mobile, it's a bottom sheet. Colour swatches use `color_family`; the product page shows the fuller `main_color` name.
+
+**The same design in another colour:** the product page shows a small "Also in this design" row, linking to the other colours (`related_design_codes`).
 
 ## 4. Home page structure (draft)
 
@@ -138,11 +142,11 @@ Video appears **on product pages only**, plus at most one featured suit on the h
 
 | Behaviour | Rule |
 |---|---|
-| Sound | Delivered with no audio track (`ac_none`), `muted`, `playsInline`. The stock videos all have audio, which is removed on delivery |
+| Sound | Delivered with no audio track (`ac_none`), `muted`, `playsInline`. The stock videos have audio tracks, which are removed on delivery |
 | Loading | `preload="none"`, poster image first. Source attached only when the tile enters the viewport |
 | Playback | Autoplays muted while in view, pauses out of view and when the tab is hidden. Loops. Visible pause button |
 | Reduced motion or Save-Data | Poster only, with a tap-to-play button |
-| Shape | Tile keeps the video's own ratio with `object-fit: contain`. Most stock is 9:16; `dhnk8-VID` is landscape |
+| Shape | Tile keeps the video's own ratio with `object-fit: contain`. Most stock is 9:16; `dhnk8-VID` is landscape with blurred sides, and `dhnk4-VID` has beige bars above and below |
 | Gallery position | After the main image, so a video is never the LCP element |
 | Accessibility | Pause control reachable by keyboard; `aria-label` from the alt text; nothing plays over 5 s without a pause control |
 
