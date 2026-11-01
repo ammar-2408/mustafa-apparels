@@ -24,7 +24,9 @@ Never name another fashion brand in titles, descriptions, slugs, alt text or JSO
      });
    }
    ```
-   **Keep the page cached.** Reading `searchParams` in a page or its metadata makes the whole route dynamic, which breaks the caching rule (`docs/architecture.md` §4). How cached pages serve `?page=N` isn't decided yet, so settle it with an ADR at step 6.3 or before. Don't read `searchParams` on a `(shop)` page without one.
+   A later page is its own route at `/collections/[slug]/page/[n]`, with `path` set to that URL and a title and description unique to that page.
+
+   **Keep the page cached.** Reading `searchParams` in a page or its metadata makes the whole route dynamic, which breaks the caching rule (`docs/architecture.md` §4). So `(shop)` pages never read it: page numbers come from the path (ADR-017), and filters and sort run in the browser (ADR-018). No `loading.tsx` above `(shop)` routes, because a 404 or redirect after streaming starts loses its real status code.
 2. Page body: exactly one `<h1>`; breadcrumbs; JSON-LD via `<JsonLd data={...} />` (uses `serializeJsonLd`).
 3. Add the route to `app/sitemap.ts` (if indexable) and to `llms.txt` if it's a key page.
 4. Add the URL to the SEO E2E fixtures list so canonical/meta tests cover it.
@@ -42,14 +44,14 @@ Never name another fashion brand in titles, descriptions, slugs, alt text or JSO
 | Two canonical tags | Exactly one | Only `buildMetadata` sets `alternates.canonical`; never hand-write `<link rel="canonical">`, never set it in a layout *and* a page |
 | Relative URL | Absolute `https://…` | `metadataBase` + `canonicalUrl()` uses `NEXT_PUBLIC_SITE_URL` |
 | Added by JavaScript | Server-rendered in `<head>` | Metadata API in server components only; verify with `curl` (no JS) using a normal and a Googlebot UA. If metadata streams outside `<head>`, set `htmlLimitedBots` in `next.config` |
-| Page 2 → page 1 | Page N → page N | `?page=2` canonical includes `?page=2`; `?page=1` → 301 to clean URL; invalid/out-of-range page → 404 |
-| Canonical → redirect/404 | Canonical returns 200 | Canonical uses the *current* slug; old slugs 301 via `slug_redirect`; deleted/unpublished items 404 and leave the sitemap |
+| Page 2 → page 1 | Page N → page N | `/collections/dhanak/page/2` is its own canonical; `/page/1` → 301 to the clean URL (`next.config`, `statusCode: 301`); `/page/0`, `/page/abc`, `/page/01` and out-of-range pages → 404 |
+| Canonical → redirect/404 | Canonical returns 200 | Canonical uses the *current* slug; old slugs redirect permanently via `slug_redirect` (`permanentRedirect()` sends 308; search engines treat it like a 301); deleted/unpublished items 404 and leave the sitemap |
 
-Also: filter/sort params (`?pieces=`, `?sort=`) canonicalize to the unfiltered page; lowercase slugs; no trailing slash; one URL per suit (`/products/[slug]`, with no `/collections/x/products/y` duplicates).
+Also: filter/sort params (`?pieces=`, `?sort=`) are read only in the browser, so the server sends the unfiltered page and its canonical; lowercase slugs; no trailing slash; one URL per suit (`/products/[slug]`, with no `/collections/x/products/y` duplicates).
 
 ## Helpers (implement once in `apps/web/lib/seo.ts`, unit-test thoroughly)
-- `canonicalUrl(path, { page? })` → absolute URL, normalizes slashes/case, drops tracking/filter params, appends `?page=N` only for N > 1.
-- `buildMetadata({ title, description, path, page?, image?, noindex? })` → title template `%s | Mustafa Apparels` (full title ≤ 60), description trim (≤ 160), canonical, OG (`og:url` = canonical, absolute 1200×630 image, `og:type`, `og:site_name`, `og:locale=en_PK`), Twitter `summary_large_image`, robots.
+- `canonicalUrl(path)` → absolute URL, normalizes slashes/case, drops all query params. Built at step 1.8.
+- `buildMetadata({ title, description, path, image?, noindex? })` → title template `%s | Mustafa Apparels`, dropping the suffix when the full title would pass 60; description 120–160, trimmed at a word boundary; canonical, OG (`og:url` = canonical, absolute 1200×630 image, `og:type`, `og:site_name`, `og:locale=en_PK`), Twitter `summary_large_image`, robots.
 - `serializeJsonLd(obj)` → `JSON.stringify(obj).replace(/</g, '\\u003c')`.
 
 ## robots / noindex
