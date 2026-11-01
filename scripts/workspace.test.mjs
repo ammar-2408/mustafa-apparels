@@ -63,6 +63,10 @@ for (const app of ['web', 'admin']) {
   test(`${app} loads the root env file from its Next config`, () => {
     assert.match(read(`apps/${app}/next.config.ts`), /loadEnvFiles\(\)/);
   });
+
+  test(`${app} sets its robots header from its Next config`, () => {
+    assert.match(read(`apps/${app}/next.config.ts`), new RegExp(`robotsHeaders\\('${app}'\\)`));
+  });
 }
 
 for (const task of ['build', 'dev']) {

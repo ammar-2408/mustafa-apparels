@@ -183,6 +183,8 @@ Search engines must see one site. The admin never gets indexed, and the storefro
 | Production has `SITE_INDEXABLE=false`, so `robots.txt` has `Disallow: /`, responses send `noindex`, and the admin sends nothing to IndexNow | Set `SITE_INDEXABLE=true` and `NEXT_PUBLIC_SITE_URL=https://mustafaapparels.com` on both production sites, then redeploy |
 | Branch deploys always `noindex` | Add the redirect below |
 
+**How `noindex` is sent:** forum replies from Netlify say it adds `X-Robots-Tag: noindex` to deploy previews but not branch deploys, so the apps send it themselves from `next.config.ts` (`packages/config/headers.ts`). The value is fixed at build time: the storefront sends it unless `SITE_INDEXABLE=true`, and the admin always sends it.
+
 Netlify's docs don't say that `.netlify.app` redirects to the primary domain on its own, so add it explicitly to `apps/web/netlify.toml`:
 ```toml
 [[redirects]]
