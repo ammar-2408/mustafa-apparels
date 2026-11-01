@@ -6,9 +6,9 @@
 |---|---|
 | Library | Better Auth, configured once in `packages/auth` (`createAuth({ app: 'web' | 'admin' })`) |
 | Method | Email + password (v1). Google sign-in can be added later with one plugin. |
-| Password hashing | **scrypt** (Better Auth default, memory-hard, OWASP-acceptable). Optional upgrade: argon2id via a custom `password.hash/verify` — decide **before** launch; switching later invalidates existing passwords. |
+| Password hashing | **scrypt** (Better Auth default, memory-hard, OWASP-acceptable). |
 | Password policy | Min 10, max 128 chars; no composition rules; block known-breached passwords (Better Auth Have I Been Pwned plugin); show a strength meter. |
-| Email verification | Required before sending inquiries from an account and before wishlist sync. |
+| Email verification | Required before wishlist sync, and before an inquiry is linked to the account. Anyone can still send an inquiry, because leads come first. |
 | Password reset | Single-use token, 1-hour expiry, emailed via Resend; all sessions revoked after reset (`revokeSessionsOnPasswordReset`). |
 | Sessions | Stored in DB; cookie `httpOnly`, `secure`, `sameSite=lax`; 7-day expiry with sliding refresh; "log out everywhere" in account settings. |
 | User enumeration | Sign-up, login and reset return the same generic message whether the email exists or not. |
@@ -108,7 +108,7 @@ GA4 hosts come from Google's CSP guide for GA4 without Ads features (`docs/analy
 - Zod on client (UX) **and** server (security). Server is the source of truth.
 - `.strict()` schemas reject unexpected fields (prevents mass assignment, e.g. `role: "admin"` in a profile update).
 - Text fields length-capped; HTML stripped from plain-text fields; descriptions rendered as text or sanitized limited markdown.
-- Public forms: honeypot field + rate limit + server-side time check (submitted < 2 s after render = bot).
+- Public forms: honeypot field + rate limit + time check (submitted < 2 s after the form mounts = bot). The timestamp is set in the browser on mount, because the render time of a cached page may be hours old. A bot can fake it, so the rate limit stays the real protection.
 - Server Actions get built-in origin checks from Next.js; Better Auth checks origin/CSRF for its routes. Don't disable either.
 
 ## 5. File uploads (admin only)
@@ -135,7 +135,7 @@ The import script (`scripts/import-stock.ts`) runs only on the owner's machine w
 | `SEED_ADMIN_EMAIL/PASSWORD` | local/CI only | never in hosting env after first seed |
 | `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` | public | non-secret only |
 | `INDEXNOW_KEY` | server (admin) | Not a secret: the key file is public |
-| `SITE_INDEXABLE` | server (web) | `false` until launch |
+| `SITE_INDEXABLE` | server (both apps) | `false` until launch. The web app uses it for `robots.txt` and `noindex`, and the admin for IndexNow |
 
 - Validate env at startup with Zod (`packages/config/env.ts`) — the app refuses to boot with missing/invalid vars.
 - Modules that use secrets start with `import 'server-only'`.
