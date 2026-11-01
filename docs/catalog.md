@@ -86,7 +86,7 @@ Short description in plain English.
 | `photos[].crop` | Optional | Pixels. Applied locally before upload |
 | `also_in_this_design` | Photo | Other design IDs: same design in another colour. Each is still a separate suit with its own price |
 | `check` | You | Anything unsure, or anything the owner must decide |
-| Body | Photo + collection file | 1–2 short sentences in simple, warm English, in your own words. Only what's visible or in the collection file. No claims about softness, warmth, quality or stock unless the owner confirmed them |
+| Body | Photo + collection file | 1–2 short sentences in simple, warm English, in your own words, naming the fabric and season (`docs/design.md` §1.5). Only what's visible or in the collection file. No claims about softness, warmth, quality or stock unless the owner confirmed them |
 
 ## 4. Filter taxonomy
 
@@ -142,14 +142,27 @@ These are the product-media rules. The `product-media` skill is built from this 
 
 Script: `scripts/import-stock.ts`. Built in Phase 5 of `docs/project-implementation.md`.
 
-1. Reads every `catalog/<collection>/*.md` and validates it with Zod, including the taxonomy and banned names.
+1. Reads every `catalog/<collection>/*.md` and validates it with Zod, including the taxonomy and banned names. The taxonomy check covers suit files only: `_collection.md` keeps the source file's wording, such as "Printed", and each suit file names the allowed value.
 2. Checks that every listed file exists in `Business data/Stock/`, and reports files in the folder that no suit lists and `_collection.md` doesn't explain.
 3. Crops photos in memory if `crop` is set, and uploads to `products/imported/<design-id>/`. Files on disk never change.
 4. Creates or updates a **draft** with `import_key` = `design_id`. Re-running creates no duplicates and never overwrites a price or a change made in admin.
 
 `--dry-run` does steps 1 and 2 and writes nothing.
 
-**Then the owner:** clears each `check:` → sets the price in admin → publishes. The publish rules (`docs/database.md`) refuse a suit with no price, main image or alt text.
+Most fields keep their name in the database (`docs/database.md` §2). These change:
+
+| Suit file | Database |
+|---|---|
+| `design_id` | `design_code` and `import_key` |
+| `collection` | `category_id`, looked up by slug |
+| `volume_style` (`3 Piece`) | `pieces` (`three_piece`) |
+| `season` (`Winter`, `All-Season`) | `season` (`winter`, `all_season`) |
+| `also_in_this_design` | `related_design_codes` |
+| Body | `description` |
+| `photos[]`, `videos[]` | `product_media` rows; the first photo is the main image |
+| Not in the file | `availability` uses its default, `in_stock`. `care_instructions` stays empty and is hidden on the page |
+
+**Then the owner:** clears each `check:` → sets the price in admin → publishes. The publish rules (`docs/database.md`) refuse a suit with no price, colour, main image or alt text.
 
 ## 7. Add a new collection
 
