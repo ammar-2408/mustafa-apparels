@@ -88,8 +88,8 @@ test('root package is private and pins the pnpm version CI uses', () => {
   assert.equal(pkg.packageManager, 'pnpm@12.16.1');
 });
 
-test('.nvmrc pins Node 26', () => {
-  assert.equal(read('.nvmrc').trim(), '26');
+test('.nvmrc pins Node 24, the newest LTS Netlify functions can run in production', () => {
+  assert.equal(read('.nvmrc').trim(), '24');
 });
 
 test('workspace includes apps and packages', () => {

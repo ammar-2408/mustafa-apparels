@@ -22,7 +22,7 @@ Why each was chosen: `docs/architecture.md`.
 ## Quick start
 
 ```bash
-# 1. Prerequisites: Node.js 26 LTS, pnpm, Git, GitHub account
+# 1. Prerequisites: Node.js 24 LTS, pnpm, Git, GitHub account
 corepack enable
 
 # 2. Install

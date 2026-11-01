@@ -6,7 +6,7 @@ From zero to running locally. Going live on Netlify and connecting the domain is
 
 | Tool | How | Check |
 |---|---|---|
-| Node.js 26 LTS (pinned in `.nvmrc`) | https://nodejs.org (or `nvm install 26`) | `node -v` |
+| Node.js 24 LTS (pinned in `.nvmrc`) | https://nodejs.org (or `nvm install 24`) | `node -v` |
 | pnpm | `corepack enable`. On a new machine corepack may be missing from Node; if so, run `npm install -g corepack` first | `pnpm -v` |
 | Git | https://git-scm.com. On Windows install **Git for Windows**: Claude Code uses its Git Bash to run commands | `git --version` |
 | GitHub CLI | https://cli.github.com → `gh auth login` | `gh auth status` |

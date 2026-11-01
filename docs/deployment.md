@@ -63,7 +63,7 @@ If a name is taken, pick another and update §1, `docs/architecture.md` §7 and 
 
 Builds stop if env is invalid (`docs/setup.md` §6). Set `APP_ENV` on every site and context (`preview` on branch deploys, `production` on production). Until the Neon, Resend, Upstash and Cloudinary accounts exist, branch deploys also need `INTEGRATIONS_MODE=mock`. Production refuses `mock`, so a production build can't pass until all those values are set.
 
-**Check at step 0.11:** that Netlify's build and functions runtime support the Node version in `.nvmrc`. If not, pick the newest supported LTS and update `.nvmrc`, `docs/setup.md` §1 and CI.
+**Node version: 24.** Checked 2026-11-02 at step 0.11. AWS Lambda, which runs Netlify functions, lists `nodejs26.x` as a public preview that isn't for production, with general availability targeted for November 2026. Netlify's docs don't mention Node 26, its default for new sites is 24, and functions fall back to 24 if the build's version isn't a valid runtime. Move up only when both Lambda and Netlify support a newer LTS: update `.nvmrc`, its test, `README.md` and `docs/setup.md` §1. CI reads `.nvmrc`.
 
 **GitHub branch protection:** not available. Checked 2026-11-02: GitHub returns 403 for both branch protection and rulesets on this private repo on the free plan. The rule is a process one: merge only after CI is green, and the owner does the merging.
 
