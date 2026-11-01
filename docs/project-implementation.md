@@ -11,7 +11,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 ## Phase 0 — Foundation
 - [x] 0.1 Init monorepo: pnpm workspaces, Turborepo, `.gitignore`, `.nvmrc` (Node 26 LTS), root `package.json` scripts. Root `package.json` must include `"packageManager": "pnpm@12.16.1"` so CI matches this machine
-- [ ] 0.2 `packages/config`: shared tsconfig (strict), ESLint (next, typescript, jsx-a11y, import order), Prettier
+- [ ] 0.2 `packages/config`: shared tsconfig (strict), ESLint (next, typescript, jsx-a11y, import order), Prettier. Add `*.yaml text eol=lf` to `.gitattributes` so Prettier doesn't flag CRLF in `pnpm-workspace.yaml` on Windows
 - [ ] 0.3 Create `apps/web` (Next.js, App Router, TS, Tailwind) — home page "Hello" + one smoke test
 - [ ] 0.4 Create `apps/admin` the same way on port 3001
 - [ ] 0.5 Vitest workspace config + coverage thresholds; sample unit test passes; port `scripts/workspace.test.mjs` from `node:test` to Vitest and drop it from the root `test` script
