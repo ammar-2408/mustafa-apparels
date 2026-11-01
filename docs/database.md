@@ -61,7 +61,7 @@ Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `no
 | currency | char(3) default `'PKR'` | |
 | category_id | text → category, not null | The collection |
 | pieces | enum `two_piece` \| `three_piece`, not null | Filterable |
-| piece_details | jsonb default `[]` | `[{ "piece": "shirt", "fabric": "Dhanak", "finish": "Embroidered" }, ...]`. Pieces: `shirt`, `dupatta`, `trouser` |
+| piece_details | jsonb default `[]` | `[{ "piece": "shirt", "fabric": "Dhanak", "finish": "Embroidered", "length_m": 3 }, ...]`. Pieces: `shirt`, `dupatta`, `trouser`. `fabric`, `finish` and `length_m` are optional. `length_m` is the fabric length in metres |
 | collection_type | text nullable | Display tag, e.g. `Premium`. Not a filter |
 | dress_categories | text[] default `{}` | Filterable. Values: `docs/catalog.md` §4 |
 | fabric | text not null | Main fabric: `Dhanak`, `Khaddar`. Lajwanti suits are `Dhanak`. Filterable |
