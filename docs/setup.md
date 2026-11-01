@@ -12,6 +12,7 @@ From zero to running locally. Going live on Netlify and connecting the domain is
 | GitHub CLI | https://cli.github.com → `gh auth login` | `gh auth status` |
 | Claude Code | macOS/Linux/WSL: `curl -fsSL https://claude.ai/install.sh \| bash` · Windows PowerShell: `irm https://claude.ai/install.ps1 \| iex` | `claude --version` |
 | ffmpeg (optional) | Only for trimming videos, such as removing an end card: `winget install Gyan.FFmpeg`. Claude Code can check videos in a browser without it | `ffmpeg -version` |
+| Python (optional) | Only for the `skill-creator` skill's benchmark scripts. The project itself doesn't need it | `python --version` |
 
 Claude Code needs a Claude subscription (Pro, Max, Team or Enterprise) or a Claude Console account. Official guide: https://code.claude.com/docs/en/quickstart
 
@@ -78,7 +79,7 @@ Every variable, and where it's set:
 |---|---|---|---|---|
 | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | ✓ | ✓ | ✓ | Different Neon branch per environment |
 | `NEXT_PUBLIC_SITE_URL` | ✓ | ✓ | ✓ | `https://mustafaapparels.com` in production |
-| `SITE_INDEXABLE` | `false` | ✓ | — | `false` until launch, then `true` on production only |
+| `SITE_INDEXABLE` | `false` | ✓ | ✓ | `false` until launch, then `true` on production only. The admin reads it for IndexNow |
 | `WEB_URL` | ✓ | — | ✓ | Admin calls this to refresh the storefront |
 | `ADMIN_URL` | ✓ | — | ✓ | `https://admin.mustafaapparels.com` in production |
 | `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET` | ✓ | ✓ | ✓ | URL differs per app |
