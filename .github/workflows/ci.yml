@@ -17,6 +17,7 @@ permissions:
 
 env:
   APP_ENV: test
+  SITE_INDEXABLE: 'false'
   INTEGRATIONS_MODE: mock # email/images/rate-limit use in-memory fakes
   NEXT_PUBLIC_SITE_URL: http://localhost:3000
   WEB_URL: http://localhost:3000

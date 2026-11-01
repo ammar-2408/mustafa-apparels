@@ -61,6 +61,8 @@ If a name is taken, pick another and update §1, `docs/architecture.md` §7 and 
 
 **Environment variables:** set them per site and per deploy context (Production, Branch deploys). Full table: `docs/setup.md` §6. Before launch, production uses `SITE_INDEXABLE=false`, its `.netlify.app` URL for `NEXT_PUBLIC_SITE_URL`, and the matching `BETTER_AUTH_URL`.
 
+Builds stop if env is invalid (`docs/setup.md` §6). Set `APP_ENV` on every site and context (`preview` on branch deploys, `production` on production). Until the Neon, Resend, Upstash and Cloudinary accounts exist, branch deploys also need `INTEGRATIONS_MODE=mock`. Production refuses `mock`, so a production build can't pass until all those values are set.
+
 **Check at step 0.11:** that Netlify's build and functions runtime support the Node version in `.nvmrc`. If not, pick the newest supported LTS and update `.nvmrc`, `docs/setup.md` §1 and CI.
 
 **GitHub branch protection:** not available. Checked 2026-11-02: GitHub returns 403 for both branch protection and rulesets on this private repo on the free plan. The rule is a process one: merge only after CI is green, and the owner does the merging.

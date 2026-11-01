@@ -98,10 +98,17 @@ Every variable, and where it's set:
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | — | Production only | — | Unset means no GA4 |
 | `INDEXNOW_KEY` | — | — | Production only | Not secret |
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | ✓ | — | — | Never in hosting env |
-| `INTEGRATIONS_MODE` | `mock` optional | — | — | CI uses `mock` |
+| `INTEGRATIONS_MODE` | `mock` until the accounts exist | `mock` until the accounts exist | `mock` until the accounts exist | Unset means `live`. CI uses `mock`. Refused in production |
+| `APP_ENV` | `development` | ✓ | ✓ | `preview` on branch deploys, `production` on production, `test` in CI. It only tells environments apart: `SITE_INDEXABLE` alone decides indexing |
 
-The apps validate env at startup and refuse to run if something is missing.
+`pnpm dev`, `pnpm build` and `pnpm start` run `packages/config/check-env.mjs` first and stop if something is missing or invalid, listing variable names but never values. `pnpm env:check` runs the same check for both apps. `pnpm typecheck` and the commit hooks don't need env.
 
-**`.env.example` is out of date** until step 0.10, which updates it to match this table: it still has the kit's `<SHOP_NAME>` placeholder and test sender, a `.netlify.app` production URL, and none of the variables added since. It also has `APP_ENV`, which CI uses. Step 0.10 keeps it for telling environments apart, and `SITE_INDEXABLE` alone decides indexing.
+**How strict the check is:**
+- `live` requires everything the app needs from the table.
+- `mock` requires only `APP_ENV`, `NEXT_PUBLIC_SITE_URL` and `SITE_INDEXABLE`, plus `WEB_URL` and `ADMIN_URL` on the admin. Anything else you set must still be valid. Fresh copies of `.env.example` use `mock`, so the site runs before the accounts exist.
+
+**Other checks:** `SITE_INDEXABLE=true` only works in production. There, site, auth and Upstash URLs must be public https, and the admin's `BETTER_AUTH_URL` must equal `ADMIN_URL`. On Netlify, `APP_ENV` must match the deploy context: `production` on production, `preview` everywhere else. Seed variables are refused in production and preview, and so is `CLOUDINARY_API_SECRET` on the web site.
+
+**Where the file goes:** `.env.local` in the repo root serves both apps, and `next.config.ts` loads it because Next only looks in the app folder. A value in `apps/<app>/.env.local` beats the root file, which is how the admin gets its own local `BETTER_AUTH_URL`. Real env vars beat both. A new variable also goes in `packages/config/env.ts`, `.env.example` and both `env` lists in `turbo.json`; tests fail if they disagree.
 
 **Claude Code's access:** it can read and edit `.env.example`. It's denied reading `.env`, `.env.local`, `.env.*.local`, `.env.development` and `.env.production`, in the root and in subfolders. Other names such as `.env.test` aren't covered by that rule, so don't put real secrets in them. All `.env*` files except the example stay git-ignored and blocked from editing by the `protect-files` hook.

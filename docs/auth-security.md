@@ -137,7 +137,7 @@ The import script (`scripts/import-stock.ts`) runs only on the owner's machine w
 | `INDEXNOW_KEY` | server (admin) | Not a secret: the key file is public |
 | `SITE_INDEXABLE` | server (both apps) | `false` until launch. The web app uses it for `robots.txt` and `noindex`, and the admin for IndexNow |
 
-- Validate env at startup with Zod (`packages/config/env.ts`) — the app refuses to boot with missing/invalid vars.
+- Validate env with Zod (`packages/config/env.ts`): `dev`, `build` and `start` stop on missing or invalid vars. On Netlify that means the build, because `next start` never runs there. A runtime check in the deployed functions comes with step 3.2.
 - Modules that use secrets start with `import 'server-only'`.
 - `.env*` git-ignored (except `.env.example`); Claude Code is denied read access to them (`.claude/settings.json`).
 - Rotate secrets if they ever appear in a log, screenshot or commit; use GitHub secret scanning.

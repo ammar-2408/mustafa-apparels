@@ -19,8 +19,8 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 0.7 `pnpm verify` script (lint + typecheck + test + build)
 - [x] 0.8 Husky + lint-staged pre-commit (format, lint staged files, typecheck), commitlint for Conventional Commits
 - [x] 0.9 GitHub Actions CI (`.github/workflows/ci.yml`) green on push. With `CI` set, Playwright runs `next start`, so build both apps first and install browsers with `pnpm exec playwright install --with-deps chromium firefox webkit`. Watch the `desktop` project for the unexplained Firefox close error in `docs/debugging.md` §2. Check whether branch protection on `main` is available for this repo; if not, use the fallback in `docs/deployment.md` §2
-- [ ] 0.10 Env validation with Zod (`packages/config/env.ts`) + bring `.env.example` in line with `docs/setup.md` §6: real shop name and sender, production URLs, all new variables
-- [ ] 0.11 Two Netlify sites (`docs/deployment.md` §2): package directories, `netlify.toml` per app with the skip rule, `develop` branch deploys, production from `main`; `SITE_INDEXABLE=false`; previews `noindex`. Confirm Netlify supports the `.nvmrc` Node version. Check the credit balance after the first skipped build and record the result in `docs/deployment.md`. `main` doesn't exist on GitHub yet (only `develop`), so create it first
+- [x] 0.10 Env validation with Zod (`packages/config/env.ts`) + bring `.env.example` in line with `docs/setup.md` §6: real shop name and sender, production URLs, all new variables
+- [ ] 0.11 Two Netlify sites (`docs/deployment.md` §2): package directories, `netlify.toml` per app with the skip rule, `develop` branch deploys, production from `main`; `SITE_INDEXABLE=false`; previews `noindex`. Confirm Netlify supports the `.nvmrc` Node version. Check the credit balance after the first skipped build and record the result in `docs/deployment.md`. `main` doesn't exist on GitHub yet (only `develop`), so create it first. Set `APP_ENV=preview` and `INTEGRATIONS_MODE=mock` on branch deploys. Production refuses `mock`, so production builds fail env validation until the service accounts exist (`docs/deployment.md` §2). Each `netlify.toml` build command must go through the app's `build` script, because `check-env` lives there and a direct `next build` skips it; add a test asserting this
 - [x] 0.12 Install external skills (`bash scripts/install-skills.sh`) and commit the lock/registry update
 
 ## Phase 1 — Brand (logo is ready; see `docs/design.md` §1)
@@ -55,7 +55,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 ## Phase 3 — Authentication & security base
 - [ ] 3.1 Resend: verify `updates.mustafaapparels.com`, add DNS at Spaceship incl. DMARC (`docs/deployment.md` §5); real test email passes SPF and DKIM
-- [ ] 3.2 `packages/auth`: Better Auth with Drizzle adapter, email/password, generate auth tables migration
+- [ ] 3.2 `packages/auth`: Better Auth with Drizzle adapter, email/password, generate auth tables migration. Also tighten `packages/config/env.ts`: run `parseEnv` at runtime from `instrumentation.ts` in both apps with app code reading only the parsed object, because Netlify functions never run `check-env`; on preview, require both secrets when `DATABASE_URL` is set, and consider refusing `mock` with a real database; in production, refuse CI placeholder and low-variety secrets and require the two secrets to differ. Check how Better Auth treats a missing secret and an http base URL
 - [ ] 3.3 Web auth routes + session helpers; `requireUser` + tests
 - [ ] 3.4 Sign-up / login / logout pages (forms, Zod, generic errors) + E2E
 - [ ] 3.5 Email verification + password reset via Resend + E2E (email mocked)

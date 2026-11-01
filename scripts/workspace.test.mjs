@@ -2,10 +2,13 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { parseEnv as parseDotenv } from 'node:util';
 
 import { ESLint } from 'eslint';
 import { getFileInfo } from 'prettier';
 import { test } from 'vitest';
+
+import { ENV_NAMES, parseEnv } from '../packages/config/env.ts';
 
 const read = (file) => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 const readJson = (file) => JSON.parse(read(file));
@@ -16,6 +19,68 @@ const prettierIgnores = async (file) => {
   const ignorePath = [fromRoot('.gitignore'), fromRoot('.prettierignore')];
   return (await getFileInfo(fromRoot(file), { ignorePath })).ignored;
 };
+
+const exampleEnv = () => parseDotenv(read('.env.example'));
+const ciEnv = () => {
+  const block = read('.github/workflows/ci.yml').match(/^env:\n((?: {2}.*\n)+)/m)[1];
+  return parseDotenv(block.replace(/^ {2}(\w+): /gm, '$1=').replace(/ # .*$/gm, ''));
+};
+
+test('.env.example lists exactly the validated variables', () => {
+  assert.deepEqual(Object.keys(exampleEnv()).sort(), [...ENV_NAMES].sort());
+});
+
+test('.env.example has the real shop details, not the kit placeholders', () => {
+  const example = read('.env.example');
+  assert.ok(!example.includes('<SHOP_NAME>'));
+  assert.ok(!example.includes('.netlify.app'));
+  assert.ok(!example.includes('onboarding@resend.dev'));
+  assert.ok(example.includes('https://mustafaapparels.com'));
+  assert.ok(example.includes('https://admin.mustafaapparels.com'));
+  assert.ok(example.includes('no-reply@updates.mustafaapparels.com'));
+});
+
+for (const app of ['web', 'admin']) {
+  test(`a fresh copy of .env.example is valid for ${app}`, () => {
+    parseEnv(app, exampleEnv());
+  });
+
+  test(`CI's env is valid for ${app}`, () => {
+    parseEnv(app, ciEnv());
+  });
+
+  for (const script of ['dev', 'build', 'start']) {
+    test(`${app} checks env before "${script}"`, () => {
+      const { scripts } = readJson(`apps/${app}/package.json`);
+      assert.match(scripts[script], new RegExp(`^node .*check-env\\.mjs ${app} && next ${script}`));
+    });
+  }
+
+  test(`${app} typecheck runs without env, so commits never need secrets`, () => {
+    assert.ok(!readJson(`apps/${app}/package.json`).scripts.typecheck.includes('check-env'));
+  });
+
+  test(`${app} loads the root env file from its Next config`, () => {
+    assert.match(read(`apps/${app}/next.config.ts`), /loadEnvFiles\(\)/);
+  });
+}
+
+for (const task of ['build', 'dev']) {
+  test(`turbo passes every variable through to "${task}"`, () => {
+    const { env } = readJson('turbo.json').tasks[task];
+    assert.deepEqual([...env].sort(), [...ENV_NAMES].sort());
+  });
+}
+
+test('turbo rebuilds when the root or app env file changes', () => {
+  const { globalDependencies, tasks } = readJson('turbo.json');
+  assert.ok(globalDependencies.includes('.env.local'));
+  assert.deepEqual(tasks.build.inputs, ['$TURBO_DEFAULT$', '.env.local']);
+});
+
+test('turbo lets the env check see the Netlify deploy context', () => {
+  assert.deepEqual(readJson('turbo.json').tasks.build.passThroughEnv, ['NETLIFY', 'CONTEXT']);
+});
 
 test('root package is private and pins the pnpm version CI uses', () => {
   const pkg = readJson('package.json');
@@ -175,8 +240,8 @@ for (const [app, port] of [
 ]) {
   test(`${app} serves on port ${port}`, () => {
     const { scripts } = readJson(`apps/${app}/package.json`);
-    assert.equal(scripts.dev, `next dev --port ${port}`);
-    assert.equal(scripts.start, `next start --port ${port}`);
+    assert.ok(scripts.dev.endsWith(`next dev --port ${port}`), scripts.dev);
+    assert.ok(scripts.start.endsWith(`next start --port ${port}`), scripts.start);
   });
 }
 
