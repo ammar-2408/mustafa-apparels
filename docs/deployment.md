@@ -40,17 +40,19 @@ If a name is taken, pick another and update §1, `docs/architecture.md` §7 and 
 `apps/web/netlify.toml`:
 ```toml
 [build]
-  command = "pnpm db:migrate && pnpm turbo build --filter=web"
+  command = "pnpm turbo build --filter=web"
   publish = "apps/web/.next"
-  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/web packages package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json"
+  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/web packages package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .nvmrc"
 ```
+
+Step 2.1 changes the web command to `pnpm db:migrate && pnpm turbo build --filter=web`. That script doesn't exist before then.
 
 `apps/admin/netlify.toml`:
 ```toml
 [build]
   command = "pnpm turbo build --filter=admin"
   publish = "apps/admin/.next"
-  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/admin packages package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json"
+  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/admin packages package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .nvmrc"
 ```
 
 **The skip rule:** `ignore` exits 0 ("nothing changed", skip) or 1 (build). Changes to `docs/`, `.claude/`, `e2e/` or the other app skip that site. A change in `packages/` rebuilds both, costing 30 credits at production. So keep shared-package changes together, and don't touch them casually.

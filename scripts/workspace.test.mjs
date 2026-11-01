@@ -40,6 +40,41 @@ test('.env.example has the real shop details, not the kit placeholders', () => {
   assert.ok(example.includes('no-reply@updates.mustafaapparels.com'));
 });
 
+const netlifyValue = (app, key) =>
+  read(`apps/${app}/netlify.toml`).match(new RegExp(`^\\s*${key}\\s*=\\s*"(.*)"\\s*$`, 'm'))?.[1];
+
+for (const [app, otherApp] of [
+  ['web', 'admin'],
+  ['admin', 'web'],
+]) {
+  test(`Netlify builds ${app} through its build script, so check-env always runs`, () => {
+    assert.equal(netlifyValue(app, 'command'), `pnpm turbo build --filter=${app}`);
+    assert.match(
+      readJson(`apps/${app}/package.json`).scripts.build,
+      /check-env\.mjs .*&& next build/,
+    );
+  });
+
+  test(`Netlify publishes ${app} from its own .next folder`, () => {
+    assert.equal(netlifyValue(app, 'publish'), `apps/${app}/.next`);
+  });
+
+  test(`Netlify skips ${app} unless its own or shared files changed`, () => {
+    const [skipCheck, paths] = netlifyValue(app, 'ignore').split(' -- ');
+    assert.equal(skipCheck, 'git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF');
+    assert.deepEqual(paths.split(' '), [
+      `apps/${app}`,
+      'packages',
+      'package.json',
+      'pnpm-lock.yaml',
+      'pnpm-workspace.yaml',
+      'turbo.json',
+      '.nvmrc',
+    ]);
+    assert.ok(!paths.includes(`apps/${otherApp}`));
+  });
+}
+
 for (const app of ['web', 'admin']) {
   test(`a fresh copy of .env.example is valid for ${app}`, () => {
     parseEnv(app, exampleEnv());
