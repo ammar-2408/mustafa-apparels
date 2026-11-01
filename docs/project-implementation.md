@@ -24,9 +24,12 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 0.12 Install external skills (`bash scripts/install-skills.sh`) and commit the lock/registry update
 
 ## Phase 1 — Brand (logo is ready; see `docs/design.md` §1)
+
+**Design direction:** `docs/design.md` §9.1. Cream and ink, Montserrat, very large headings set against tiny spaced labels, and generous empty space.
+
 - [ ] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists
 - [ ] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, spacing tokens (`docs/design.md` §1.4) and the custom breakpoints (`docs/design.md` §2), in the Tailwind preset and `globals.css` + contrast unit test
-- [ ] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()`, spaced-capitals label style
+- [ ] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()` and tight leading on large headings, spaced-capitals label style
 - [ ] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
 - [ ] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests
 - [ ] 1.6 `packages/ui` primitives in the brand style: Button, Input, Dialog, with focus rings + tests
@@ -92,7 +95,10 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 5.7 Owner: clear remaining `check:` items, set prices, choose what to publish (`TODO-OWNER`)
 
 ## Phase 6 — Storefront
-- [ ] 6.1 Root layout: header (`<Logo>`, nav, search, account), footer (primary white logo on ink), skip link, `.js` class. Account state loads client-side after paint, so the layout never reads cookies
+
+**Design direction:** `docs/design.md` §9.1, applied to every page in `docs/design.md` §3. The reference guides look and motion only: the pages below stay as planned.
+
+- [ ] 6.1 Root layout: header (`<Logo>`, side-panel menu, search, account, WhatsApp button; floating bar on scroll), footer (primary white logo on ink), skip link, `.js` class. Account state loads client-side after paint, so the layout never reads cookies
 - [ ] 6.2 Product card (3:4 image, name, pieces, price, wishlist toggle), no video. Wishlist state loads client-side + component tests
 - [ ] 6.3 `/shop` grid + `/shop/page/[n]` (ADR-017: static, self-canonical, `/page/1` 301, invalid or out-of-range 404) + E2E
 - [ ] 6.4 `/collections/[slug]` + `/collections/[slug]/page/[n]` with the same rules, and real text for each collection (drafted here, fabric facts checked by the owner) + E2E
@@ -125,14 +131,17 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 7.15 `seo-auditor` agent pass; Lighthouse SEO = 100
 
 ## Phase 8 — Motion & 3D
+
+**Design direction:** `docs/design.md` §9.1. More motion than the reference, while staying fast on phones and respecting reduced motion. Each page gets the amount of motion listed there.
+
 - [ ] 8.1 GSAP + `@gsap/react` setup, plugin registration, `gsap.matchMedia` + reduced-motion helper + tests
 - [ ] 8.2 Lenis smooth scroll synced with ScrollTrigger (disabled for reduced motion)
-- [ ] 8.3 Text reveal component (SplitText) + image clip reveal component
-- [ ] 8.4 Scroll reveals on home sections; pinned horizontal "New arrivals" (desktop) / swipe (mobile)
-- [ ] 8.5 Page transitions (View Transitions / GSAP overlay) + Flip card→product image
-- [ ] 8.6 Micro-interactions: magnetic buttons, cursor follower (desktop, pointer:fine only), hover image swap
+- [ ] 8.3 Text reveal component (SplitText), word-fill-on-scroll component + image clip reveal component
+- [ ] 8.4 Scroll reveals on home sections, hero inset and stacking cards (desktop); pinned horizontal "New arrivals" (desktop) / swipe (mobile); reveals on the other pages per `docs/design.md` §9.1
+- [ ] 8.5 Page transitions between all pages: short cream cover with the MA submark (View Transitions / GSAP overlay), none with reduced motion + Flip card→product image
+- [ ] 8.6 Micro-interactions: collection panel and product card hovers, menu panel motion, magnetic buttons, cursor follower (desktop, pointer:fine only), hover image swap
 - [ ] 8.7 R3F setup: lazy `<HeroCanvas>` island with poster fallback + capability detection
-- [ ] 8.8 Flowing-fabric hero shader in ink and cream, **no model download**, within budget (≤ 250 kB JS)
+- [ ] 8.8 Flowing-fabric hero shader in ink and cream, reading as real draped cloth with soft folds, **no model or video download**, within budget (≤ 250 kB JS)
 - [ ] 8.9 WebGL image hover distortion on collection tiles (desktop)
 - [ ] 8.10 Motion/3D tests: reduced motion, no-WebGL, no leaked triggers, CLS < 0.1; Lighthouse ≥ 90 mobile
 
