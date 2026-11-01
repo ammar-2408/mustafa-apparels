@@ -34,7 +34,7 @@ Error and success colours are chosen and contrast-tested at step 1.2. `--color-b
 | Small labels, nav, buttons | Regular 400 | Uppercase, `letter-spacing: 0.4em` (reduce to about `0.2em` where text would wrap on phones) |
 | Body | Regular 400 | Sentence case, no extra tracking |
 
-Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300 and 400.
+Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300 and 400. The logo pack's readme suggests Light 300 for spaced capitals, but these labels are small, so Regular 400 is the deliberate choice here.
 
 Radius: small or none (`--radius-sm: 2px`), to match the logo's angular shapes. Shadows: `--shadow-soft`, sparingly. Dark mode: not in v1.
 
@@ -68,6 +68,32 @@ Rules: keep clear space of at least a quarter of the monogram's height. Black on
 - Manifest `name` and `short_name`: `Mustafa Apparels`
 - `theme_color` and `background_color`: `#FAF7EC`
 
+### 1.4 Spacing
+
+Generous and even, so the suits have room. Use Tailwind's 4px scale, limited to these steps, with no one-off values:
+
+| Tailwind step | 1 | 2 | 3 | 4 | 6 | 8 | 12 | 16 | 24 | 32 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Pixels | 4 | 8 | 12 | 16 | 24 | 32 | 48 | 64 | 96 | 128 |
+
+| Token | Value | Use |
+|---|---|---|
+| `--space-gutter` | `clamp(1rem, 4vw, 3rem)` | Page side padding (16px on phones) |
+| `--space-grid` | `clamp(0.75rem, 2vw, 1.5rem)` | Gap between product cards |
+| `--space-section` | `clamp(4rem, 10vw, 10rem)` | Space between page sections |
+
+### 1.5 Tone
+
+Product descriptions and other customer-facing text use simple English and a warm voice, as if a helpful shopkeeper were describing the suit. A suit description is 1–2 short sentences that **name the fabric and the season**, then say what's visible: the pieces, the print or embroidery, the colours.
+
+Example: "A black unstitched 3-piece Dhanak suit for winter. The embroidered shirt has a beige diamond panel down the front, with a floral printed dupatta and plain dyed trousers."
+
+- **"Warm" describes the voice, not the fabric.** "For winter" is fine, because the season comes from the collection file. "Keeps you warm" is a claim.
+- **Only what's visible or in the collection file.** No claims about softness, warmth, quality or stock unless the owner confirmed them.
+- **Your own words.** Never another brand's name, and never text from posters or videos.
+- **No hype or invented claims:** "luxury", "must-have", "best in Pakistan".
+- **"Suits" or "unstitched suits"**, never "dresses". No mention of sizes.
+
 ## 2. Layout and responsive design
 
 Mobile-first. Must work from **320px** to **2560px+**.
@@ -89,7 +115,7 @@ Rules:
 - Touch targets ≥ 44×44px; hover effects have a tap/focus equivalent.
 - Test portrait **and** landscape on phones and tablets; respect safe areas (`env(safe-area-inset-*)`).
 - Product images: fixed **3:4** aspect ratio boxes (no layout shift), `next/image` + Cloudinary loader, `sizes` set per grid.
-- Stock photos are full-length and tall, about 0.4 to 0.6 width to height, against 0.75 for a 3:4 box. Grid cards fill the box from the top, cutting off the lower part. The product gallery shows the whole photo on the surface colour rather than cutting off the model. Check this with real imports at step 5.6.
+- Stock photos are full-length and tall, about 0.4 to 0.6 width to height, against 0.75 for a 3:4 box. Grid cards fill the box from the top (`g_north`, `docs/integrations.md`), cutting off the lower part. The product gallery shows the whole photo on the surface colour rather than cutting off the model. Check this with real imports at step 6.14.
 
 ## 3. Page inventory
 
@@ -100,7 +126,9 @@ Admin design: clean, fast, no 3D; dense tables on desktop, card lists on mobile;
 
 **Wording:** the site calls products "suits" or "unstitched suits", never "dresses". It never mentions other brands (`docs/prd.md` §2).
 
-**Filters:** volume style, dress category, fabric, design, season, outfit style, colour and price, from the fixed list in `docs/catalog.md` §4. A filter value shows only when a published suit has it, and a filter with one value or none is hidden. With 30 suits, that keeps the bar short; on mobile, it's a bottom sheet. Colour swatches use `color_family`; the product page shows the fuller `main_color` name.
+**Filters:** volume style, dress category, fabric, design, season, outfit style, colour and price, from the fixed list in `docs/catalog.md` §4. Customers see the dress category filter labelled "Category". A filter value shows only when a published suit has it, and a filter with one value or none is hidden. With 30 suits, that keeps the bar short; on mobile, it's a bottom sheet. Colour swatches use `color_family`; the product page shows the fuller `main_color` name.
+
+Filters and sort run in the browser, so pages stay static (ADR-018). The first use loads `/api/suits` once. The URL updates (`?fabric=dhanak&sort=price`), so it can be shared and Back works, and the filtered view has its own client-side paging. The server-rendered page always shows the unfiltered grid with real `/page/<n>` links, so it works without JavaScript and crawlers see every suit.
 
 **The same design in another colour:** the product page shows a small "Also in this design" row, linking to the other colours (`related_design_codes`).
 
@@ -182,12 +210,13 @@ This section covers tags and URLs in code. Search Console, Bing, AI answers and 
 ### 8.1 Metadata on every page
 Built with the Next.js Metadata API (`generateMetadata`) through one helper `buildMetadata()` in `apps/web/lib/seo.ts`:
 - `metadataBase: new URL(SITE_URL)`
-- `title` (template `%s | Mustafa Apparels`), `description` (120–160 chars)
-- `alternates.canonical` = **absolute self URL** from `canonicalUrl(pathname, { page })`
+- `title`: template `%s | Mustafa Apparels`, at most 60 characters in full. If the suffix would pass 60, drop it (`title.absolute`). Today, 13 of 30 suit names need this
+- `description`: 120–160 characters, everywhere. Longer text is trimmed at a word boundary, because most suit descriptions run past 160
+- `alternates.canonical` = **absolute self URL** from `canonicalUrl(pathname)`
 - `openGraph` (type, url = canonical, title, description, images 1200×630 absolute, siteName `Mustafa Apparels`, locale `en_PK`), `twitter` (`summary_large_image`)
 - `robots`: `index, follow` for shop pages; `noindex, follow` for search; `noindex, nofollow` for account/auth; previews and admin send `X-Robots-Tag: noindex` header too.
 
-Default share image: `/brand/social/og-share-image-1200x630.png`. Product pages use the product's main image.
+Default share image: `/brand/social/og-share-image-1200x630.png`. Collection and product pages use a generated image (`opengraph-image.tsx`, 1200×630), cached because each generation costs compute credits.
 
 ### 8.2 Canonical rules (each one tested in `e2e/seo/canonical.spec.ts`)
 
@@ -197,9 +226,9 @@ Default share image: `/brand/social/og-share-image-1200x630.png`. Product pages 
 | Exactly one tag | Only `buildMetadata()` sets it; never hand-write `<link rel=canonical>` | Count = 1 on every page |
 | Absolute URL | Built from `SITE_URL` (`https://mustafaapparels.com`), no trailing-slash mix | Starts with `SITE_URL`, parses as URL |
 | Server-rendered, in `<head>` | Metadata API; verify raw HTML (no JS) | Fetch HTML without JS (normal and Googlebot user-agents); tag inside `<head>`. If Next.js streams metadata outside `<head>` for some user-agents, configure `htmlLimitedBots` so metadata blocks render |
-| Pagination self-canonical | `/collections/dhanak?page=2` → canonical `…?page=2`; `?page=1` → 301 to clean URL | Check pages 1–3 |
+| Pagination self-canonical | `/collections/dhanak/page/2` → canonical is itself; `/collections/dhanak/page/1` → 301 to `/collections/dhanak` (ADR-017) | Check pages 1–3 |
 | Never to redirect/404 | Canonical = final URL after slug redirects; deleted products 404 and leave the sitemap | Request each canonical → status 200, no redirect |
-| Clean parameters | Filter/sort params (`?pieces=three_piece&sort=price`) canonicalize to the unfiltered page (or are `noindex`) | Filter URLs' canonical has no filter params |
+| Clean parameters | Filter/sort params (`?pieces=three_piece&sort=price`) are read only in the browser (ADR-018), so the server sends the unfiltered page and its canonical | Filter URLs' canonical has no filter params |
 
 Other URL rules: lowercase slugs, no trailing slash, `http→https` and `www`→apex handled by Netlify, one URL per suit.
 
@@ -238,8 +267,9 @@ Route `app/llms.txt/route.ts`, `Content-Type: text/plain; charset=utf-8`, cached
 - Preview, dev and production before launch (`SITE_INDEXABLE=false`): `Disallow: /`.
 
 ### 8.6 Status codes
-- Unknown product/collection/page number → `notFound()` → real **404**.
-- Changed slug → **301** via `slug_redirect`.
+- Unknown product/collection/page number → `notFound()` → real **404**. No `loading.tsx` above `(shop)` routes: once streaming starts, a 404 or redirect loses its real status code.
+- Changed slug → **permanent redirect** via `slug_redirect` (`permanentRedirect()` sends 308; search engines treat it like a 301).
+- `/page/1` → **301** to the clean URL, set in `next.config` with `statusCode: 301`.
 - Unpublished/archived product → 404 (or 410 for permanently removed).
 - Errors → 500 page with no stack trace.
 
