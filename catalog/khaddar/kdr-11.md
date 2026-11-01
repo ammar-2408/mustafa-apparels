@@ -27,4 +27,4 @@ videos: []
 also_in_this_design: [KDR-12]
 check: []
 ---
-A navy unstitched 3-piece Khaddar suit. A beige embroidered neckline sits above small flower sprigs and a wide beige hem, with a beige printed dupatta and khaki dyed trousers. The same design also comes in plum.
+A navy unstitched 3-piece Khaddar suit for winter. A beige embroidered neckline sits above small flower sprigs and a wide beige hem, with a beige printed dupatta and khaki dyed trousers. The same design also comes in plum.

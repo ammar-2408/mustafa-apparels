@@ -27,4 +27,4 @@ videos: []
 also_in_this_design: []
 check: []
 ---
-A beige unstitched 3-piece Khaddar suit. Plum embroidered flowers and trailing vines fill the shirt above a wide plum hem, with a plum floral printed dupatta and beige dyed trousers.
+A beige unstitched 3-piece Khaddar suit for winter. Plum embroidered flowers and trailing vines fill the shirt above a wide plum hem, with a plum floral printed dupatta and beige dyed trousers.

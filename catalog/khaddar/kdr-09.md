@@ -27,4 +27,4 @@ videos: []
 also_in_this_design: [KDR-06]
 check: []
 ---
-A navy unstitched 3-piece Khaddar suit. Pink embroidery sits at the neckline above tulip and flower sprigs and a magenta hem border, with a matching printed dupatta and royal blue dyed trousers. The same design also comes in red.
+A navy unstitched 3-piece Khaddar suit for winter. Pink embroidery sits at the neckline above tulip and flower sprigs and a magenta hem border, with a matching printed dupatta and royal blue dyed trousers. The same design also comes in red.

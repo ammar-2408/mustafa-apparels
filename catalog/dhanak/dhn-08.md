@@ -30,4 +30,4 @@ also_in_this_design: []
 check:
   - "Video is landscape with blurred sides, so the suit looks small. Check how it looks on the product page"
 ---
-A dark brown unstitched 3-piece Dhanak suit. A copper embroidered panel runs down the front above flower motifs and a wide patterned hem, with a matching printed dupatta and plain dyed trousers.
+A dark brown unstitched 3-piece Dhanak suit for winter. A copper embroidered panel runs down the front above flower motifs and a wide patterned hem, with a matching printed dupatta and plain dyed trousers.

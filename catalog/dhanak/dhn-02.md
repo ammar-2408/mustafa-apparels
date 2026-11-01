@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A wine unstitched 3-piece Dhanak suit. Rose pink embroidery frames the neckline and a paisley border runs along the hem, finished with a lattice printed dupatta and plain dyed trousers.
+A wine unstitched 3-piece Dhanak suit for winter. Rose pink embroidery frames the neckline and a paisley border runs along the hem, finished with a lattice printed dupatta and plain dyed trousers.

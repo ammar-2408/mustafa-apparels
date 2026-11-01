@@ -30,4 +30,4 @@ also_in_this_design: []
 check:
   - "Video has beige bars above and below the picture. Check how it looks on the product page"
 ---
-A maroon unstitched 3-piece Dhanak suit. Beige floral embroidery sits at the neckline above small gold diamond motifs, paired with a maroon and green printed dupatta and plain dyed trousers.
+A maroon unstitched 3-piece Dhanak suit for winter. Beige floral embroidery sits at the neckline above small gold diamond motifs, paired with a maroon and green printed dupatta and plain dyed trousers.

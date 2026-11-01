@@ -31,4 +31,4 @@ check:
   - "The print in the video looks different from the photo. Confirm they show the same suit"
   - "Lower resolution than most photos. Check sharpness once imported"
 ---
-A purple unstitched 2-piece Dhanak suit. Pale round medallions and small triangles run all over the shirt and matching trousers.
+A purple unstitched 2-piece Dhanak suit for winter. Pale round medallions and small triangles run all over the shirt and matching trousers.

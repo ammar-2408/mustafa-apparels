@@ -29,4 +29,4 @@ videos:
 also_in_this_design: [DHN-05]
 check: []
 ---
-A plum unstitched 3-piece Dhanak suit. Pink and orange flowers cover the shirt below an embroidered neckline, with a floral printed dupatta and plain dyed trousers. The same design also comes in charcoal.
+A plum unstitched 3-piece Dhanak suit for winter. Pink and orange flowers cover the shirt below an embroidered neckline, with a floral printed dupatta and plain dyed trousers. The same design also comes in charcoal.

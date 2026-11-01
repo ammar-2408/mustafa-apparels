@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A dusty olive green unstitched 3-piece Dhanak suit. Antique gold embroidery sits at the neckline and golden flowers fill the hem and sleeves, with a matching printed dupatta and plain dyed trousers.
+A dusty olive green unstitched 3-piece Dhanak suit for winter. Antique gold embroidery sits at the neckline and golden flowers fill the hem and sleeves, with a matching printed dupatta and plain dyed trousers.

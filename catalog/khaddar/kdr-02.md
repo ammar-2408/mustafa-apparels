@@ -27,4 +27,4 @@ videos: []
 also_in_this_design: []
 check: []
 ---
-A camel unstitched 3-piece Khaddar suit. Peach embroidery sits on the front of a rose printed shirt, with a matching printed dupatta and trousers.
+A camel unstitched 3-piece Khaddar suit for winter. Peach embroidery sits on the front of a rose printed shirt, with a matching printed dupatta and trousers.

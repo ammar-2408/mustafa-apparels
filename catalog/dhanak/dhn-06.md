@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A mauve brown unstitched 3-piece Dhanak suit. Cream embroidered motifs run down the shirt and tan flowers fill the sleeves, with a dotted floral printed dupatta and plain dyed trousers.
+A mauve brown unstitched 3-piece Dhanak suit for winter. Cream embroidered motifs run down the shirt and tan flowers fill the sleeves, with a dotted floral printed dupatta and plain dyed trousers.

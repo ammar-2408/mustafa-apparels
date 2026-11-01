@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A light beige unstitched 3-piece Khaddar suit. A rust brown embroidered rose stem runs down the shirt among rust brown and dusty blue roses with golden detailing, with a matching printed dupatta and trousers.
+A light beige unstitched 3-piece Khaddar suit for winter. A rust brown embroidered rose stem runs down the shirt among rust brown and dusty blue roses with golden detailing, with a matching printed dupatta and trousers.

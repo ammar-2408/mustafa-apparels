@@ -28,4 +28,4 @@ also_in_this_design: []
 check:
   - "Lower resolution than most photos. Check sharpness once imported"
 ---
-A navy blue unstitched 3-piece Khaddar suit. Ivory chevrons and paisley scrolls fill the shirt, with orange bands at the hem, a patterned printed dupatta and dyed trousers.
+A navy blue unstitched 3-piece Khaddar suit for winter. Ivory chevrons and paisley scrolls fill the shirt, with orange bands at the hem, a patterned printed dupatta and dyed trousers.

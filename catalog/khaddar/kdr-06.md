@@ -27,4 +27,4 @@ videos: []
 also_in_this_design: [KDR-09]
 check: []
 ---
-A red unstitched 3-piece Khaddar suit. Ivory embroidery sits at the neckline above tulip and flower sprigs and a lilac hem border, with a matching printed dupatta and dyed trousers. The same design also comes in navy.
+A red unstitched 3-piece Khaddar suit for winter. Ivory embroidery sits at the neckline above tulip and flower sprigs and a lilac hem border, with a matching printed dupatta and dyed trousers. The same design also comes in navy.

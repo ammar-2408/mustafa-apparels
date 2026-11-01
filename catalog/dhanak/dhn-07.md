@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A teal unstitched 3-piece Dhanak suit. Aqua embroidery shapes the neckline above small flower sprigs, with dark floral sleeves, a matching printed dupatta and plain dyed trousers.
+A teal unstitched 3-piece Dhanak suit for winter. Aqua embroidery shapes the neckline above small flower sprigs, with dark floral sleeves, a matching printed dupatta and plain dyed trousers.

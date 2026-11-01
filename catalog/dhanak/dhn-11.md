@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-An aubergine unstitched 3-piece Dhanak suit. Large red and cream flowers cover the shirt below an embroidered neckline, with a floral printed dupatta and plain dyed trousers finished in lace.
+An aubergine unstitched 3-piece Dhanak suit for winter. Large red and cream flowers cover the shirt below an embroidered neckline, with a floral printed dupatta and plain dyed trousers finished in lace.

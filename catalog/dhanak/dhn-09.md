@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A bottle green unstitched 3-piece Dhanak suit. Tilted orange and magenta squares fill the shirt below an embroidered tassel neckline, with a matching printed dupatta and plain dyed trousers.
+A bottle green unstitched 3-piece Dhanak suit for winter. Tilted orange and magenta squares fill the shirt below an embroidered tassel neckline, with a matching printed dupatta and plain dyed trousers.

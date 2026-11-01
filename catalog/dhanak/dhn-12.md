@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A crimson unstitched 3-piece Dhanak suit. A gold embroidered panel runs down the front above paisley shapes, with a dark brown and crimson printed dupatta and plain dyed trousers.
+A crimson unstitched 3-piece Dhanak suit for winter. A gold embroidered panel runs down the front above paisley shapes, with a dark brown and crimson printed dupatta and plain dyed trousers.

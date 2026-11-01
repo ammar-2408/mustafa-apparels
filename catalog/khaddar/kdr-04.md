@@ -29,4 +29,4 @@ videos:
 also_in_this_design: []
 check: []
 ---
-A black unstitched 3-piece Khaddar suit. A copper leaf and flower print runs over the shirt below an embroidered neckline, with a matching printed dupatta and dyed trousers.
+A black unstitched 3-piece Khaddar suit for winter. A copper leaf and flower print runs over the shirt below an embroidered neckline, with a matching printed dupatta and dyed trousers.

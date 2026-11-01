@@ -31,4 +31,4 @@ check:
   - "Video has captions burned in (\"INTRO / FULL LOOK\", \"SLEEVE DETAIL\", \"SITTING POSE\", \"FINAL LOOK\"). Re-export without them, or accept"
   - "Lower resolution than most photos. Check sharpness once imported"
 ---
-A brick red unstitched 2-piece Dhanak suit. A square tile pattern with small red flowers runs all over the shirt and matching trousers.
+A brick red unstitched 2-piece Dhanak suit for winter. A square tile pattern with small red flowers runs all over the shirt and matching trousers.

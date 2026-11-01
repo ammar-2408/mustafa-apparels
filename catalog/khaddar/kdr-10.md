@@ -27,4 +27,4 @@ videos: []
 also_in_this_design: []
 check: []
 ---
-A teal unstitched 3-piece Khaddar suit. Peach roses and aqua embroidery fill the shirt, with a matching printed dupatta in a copper floral border and dyed trousers.
+A teal unstitched 3-piece Khaddar suit for winter. Peach roses and aqua embroidery fill the shirt, with a matching printed dupatta in a copper floral border and dyed trousers.

@@ -28,4 +28,4 @@ also_in_this_design: []
 check:
   - "Lower resolution than most photos. Check sharpness once imported"
 ---
-A black unstitched 3-piece Khaddar suit. Ochre gold vines and flowers climb the shirt above chevron bands, with a black and gold chevron printed dupatta and dyed trousers.
+A black unstitched 3-piece Khaddar suit for winter. Ochre gold vines and flowers climb the shirt above chevron bands, with a black and gold chevron printed dupatta and dyed trousers.
