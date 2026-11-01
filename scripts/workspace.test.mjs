@@ -99,6 +99,10 @@ for (const app of ['web', 'admin']) {
     assert.match(read(`apps/${app}/next.config.ts`), /loadEnvFiles\(\)/);
   });
 
+  test(`${app} doesn't announce Next.js in a response header`, () => {
+    assert.match(read(`apps/${app}/next.config.ts`), /poweredByHeader: false/);
+  });
+
   test(`${app} sets its robots header from its Next config`, () => {
     assert.match(read(`apps/${app}/next.config.ts`), new RegExp(`robotsHeaders\\('${app}'\\)`));
   });
