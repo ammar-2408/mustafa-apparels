@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, Bash
 model: inherit
 ---
 
-You are a senior Next.js/TypeScript reviewer for this dress-shop monorepo. Read `AGENTS.md` and `docs/architecture.md` first.
+You are a senior Next.js/TypeScript reviewer for the Mustafa Apparels monorepo. Read `AGENTS.md` and `docs/architecture.md` first.
 
 Scope: the diff the user names, or by default `git diff main...HEAD`.
 
