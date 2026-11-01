@@ -67,7 +67,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 3.11 `security-auditor` agent pass; fix findings (one commit each)
 
 ## Phase 4 — Admin panel
-- [ ] 4.1 Admin layout (sidebar, responsive), dashboard counts
+- [ ] 4.1 Admin layout (sidebar, responsive), dashboard counts. Server actions must live in files named `actions.ts` (or `route.ts` for handlers) so the 80% coverage floor applies, or extend the coverage pattern in `packages/config/vitest/app.mjs`
 - [ ] 4.2 Collections list + create/edit + reorder + hide
 - [ ] 4.3 Cloudinary signed upload endpoint for images and videos + tests
 - [ ] 4.4 Media metadata check on save: folder, format, size, video length; delete rejected assets + tests
