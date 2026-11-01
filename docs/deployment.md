@@ -35,6 +35,8 @@ Do this at step 0.11. Netlify → **Add new project** → import `ammar-06/musta
 | Branch deploys | `develop` only | `develop` only | UI |
 | Deploy previews for PRs | Off | Off | UI. CI already tests PRs |
 
+Both sites were created on 2026-11-02 with these names and settings. To read deploys or variables from the CLI without linking the repo: `netlify api listSiteDeploys --data '{"site_id":"<id>"}'`, and `NETLIFY_SITE_ID=<id> netlify env:list --filter <web|admin> --context branch-deploy --json`. The `--filter` is needed because the CLI otherwise stops to ask which app in the monorepo you mean.
+
 If a name is taken, pick another and update §1, `docs/architecture.md` §7 and the `netlify.toml` redirect in §6.
 
 `apps/web/netlify.toml`:
