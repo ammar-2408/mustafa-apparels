@@ -15,6 +15,8 @@ build/
 .vercel/
 .open-next/
 next-env.d.ts
+# Written by next dev when it detects an AI agent. The root AGENTS.md stays tracked.
+apps/*/AGENTS.md
 
 # env (keep only the example)
 .env

@@ -69,6 +69,12 @@ test('.gitignore keeps dependencies, Turbo cache, secrets and owner files out of
   }
 });
 
+test('.gitignore keeps the AGENTS.md that next dev writes in each app out of git', () => {
+  const lines = read('.gitignore').split(/\r?\n/);
+  assert.ok(lines.includes('apps/*/AGENTS.md'));
+  assert.ok(!lines.includes('AGENTS.md'), 'the root AGENTS.md must stay tracked');
+});
+
 test('.gitattributes keeps YAML files on LF', () => {
   assert.ok(read('.gitattributes').split(/\r?\n/).includes('*.yaml text eol=lf'));
 });
