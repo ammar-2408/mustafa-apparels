@@ -12,7 +12,7 @@ Audit the diff (`git diff main...HEAD` by default) and any file it touches. Chec
 1. **Access control** — every admin server action/route calls `requireAdmin()` before anything else; user-owned queries filter by the session user id; no trust in client-sent ids/roles; admin proxy is not the only guard.
 2. **Input validation** — Zod `.strict()` on every input incl. search params and route params; length caps; no mass assignment (`role`, `status`, `userId` from client).
 3. **Injection/XSS** — only parameterized Drizzle queries (no string-built SQL); no `dangerouslySetInnerHTML` except escaped JSON-LD; no user-controlled URLs fetched server-side.
-4. **Auth** — Better Auth config: scrypt (or agreed argon2id), session cookie flags, rate limits, generic errors (no user enumeration), reset tokens single-use and expiring, sessions revoked on reset, admin sign-up disabled, 2FA enforced.
+4. **Auth** — Better Auth config: scrypt, session cookie flags, rate limits, generic errors (no user enumeration), reset tokens single-use and expiring, sessions revoked on reset, admin sign-up disabled, 2FA enforced.
 5. **Uploads** — signature endpoint admin-only; folder and format restricted per `kind`; on save the server re-verifies `public_id`, format, size and video duration against the limits in `docs/auth-security.md` §5.
 6. **Secrets** — none in code, logs, client bundles, or `NEXT_PUBLIC_*`; `server-only` imports present; `.env*` git-ignored.
 7. **Headers** — two-tier CSP per `docs/auth-security.md` §3.2: nonce on dynamic routes and admin, fixed policy with no nonce on cached public pages (flag any cached page that gets a nonce, and any new host added without reason). HSTS, frame-ancestors, nosniff, referrer policy; admin `X-Robots-Tag: noindex`.
