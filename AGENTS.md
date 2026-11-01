@@ -16,6 +16,7 @@ Claude Code reads this file through `CLAUDE.md`. Humans: see `README.md`.
 
 Hard product rules:
 - **No sizes.** Products are unstitched; there are no size fields or filters.
+- **Filter values are a fixed list** in `docs/catalog.md` §4. Prices are never in `catalog/`; the owner sets them in admin.
 - **Never name another fashion brand** anywhere customers or search engines can see. The owner has no written permission. A validator enforces it (`docs/database.md` §9).
 - **No Urdu version.** The owner decided this; don't add it.
 - Call products "suits", not "dresses".
@@ -58,8 +59,8 @@ pnpm verify               # lint + typecheck + test + build  (run before every c
 pnpm db:generate          # create a migration from schema changes
 pnpm db:migrate           # apply migrations
 pnpm db:seed              # seed collections, contact details, first admin
-pnpm import:stock --dry-run   # check the stock manifest; writes nothing
-pnpm import:stock             # import Business data/ as draft products with no price
+pnpm import:stock --dry-run   # check catalog/ and its files; writes nothing
+pnpm import:stock             # import catalog/ as draft products with no price
 ```
 
 ## 4. Repo layout
@@ -73,11 +74,12 @@ packages/auth   Better Auth config shared by both apps
 packages/validators  Zod schemas shared by apps and core, incl. banned brand names
 packages/ui     shared primitives (Button, Input, Dialog)
 packages/config ESLint, tsconfig, Tailwind preset
-scripts/        import-stock.ts + stock-manifest.json, install-skills.sh
+scripts/        import-stock.ts, install-skills.sh
 e2e/            Playwright tests (web, admin, seo, a11y, responsive)
 docs/           all project docs (start with docs/prd.md)
+catalog/        one details file per suit, by collection (docs/catalog.md)
 mustafa-apparels-logos/  official logo pack
-Business data/  owner's raw stock: git-ignored, read-only, used only by the import script
+Business data/  owner's collection files, photos, videos: git-ignored, read-only, used only to build catalog/ and by the import script
 ```
 
 Public routes: `/`, `/shop`, `/collections/[slug]`, `/products/[slug]`, `/search`, `/about`, `/contact`, `/how-to-order`, `/faq`, `/privacy`, `/terms`.
@@ -159,6 +161,7 @@ Full details: `docs/design.md` §8, `docs/seo-geo.md` and `.claude/skills/seo-gu
 |---|---|
 | Any new feature | `docs/prd.md`, `docs/feature-development.md` |
 | Structure, data flow, caching | `docs/architecture.md` |
+| Stock, suit files, filters, import, new collections | `docs/catalog.md` |
 | Schema, migrations, queries | `docs/database.md` |
 | Server actions, route handlers | `docs/api.md` |
 | Login, roles, uploads, headers | `docs/auth-security.md` |
@@ -180,7 +183,8 @@ Full details: `docs/design.md` §8, `docs/seo-geo.md` and `.claude/skills/seo-gu
 - Never change the stack, add a paid service, or add a dependency over ~50 kB gzipped to the client without asking.
 - Never copy code, images, logos, fonts or text from reference websites. Use them for ideas only and build original work.
 - Never name another fashion brand in customer-facing text, or copy text from the stock posters.
-- Never upload an uncropped stock poster, or commit or modify anything in `Business data/`.
+- Never upload media that shows another brand's logo, name or text. Check videos through to the end.
+- Never commit or modify anything in `Business data/`, or save any output there.
 - Never redraw, recolour or stretch the logo.
 - Never serve heavy files (video, models, large images) from `public/`: Netlify bandwidth costs credits. Media goes on Cloudinary.
 - Never make a cached public page dynamic without an ADR.
