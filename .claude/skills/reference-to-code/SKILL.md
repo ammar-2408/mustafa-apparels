@@ -8,6 +8,8 @@ argument-hint: "[url or attached image] [what part you like]"
 
 Ideas are free; code, images, fonts, logos and copy are not. We **study** references and **rebuild** originals.
 
+The shop's main reference is already studied: `docs/design.md` §9.1. Read it first, so new work fits that direction. References guide look and motion only: our pages stay as listed in `docs/design.md` §3.
+
 ## 1. Capture
 - **URL**: with the `playwright` MCP, open it and take full-page screenshots at 360, 768, 1280, 1920 and 2560 widths. For motion, scroll slowly and capture frames at key points (start, mid, end of each animated section); note what triggers each change (load, scroll position, hover, click). Screenshots land in `.playwright-mcp/`, which is git-ignored. Never move them anywhere that's committed, or into `Business data/`.
 - **Screenshot/video from the user**: read the image(s) directly. Ask for a short screen recording only if the motion is unclear.
