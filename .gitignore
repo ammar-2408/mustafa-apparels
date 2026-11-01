@@ -23,6 +23,7 @@ build/
 # tests
 coverage/
 playwright-report/
+.playwright-mcp/
 test-results/
 blob-report/
 .lighthouseci/
