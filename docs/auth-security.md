@@ -15,7 +15,7 @@
 | Brute force | Better Auth built-in rate limit on `/api/auth/*` + Upstash limit: 5 failed logins / 15 min / (IP + email), then backoff. |
 
 ### Admins
-- Separate app (`apps/admin`), separate cookie (admin domain), **sign-up disabled**.
+- Separate app (`apps/admin`) at `https://admin.mustafaapparels.com`, separate host-only cookie, **sign-up disabled**. Don't enable cross-subdomain cookies: a storefront session must never be readable by admin, or the reverse.
 - Sign-in hook rejects any user whose `role !== 'admin'` (generic error).
 - **2FA (TOTP) mandatory**: first login forces setup; backup codes shown once.
 - First admin is created only by `pnpm db:seed` from env vars; more admins only by an existing admin (audit-logged).
@@ -41,31 +41,67 @@ Every query for user-owned data filters by `user_id = session.user.id` (wishlist
 | A05 Security misconfiguration | Security headers + CSP; `poweredByHeader: false`; previews `noindex`; no default credentials; error pages without stack traces |
 | A06 Vulnerable components | Renovate/Dependabot weekly; `pnpm audit --prod` in CI (fail on high/critical); lockfile committed |
 | A07 Auth failures | Better Auth; rate limits; generic errors; session revocation; 2FA for admins |
-| A08 Integrity failures | Signed Cloudinary uploads; HMAC on `/api/revalidate`; CI-only production deploys; pinned GitHub Actions |
+| A08 Integrity failures | Signed Cloudinary uploads; HMAC on `/api/revalidate`; production deploys only from `main`; pinned GitHub Actions |
 | A09 Logging failures | Audit log for admin actions; auth events logged (no passwords/tokens); alerts on repeated failures |
-| A10 SSRF | Server never fetches user-supplied URLs; image URLs must be our Cloudinary domain (`images.remotePatterns` locked) |
+| A10 SSRF | Server never fetches user-supplied URLs; media URLs must be our Cloudinary domain (`images.remotePatterns` locked) |
 
-## 3. HTTP security headers (both apps)
+## 3. HTTP security headers
 
-Set in `next.config.ts` `headers()` and `proxy.ts` (for the per-request CSP nonce):
+### 3.1 All responses, both apps
+
+Set in `next.config.ts` `headers()`:
 
 ```
-Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Strict-Transport-Security: max-age=63072000; includeSubDomains
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
 X-Frame-Options: DENY            (and CSP frame-ancestors 'none')
 Cross-Origin-Opener-Policy: same-origin
-Content-Security-Policy: default-src 'self';
-  script-src 'self' 'nonce-{NONCE}' 'strict-dynamic';
-  style-src 'self' 'unsafe-inline';
-  img-src 'self' data: blob: https://res.cloudinary.com;
-  font-src 'self';
-  connect-src 'self' https://api.cloudinary.com {analytics};
-  worker-src 'self' blob:;
-  frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 ```
-Admin adds `X-Robots-Tag: noindex, nofollow` on every response. Test headers in `e2e/security/headers.spec.ts`. Three.js/R3F needs `blob:` for workers/textures — keep it in `worker-src`/`img-src` only.
+HSTS has **no `preload`** for now: browsers' preload lists are hard to leave. Reconsider once the domain has been stable for some months.
+
+Admin and previews add `X-Robots-Tag: noindex, nofollow` on every response.
+
+### 3.2 Content Security Policy: two tiers
+
+Next.js nonces force dynamic rendering, which disables static pages, ISR and CDN caching. So nonces can't be used on the cached storefront pages (`docs/architecture.md` ADR-010).
+
+**Tier A: cached public pages** (home, shop, collections, products, static pages). A fixed policy set in `next.config.ts`:
+```
+default-src 'self';
+script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https://res.cloudinary.com https://www.googletagmanager.com https://*.google-analytics.com;
+media-src 'self' https://res.cloudinary.com;
+font-src 'self';
+connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com;
+worker-src 'self' blob:;
+frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+```
+**Trade-off:** `'unsafe-inline'` weakens protection against injected scripts on these pages. To compensate: they render no user-supplied HTML, the only `dangerouslySetInnerHTML` is JSON-LD through `serializeJsonLd()`, and login and account pages sit in Tier B.
+
+Step 3.9 **first tries experimental SRI** (`experimental.sri`) with `script-src 'self'` against a real production build, including Next's inline bootstrap scripts and GA4. Use it only if every template works with no CSP errors. If not, ship the policy above.
+
+**Tier B: dynamic pages** (`/search`, `/account/*`, `/login`, `/register`, password pages). `proxy.ts` sets a per-request nonce, and its `matcher` lists only these paths, so it never runs on cached pages:
+```
+script-src 'self' 'nonce-{NONCE}' 'strict-dynamic';
+(other directives as Tier A)
+```
+
+**Admin app:** nonce on every route (it's dynamic anyway). No GA4.
+```
+default-src 'self';
+script-src 'self' 'nonce-{NONCE}' 'strict-dynamic';
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: blob: https://res.cloudinary.com;
+media-src 'self' blob: https://res.cloudinary.com;
+font-src 'self';
+connect-src 'self' https://api.cloudinary.com;
+frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+```
+
+GA4 hosts come from Google's CSP guide for GA4 without Ads features (`docs/analytics.md`). Test headers in `e2e/security/headers.spec.ts`, including that cached pages get **no** nonce. Three.js/R3F needs `blob:` for workers/textures — keep it in `worker-src`/`img-src` only.
 
 ## 4. Forms & input
 
@@ -77,11 +113,15 @@ Admin adds `X-Robots-Tag: noindex, nofollow` on every response. Test headers in 
 
 ## 5. File uploads (admin only)
 
-1. Client requests signature from `/api/upload/sign` (admin session required).
-2. Signature restricts: folder `products/`, `allowed_formats: jpg,png,webp`, `max_file_size: 10MB`, expiry 5 min.
-3. On save, the server re-fetches image metadata from Cloudinary by `public_id` and rejects anything outside our folder or format list.
-4. Cloudinary strips EXIF/GPS metadata on delivery (`fl_strip_profile` or the account default).
-5. Deleting an image removes it from Cloudinary too.
+1. Client requests a signature from `/api/upload/sign` with `{ kind }` (admin session required).
+2. Signature restricts: folder `products/`, `resource_type`, `allowed_formats` for that kind, expiry 5 min.
+   - **Images:** `jpg,png,webp`, 10 MB.
+   - **Videos:** `mp4,mov,webm`, 50 MB, 60 seconds.
+3. On save, the server re-fetches metadata from Cloudinary by `public_id` and rejects anything outside our folder, format list, size limit or duration limit. Rejected assets are deleted from Cloudinary.
+4. Cloudinary strips EXIF/GPS metadata on delivery (`fl_strip_profile` or the account default). Videos are delivered with no audio track.
+5. Deleting media removes it from Cloudinary too.
+
+The import script (`scripts/import-stock.ts`) runs only on the owner's machine with the owner's keys, never on the server. It crops posters **before** upload, so the full posters with other brands' logos never reach a public URL.
 
 ## 6. Secrets & environment
 
@@ -89,11 +129,13 @@ Admin adds `X-Robots-Tag: noindex, nofollow` on every response. Test headers in 
 |---|---|---|
 | `DATABASE_URL` (pooled), `DATABASE_URL_UNPOOLED` | server | Neon |
 | `BETTER_AUTH_SECRET` | server | 32+ random bytes; different per environment |
-| `CLOUDINARY_API_SECRET` | server | admin only |
+| `CLOUDINARY_API_SECRET` | server | admin and import script only |
 | `RESEND_API_KEY`, `UPSTASH_REDIS_REST_TOKEN` | server | |
 | `REVALIDATE_SECRET` | server (both apps) | 32+ random bytes |
 | `SEED_ADMIN_EMAIL/PASSWORD` | local/CI only | never in hosting env after first seed |
-| `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | public | non-secret only |
+| `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` | public | non-secret only |
+| `INDEXNOW_KEY` | server (admin) | Not a secret: the key file is public |
+| `SITE_INDEXABLE` | server (web) | `false` until launch |
 
 - Validate env at startup with Zod (`packages/config/env.ts`) — the app refuses to boot with missing/invalid vars.
 - Modules that use secrets start with `import 'server-only'`.
@@ -103,9 +145,9 @@ Admin adds `X-Robots-Tag: noindex, nofollow` on every response. Test headers in 
 ## 7. Privacy
 
 - Collect only what's needed (name, email, phone for inquiries).
-- Privacy page explains what's stored and why; users can delete their account (inquiries anonymized).
+- Privacy page explains what's stored and why, including GA4 and its cookies; users can delete their account (inquiries anonymized).
 - IPs stored only as salted hashes for abuse prevention.
-- Analytics: cookieless/privacy-friendly; no third-party ad trackers.
+- **Analytics:** GA4 on the storefront only, with no cookie banner in v1. This is a practical default for a Pakistan audience, not legal advice. Search text, names, emails, phone numbers and inquiry messages are never sent to GA4 (`docs/analytics.md` §4).
 
 ## 8. Threat model (short)
 
@@ -117,11 +159,12 @@ Admin adds `X-Robots-Tag: noindex, nofollow` on every response. Test headers in 
 | Stolen admin password | Mandatory 2FA, short sessions, audit log |
 | Malicious upload | Signed, format-limited, admin-only uploads to Cloudinary (never served from our origin) |
 | Cache poisoning via revalidate endpoint | HMAC + timestamp + tag allow-list |
-| XSS via product description | Plain text / sanitized markdown, CSP with nonces |
+| XSS via product description | Plain text / sanitized markdown; React escaping; no raw HTML. CSP is a weaker backstop on Tier A pages (§3.2) |
+| Traffic spike or bots exhaust Netlify credits, pausing the site | Cached pages, media on Cloudinary, usage alerts, rate limits (`docs/deployment.md` §3) |
 | Leaked secret in repo | `.gitignore`, hook denies reading `.env`, secret scanning, rotation runbook |
 
 ## 9. Security tests (must exist)
 
-`e2e/security/`: headers present; admin routes redirect when logged out; customer session → 403 on each admin action; rate limits return 429; generic auth errors; upload sign rejects non-admin; revalidate rejects bad signature/old timestamp; JSON-LD can't break out of `<script>`.
-Unit: guards, Zod schemas (including mass-assignment attempts), HMAC verify, slug/redirect logic.
+`e2e/security/`: headers present; cached pages have a fixed CSP with no nonce, Tier B and admin have a nonce; `media-src` allows Cloudinary; admin routes redirect when logged out; customer session → 403 on each admin action; rate limits return 429; generic auth errors; upload sign rejects non-admin and unknown `kind`; save rejects oversized, too-long or wrong-format media; revalidate rejects bad signature/old timestamp; JSON-LD can't break out of `<script>`.
+Unit: guards, Zod schemas (including mass-assignment attempts and banned brand names), HMAC verify, slug/redirect logic.
 Use the `security-check` skill and the `security-auditor` agent for every auth/admin/API change.
