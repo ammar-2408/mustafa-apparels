@@ -29,13 +29,15 @@ Usually a change needs 2 levels: the logic (unit/integration) and how a user rea
 - [ ] Each validation rule: valid boundary, invalid boundary (min-1, max+1), empty, wrong type
 - [ ] Unauthenticated → 401/redirect; wrong role → 403
 - [ ] Another user's resource (IDOR) → 403/404
-- [ ] Not found → 404; slug redirect → 301
+- [ ] Not found → 404; slug redirect → permanent (301 or 308)
 - [ ] Rate limit → 429 and the UI handles it
 - [ ] External service fails (Resend, Cloudinary, Upstash) → defined fallback
 - [ ] UI: loading, empty, error and success states; keyboard use; reduced motion
 - [ ] Responsive: no horizontal scroll; key elements visible at 360px and 2560px
 - [ ] Customer-facing text: each banned brand name rejected, in any case and with or without punctuation (`docs/database.md` §9)
-- [ ] Filters: values outside `docs/catalog.md` §4 rejected; values with no published suit hidden; no size filter or size text anywhere
+- [ ] Pagination: `/page/2` is self-canonical; `/page/1` → 301; `/page/0`, `/page/abc`, `/page/01`, `/page/999` → real 404
+- [ ] Filters: values outside `docs/catalog.md` §4 rejected; values with no published suit hidden; run in the browser with no page request; shared `?fabric=` link restores the filter; no size filter or size text anywhere
+- [ ] Metadata: title ≤ 60; description 120–160, unique per page
 - [ ] Publishing: refused with no price, colour, main image or alt text
 - [ ] Media: wrong type, photo over 10 MB, video over 50 MB or 60 s rejected; video never in grids or as the main item; poster first, muted, `ac_none`
 - [ ] Public page stays cached (no nonce, no per-request work)
@@ -56,7 +58,7 @@ Required cases per feature: `docs/testing-qa.md` §3. Coverage floors: `packages
 ## 5. Examples
 
 ```ts
-// packages/validators/src/inquiry.test.ts
+// packages/validators/inquiry.test.ts
 import { inquiryInput } from './inquiry';
 it('rejects a filled honeypot field', () => {
   const r = inquiryInput.safeParse({ name: 'Ayesha', email: 'a@b.pk', message: 'Hi', website: 'spam' });
@@ -67,10 +69,10 @@ it('rejects a filled honeypot field', () => {
 ```ts
 // e2e/seo/canonical.spec.ts (excerpt)
 test('paginated collection canonicalizes to itself', async ({ request }) => {
-  const html = await (await request.get('/collections/dhanak?page=2')).text();
+  const html = await (await request.get('/collections/dhanak/page/2')).text();
   const tags = html.match(/<link[^>]+rel="canonical"[^>]*>/g) ?? [];
   expect(tags).toHaveLength(1);
-  expect(tags[0]).toContain(`href="${process.env.NEXT_PUBLIC_SITE_URL}/collections/dhanak?page=2"`);
+  expect(tags[0]).toContain(`href="${process.env.NEXT_PUBLIC_SITE_URL}/collections/dhanak/page/2"`);
   expect(html.indexOf(tags[0])).toBeLessThan(html.indexOf('</head>'));
 });
 ```
