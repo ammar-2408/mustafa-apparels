@@ -39,9 +39,9 @@ You create the service accounts (Neon, Cloudinary, Resend, Upstash, Netlify, Goo
 
 ## 3. Prompts before any code (scope, docs, skills)
 
-**Prompt 1 (setup) and Prompt 2 (scope and doc rewrite) are done.** The docs now describe the real business.
+**All four prompts are done:** Prompt 1 (setup), Prompt 2 (scope and doc rewrite), Prompt 3 (project skills) and Prompt 4 (final scope check). The next step is §4. Prompts 3 and 4 stay here for reference.
 
-### Prompt 3 — Project skills for this shop
+### Prompt 3 — Project skills for this shop (done)
 **Opus 5.5 · high · Auto mode**
 ```
 The scope is final. Review our skills and fill the gaps. Use the skill-creator skill to add these project skills, short and specific to Mustafa Apparels:
@@ -50,7 +50,7 @@ The scope is final. Review our skills and fill the gaps. Use the skill-creator s
 Then check every existing project skill (seo-guard, motion-gsap, three-scene, security-check, db-change, write-tests, ship-change, next-step, reference-to-code) against the updated docs and fix anything out of date. Pay special attention to: three-scene has no downloaded model now; ship-change's merge rule must respect Netlify credits; security-check needs the two-tier CSP and media limits. One commit per skill, then push.
 ```
 
-### Prompt 4 — Final scope check
+### Prompt 4 — Final scope check (done)
 First type `/doctor prompt-audit` (it finds conflicting instructions across CLAUDE.md, AGENTS.md and skills). Then:
 
 **Opus 5.5 · high · Plan mode**
