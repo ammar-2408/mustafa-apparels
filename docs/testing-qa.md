@@ -54,6 +54,7 @@ Every responsive test asserts: no horizontal overflow (`document.documentElement
 
 ### Banned brand names
 - Each banned name, in any case and with or without punctuation (`Maria.B`, `maria b`, `MARIAB`), is rejected in every customer-facing field: name, slug, description, care instructions, alt text, SEO fields, collection text.
+- Whole names only: `Khaddar`, `khadi` and `also Kamal` are accepted, while `so-kamal` and `SOKAMAL` are rejected. Every real file in `catalog/` still passes.
 - E2E: no banned name appears in the HTML or JSON-LD of any page in the sitemap.
 
 ### Photos and video

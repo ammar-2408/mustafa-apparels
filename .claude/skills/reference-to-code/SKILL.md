@@ -8,7 +8,7 @@ argument-hint: "[url or attached image] [what part you like]"
 
 Ideas are free; code, images, fonts, logos and copy are not. We **study** references and **rebuild** originals.
 
-The shop's references are already studied: `docs/design.md` §9.1 for look and motion, and §9.2 for shopping patterns. Read them first, so new work fits that direction. Our pages stay as listed in `docs/design.md` §3, and store names appear only in §9.2.
+The shop's references are already studied: `docs/design.md` §9.1 for look and motion, and §9.2 for shopping patterns. Read them first, so new work fits that direction. Our pages stay as listed in `docs/design.md` §3, and store names never appear on the site (`docs/database.md` §9).
 
 ## 1. Capture
 - **URL**: with the `playwright` MCP, open it and take full-page screenshots at 360, 768, 1280, 1920 and 2560 widths. For motion, scroll slowly and capture frames at key points (start, mid, end of each animated section); note what triggers each change (load, scroll position, hover, click). Screenshots land in `.playwright-mcp/`, which is git-ignored. Never move them anywhere that's committed, or into `Business data/`.

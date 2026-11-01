@@ -222,6 +222,6 @@ Rules: never edit an applied migration; never use `drizzle-kit push` on producti
 
 ## 9. Banned brand names
 
-`packages/validators/banned-terms.ts` holds the names of brands the shop has no permission to use: Elaf, Baroque, Maria B (also `Maria.B`, `MariaB`) and HS Fashion. The check ignores case and punctuation.
+`packages/validators/banned-terms.ts` holds the names of brands the shop has no permission to use: Elaf, Baroque, Maria B (also `Maria.B`, `MariaB`), HS Fashion, Khaadi, Sobia Waseem, Nishat (also `Nishat Linen`) and So Kamal (also `SoKamal`). The check ignores case and punctuation, and matches whole names only, so fabric words and ordinary text such as `Khaddar`, `khadi` and `also Kamal` still pass.
 
 It runs on every customer-facing text field: product name, slug, description, care instructions, motifs, media alt text, SEO fields and collection text, and on every file in `catalog/` during import. Add a name here when new stock arrives showing another brand. The owner can remove a name only with written permission from that brand.

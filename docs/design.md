@@ -339,7 +339,7 @@ References collected so far (add more as you find them):
 
 ### 9.2 References
 
-Each reference has one job. The four Pakistani stores are studied for **shopping patterns only**, not look. **Their names stay in this section:** never put them on the website, in metadata, alt text or `catalog/`, and never copy their code, images, text or logos. Studied on 2026-11-01 at 360 and 1280 px: homepage, one collection and one product page each.
+Each reference has one job. The four Pakistani stores are studied for **shopping patterns only**, not look. **Their names appear only here and in the banned list (`docs/database.md` §9), which blocks them:** never put them on the website, in metadata, alt text or `catalog/`, and never copy their code, images, text or logos. Studied on 2026-11-01 at 360 and 1280 px: homepage, one collection and one product page each.
 
 | Site | What we take | What we don't |
 |---|---|---|
