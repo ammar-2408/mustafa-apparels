@@ -17,6 +17,10 @@ Full strategy: `docs/testing-qa.md`. This skill is the quick decision guide.
 | Public page/metadata | **SEO** — `e2e/seo/*` (raw HTML, canonical rules) |
 | Auth/admin/API/headers | **Security** — `e2e/security/*` + unit tests for guards/schemas |
 | Any page template | **a11y** — axe check in `e2e/a11y` |
+| Layout | **Responsive** — `e2e/responsive`, no horizontal overflow on any device project |
+| `catalog/` or the import script | **Catalog schema** over the real `catalog/`; **import** with small fixture files, because `Business data/` isn't in git, so CI can't see it |
+| Caching or `proxy.ts` | **Caching** — cached on the second request; `proxy.ts` matcher includes no cached page |
+| A GA4 event | **Analytics** — `e2e/web/analytics.spec.ts`: fires once, with no search text or personal data |
 
 Usually a change needs 2 levels: the logic (unit/integration) and how a user reaches it (component or E2E).
 
@@ -30,6 +34,13 @@ Usually a change needs 2 levels: the logic (unit/integration) and how a user rea
 - [ ] External service fails (Resend, Cloudinary, Upstash) → defined fallback
 - [ ] UI: loading, empty, error and success states; keyboard use; reduced motion
 - [ ] Responsive: no horizontal scroll; key elements visible at 360px and 2560px
+- [ ] Customer-facing text: each banned brand name rejected, in any case and with or without punctuation (`docs/database.md` §9)
+- [ ] Filters: values outside `docs/catalog.md` §4 rejected; values with no published suit hidden; no size filter or size text anywhere
+- [ ] Publishing: refused with no price, colour, main image or alt text
+- [ ] Media: wrong type, photo over 10 MB, video over 50 MB or 60 s rejected; video never in grids or as the main item; poster first, muted, `ac_none`
+- [ ] Public page stays cached (no nonce, no per-request work)
+
+Required cases per feature: `docs/testing-qa.md` §3. Coverage floors: `packages/core`, `validators` and `auth` ≥ 90% lines and ≥ 85% branches; server actions and route handlers ≥ 80% lines.
 
 ## 3. Conventions
 - Name tests as behaviour: `it('rejects a compare-at price lower than the price')`.
@@ -45,7 +56,7 @@ Usually a change needs 2 levels: the logic (unit/integration) and how a user rea
 ## 5. Examples
 
 ```ts
-// packages/validators/inquiry.test.ts
+// packages/validators/src/inquiry.test.ts
 import { inquiryInput } from './inquiry';
 it('rejects a filled honeypot field', () => {
   const r = inquiryInput.safeParse({ name: 'Ayesha', email: 'a@b.pk', message: 'Hi', website: 'spam' });
@@ -56,10 +67,10 @@ it('rejects a filled honeypot field', () => {
 ```ts
 // e2e/seo/canonical.spec.ts (excerpt)
 test('paginated collection canonicalizes to itself', async ({ request }) => {
-  const html = await (await request.get('/collections/formal?page=2')).text();
+  const html = await (await request.get('/collections/dhanak?page=2')).text();
   const tags = html.match(/<link[^>]+rel="canonical"[^>]*>/g) ?? [];
   expect(tags).toHaveLength(1);
-  expect(tags[0]).toContain(`href="${process.env.NEXT_PUBLIC_SITE_URL}/collections/formal?page=2"`);
+  expect(tags[0]).toContain(`href="${process.env.NEXT_PUBLIC_SITE_URL}/collections/dhanak?page=2"`);
   expect(html.indexOf(tags[0])).toBeLessThan(html.indexOf('</head>'));
 });
 ```
