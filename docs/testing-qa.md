@@ -155,7 +155,7 @@ For every URL in the sitemap plus representative noindex pages:
 
 ## 6. CI pipeline (`.github/workflows/ci.yml`)
 
-On every push and PR: install → lint → typecheck → migrate a fresh Postgres container → unit + integration (coverage) → build both apps → `pnpm audit --prod` → Playwright (all projects: E2E, responsive, SEO, a11y, security) against the built apps → Lighthouse CI on PRs to `main`. External services run in `INTEGRATIONS_MODE=mock`. Any failure means no merge to `main`.
+On every push and PR: install → lint → typecheck → migrate a fresh Postgres container → unit + integration (coverage) → build both apps → `pnpm audit --prod` → Playwright (all projects: E2E, responsive, SEO, a11y, security) against the built apps → Lighthouse CI on PRs to `main`. External services run in `INTEGRATIONS_MODE=mock`. Any failure means no merge to `main`. The Postgres and migrate stages join the workflow at step 2.1, and Lighthouse at step 9.2.
 
 ## 7. Release QA checklist (before merging `develop` → `main`)
 

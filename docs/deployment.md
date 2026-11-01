@@ -63,7 +63,7 @@ If a name is taken, pick another and update §1, `docs/architecture.md` §7 and 
 
 **Check at step 0.11:** that Netlify's build and functions runtime support the Node version in `.nvmrc`. If not, pick the newest supported LTS and update `.nvmrc`, `docs/setup.md` §1 and CI.
 
-**GitHub branch protection:** step 0.9 checks whether protecting `main` is available. On a private repo with a free GitHub plan it may not be. If it isn't, the rule is a process one: merge only after CI is green, and the owner does the merging.
+**GitHub branch protection:** not available. Checked 2026-11-02: GitHub returns 403 for both branch protection and rulesets on this private repo on the free plan. The rule is a process one: merge only after CI is green, and the owner does the merging.
 
 ## 3. Credit budget (read before merging)
 

@@ -20,7 +20,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 0.8 Husky + lint-staged pre-commit (format, lint staged files, typecheck), commitlint for Conventional Commits
 - [ ] 0.9 GitHub Actions CI (`.github/workflows/ci.yml`) green on push. With `CI` set, Playwright runs `next start`, so build both apps first and install browsers with `pnpm exec playwright install --with-deps chromium firefox webkit`. Watch the `desktop` project for the unexplained Firefox close error in `docs/debugging.md` §2. Check whether branch protection on `main` is available for this repo; if not, use the fallback in `docs/deployment.md` §2
 - [ ] 0.10 Env validation with Zod (`packages/config/env.ts`) + bring `.env.example` in line with `docs/setup.md` §6: real shop name and sender, production URLs, all new variables
-- [ ] 0.11 Two Netlify sites (`docs/deployment.md` §2): package directories, `netlify.toml` per app with the skip rule, `develop` branch deploys, production from `main`; `SITE_INDEXABLE=false`; previews `noindex`. Confirm Netlify supports the `.nvmrc` Node version. Check the credit balance after the first skipped build and record the result in `docs/deployment.md`
+- [ ] 0.11 Two Netlify sites (`docs/deployment.md` §2): package directories, `netlify.toml` per app with the skip rule, `develop` branch deploys, production from `main`; `SITE_INDEXABLE=false`; previews `noindex`. Confirm Netlify supports the `.nvmrc` Node version. Check the credit balance after the first skipped build and record the result in `docs/deployment.md`. `main` doesn't exist on GitHub yet (only `develop`), so create it first
 - [x] 0.12 Install external skills (`bash scripts/install-skills.sh`) and commit the lock/registry update
 
 ## Phase 1 — Brand (logo is ready; see `docs/design.md` §1)
@@ -37,7 +37,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 1.8 `SITE_URL` + `canonicalUrl()` + `buildMetadata()` helpers in `apps/web/lib/seo.ts` + unit tests, incl. title suffix dropped past 60 and description trimmed at a word boundary to 160. Built here so every later page can use them
 
 ## Phase 2 — Data layer
-- [ ] 2.1 `packages/db`: Drizzle + Neon client, drizzle-kit config, first migration enabling `pg_trgm` and creating `immutable_array_to_string`
+- [ ] 2.1 `packages/db`: Drizzle + Neon client, drizzle-kit config, first migration enabling `pg_trgm` and creating `immutable_array_to_string`. Add a `postgres:17` service and `pnpm db:migrate` to both CI jobs (removed in step 0.9 until this exists). When `db:seed` exists, add `pnpm db:seed -- --e2e` to the `e2e` job
 - [ ] 2.2 `category` table + migration + integration test
 - [ ] 2.3 `product` table: design code, import key, nullable price, pieces, piece details, collection type, dress categories, fabric, design, season, outfit style, main colour, colour family, accent colours, motifs, related design codes, care; publish-needs-price check; generated `search_vector`; indexes + tests
 - [ ] 2.4 `product_media` table: `kind`, poster, duration, bytes; one-primary index; primary-must-be-image and video-duration checks + tests
@@ -147,7 +147,7 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 
 ## Phase 9 — Hardening
 - [ ] 9.1 Full E2E regression on all devices; fix flakiness
-- [ ] 9.2 Lighthouse CI budgets enforced in CI
+- [ ] 9.2 Lighthouse CI budgets enforced in CI: add `.lighthouserc.json` (perf ≥ 0.9, a11y ≥ 0.95, SEO = 1) and a `lighthouse` job on PRs to `main` (removed in step 0.9 until this exists)
 - [ ] 9.3 Error tracking + structured logging
 - [ ] 9.4 Caching check: home, collection and product pages served from cache; measure a real page's Netlify bandwidth and requests, and update the estimate in `docs/deployment.md` §3
 - [ ] 9.5 Dependency audit, Renovate/Dependabot config, secret scanning on

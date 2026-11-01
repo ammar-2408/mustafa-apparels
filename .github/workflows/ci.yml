@@ -1,5 +1,5 @@
-# CI for the dress-shop monorepo.
-# Template: script names match AGENTS.md §3. Claude Code adapts this in plan step 0.9.
+# CI for the Mustafa Apparels monorepo.
+# The database and Lighthouse stages in docs/testing-qa.md §6 are added by steps 2.1 and 9.2.
 name: CI
 
 on:
@@ -41,94 +41,46 @@ jobs:
   quality:
     name: Lint, typecheck, unit + integration, build
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: shop_test
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm db:migrate
       - run: pnpm test # every package's test script already measures coverage
       - run: pnpm build
       - run: pnpm audit --prod --audit-level high
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage
-          path: '**/coverage/'
+          path: |
+            **/coverage/
+            !**/node_modules/**
           retention-days: 7
 
   e2e:
     name: E2E, responsive, SEO, a11y, security (Playwright)
     needs: quality
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: shop_test
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps
-      - run: pnpm db:migrate
-      - run: pnpm db:seed -- --e2e
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm build
       - run: pnpm test:e2e # Playwright webServer starts web (3000) + admin (3001)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
-
-  lighthouse:
-    name: Lighthouse budgets
-    if: github.event_name == 'pull_request'
-    needs: e2e
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: shop_test
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 5s --health-timeout 5s --health-retries 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm db:migrate && pnpm db:seed -- --e2e
-      - run: pnpm build
-      - run: pnpm dlx @lhci/cli autorun # reads .lighthouserc.json (budgets: perf ≥ 0.9, a11y ≥ 0.95, seo = 1)
