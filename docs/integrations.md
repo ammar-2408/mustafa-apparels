@@ -16,7 +16,7 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 ## Cloudinary
 
 ### Folders and delivery
-- Folder structure: `products/{productId}/{publicId}`, `categories/{categoryId}`, `brand/`. Imported stock uses `products/imported/{import_key}`.
+- Folder structure: `products/{productId}/{publicId}`, `categories/{categoryId}`, `brand/`. Imported stock uses `products/imported/{import_key}/`, where `import_key` is the suit's design ID (`docs/catalog.md` §6).
 - Image URLs: `f_auto,q_auto,c_fill,ar_3:4,w_{width}` via a custom `next/image` loader (`apps/web/lib/cloudinary-loader.ts`), so neither Next.js nor Netlify re-optimizes images.
 - Widths for `srcset`: 320, 480, 640, 828, 1080, 1440, 1920.
 - `next.config` `images.remotePatterns` allows only `res.cloudinary.com/<cloud_name>/**`.
@@ -35,8 +35,8 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 
 | Item | Rough use |
 |---|---|
-| Storing today's stock | About 0.2 credits a month (20 videos ≈ 115 MB, 30 cropped photos ≈ 30 MB) |
-| Processing today's 20 videos once | About 1 credit (200 seconds), one-off |
+| Storing today's stock | About 0.15 credits a month (18 videos ≈ 105 MB, 30 photos ≈ 20 MB) |
+| Processing today's 18 videos once | About 1 credit (180 seconds), one-off |
 | Everything else | Delivery |
 
 **Estimate (ours, not Cloudinary's):** about 2 MB per product view, so about 10,000 product views a month. Check **Dashboard → Usage** weekly once live, alongside Netlify. If usage passes 15 credits, lower the video bitrate or switch to tap-to-play before thinking about paid plans. Upgrading is the owner's decision.
