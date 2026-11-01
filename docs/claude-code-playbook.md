@@ -137,7 +137,7 @@ I'm looking at Netlify's Account usage insights: <paste the numbers>. Using docs
 
 ## 6. Better product photos (biggest visual upgrade)
 
-New photos that show your own shop's style, with several angles per suit, are the biggest visual upgrade available. They also clear the Lajwanti frames and let a suit have more than one photo.
+New photos that show your own shop's style, with several angles per suit, are the biggest visual upgrade available. They also replace the small Lajwanti photos and let a suit have more than one photo.
 
 - Daylight near a window, plain light background, phone at 1x zoom (not wide-angle).
 - The same set for every suit: full front, back, dupatta spread open, fabric close-up (shows the Khaddar or Dhanak texture), embroidery detail.
