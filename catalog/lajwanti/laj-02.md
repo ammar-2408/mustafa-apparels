@@ -27,7 +27,7 @@ videos:
     alt: "Short video of the purple printed dhanak 2-piece suit, muted"
 also_in_this_design: []
 check:
-  - "Printed flowers and a gold edge from the poster still show at the left and corners. The flowers reach the model's feet, so a crop may not remove them all. Retouch, replace or accept"
+  - "A small printed flower from the poster remains in the bottom-left corner. A crop would cut the sleeve or feet, so retouch it or accept"
   - "The print in the video looks different from the photo. Confirm they show the same suit"
   - "Lower resolution than most photos. Check sharpness once imported"
   - "Outfit style is not in the collection file. Left empty; choose one in admin"

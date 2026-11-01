@@ -25,7 +25,7 @@ photos:
 videos: []
 also_in_this_design: []
 check:
-  - "Gold poster frame and printed flowers still show around the photo. The flowers sit close to the model, so a crop may not remove them all. Retouch, replace or accept"
+  - "A small printed flower from the poster remains in the bottom-left corner. A crop would cut the sleeve or feet, so retouch it or accept"
   - "Video left out: laj3vid.mp4 ends on a card showing another brand's logo and name. It can return if re-exported without that card"
   - "Lower resolution than most photos. Check sharpness once imported"
   - "Outfit style is not in the collection file. Left empty; choose one in admin"

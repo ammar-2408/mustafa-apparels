@@ -26,7 +26,7 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 
 | Design ID | Photo | Video | Main colour |
 |---|---|---|---|
-| LAJ-01 | Laj1.jpeg | — | Blue |
+| LAJ-01 | Laj1.png | — | Blue |
 | LAJ-02 | Laj2.jpeg | Laj2vid.mp4 | Purple |
 | LAJ-03 | Laj3.jpeg | — | Wine |
 | LAJ-04 | Laj4.jpeg | Laj4vid.mp4 | Brick red |

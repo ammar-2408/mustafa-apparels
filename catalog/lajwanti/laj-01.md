@@ -18,15 +18,15 @@ outfit_style:
 main_color: Blue
 color_family: Blue
 accent_colors: [Pale grey]
-motifs: [pale flower sprigs, woven-look streaks, piped neckline]
+motifs: [pale flower sprigs, buttoned neckline, patterned cuffs]
 photos:
-  - file: Lajwanti/Laj1.jpeg
-    alt: "Model wearing a blue 2-piece Dhanak suit with pale grey flower sprigs on a streaked background, a piped neckline and matching printed trousers"
+  - file: Lajwanti/Laj1.png
+    alt: "Model wearing a blue 2-piece Dhanak suit with pale grey flower sprigs, a buttoned neckline, patterned cuffs and matching printed trousers"
 videos: []
 also_in_this_design: []
 check:
-  - "Printed flowers and a gold edge from the poster still show at the left and corners. The flowers reach the model's feet, so a crop may not remove them all. Retouch, replace or accept"
+  - "Very small photo (384 x 691 pixels), and it looks like a frame from the video. It will look blurry on a product page. Replace it with a larger one"
   - "Video left out: Laj1vid.mp4 ends on a card showing another brand's logo and name. It can return if re-exported without that card"
   - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
-A blue unstitched 2-piece Dhanak suit. Pale flower sprigs run all over the shirt and matching trousers, with a slim piped neckline.
+A blue unstitched 2-piece Dhanak suit. Pale flower sprigs run all over the shirt and matching trousers, with a buttoned neckline and patterned cuffs.
