@@ -51,7 +51,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 2.12 `core.products.setStatus`: publish rules (price, colour, main image, alt text, no banned names) + tests
 - [ ] 2.13 `core.search` (full-text + trigram + design code, filters, suggestions) + ranking tests, incl. "dhanak" finds Lajwanti
 - [ ] 2.14 `core.settings`, `core.audit` + tests
-- [ ] 2.15 Seed script (idempotent): Dhanak, Khaddar, Lajwanti, real WhatsApp, phone and email, first admin; `--e2e` demo data + test
+- [ ] 2.15 `pnpm db:seed` (idempotent, `docs/database.md` §6): the 3 collections (Dhanak, Khaddar, Lajwanti), site settings with the owner's real WhatsApp, phone and email, first admin from `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD`; `--e2e` demo data. Tests: running twice changes nothing, missing admin env vars fail clearly. The admin needs Better Auth's tables and hashing from step 3.2, so if this step runs first, build the admin part and its tests at 3.2 and don't tick this step until then
 
 ## Phase 3 — Authentication & security base
 - [ ] 3.1 Resend: verify `updates.mustafaapparels.com`, add DNS at Spaceship incl. DMARC (`docs/deployment.md` §5); real test email passes SPF and DKIM
@@ -147,7 +147,7 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 
 ## Phase 9 — Hardening
 - [ ] 9.1 Full E2E regression on all devices; fix flakiness
-- [ ] 9.2 Lighthouse CI budgets enforced in CI: add `.lighthouserc.json` (perf ≥ 0.9, a11y ≥ 0.95, SEO = 1) and a `lighthouse` job on PRs to `main` (removed in step 0.9 until this exists)
+- [ ] 9.2 Lighthouse CI budgets enforced in CI: add `.lighthouserc.json` (perf ≥ 0.9, a11y ≥ 0.95, SEO = 1) and a `lighthouse` job on PRs to `main` (removed in step 0.9 until this exists). If `playwright install --with-deps` fails on CI, pin the runner to `ubuntu-24.04`
 - [ ] 9.3 Error tracking + structured logging
 - [ ] 9.4 Caching check: home, collection and product pages served from cache; measure a real page's Netlify bandwidth and requests, and update the estimate in `docs/deployment.md` §3
 - [ ] 9.5 Dependency audit, Renovate/Dependabot config, secret scanning on
