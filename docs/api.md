@@ -52,7 +52,7 @@ Messages are safe to show users; never include stack traces, SQL or whether an e
 ### Page data (Server Components, via `core`)
 `getHomeData()`, `listProducts({ category?, page, sort, filters })`, `getProductBySlug(slug)`, `resolveSlugRedirect(entity, slug)`, `searchProducts({ q, page, filters })`, `getSiteSettings()`, `getWishlist(userId)`, `listMyInquiries(userId)`.
 
-`filters`: `{ pieces?, colors?, work?, priceMin?, priceMax? }`. There is no size filter.
+`filters`: `{ pieces?, dressCategories?, fabric?, design?, season?, outfitStyle?, colorFamily?, priceMin?, priceMax? }`. Allowed values: `docs/catalog.md` §4. There is no size filter. `listProducts` also returns which values exist among published suits, so the UI hides empty options.
 
 ## 3. Admin (`apps/admin`)
 
@@ -115,10 +115,17 @@ export const productInput = z.object({
   categoryId: z.string().min(1),
   pieces: z.enum(['two_piece', 'three_piece']),
   pieceDetails: z.array(pieceDetail).max(3),
-  fabric: z.string().trim().min(1).max(60),
-  colors: z.array(z.string().trim().min(1).max(30)).max(12),
-  work: z.array(z.enum(['embroidered', 'printed', 'plain_dyed'])).max(3),
+  collectionType: z.string().trim().max(40).nullable(),
+  dressCategories: z.array(z.enum(DRESS_CATEGORIES)).max(6),
+  fabric: z.enum(FABRICS),
+  design: z.array(z.enum(DESIGNS)).max(9),
   season: z.enum(['winter', 'summer', 'all_season']).nullable(),
+  outfitStyle: z.enum(OUTFIT_STYLES).nullable(),
+  mainColor: noBannedTerms(z.string().trim().max(30)).nullable(),
+  colorFamily: z.enum(COLOR_FAMILIES).nullable(),
+  accentColors: z.array(z.string().trim().min(1).max(30)).max(12),
+  motifs: z.array(noBannedTerms(z.string().trim().min(1).max(60))).max(12),
+  relatedDesignCodes: z.array(z.string().regex(/^[A-Za-z0-9-]{1,20}$/)).max(10),
   careInstructions: noBannedTerms(z.string().max(1000)).default(''),
   availability: z.enum(['in_stock', 'low_stock', 'out_of_stock']),
   status: z.enum(['draft', 'published', 'archived']),
@@ -130,10 +137,15 @@ export const productInput = z.object({
   .refine(p => p.status !== 'published' || p.price !== null, {
     path: ['price'], message: 'Add a price before publishing',
   })
+  .refine(p => p.status !== 'published' || (p.mainColor !== null && p.colorFamily !== null), {
+    path: ['colorFamily'], message: 'Add a colour before publishing',
+  })
   .refine(p => p.compareAtPrice == null || (p.price !== null && p.compareAtPrice > p.price), {
     path: ['compareAtPrice'], message: 'Must be higher than price',
   });
 ```
+
+`DRESS_CATEGORIES`, `FABRICS`, `DESIGNS`, `OUTFIT_STYLES` and `COLOR_FAMILIES` live in `packages/validators/taxonomy.ts` and match `docs/catalog.md` §4.
 
 ### 5.2 Media
 
