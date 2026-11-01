@@ -35,14 +35,17 @@ Every responsive test asserts: no horizontal overflow (`document.documentElement
 ### Catalogue & product
 - Published products appear; drafts/archived/deleted never appear (list, search, sitemap, direct URL → 404).
 - Pagination: page 1, middle, last; `?page=0`, `?page=-1`, `?page=abc`, `?page=999` → 404 or normalized; `?page=1` → 301 clean URL.
-- Filters (collection, pieces, colour, work, price) combine correctly; empty results show a helpful state. No size filter or size text anywhere.
+- Filters (collection, volume style, dress category, fabric, design, season, outfit style, colour, price) combine correctly; empty results show a helpful state. No size filter or size text anywhere.
+- Filter values with no published suit are hidden; a filter with one value or none is hidden.
+- "Also in this design" links to the other colours, and hides when a linked suit isn't published.
 - Sort by price asc/desc, newest.
 - Slug change → old URL 301 → new URL; chain of two renames still resolves in one hop.
 - Price formatting (PKR, no decimals), compare-at price shown only when higher.
 - 2-piece product shows shirt and trouser; 3-piece also shows dupatta; piece details render each fabric and finish.
 
 ### Publish rules
-- Draft with no price saves. Publishing with no price, no main image or missing alt text fails with a clear message, in Zod and in `core`.
+- Draft with no price saves. Publishing with no price, no colour, no main image or missing alt text fails with a clear message, in Zod and in `core`.
+- A value outside the taxonomy in `docs/catalog.md` §4 is rejected for each of fabric, design, dress category, outfit style and colour family.
 - Database rejects a published row with a null price.
 - A video can't be the main item.
 
@@ -58,15 +61,18 @@ Every responsive test asserts: no horizontal overflow (`document.documentElement
 - Video pauses off-screen and when the tab is hidden; pause control works by keyboard.
 - Landscape video shows whole, with no layout shift. Main image stays the LCP element.
 
-### Stock import
-- Manifest validation: every file in `Business data/Stock` is mapped or explicitly excluded, and `KDR-1-VID.png` is excluded.
-- File name patterns: `dhnk1-VID`, `KDR-1-VID`, `Laj1vid` and `laj3vid` resolve to the right product regardless of case.
-- Dry run writes nothing. Real run creates drafts with no price. A second run creates no duplicates.
+### Catalog and stock import
+- Every real file in `catalog/` passes the Zod schema in CI: required fields, taxonomy values, no banned names, unique design IDs, names and slugs, `price` empty, `status: draft`.
+- `also_in_this_design` points to IDs that exist, and the link goes both ways.
+- Left-out media (`dhnk1-VID`, `Laj1vid`, `laj3vid`) appears in no suit file.
+- A listed file missing from `Business data/` fails the dry run. A file in the folder that no suit lists and `_collection.md` doesn't explain is reported.
+- Dry run writes nothing. Real run creates drafts with no price. A second run creates no duplicates and doesn't overwrite a price or a change made in admin.
 - Script never opens a `Business data/` file for writing.
-- Uploaded image is the crop, not the full poster.
+- With `crop` set, the uploaded image is the crop, not the full file.
+- `Business data/` isn't in git, so CI import tests use small fixture files; the catalog schema test uses the real `catalog/`.
 
 ### Search
-- Exact match, partial word, typo ("khadar", "dhanuk"), design code ("D-18", "k-26a"), colour, fabric, collection name.
+- Exact match, partial word, typo ("khadar", "dhanuk"), design code ("DHN-01", "kdr-13"), colour, fabric, design, motif, collection name.
 - "dhanak" returns Lajwanti suits as well as Dhanak ones.
 - Empty query, 1-char query, 61-char query, SQL-ish input (`' OR 1=1 --`), emoji, HTML tags → safe results/validation error.
 - Suggestions debounce; rate limit → 429 handled gracefully in UI.
@@ -128,7 +134,6 @@ For every URL in the sitemap plus representative noindex pages:
 - Integration tests: each test file gets a fresh schema (PGlite) or transaction rolled back after each test.
 - E2E: CI starts a throwaway Postgres container, runs migrations + `db:seed --e2e`, and discards it after. (Locally you can point E2E at a Neon `test` branch instead.)
 - External services mocked at the network boundary (MSW) in unit/integration; real test keys only in a nightly E2E job.
-- `Business data/` is not in git, so CI import tests use small fixture files that follow the same name patterns.
 
 ## 5. Coverage
 
