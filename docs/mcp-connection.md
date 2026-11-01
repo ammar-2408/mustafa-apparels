@@ -6,17 +6,17 @@ MCP servers give Claude Code extra abilities: a real browser, live library docs,
 
 | Server | Type | Why we use it | Safety notes |
 |---|---|---|---|
-| `playwright` | local (npx) | Open pages in a real browser, click through flows, take screenshots at each breakpoint, study reference sites for the `reference-to-code` skill | Read-only browsing of public sites is fine; never log in to personal accounts through it |
-| `chrome-devtools` | local (npx) | Performance traces, Core Web Vitals, console errors, network waterfall — used when debugging motion/3D performance | Uses a separate Chrome profile |
+| `playwright` | local (npx) | Open pages in a real browser, click through flows, take screenshots at each breakpoint, study reference sites for the `reference-to-code` skill | Read-only browsing of public sites is fine; never log in to personal accounts through it. Screenshots must never be saved inside `Business data/` |
+| `chrome-devtools` | local (npx) | Performance traces, Core Web Vitals, console and CSP errors, network waterfall — used when debugging motion/3D/video performance | Uses a separate Chrome profile |
 | `context7` | remote (http) | Current docs and examples for Next.js, GSAP, Drizzle, Better Auth, R3F, Tailwind — prevents outdated API usage | Public docs only |
-| `neon` | remote (http, OAuth) | Inspect schema, run read queries, create/delete test branches | Approve per action; **never** run writes on the production branch; prefer the `dev` branch |
+| `neon` | remote (http, OAuth) | Inspect schema, run read queries, create/delete test branches | Needs authorizing with `/mcp` before use. Approve per action; **never** run writes on the production branch; prefer the `dev` branch |
 
 Optional (add when needed):
 | Server | Why |
 |---|---|
 | GitHub MCP | Manage issues/PRs from Claude Code (the `gh` CLI already covers most of this) |
-| Netlify or Vercel MCP | Read deploy logs and env status from your host |
-| Cloudinary MCP | Inspect uploaded assets |
+| Netlify MCP | Read deploy logs, env status and usage from the host. Never let it trigger a production deploy: each costs credits |
+| Cloudinary MCP | Inspect uploaded assets and check no full posters were uploaded |
 
 ## `.mcp.json`
 
@@ -56,5 +56,6 @@ Package names and URLs of MCP servers change. If a server fails to start, check 
 
 - Before writing code against a library API: query `context7`.
 - After building UI: `playwright` screenshots at 360, 768, 1280, 1920 and 2560 widths; compare against design intent.
-- Motion/3D slow or janky: `chrome-devtools` performance trace; fix the top issue; re-measure.
+- Motion, 3D or video slow or janky: `chrome-devtools` performance trace; fix the top issue; re-measure.
+- Launch checks: `chrome-devtools` Lighthouse on key pages (`docs/launch-checklist.md` §1).
 - Database questions: `neon` read queries on `dev`; schema changes still go through migrations (`db-change` skill), never ad-hoc.
