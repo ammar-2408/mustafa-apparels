@@ -11,9 +11,9 @@ Everything in AGENTS.md applies. This file adds Claude Code–specific behaviour
 3. Check skills (section below). Install any missing skill from the registry before starting the task it covers.
 4. The user's prompt order and model choices are in `docs/claude-code-playbook.md`. When you finish a step, name the model it recommends for the next one.
 
-`Business data/` holds the owner's original stock photos and videos. Read them (you can view images) but never modify, move or commit them, and never save screenshots or other output inside it. Imports go only through `scripts/import-stock.ts` and the `product-media` skill.
+`Business data/` holds the owner's collection files, photos and videos. Read them (you can view images) but never modify, move or commit them, and never save screenshots or other output inside it. Per-suit details go in `catalog/<collection>/<design-id>.md`, never in `Business data/`. Imports go only through `scripts/import-stock.ts`. Follow `docs/catalog.md` for all stock work, including adding a collection.
 
-The stock posters show other brands' logos, and the owner has no permission to use those names: see the hard product rules in AGENTS.md §1.
+Some stock has shown other brands' logos, and the owner has no permission to use those names: see the hard product rules in AGENTS.md §1. Check every photo, and sample every video through to its last seconds. Prices never go in `catalog/`, and anything unsure gets a `check:`.
 
 ## How to work
 
@@ -42,7 +42,7 @@ Skills live in `.claude/skills/` (project) and `~/.claude/skills/` (user). Befor
 | `security-check` | Any server action, route handler, auth, upload, or env change |
 | `db-change` | Any schema or migration change |
 
-Two more are planned for this shop, created by Prompt 3 in `docs/claude-code-playbook.md`: `product-media` (photos, videos, stock import) and `brand-mustafa` (logo, tokens, tone). Until they exist, follow `docs/project-implementation.md` Phase 5 and `docs/design.md` §1.
+Two more are planned for this shop, created by Prompt 3 in `docs/claude-code-playbook.md`: `product-media` (photos, videos, catalog, stock import) and `brand-mustafa` (logo, tokens, tone). Until they exist, follow `docs/catalog.md` and `docs/design.md` §1.
 
 ### External skills registry (install automatically when needed)
 
