@@ -82,7 +82,7 @@ mustafa-apparels-logos/  official logo pack
 Business data/  owner's collection files, photos, videos: git-ignored, read-only, used only to build catalog/ and by the import script
 ```
 
-Public routes: `/`, `/shop`, `/collections/[slug]`, `/products/[slug]`, `/search`, `/about`, `/contact`, `/how-to-order`, `/faq`, `/privacy`, `/terms`.
+Public routes: `/`, `/shop`, `/shop/page/[n]`, `/collections/[slug]`, `/collections/[slug]/page/[n]`, `/products/[slug]`, `/search`, `/about`, `/contact`, `/how-to-order`, `/faq`, `/privacy`, `/terms`.
 
 ## 5. The golden workflow (non-negotiable)
 
@@ -147,11 +147,11 @@ Canonical mistakes that must **never** happen (each one has an automated test in
 | Two canonical tags | Exactly one per page |
 | Relative canonical URL | Always absolute, built from `SITE_URL` |
 | Canonical added by JavaScript | Server-rendered in the initial HTML |
-| Page 2 canonical → page 1 | Paginated pages canonicalize to themselves (`?page=2`) |
+| Page 2 canonical → page 1 | Paginated pages use path URLs and canonicalize to themselves (`/collections/dhanak/page/2`); `/page/1` redirects to the clean URL |
 | Canonical → redirect or 404 | Canonical target must return HTTP 200 |
 
 Also: dynamic `sitemap.xml`, `robots.txt`, `llms.txt`; `noindex` on search results, account, auth and all admin pages;
-old product slugs 301 to the new slug; unknown slugs and out-of-range pages return a real 404.
+old product slugs permanently redirect (301 or 308) to the new slug; unknown slugs and out-of-range pages return a real 404. Cached pages never read `searchParams`: page numbers come from the path, and filters and sort run in the browser (`docs/architecture.md` ADR-017, ADR-018).
 `robots.txt` disallows `/api` only, because a crawler blocked from a `noindex` page never reads the tag. Before launch and on previews, `SITE_INDEXABLE=false` disallows everything.
 Full details: `docs/design.md` §8, `docs/seo-geo.md` and `.claude/skills/seo-guard/SKILL.md`.
 
