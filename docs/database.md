@@ -73,8 +73,8 @@ Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `no
 | accent_colors | text[] default `{}` | Print or embroidery colours |
 | motifs | text[] default `{}` | e.g. `paisley`. Search and description only |
 | related_design_codes | text[] default `{}` | The same design in other colours. Each is still its own product |
-| care_instructions | text | |
-| availability | enum `in_stock` \| `low_stock` \| `out_of_stock` | |
+| care_instructions | text | Hidden on the product page when empty |
+| availability | enum `in_stock` \| `low_stock` \| `out_of_stock`, default `in_stock` | The import uses the default; the owner changes it in admin |
 | status | enum `draft` \| `published` \| `archived` | only `published` is public |
 | featured | bool default false | home page |
 | attributes | jsonb default `{}` | future fields without migrations |
@@ -111,7 +111,7 @@ Rules:
 - Partial unique index: one `is_primary = true` per product.
 - Check: `is_primary = false OR kind = 'image'`. The main item is always a photo, because it feeds LCP, the share image and JSON-LD.
 - Check: `kind = 'image' OR (duration_seconds IS NOT NULL AND duration_seconds <= 60)`.
-- Publishing (`core.products.setStatus`) requires a main image and refuses any product whose media or text fails §9.
+- Publishing (`core.products.setStatus`) requires a price, a colour, a main image and alt text on all media, and refuses any product whose media or text fails §9.
 
 **`slug_redirect`**: id, entity (`product` \| `category`), old_slug (unique per entity), target_id, created_at. Written automatically when a slug changes; used for 301s so canonicals never point at dead URLs.
 
@@ -222,6 +222,6 @@ Rules: never edit an applied migration; never use `drizzle-kit push` on producti
 
 ## 9. Banned brand names
 
-`packages/validators/src/banned-terms.ts` holds the names of brands the shop has no permission to use: Elaf, Baroque, Maria B (also `Maria.B`, `MariaB`) and HS Fashion. The check ignores case and punctuation.
+`packages/validators/banned-terms.ts` holds the names of brands the shop has no permission to use: Elaf, Baroque, Maria B (also `Maria.B`, `MariaB`) and HS Fashion. The check ignores case and punctuation.
 
 It runs on every customer-facing text field: product name, slug, description, care instructions, motifs, media alt text, SEO fields and collection text, and on every file in `catalog/` during import. Add a name here when new stock arrives showing another brand. The owner can remove a name only with written permission from that brand.
