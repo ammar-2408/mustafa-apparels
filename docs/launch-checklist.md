@@ -101,6 +101,7 @@ Click every one, on phone and desktop, in the preview.
 - [ ] `SHOP_INBOX_EMAIL` and admin Settings both have `ammarofficial321@gmail.com`
 - [ ] Netlify: credit balance has room for launch-week fixes, usage email confirmed (`docs/deployment.md` §3)
 - [ ] Skip rule tested: a docs-only merge built nothing
+- [ ] Netlify team login protection off for production on the web site, and visitors get a 200 when logged out (`docs/deployment.md` §2)
 - [ ] Rollback steps read and understood (`docs/deployment.md` §7)
 - [ ] DNS: no leftover parking records; Search Console TXT record still there
 - [ ] Email: SPF, DKIM and DMARC all PASS on a real message to Gmail

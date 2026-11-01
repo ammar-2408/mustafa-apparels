@@ -44,7 +44,7 @@ If a name is taken, pick another and update §1, `docs/architecture.md` §7 and 
 [build]
   command = "pnpm turbo build --filter=web"
   publish = "apps/web/.next"
-  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/web packages package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .nvmrc"
+  ignore  = "[ \"$CACHED_COMMIT_REF\" != \"$COMMIT_REF\" ] && git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- :/apps/web :/packages :/package.json :/pnpm-lock.yaml :/pnpm-workspace.yaml :/turbo.json :/.nvmrc"
 ```
 
 Step 2.1 changes the web command to `pnpm db:migrate && pnpm turbo build --filter=web`. That script doesn't exist before then.
@@ -54,10 +54,14 @@ Step 2.1 changes the web command to `pnpm db:migrate && pnpm turbo build --filte
 [build]
   command = "pnpm turbo build --filter=admin"
   publish = "apps/admin/.next"
-  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/admin packages package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .nvmrc"
+  ignore  = "[ \"$CACHED_COMMIT_REF\" != \"$COMMIT_REF\" ] && git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- :/apps/admin :/packages :/package.json :/pnpm-lock.yaml :/pnpm-workspace.yaml :/turbo.json :/.nvmrc"
 ```
 
 **The skip rule:** `ignore` exits 0 ("nothing changed", skip) or 1 (build). Changes to `docs/`, `.claude/`, `e2e/` or the other app skip that site. A change in `packages/` rebuilds both, costing 30 credits at production. So keep shared-package changes together, and don't touch them casually.
+
+**Why the rule has two extra parts:** on 2026-11-02 the plain `git diff` form cancelled the first `develop` builds, even for a commit that changed both apps. Netlify doesn't document `$CACHED_COMMIT_REF` on a branch's first build, and the likely cause is that it equals `$COMMIT_REF`. So equal refs now always build, and `:/` anchors each path to the repo root wherever the command runs. This means a manual redeploy of the same commit builds rather than cancels, and on production that costs credits.
+
+**Team login is on:** both sites have Netlify's team login protection on all contexts (`sso_login_context: all`), so anyone not logged in to the team gets a 401 from Netlify, and so does `curl`. It keeps previews private, but it must be off for production before launch (`docs/launch-checklist.md`).
 
 **Not confirmed:** Netlify charges for "successful" production deploys, and its docs don't say how skipped builds are treated. They shouldn't cost anything, since nothing deploys, but **check the credit balance after the first skip** and update this doc.
 
