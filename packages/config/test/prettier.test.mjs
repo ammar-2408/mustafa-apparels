@@ -1,8 +1,7 @@
-// Runs real Prettier with the shared config. Uses node:test until Vitest arrives in step 0.5.
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
 
 import { format } from 'prettier';
+import { test } from 'vitest';
 
 import config from '../prettier.mjs';
 

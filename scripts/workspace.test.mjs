@@ -1,12 +1,11 @@
-// Monorepo setup checks. Uses node:test until Vitest arrives in step 0.5.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import { ESLint } from 'eslint';
 import { getFileInfo } from 'prettier';
+import { test } from 'vitest';
 
 const read = (file) => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 const readJson = (file) => JSON.parse(read(file));
@@ -41,6 +40,26 @@ for (const task of ['dev', 'build', 'lint', 'typecheck', 'test']) {
     assert.ok(readJson('turbo.json').tasks[task], `turbo.json has no "${task}" task`);
   });
 }
+
+test('root test script runs the workspace project through Vitest', () => {
+  const { scripts } = readJson('package.json');
+  assert.doesNotMatch(scripts.test, /node --test/);
+  assert.match(scripts.test, /^vitest run --project workspace && /);
+});
+
+for (const pkg of ['apps/web', 'apps/admin', 'packages/config']) {
+  test(`${pkg} tests run through Vitest with coverage`, () => {
+    assert.equal(readJson(`${pkg}/package.json`).scripts.test, 'vitest run --coverage');
+  });
+}
+
+test('root Vitest config covers the apps, the packages and the workspace tests', async () => {
+  const { default: config } = await import('../vitest.config.mjs');
+  const { projects } = config.test;
+  assert.ok(projects.includes('apps/*'));
+  assert.ok(projects.includes('packages/*'));
+  assert.ok(projects.some((project) => project.test?.name === 'workspace'));
+});
 
 test('dev is uncached and persistent', () => {
   const { dev } = readJson('turbo.json').tasks;

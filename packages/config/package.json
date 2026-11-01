@@ -8,25 +8,32 @@
     "./eslint/next": "./eslint/next.mjs",
     "./prettier": "./prettier.mjs",
     "./tsconfig/base.json": "./tsconfig/base.json",
-    "./tsconfig/nextjs.json": "./tsconfig/nextjs.json"
+    "./tsconfig/nextjs.json": "./tsconfig/nextjs.json",
+    "./vitest/app": "./vitest/app.mjs",
+    "./vitest/library": "./vitest/library.mjs",
+    "./vitest/tooling": "./vitest/tooling.mjs"
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "node --test test/*.test.mjs"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@eslint/js": "^9.39.5",
+    "@vitejs/plugin-react": "^6.1.2",
     "eslint-config-next": "16.4.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "globals": "^17.13.0",
+    "jsdom": "^30.1.3",
     "next": "16.4.3",
     "typescript-eslint": "^8.72.1"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.5",
     "prettier": "^3.9.10",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
   }
 }

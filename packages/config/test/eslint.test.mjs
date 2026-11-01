@@ -1,8 +1,7 @@
-// Runs real ESLint with the shared configs. Uses node:test until Vitest arrives in step 0.5.
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
 
 import { ESLint } from 'eslint';
+import { test } from 'vitest';
 
 import base from '../eslint/base.mjs';
 import next from '../eslint/next.mjs';

@@ -62,7 +62,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm db:migrate
-      - run: pnpm test -- --coverage
+      - run: pnpm test # every package's test script already measures coverage
       - run: pnpm build
       - run: pnpm audit --prod --audit-level high
       - uses: actions/upload-artifact@v4

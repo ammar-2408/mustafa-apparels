@@ -149,6 +149,8 @@ For every URL in the sitemap plus representative noindex pages:
 - `packages/core`, `packages/validators`, `packages/auth`: ≥ 90% lines, ≥ 85% branches.
 - Apps (server actions, route handlers): ≥ 80% lines.
 - Coverage is a floor, not the goal — every bug fix starts with a test reproducing it.
+- The floors live in the presets in `packages/config/vitest/`: `app` for apps, `library` for `core`, `validators` and `auth`, and `tooling` (no floor) for tests that spawn other tools. Each package's `vitest.config.mjs` re-exports one. Files no test loads still count against the floor.
+- `pnpm test` runs the workspace tests, then each package through Turbo with coverage. `pnpm exec vitest run` from the root runs everything without coverage or caching.
 
 ## 6. CI pipeline (`.github/workflows/ci.yml`)
 

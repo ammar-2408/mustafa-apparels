@@ -1,9 +1,8 @@
-// Runs the real compiler against the shared tsconfigs. Uses node:test until Vitest arrives in step 0.5.
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import ts from 'typescript';
+import { test } from 'vitest';
 
 const path = (file) => fileURLToPath(new URL(file, import.meta.url));
 

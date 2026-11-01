@@ -7,13 +7,15 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "node --test scripts/workspace.test.mjs && turbo run test"
+    "test": "vitest run --project workspace && turbo run test"
   },
   "devDependencies": {
     "@mustafa/config": "workspace:*",
+    "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.5",
     "prettier": "^3.9.10",
     "turbo": "^2.11.10",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
   }
 }
