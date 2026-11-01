@@ -42,8 +42,7 @@ Skills live in `.claude/skills/` (project) and `~/.claude/skills/` (user). Befor
 | `security-check` | Any server action, route handler, auth, upload, or env change |
 | `db-change` | Any schema or migration change |
 | `product-media` | Photos, videos, `catalog/`, filter values, stock import, adding a collection |
-
-One more is planned for this shop, created by Prompt 3 in `docs/claude-code-playbook.md`: `brand-mustafa` (logo, tokens, tone). Until it exists, follow `docs/design.md` §1.
+| `brand-mustafa` | Logo, colour tokens, Montserrat, spacing, tone for suit descriptions and other customer-facing text |
 
 ### External skills registry (install automatically when needed)
 
