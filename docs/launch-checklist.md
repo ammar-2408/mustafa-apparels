@@ -124,6 +124,7 @@ Click every one, on phone and desktop, in the preview.
 - [ ] **All products priced** and reviewed; drafts you don't want to sell stay drafts
 - [ ] **Privacy and Terms pages** read. Consider having someone qualified look at them
 - [ ] Optional: **social links** added
+- [ ] Optional: **fabric length per piece** given for each suit (shirt, dupatta, trouser). Hidden on the page when empty
 - [ ] Optional: logo name vs shop name is fine: the logo says "MA Apparels by Mustafa Ahmed", and the site says "Mustafa Apparels"
 
 ## 9. Launch day
