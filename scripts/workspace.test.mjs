@@ -59,6 +59,7 @@ test('.gitignore keeps dependencies, Turbo cache, secrets and owner files out of
   for (const entry of [
     'node_modules/',
     '.turbo/',
+    'next-env.d.ts',
     '.env',
     '.env.*',
     '!.env.example',
@@ -105,6 +106,36 @@ test('root ESLint looks for Next.js routes inside the apps', async () => {
   const { settings } = await eslint.calculateConfigForFile('apps/web/app/page.tsx');
   assert.deepEqual(settings.next.rootDir, ['apps/*/']);
 });
+
+const lintLinkToHome = (cwd) =>
+  spawnSync(
+    process.execPath,
+    [
+      fromRoot('node_modules/eslint/bin/eslint.js'),
+      '--format',
+      'json',
+      '--stdin',
+      '--stdin-filename',
+      fromRoot('apps/web/app/link-probe.tsx'),
+    ],
+    {
+      cwd: fromRoot(cwd),
+      encoding: 'utf8',
+      input: 'export const A = () => <a href="/">Home</a>;\n',
+    },
+  );
+
+for (const [where, cwd] of [
+  ['the repo root', ''],
+  ['apps/web', 'apps/web'],
+]) {
+  test(`ESLint from ${where} flags a plain link to a page, with no missing-pages warning`, () => {
+    const { stdout, stderr } = lintLinkToHome(cwd);
+    assert.doesNotMatch(stdout + stderr, /Pages directory cannot be found/);
+    const [{ messages }] = JSON.parse(stdout);
+    assert.ok(messages.some((m) => m.ruleId === '@next/next/no-html-link-for-pages'));
+  });
+}
 
 test('root ESLint ignores owner files and build output', async () => {
   for (const file of ['Business data/x.ts', 'apps/web/.next/x.js', '.claude/skills/x/y.mjs']) {
