@@ -26,7 +26,6 @@ photos:
 videos: []
 also_in_this_design: []
 check:
-  - "Another company's logo is visible: a car badge on the car behind the model. Retouch, replace or accept"
   - "Lower resolution than most photos. Check sharpness once imported"
   - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
