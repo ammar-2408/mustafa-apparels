@@ -90,7 +90,7 @@ A black unstitched 3-piece Dhanak suit for winter. The embroidered shirt has a b
 - **`name`:** `<Main colour> [detail] <Embroidered or Printed> <Fabric> <N>-Piece Suit`, unique. Add a detail word only when the name would otherwise clash. **`slug`:** lowercase, hyphens, ends with the design ID.
 - **From the photo:** `main_color` (descriptive name), `color_family` (filter value), `accent_colors`, `motifs`.
 - **`design`:** the collection's allowed values, plus the print type you can see. A Lajwanti suit is `[All-Over Print, Floral Print]`.
-- **`piece_details`:** from the collection file. `finish` is free text, so "Printed" is fine here. Leave out any key the file doesn't give.
+- **`piece_details`:** from the collection file. `finish` is free text, so "Printed" is fine here. Leave out any key the file doesn't give. `length_m` is fabric length in metres: only the owner can supply it, so never estimate it.
 - **`outfit_style`:** leave empty unless the collection file gives one. The customer's tailor decides the cut.
 - **`photos`:** `file`, `alt`, optional `crop`. **`videos`:** `file` and `alt` only, or `[]`. **`file`:** relative to `Business data/Stock/`. **`crop`:** pixels, applied in memory before upload.
 - **`alt`, photos and videos:** written by looking at that file, 3–200 characters. Describe the suit: colour, pieces, print, work. Never the person's identity, and never a brand.
