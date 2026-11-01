@@ -57,7 +57,7 @@ A change is "small" when: it has one purpose, its diff is reviewable in a few mi
 - **Each merge to `main` costs 15 Netlify credits per site that changed, and at most 4 merges a month fit the budget.** So merging is a deliberate release, not a routine step. Finished phases can wait on `develop` and go out together. See `docs/deployment.md` §3.
 - Commits: [Conventional Commits](https://www.conventionalcommits.org) — `type(scope): summary` in present tense, ≤ 72 chars.
   - types: `feat`, `fix`, `test`, `refactor`, `perf`, `style`, `docs`, `chore`, `ci`, `build`
-  - scopes: `web`, `admin`, `db`, `core`, `auth`, `ui`, `seo`, `motion`, `3d`, `e2e`, `deps`
+  - scopes: `web`, `admin`, `db`, `core`, `auth`, `ui`, `validators`, `config`, `catalog`, `seo`, `motion`, `3d`, `e2e`, `deps`
 - One logical change per commit. Tests go in the same commit as the code they test.
 - Push after every commit. PR `develop` → `main` when a phase or batch of phases is done and the credit budget allows; CI must be green; squash not required (history is already small commits).
 
