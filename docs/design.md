@@ -336,3 +336,26 @@ References collected so far (add more as you find them):
 - **Budgets:** 3D JS ≤ 250 kB, Home only. Other pages don't load Three.js.
 
 **Don't take:** its orange, font, emblem, wording, photos, videos, page structure, or the look of any one section so closely that it could be mistaken for theirs.
+
+### 9.2 References
+
+Each reference has one job. The four Pakistani stores are studied for **shopping patterns only**, not look. **Their names stay in this section:** never put them on the website, in metadata, alt text or `catalog/`, and never copy their code, images, text or logos. Studied on 2026-11-01 at 360 and 1280 px: homepage, one collection and one product page each.
+
+| Site | What we take | What we don't |
+|---|---|---|
+| davaris.gr | Look and motion (§9.1) | Its page structure |
+| pk.khaadi.com | Per-piece details with fabric, finish and length. On phones: image first, name and price below, and a sticky action button. Clear path from fabric to 2 or 3 pieces | The same name on every suit, "Size: 3PC", a bottom app tab bar, a chat bubble over the grid |
+| sobiawaseem.com | A short menu: new arrivals, seasons, collections. The design code as part of the suit's identity. A sticky action on phones | A WhatsApp link far down the page with no message, a banner pushing the grid down, sold-out badges filling the first screen |
+| nishatlinen.com | One-tap shortcuts above the grid (print, embroidered, 2 piece, 3 piece) with a product count. Two photos beside a sticky details column on desktop. Each piece listed with its fabric and length | Long names cut off on phones, the action button below the fold with no sticky bar, a help bubble covering the title, instalment offers |
+| sokamal.com | "What's included" and the fabric shown near the top of the product page | A sale popup over every page, abbreviations in piece details, a badge on every menu item |
+
+**Patterns we adopt.** All four sell through a cart, and none puts WhatsApp in the buying area, so ordering here is deliberately different:
+
+- **Menu:** short and collections-first: New arrivals, Dhanak, Khaddar, Lajwanti, All suits, How to Order, with Search close by, in the side panel from §9.1. No sale links or menu badges.
+- **Grid:** 2 columns on phones and 4 on desktop, with the number of suits shown. No layout-switching buttons.
+- **Quick filters:** a row of one-tap chips above the grid, such as `3 Piece`, `Embroidered` or `Floral Print`. They use only the values in `docs/catalog.md` §4 that a published suit has, and set the same browser filter (ADR-018). The row hides when it wouldn't narrow anything. Full filters open in a bottom sheet on phones and a sidebar on desktop.
+- **Suit card:** photo, a small line such as `Embroidered · Dhanak`, the suit's own name, `3 Piece`, price and a wishlist heart. Tapping opens the product page: no add-to-cart.
+- **Product page order:** photo; name, price and design code; WhatsApp, Call and Email; "What's included"; description; care, when there is any; "Also in this design". On desktop, the gallery sits beside a sticky details column.
+- **"What's included":** one plain row per piece, with no abbreviations: `Shirt: Dhanak, embroidered, 3 m`. Length shows only when the owner has given it. State once that the suit is unstitched.
+- **Easy to order:** on phones, a sticky WhatsApp bar stands where other shops put "Add to cart", and opens with the suit's name, design code and link filled in. A short line beneath it covers delivery, payment and reply time, from admin settings and never invented. An out-of-stock suit keeps its page, with the button asking about the suit instead.
+- **Keep the path clear:** no popups, floating chat bubbles, countdowns or quantity pickers.
