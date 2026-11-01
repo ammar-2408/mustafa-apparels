@@ -6,7 +6,7 @@
 
 | Level | Tool | Lives in | What it covers | Speed |
 |---|---|---|---|---|
-| Unit | Vitest | `packages/*/src/**/*.test.ts` | Pure logic: validators, banned terms, price formatting, slug/redirect rules, search query building, guards, HMAC, media URL builders | ms |
+| Unit | Vitest | `packages/*/**/*.test.ts` | Pure logic: validators, banned terms, price formatting, slug/redirect rules, search query building, guards, HMAC, media URL builders | ms |
 | Integration | Vitest + PGlite (or Neon test branch) | `packages/core/**/*.int.test.ts` | `core` functions against a real Postgres schema: create/update product, publish rules, search ranking, wishlist, inquiry, cascade rules | < 1 s each |
 | Component | Vitest + React Testing Library + jsdom | `apps/*/components/**/*.test.tsx` | Forms (validation messages), filters, gallery, video tile, inquiry buttons build correct `tel:`/`wa.me`/`mailto:` links | fast |
 | E2E | Playwright | `e2e/web`, `e2e/admin` | Real user journeys in real browsers | seconds |
@@ -28,18 +28,19 @@
 | `desktop` | 1920×1080 | Firefox |
 | `large` | 2560×1440 | Chromium |
 
-Every responsive test asserts: no horizontal overflow (`document.documentElement.scrollWidth <= innerWidth`), header/menu usable, product grid column count as designed, primary CTA visible without overlap.
+Every responsive test asserts: no horizontal overflow (`document.documentElement.scrollWidth <= innerWidth`), header/menu usable, product grid column count as designed, primary CTA visible without overlap. One extra check loads each page template at 320px wide and asserts no horizontal overflow, because the design promises support down to 320px.
 
 ## 3. Required test cases by feature
 
 ### Catalogue & product
 - Published products appear; drafts/archived/deleted never appear (list, search, sitemap, direct URL → 404).
-- Pagination: page 1, middle, last; `?page=0`, `?page=-1`, `?page=abc`, `?page=999` → 404 or normalized; `?page=1` → 301 clean URL.
+- Pagination on `/shop` and collections: `/page/2`, middle and last pages return 200 with a self-canonical; `/page/1` → 301 to the clean URL; `/page/0`, `/page/-1`, `/page/abc`, `/page/01`, `/page/999` → real 404. A page that comes into range after new suits are published stops returning 404 once revalidated.
 - Filters (collection, volume style, dress category, fabric, design, season, outfit style, colour, price) combine correctly; empty results show a helpful state. No size filter or size text anywhere.
+- Filters and sort run in the browser: `/api/suits` loads only on first use and returns published suits only; the URL updates; a shared `?fabric=` link restores the filter after load; Back works; a filter click sends no page request to the server. With JavaScript off, the unfiltered grid and its `/page/<n>` links work.
 - Filter values with no published suit are hidden; a filter with one value or none is hidden.
 - "Also in this design" links to the other colours, and hides when a linked suit isn't published.
 - Sort by price asc/desc, newest.
-- Slug change → old URL 301 → new URL; chain of two renames still resolves in one hop.
+- Slug change → old URL permanently redirects (301 or 308) to the new URL; chain of two renames still resolves in one hop; an old collection slug also redirects on its `/page/<n>` URLs.
 - Price formatting (PKR, no decimals), compare-at price shown only when higher.
 - 2-piece product shows shirt and trouser; 3-piece also shows dupatta; piece details render each fabric and finish.
 
@@ -79,7 +80,7 @@ Every responsive test asserts: no horizontal overflow (`document.documentElement
 
 ### Inquiry
 - Valid submit (guest and logged in) → DB row + email sent (Resend mocked at the network boundary with MSW in tests).
-- Each invalid field shows its message; honeypot filled → silently rejected; too fast → rejected; 6th submit in 10 min → 429.
+- Each invalid field shows its message; honeypot filled → silently rejected; submitted under 2 s after the form mounts in the browser → rejected, while a page cached for hours still submits normally; 6th submit in 10 min → 429.
 - WhatsApp link goes to `wa.me/923482799707` and contains the encoded suit name, design code and absolute product URL; `tel:+923069558717` and `mailto:` correct.
 - Email provider down → inquiry still saved, admin sees it, user gets success.
 
@@ -106,7 +107,7 @@ For every URL in the sitemap plus representative noindex pages:
 - Status 200; exactly one canonical; absolute; equals the page's own URL; present in raw server HTML inside `<head>` (fetched without JS, normal and Googlebot UAs).
 - Canonical target returns 200 with no redirect.
 - No two indexable pages share a canonical; page 2 canonical ≠ page 1.
-- Title unique and ≤ 60 chars; description 70–160 chars; one `<h1>`.
+- Title unique and ≤ 60 chars, with the shop-name suffix dropped when it would pass 60; description 120–160 chars, trimmed at a word boundary; one `<h1>`.
 - OG: `og:title`, `og:description`, `og:image` (absolute, 200, 1200×630), `og:url` = canonical; Twitter card present.
 - JSON-LD parses. Product has price, currency, availability, image and `seller`, and has **no `brand`**. Product with a video has `VideoObject`. Home and Contact have `OnlineStore` with **no address or opening hours**.
 - `sitemap.xml` valid XML, only 200 + indexable URLs, absolute; `llms.txt` returns 200 text/plain and links resolve.
@@ -125,8 +126,11 @@ For every URL in the sitemap plus representative noindex pages:
 - CLS < 0.1 on pages with animations (Lighthouse + `PerformanceObserver` assertion).
 
 ### Caching (protects Netlify credits)
-- Home, collection and product pages return cache headers showing they're served from cache on the second request.
+- Home, shop, collection, `/page/<n>` and product pages return cache headers showing they're served from cache on the second request.
+- Adding `?fabric=` or `?sort=` to a cached page doesn't make it render per request.
 - `proxy.ts` matcher doesn't include any cached page.
+- Real status codes: an unknown slug and an out-of-range page return 404, not 200, on the built app.
+- Session-only UI (header account state, wishlist hearts) loads client-side, and the cached HTML holds no user data.
 
 ## 4. Test data
 
