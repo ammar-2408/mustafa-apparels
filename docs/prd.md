@@ -132,7 +132,7 @@ Sitemap · llms.txt · Open Graph · robots.txt · JSON-LD. The canonical items 
 | Decision | Owner | Blocks | Default if undecided |
 |---|---|---|---|
 | Payment methods, courier charges and timing, return policy | Owner | Launch (How to Order, FAQ) | — |
-| Every `check:` in `catalog/`: Lajwanti photo frames, KDR-08 car badge, KDR-02 and KDR-03 trousers, outfit styles and others | Owner | Publishing that suit | Stays a draft |
+| Every `check:` in `catalog/`: Lajwanti photo frames, KDR-08 car badge, outfit styles and others | Owner | Publishing that suit | Stays a draft |
 | 3 videos with other brands' end cards: re-export without them, or leave them out | Owner | Nothing; they're left out | Left out |
 | Rights to the stock videos | Owner | Launch sign-off | — |
 | The name "Lajwanti": old posters and videos say "Lajwanti by" another brand, so the collection name may belong to it | Owner | Launch sign-off | Keep the collection name as the owner asked; confirm with the supplier |
