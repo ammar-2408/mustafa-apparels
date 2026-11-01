@@ -83,11 +83,11 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 The flow: collection file + photos in `Business data/` → per-suit files in `catalog/` → import to drafts → the owner sets prices in admin. `Business data/` stays out of git, and only this script reads it. It never writes there. Full rules: `docs/catalog.md`.
 
 - [x] 5.1 Review all media and create `catalog/`: 30 suit files and 3 `_collection.md` files
-- [ ] 5.2 Owner: answer the `check:` items that affect import: Lajwanti photo frames, KDR-08 car badge, outfit styles, the 3 left-out videos (`TODO-OWNER`). Update the catalog files
+- [ ] 5.2 Owner: answer the `check:` items that affect import: Lajwanti photo size and corner flowers, outfit styles, the 3 left-out videos (`TODO-OWNER`). Update the catalog files
 - [ ] 5.3 Catalog Zod schema + test over the real `catalog/` files: taxonomy, banned names, unique IDs, names and slugs, empty price, two-way colour links
 - [ ] 5.4 `scripts/import-stock.ts --dry-run`: reads `catalog/`, checks each listed file exists, reports files no suit lists. Tests with fixture files
 - [ ] 5.5 Real run: crop in memory (`sharp`) where `crop` is set, upload to `products/imported/<design-id>/`, create **draft** products with no price; `import_key` prevents duplicates, and a re-run keeps prices and admin edits + re-run test. Add `pnpm import:stock`
-- [ ] 5.6 Check real imports in the admin and a local storefront at 3:4: sharpness (especially KDR-7, KDR-8, Laj2–5), framing, no logos left; adjust crops and re-run. Output a review table
+- [ ] 5.6 Check real imports in the admin and a local storefront at 3:4: sharpness (especially KDR-7, KDR-8, Laj1–5), framing, no logos left; adjust crops and re-run. Output a review table
 - [ ] 5.7 Owner: clear remaining `check:` items, set prices, choose what to publish (`TODO-OWNER`)
 
 ## Phase 6 — Storefront
