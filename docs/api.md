@@ -115,8 +115,9 @@ X-Signature: hex(hmac_sha256(REVALIDATE_SECRET, timestamp + "." + body))
 // packages/validators/product.ts
 const pieceDetail = z.object({
   piece: z.enum(['shirt', 'dupatta', 'trouser']),
-  fabric: z.string().trim().min(1).max(40),
+  fabric: z.string().trim().min(1).max(40).optional(),
   finish: z.string().trim().max(40).optional(),
+  length_m: z.number().positive().max(10).optional(),
 }).strict();
 
 export const productInput = z.object({
