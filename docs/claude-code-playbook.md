@@ -103,7 +103,7 @@ If the budget doesn't allow a merge, keep building on `develop`. Its previews ar
 
 **Copy an idea from a website** (Opus 5.5 · high)
 ```
-/reference-to-code https://outfit.hellohello.is — I like the <product hover / page transition / hero>. Rebuild the idea as an original Mustafa Apparels component. Don't copy their code or images.
+/reference-to-code https://davaris.gr — I like the <menu / page transition / hero>. Rebuild the idea as an original Mustafa Apparels component. Don't copy their code or images.
 ```
 You can attach a screenshot or screen recording instead of a URL.
 
