@@ -6,14 +6,14 @@
 
 | Level | Tool | Lives in | What it covers | Speed |
 |---|---|---|---|---|
-| Unit | Vitest | `packages/*/src/**/*.test.ts` | Pure logic: validators, price formatting, slug/redirect rules, search query building, guards, HMAC | ms |
-| Integration | Vitest + PGlite (or Neon test branch) | `packages/core/**/*.int.test.ts` | `core` functions against a real Postgres schema: create/update product, search ranking, wishlist, inquiry, cascade rules | < 1 s each |
-| Component | Vitest + React Testing Library + jsdom | `apps/*/components/**/*.test.tsx` | Forms (validation messages), filters, gallery, inquiry buttons build correct `tel:`/`wa.me`/`mailto:` links | fast |
+| Unit | Vitest | `packages/*/src/**/*.test.ts` | Pure logic: validators, banned terms, price formatting, slug/redirect rules, search query building, guards, HMAC, media URL builders | ms |
+| Integration | Vitest + PGlite (or Neon test branch) | `packages/core/**/*.int.test.ts` | `core` functions against a real Postgres schema: create/update product, publish rules, search ranking, wishlist, inquiry, cascade rules | < 1 s each |
+| Component | Vitest + React Testing Library + jsdom | `apps/*/components/**/*.test.tsx` | Forms (validation messages), filters, gallery, video tile, inquiry buttons build correct `tel:`/`wa.me`/`mailto:` links | fast |
 | E2E | Playwright | `e2e/web`, `e2e/admin` | Real user journeys in real browsers | seconds |
 | Responsive | Playwright projects | `e2e/responsive` | Layout at 5+ viewports, no horizontal scroll, menu/filters usable | seconds |
 | SEO | Playwright (raw HTML fetch + DOM) | `e2e/seo` | Canonical rules, meta, OG, JSON-LD, sitemap, robots, llms.txt, status codes | seconds |
 | Accessibility | `@axe-core/playwright` | `e2e/a11y` | Every page template, zero serious/critical violations | seconds |
-| Security | Playwright + Vitest | `e2e/security` | Headers, authz, rate limits, upload signing, revalidate HMAC | seconds |
+| Security | Playwright + Vitest | `e2e/security` | Headers, CSP tiers, authz, rate limits, upload signing, revalidate HMAC | seconds |
 | Performance | Lighthouse CI | `.lighthouserc.json` | Budgets on home, collection, product (mobile) | minutes (CI) |
 | Visual (optional) | Playwright screenshots | `e2e/visual` | Key templates at 3 widths; review diffs on motion/theme changes | seconds |
 
@@ -35,20 +35,46 @@ Every responsive test asserts: no horizontal overflow (`document.documentElement
 ### Catalogue & product
 - Published products appear; drafts/archived/deleted never appear (list, search, sitemap, direct URL → 404).
 - Pagination: page 1, middle, last; `?page=0`, `?page=-1`, `?page=abc`, `?page=999` → 404 or normalized; `?page=1` → 301 clean URL.
-- Filters combine correctly; empty results show a helpful state.
+- Filters (collection, pieces, colour, work, price) combine correctly; empty results show a helpful state. No size filter or size text anywhere.
 - Sort by price asc/desc, newest.
 - Slug change → old URL 301 → new URL; chain of two renames still resolves in one hop.
 - Price formatting (PKR, no decimals), compare-at price shown only when higher.
+- 2-piece product shows shirt and trouser; 3-piece also shows dupatta; piece details render each fabric and finish.
+
+### Publish rules
+- Draft with no price saves. Publishing with no price, no main image or missing alt text fails with a clear message, in Zod and in `core`.
+- Database rejects a published row with a null price.
+- A video can't be the main item.
+
+### Banned brand names
+- Each banned name, in any case and with or without punctuation (`Maria.B`, `maria b`, `MARIAB`), is rejected in every customer-facing field: name, slug, description, care instructions, alt text, SEO fields, collection text.
+- E2E: no banned name appears in the HTML or JSON-LD of any page in the sitemap.
+
+### Photos and video
+- Admin upload: valid photo; valid video; wrong type; photo over 10 MB; video over 50 MB; video over 60 s; unsigned upload; asset outside our folder. Rejected assets get deleted.
+- Product page: video has `muted`, `playsInline`, `preload="none"`, no source until in view, poster visible first.
+- Video URL has `ac_none`. Video never appears in grids.
+- Reduced motion and Save-Data: poster only, tap to play works.
+- Video pauses off-screen and when the tab is hidden; pause control works by keyboard.
+- Landscape video shows whole, with no layout shift. Main image stays the LCP element.
+
+### Stock import
+- Manifest validation: every file in `Business data/Stock` is mapped or explicitly excluded, and `KDR-1-VID.png` is excluded.
+- File name patterns: `dhnk1-VID`, `KDR-1-VID`, `Laj1vid` and `laj3vid` resolve to the right product regardless of case.
+- Dry run writes nothing. Real run creates drafts with no price. A second run creates no duplicates.
+- Script never opens a `Business data/` file for writing.
+- Uploaded image is the crop, not the full poster.
 
 ### Search
-- Exact match, partial word, typo ("chifon"), Roman-Urdu word, colour, fabric, category name.
+- Exact match, partial word, typo ("khadar", "dhanuk"), design code ("D-18", "k-26a"), colour, fabric, collection name.
+- "dhanak" returns Lajwanti suits as well as Dhanak ones.
 - Empty query, 1-char query, 61-char query, SQL-ish input (`' OR 1=1 --`), emoji, HTML tags → safe results/validation error.
 - Suggestions debounce; rate limit → 429 handled gracefully in UI.
 
 ### Inquiry
 - Valid submit (guest and logged in) → DB row + email sent (Resend mocked at the network boundary with MSW in tests).
 - Each invalid field shows its message; honeypot filled → silently rejected; too fast → rejected; 6th submit in 10 min → 429.
-- WhatsApp link contains encoded dress name + absolute product URL; `tel:` and `mailto:` correct.
+- WhatsApp link goes to `wa.me/923482799707` and contains the encoded suit name, design code and absolute product URL; `tel:+923069558717` and `mailto:` correct.
 - Email provider down → inquiry still saved, admin sees it, user gets success.
 
 ### Auth (web)
@@ -63,9 +89,10 @@ Every responsive test asserts: no horizontal overflow (`document.documentElement
 ### Admin
 - Logged out → redirect to login for every route; customer account can't log in to admin.
 - 2FA required on first login; wrong code rejected.
-- Create/edit/publish/archive/duplicate product; image upload (valid, wrong type, too big, not signed); reorder images; required alt text.
-- Category CRUD and slug redirect; inquiry status changes; settings validation per key.
+- Create/edit/publish/archive/duplicate product; reorder media; required alt text.
+- Collection CRUD and slug redirect; inquiry status changes; settings validation per key.
 - Every mutation writes an audit log row and triggers revalidation (storefront shows the change).
+- Publishing sends the URL to IndexNow (mocked); IndexNow failure doesn't fail the save; nothing is sent when `SITE_INDEXABLE=false`.
 - Every admin server action called with a customer session → FORBIDDEN (loop over all actions).
 
 ### SEO (`e2e/seo`)
@@ -75,9 +102,15 @@ For every URL in the sitemap plus representative noindex pages:
 - No two indexable pages share a canonical; page 2 canonical ≠ page 1.
 - Title unique and ≤ 60 chars; description 70–160 chars; one `<h1>`.
 - OG: `og:title`, `og:description`, `og:image` (absolute, 200, 1200×630), `og:url` = canonical; Twitter card present.
-- JSON-LD parses; Product has price, currency, availability, image.
-- `sitemap.xml` valid XML, only 200 + indexable URLs, absolute; `robots.txt` contains sitemap line and disallows; `llms.txt` returns 200 text/plain and links resolve.
-- Search/account/auth pages: `noindex`; admin: `X-Robots-Tag: noindex`.
+- JSON-LD parses. Product has price, currency, availability, image and `seller`, and has **no `brand`**. Product with a video has `VideoObject`. Home and Contact have `OnlineStore` with **no address or opening hours**.
+- `sitemap.xml` valid XML, only 200 + indexable URLs, absolute; `llms.txt` returns 200 text/plain and links resolve.
+- `robots.txt` has the sitemap line and disallows `/api`, and does **not** disallow `/search`, `/account` or auth pages. With `SITE_INDEXABLE=false` it has `Disallow: /`.
+- Search/account/auth pages: `noindex` readable by a crawler; admin: `X-Robots-Tag: noindex`.
+
+### Analytics (`e2e/web/analytics.spec.ts`)
+- Each event in `docs/analytics.md` §3 fires once with the listed parameters (intercept the GA4 request or stub `gtag`).
+- `search` sends query length only. No name, email, phone, message or search text in any event.
+- No GA4 script when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is unset (previews, admin, tests). No CSP violations with GA4 on.
 
 ### Motion & 3D
 - Reduced motion: no transforms animated, Lenis disabled, content visible immediately.
@@ -85,12 +118,17 @@ For every URL in the sitemap plus representative noindex pages:
 - Route change: no leaked ScrollTriggers (count before/after), no WebGL context warnings.
 - CLS < 0.1 on pages with animations (Lighthouse + `PerformanceObserver` assertion).
 
+### Caching (protects Netlify credits)
+- Home, collection and product pages return cache headers showing they're served from cache on the second request.
+- `proxy.ts` matcher doesn't include any cached page.
+
 ## 4. Test data
 
-- Factories in `packages/core/test/factories.ts` (`makeProduct()`, `makeCategory()`, `makeUser({ role })`).
+- Factories in `packages/core/test/factories.ts` (`makeProduct()`, `makeCategory()`, `makeUser({ role })`, `makeMedia({ kind })`).
 - Integration tests: each test file gets a fresh schema (PGlite) or transaction rolled back after each test.
 - E2E: CI starts a throwaway Postgres container, runs migrations + `db:seed --e2e`, and discards it after. (Locally you can point E2E at a Neon `test` branch instead.)
 - External services mocked at the network boundary (MSW) in unit/integration; real test keys only in a nightly E2E job.
+- `Business data/` is not in git, so CI import tests use small fixture files that follow the same name patterns.
 
 ## 5. Coverage
 
@@ -100,15 +138,18 @@ For every URL in the sitemap plus representative noindex pages:
 
 ## 6. CI pipeline (`.github/workflows/ci.yml`)
 
-On every push and PR: install → lint → typecheck → migrate a fresh Postgres container → unit + integration (coverage) → build both apps → `pnpm audit --prod` → Playwright (all projects: E2E, responsive, SEO, a11y, security) against the built apps → Lighthouse CI on PRs to `main`. External services run in `INTEGRATIONS_MODE=mock`. Any failure blocks merge to `main` (branch protection).
+On every push and PR: install → lint → typecheck → migrate a fresh Postgres container → unit + integration (coverage) → build both apps → `pnpm audit --prod` → Playwright (all projects: E2E, responsive, SEO, a11y, security) against the built apps → Lighthouse CI on PRs to `main`. External services run in `INTEGRATIONS_MODE=mock`. Any failure means no merge to `main`.
 
 ## 7. Release QA checklist (before merging `develop` → `main`)
 
 - [ ] CI green on the merge commit
+- [ ] Check the Netlify credit balance: is there room for this merge? (`docs/deployment.md` §3)
 - [ ] `seo-auditor` and `security-auditor` agents report no blockers
-- [ ] Manual pass on a real Android phone and an iPhone (Safari): home, collection, product, inquiry, login
+- [ ] Manual pass on a real Android phone and an iPhone (Safari): home, collection, product with video, inquiry, WhatsApp button, login
 - [ ] Lighthouse mobile: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO = 100
 - [ ] Rich Results Test passes for a product page
 - [ ] Keyboard-only walkthrough of main journey; VoiceOver/TalkBack spot check
 - [ ] Reduced-motion walkthrough
 - [ ] Admin: create → publish → appears on site within a minute → archive → 404
+
+The full first-launch list is in `docs/launch-checklist.md`.
