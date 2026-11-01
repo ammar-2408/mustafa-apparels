@@ -28,7 +28,7 @@ Ideas are free; code, images, fonts, logos and copy are not. We **study** refere
 ## 3. Rebuild
 - Use our components first (`<Reveal>`, `<SplitHeading>`, `<ImageReveal>`, `<HorizontalGallery>`, `<HeroCanvas>`…); extend them rather than writing one-offs.
 - Follow `motion-gsap` and `three-scene` rules (reduced motion, no-JS content, budgets).
-- Our own content: placeholder dress photos from our Cloudinary/seed data, our copy, our tokens. Never hotlink or download the reference's assets.
+- Our own content: placeholder suit photos from our Cloudinary/seed data, our copy, our tokens. Never hotlink or download the reference's assets.
 - Make it responsive across all breakpoints in `docs/design.md` §2 — references are often desktop-only; design the mobile version deliberately.
 
 ## 4. Check
