@@ -61,9 +61,13 @@ Step 2.1 changes the web command to `pnpm db:migrate && pnpm turbo build --filte
 
 **Why the rule has two extra parts:** on 2026-11-02 the plain `git diff` form cancelled the first `develop` builds, even for a commit that changed both apps. Netlify doesn't document `$CACHED_COMMIT_REF` on a branch's first build, and the likely cause is that it equals `$COMMIT_REF`. So equal refs now always build, and `:/` anchors each path to the repo root wherever the command runs. This means a manual redeploy of the same commit builds rather than cancels, and on production that costs credits.
 
-**Team login is on:** both sites have Netlify's team login protection on all contexts (`sso_login_context: all`), so anyone not logged in to the team gets a 401 from Netlify, and so does `curl`. It keeps previews private, but it must be off for production before launch (`docs/launch-checklist.md`).
+**Team login stays on (owner's decision, 2026-11-02):** both sites have Netlify's team login protection on all contexts (`sso_login_context: all`), so anyone not logged in to the team gets a 401 from Netlify, and so does `curl`. It keeps previews private, so check previews in a browser logged in to the team. It must be off for production before launch (`docs/launch-checklist.md`).
 
-**Not confirmed:** Netlify charges for "successful" production deploys, and its docs don't say how skipped builds are treated. They shouldn't cost anything, since nothing deploys, but **check the credit balance after the first skip** and update this doc.
+**Previews checked, 2026-11-02:** logged in to the team, both `develop` URLs returned 200 with `X-Robots-Tag: noindex, nofollow` and no `X-Powered-By`.
+
+**Credit check, 2026-11-02:** 0 of 300 credits used after skipped `develop` builds on both sites, successful `develop` builds on both, and a failed production build on each. This was read from Netlify's usage page on the same day, so a late-posting charge can't be ruled out. Look again at the next weekly check (§3).
+
+**First production builds, 2026-11-02:** the web log shows it failed at `Invalid environment for web` from `check-env.mjs`, because it ran before the variables were set. The admin's log wasn't read; it failed the same way as far as the API shows (exit code 2).
 
 **Migrations** run once per deploy, from the web site only. A preview build migrates the Neon `preview` branch, and production migrates `main`. A `packages/db` change rebuilds both sites, and they may build at once, so migrations must be backward compatible (`db-change` skill).
 
