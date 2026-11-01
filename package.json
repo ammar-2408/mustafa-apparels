@@ -9,14 +9,19 @@
     "typecheck": "tsc -p e2e && turbo run typecheck",
     "test": "vitest run --project workspace && turbo run test",
     "test:e2e": "playwright test",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "prepare": "husky || exit 0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@mustafa/config": "workspace:*",
     "@playwright/test": "1.64.1",
     "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
     "prettier": "^3.9.10",
     "turbo": "^2.11.10",
     "typescript": "~6.0.3",

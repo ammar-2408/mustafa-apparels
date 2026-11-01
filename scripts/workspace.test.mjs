@@ -223,6 +223,62 @@ test('root scripts run E2E and check the e2e folder', () => {
   assert.match(scripts.typecheck, /^tsc -p e2e && /);
 });
 
+const commitlint = (message) =>
+  spawnSync(process.execPath, [fromRoot('node_modules/@commitlint/cli/cli.js')], {
+    cwd: fromRoot(''),
+    encoding: 'utf8',
+    input: message,
+  });
+
+for (const message of [
+  'feat(web): add product image gallery',
+  'docs: note the coverage floor',
+  'chore(config): add a hook\n\nExplains why.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>',
+  `fix(web): ${'a'.repeat(72)}`,
+]) {
+  test(`commitlint accepts "${message.split('\n')[0]}"`, () => {
+    const { status, stdout, stderr } = commitlint(message);
+    assert.equal(status, 0, stdout + stderr);
+  });
+}
+
+for (const [problem, message, rule] of [
+  ['no type', 'add product image gallery', 'type-empty'],
+  ['an unknown type', 'feature(web): add gallery', 'type-enum'],
+  ['an unknown scope', 'feat(shop): add gallery', 'scope-enum'],
+  ['a subject over 72 characters', `fix(web): ${'a'.repeat(73)}`, 'subject-max-length'],
+]) {
+  test(`commitlint rejects a message with ${problem}`, () => {
+    const { status, stdout, stderr } = commitlint(message);
+    assert.notEqual(status, 0);
+    assert.match(stdout + stderr, new RegExp(rule));
+  });
+}
+
+test('installing the workspace installs the git hooks', () => {
+  assert.equal(readJson('package.json').scripts.prepare, 'husky || exit 0');
+});
+
+test('git hooks run lint-staged, typecheck and commitlint', () => {
+  assert.equal(read('.husky/pre-commit').trim(), 'pnpm exec lint-staged && pnpm typecheck');
+  assert.equal(read('.husky/commit-msg').trim(), 'pnpm exec commitlint --edit "$1"');
+});
+
+test('.gitattributes keeps the git hooks on LF', () => {
+  assert.ok(read('.gitattributes').split(/\r?\n/).includes('.husky/* text eol=lf'));
+});
+
+test('lint-staged runs ESLint before Prettier on code, and only Prettier on other text', async () => {
+  const { default: config } = await import('../lint-staged.config.mjs');
+  assert.deepEqual(config, {
+    '*.{js,mjs,cjs,ts,tsx}': [
+      'eslint --fix --no-warn-ignored --max-warnings 0',
+      'prettier --write',
+    ],
+    '*.{json,md,yml,yaml,css}': 'prettier --write --ignore-unknown',
+  });
+});
+
 test('root ESLint ignores owner files and build output', async () => {
   for (const file of ['Business data/x.ts', 'apps/web/.next/x.js', '.claude/skills/x/y.mjs']) {
     assert.equal(await eslint.isPathIgnored(file), true, `${file} should be ignored`);
