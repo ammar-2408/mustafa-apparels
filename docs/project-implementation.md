@@ -35,16 +35,16 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 ## Phase 2 — Data layer
 - [ ] 2.1 `packages/db`: Drizzle + Neon client, drizzle-kit config, first migration enabling `pg_trgm` and creating `immutable_array_to_string`
 - [ ] 2.2 `category` table + migration + integration test
-- [ ] 2.3 `product` table: design code, import key, nullable price, pieces, piece details, fabric, colours, work, season, care; publish-needs-price check; generated `search_vector`; indexes + tests
+- [ ] 2.3 `product` table: design code, import key, nullable price, pieces, piece details, collection type, dress categories, fabric, design, season, outfit style, main colour, colour family, accent colours, motifs, related design codes, care; publish-needs-price check; generated `search_vector`; indexes + tests
 - [ ] 2.4 `product_media` table: `kind`, poster, duration, bytes; one-primary index; primary-must-be-image and video-duration checks + tests
 - [ ] 2.5 `slug_redirect`, `site_setting`, `audit_log` tables + tests
 - [ ] 2.6 `inquiry`, `wishlist_item` tables + tests
 - [ ] 2.7 PGlite test harness + factories (`makeProduct`, `makeMedia`, `makeCategory`, `makeUser`)
 - [ ] 2.8 `packages/validators`: banned brand names helper + exhaustive unit tests (`docs/database.md` §9)
-- [ ] 2.9 `packages/validators`: product, media, category, inquiry, search, settings schemas + exhaustive unit tests
+- [ ] 2.9 `packages/validators`: filter taxonomy (`docs/catalog.md` §4), then product, media, category, inquiry, search, settings schemas + exhaustive unit tests
 - [ ] 2.10 `core.categories` (list, getBySlug, create, update w/ redirect, reorder) + tests
 - [ ] 2.11 `core.products` (list w/ filters+sort+pagination, getBySlug, create, update w/ redirect, duplicate, archive) + tests
-- [ ] 2.12 `core.products.setStatus`: publish rules (price, main image, alt text, no banned names) + tests
+- [ ] 2.12 `core.products.setStatus`: publish rules (price, colour, main image, alt text, no banned names) + tests
 - [ ] 2.13 `core.search` (full-text + trigram + design code, filters, suggestions) + ranking tests, incl. "dhanak" finds Lajwanti
 - [ ] 2.14 `core.settings`, `core.audit` + tests
 - [ ] 2.15 Seed script (idempotent): Dhanak, Khaddar, Lajwanti, real WhatsApp, phone and email, first admin; `--e2e` demo data + test
@@ -70,7 +70,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 4.5 Photo uploader component (drag-drop, progress, reorder, main image, alt required)
 - [ ] 4.6 Video upload in the same component: 50 MB and 60 s checks, eager delivery version, poster preview and change
 - [ ] 4.7 Product list (search, filter by status/collection, "needs price" filter, pagination)
-- [ ] 4.8 Product create form (field config driven): pieces, piece details, design code, fabric, work, season, care + E2E
+- [ ] 4.8 Product create form (field config driven): every field in `docs/database.md`, with taxonomy values as choices + E2E
 - [ ] 4.9 Product edit, publish/unpublish with clear errors, duplicate, archive/restore + E2E
 - [ ] 4.10 Cross-app revalidation (`/api/revalidate` HMAC on web + caller in admin) + tests
 - [ ] 4.11 Inquiries inbox + status changes + reply links
@@ -78,23 +78,24 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 4.13 Site settings page (contact info, service area, delivery, payment, returns, socials, default SEO)
 - [ ] 4.14 Audit log page
 
-## Phase 5 — Stock import (`Business data/` → draft products)
+## Phase 5 — Stock import (`catalog/` → draft products)
 
-`Business data/` stays out of git, and only this script reads it. It never writes there. Follow the `product-media` skill.
+The flow: collection file + photos in `Business data/` → per-suit files in `catalog/` → import to drafts → the owner sets prices in admin. `Business data/` stays out of git, and only this script reads it. It never writes there. Full rules: `docs/catalog.md`.
 
-- [ ] 5.1 Review all media: open all 30 photos and extract frames from all 20 videos (`ffmpeg`, output outside the repo). Record design code, colours, work and crop box per photo, and any logos or watermarks in videos. Show the owner a table, flagging videos that can't be used
-- [ ] 5.2 `scripts/stock-manifest.json` + Zod schema + test: every file mapped or excluded, `KDR-1-VID.png` excluded, each maps to a design code, crop box, name, slug, colours, work, alt text and piece details. Names in your own words; nothing from the poster text
-- [ ] 5.3 `scripts/import-stock.ts --dry-run`: matches all three name patterns ignoring case, validates, reports. Tests with fixture files
-- [ ] 5.4 Real run: crop each photo in memory (`sharp`), upload crop and video to `products/imported/`, create **draft** products with no price, `import_key` prevents duplicates + re-run test. Add `pnpm import:stock`
-- [ ] 5.5 Check real crops in the admin and in a local storefront at 3:4: sharpness (especially KDR-7, KDR-8, Laj2–5), framing, no logos left; adjust crop boxes and re-run. Output a review table
-- [ ] 5.6 Owner: review drafts, set prices, choose what to publish (`TODO-OWNER`)
+- [x] 5.1 Review all media and create `catalog/`: 30 suit files and 3 `_collection.md` files
+- [ ] 5.2 Owner: answer the `check:` items that affect import: Lajwanti photo frames, KDR-08 car badge, KDR-02 and KDR-03 trousers, outfit styles, the 3 left-out videos (`TODO-OWNER`). Update the catalog files
+- [ ] 5.3 Catalog Zod schema + test over the real `catalog/` files: taxonomy, banned names, unique IDs, names and slugs, empty price, two-way colour links
+- [ ] 5.4 `scripts/import-stock.ts --dry-run`: reads `catalog/`, checks each listed file exists, reports files no suit lists. Tests with fixture files
+- [ ] 5.5 Real run: crop in memory (`sharp`) where `crop` is set, upload to `products/imported/<design-id>/`, create **draft** products with no price; `import_key` prevents duplicates, and a re-run keeps prices and admin edits + re-run test. Add `pnpm import:stock`
+- [ ] 5.6 Check real imports in the admin and a local storefront at 3:4: sharpness (especially KDR-7, KDR-8, Laj2–5), framing, no logos left; adjust crops and re-run. Output a review table
+- [ ] 5.7 Owner: clear remaining `check:` items, set prices, choose what to publish (`TODO-OWNER`)
 
 ## Phase 6 — Storefront
 - [ ] 6.1 Root layout: header (`<Logo>`, nav, search, account), footer (primary white logo on ink), skip link, `.js` class
 - [ ] 6.2 Product card (3:4 image, name, pieces, price, wishlist toggle), no video + component tests
-- [ ] 6.3 `/shop` grid with pagination + filters (collection, pieces, colour, work, price) + sort (URL-driven) + E2E
+- [ ] 6.3 `/shop` grid with pagination + filters from the taxonomy, hiding values with no published suit (`docs/catalog.md` §4) + sort (URL-driven) + E2E
 - [ ] 6.4 `/collections/[slug]` + page-number rules (`?page=1` 301, out-of-range 404) + E2E
-- [ ] 6.5 `/products/[slug]` product page: gallery (swipe/zoom), design code, pieces, fabric, care, related + slug 301 + 404
+- [ ] 6.5 `/products/[slug]` product page: gallery (swipe/zoom), design code, pieces, fabric, colour, design, care, "Also in this design", related + slug 301 + 404
 - [ ] 6.6 Product video tile: poster first, loads in view, muted, pause control, reduced motion and Save-Data rules (`docs/design.md` §5.2) + tests
 - [ ] 6.7 Contact buttons (WhatsApp first, Call, Email) on product page + sticky mobile WhatsApp bar
 - [ ] 6.8 Inquiry form + server action + rate limit + email (see feature-development.md example)
@@ -147,7 +148,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 Follow `docs/deployment.md` §8 and `docs/launch-checklist.md`.
 
-- [ ] 10.1 Owner sign-offs (`docs/launch-checklist.md` §8): photo rights, the Lajwanti name, payment, courier, returns, prices
+- [ ] 10.1 Owner sign-offs (`docs/launch-checklist.md` §8): `check:` items, video rights, the Lajwanti name, payment, courier, returns, prices
 - [ ] 10.2 Fill in How to Order, FAQ and Privacy with the owner's real information; add `shippingDetails` and `hasMerchantReturnPolicy` to JSON-LD if the information supports it
 - [ ] 10.3 Production env vars set; production database migrated and seeded; approved products published
 - [ ] 10.4 Launch checklist §1–7 passes on the `develop` preview
