@@ -6,7 +6,7 @@ MCP servers give Claude Code extra abilities: a real browser, live library docs,
 
 | Server | Type | Why we use it | Safety notes |
 |---|---|---|---|
-| `playwright` | local (npx) | Open pages in a real browser, click through flows, take screenshots at each breakpoint, study reference sites for the `reference-to-code` skill | Read-only browsing of public sites is fine; never log in to personal accounts through it. Screenshots must never be saved inside `Business data/` |
+| `playwright` | local (npx) | Open pages in a real browser, click through flows, take screenshots at each breakpoint, study reference sites for the `reference-to-code` skill | Read-only browsing of public sites is fine; never log in to personal accounts through it. Screenshots land in `.playwright-mcp/`, which is git-ignored, and must never be saved inside `Business data/`. Video frames go to the OS temp folder (`product-media` skill) |
 | `chrome-devtools` | local (npx) | Performance traces, Core Web Vitals, console and CSP errors, network waterfall — used when debugging motion/3D/video performance | Uses a separate Chrome profile |
 | `context7` | remote (http) | Current docs and examples for Next.js, GSAP, Drizzle, Better Auth, R3F, Tailwind — prevents outdated API usage | Public docs only |
 | `neon` | remote (http, OAuth) | Inspect schema, run read queries, create/delete test branches | Needs authorizing with `/mcp` before use. Approve per action; **never** run writes on the production branch; prefer the `dev` branch |
