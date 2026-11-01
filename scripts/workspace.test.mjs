@@ -41,7 +41,9 @@ test('.env.example has the real shop details, not the kit placeholders', () => {
 });
 
 const netlifyValue = (app, key) =>
-  read(`apps/${app}/netlify.toml`).match(new RegExp(`^\\s*${key}\\s*=\\s*"(.*)"\\s*$`, 'm'))?.[1];
+  read(`apps/${app}/netlify.toml`)
+    .match(new RegExp(`^\\s*${key}\\s*=\\s*"(.*)"\\s*$`, 'm'))?.[1]
+    .replaceAll('\\"', '"');
 
 for (const [app, otherApp] of [
   ['web', 'admin'],
@@ -61,15 +63,18 @@ for (const [app, otherApp] of [
 
   test(`Netlify skips ${app} unless its own or shared files changed`, () => {
     const [skipCheck, paths] = netlifyValue(app, 'ignore').split(' -- ');
-    assert.equal(skipCheck, 'git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF');
+    assert.equal(
+      skipCheck,
+      '[ "$CACHED_COMMIT_REF" != "$COMMIT_REF" ] && git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF',
+    );
     assert.deepEqual(paths.split(' '), [
-      `apps/${app}`,
-      'packages',
-      'package.json',
-      'pnpm-lock.yaml',
-      'pnpm-workspace.yaml',
-      'turbo.json',
-      '.nvmrc',
+      `:/apps/${app}`,
+      ':/packages',
+      ':/package.json',
+      ':/pnpm-lock.yaml',
+      ':/pnpm-workspace.yaml',
+      ':/turbo.json',
+      ':/.nvmrc',
     ]);
     assert.ok(!paths.includes(`apps/${otherApp}`));
   });

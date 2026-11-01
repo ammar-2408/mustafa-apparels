@@ -2,4 +2,4 @@
 [build]
   command = "pnpm turbo build --filter=admin"
   publish = "apps/admin/.next"
-  ignore  = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/admin packages package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .nvmrc"
+  ignore  = "[ \"$CACHED_COMMIT_REF\" != \"$COMMIT_REF\" ] && git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- :/apps/admin :/packages :/package.json :/pnpm-lock.yaml :/pnpm-workspace.yaml :/turbo.json :/.nvmrc"
