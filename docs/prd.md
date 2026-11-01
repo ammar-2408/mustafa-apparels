@@ -43,11 +43,12 @@ Anything marked `TODO-OWNER` is listed in `docs/launch-checklist.md` §8 and blo
 
 ### Other brands (hard rule)
 
-The owner's stock posters show other brands' logos, and the owner has no written permission to use those names. So:
+The owner has no written permission to use other fashion brands' names. So:
 - **The site never names another fashion brand**, in product text, alt text, SEO fields, JSON-LD, FAQ answers, URLs or file names.
 - A validator rejects those names in customer-facing fields (`docs/database.md` §9).
-- Posters are cropped to the model photo before upload. Poster text is never copied.
-- Cropping removes logos, but the photos may still belong to those brands. **The owner signs off before launch**: permission confirmed, or own photos in place (`docs/launch-checklist.md` §8).
+- Nothing from a poster goes on the site: no logos, no text panels and no end cards. Any photo or video that shows them stays out of the catalog (`docs/catalog.md` §5).
+
+**Photo rights, as stated by the owner on 2026-11-01:** the owner says they or their team shot all 30 stock photos. That statement isn't independently verified. The same shots appeared earlier on posters carrying other brands' names, and three stock videos end on cards with other brands' logos. The owner keeps the originals or shoot records on file (`docs/launch-checklist.md` §8).
 
 ## 3. Users
 
@@ -63,11 +64,11 @@ The owner's stock posters show other brands' logos, and the owner has no written
 | # | Feature | Acceptance criteria |
 |---|---|---|
 | W1 | Home page | 3D/animated hero, featured suits, collections, contact strip. Content visible and usable even if WebGL is unavailable or reduced motion is on. |
-| W2 | Collection pages `/collections/[slug]` | Grid of published suits in a collection, 24 per page, `?page=N` pagination, filters (pieces, colour, work, price range), sort (newest, price ↑↓). Out-of-range page → 404. |
+| W2 | Collection pages `/collections/[slug]` | Grid of published suits in a collection, 24 per page, `?page=N` pagination, filters (volume style, dress category, fabric, design, season, outfit style, colour, price range; `docs/catalog.md` §4), sort (newest, price ↑↓). A filter value shows only when a published suit has it. Out-of-range page → 404. |
 | W3 | All suits `/shop` | Same as W2 across all collections, plus a collection filter. |
-| W4 | Product page `/products/[slug]` | Gallery (zoom, swipe on mobile) with muted video preview where one exists, name, design code, price (PKR), pieces with each piece's fabric and finish, colours, care instructions, availability, related suits, **Inquire** section. Old slug → 301 to new slug. Unknown slug → 404. |
+| W4 | Product page `/products/[slug]` | Gallery (zoom, swipe on mobile) with muted video preview where one exists, name, design code, price (PKR), pieces with each piece's fabric and finish, colour, design, season, care instructions, availability, the same design in other colours, related suits, **Inquire** section. Old slug → 301 to new slug. Unknown slug → 404. |
 | W5 | Inquire about a suit | Buttons: WhatsApp first (`wa.me` with pre-filled message incl. name, design code, link), Call (`tel:`), Email (`mailto:`). Optional form (name, phone, email, message) saved to DB and emailed to the shop. Rate-limited. |
-| W6 | Search `/search?q=` | Searches name, design code, description, collection, colour, fabric, work. Typo-tolerant. Suggestions while typing (debounced). Searching "dhanak" also finds Lajwanti suits, because their fabric is Dhanak. Results page is `noindex, follow`. |
+| W6 | Search `/search?q=` | Searches name, design code, description, collection, colour, fabric, design. Typo-tolerant. Suggestions while typing (debounced). Searching "dhanak" also finds Lajwanti suits, because their fabric is Dhanak. Results page is `noindex, follow`. |
 | W7 | Accounts | Sign up, log in, log out, forgot/reset password, email verification, profile edit, delete account. |
 | W8 | Wishlist | Logged-in users save/remove suits; guests are prompted to log in. |
 | W9 | My inquiries | Logged-in users see inquiries they sent and their status. |
@@ -78,7 +79,7 @@ The owner's stock posters show other brands' logos, and the owner has no written
 | # | Feature | Acceptance criteria |
 |---|---|---|
 | A1 | Admin login | Separate app. Only `role = admin` can sign in. 2FA (TOTP) required. No public sign-up. |
-| A2 | Suits | List with search/filter; create, edit, duplicate, publish/unpublish, archive. Fields: name, slug (auto, editable), design code, description, price, compare-at price, collection, pieces, piece details, fabric, colours, work, season, care instructions, availability, featured, SEO title/description. A draft may have no price; publishing requires a price and a main image. |
+| A2 | Suits | List with search/filter; create, edit, duplicate, publish/unpublish, archive. Fields: name, slug (auto, editable), design code, description, price, compare-at price, collection, collection type, volume style, piece details, dress categories, fabric, design, season, outfit style, main colour, colour family, accent colours, motifs, same design in other colours, care instructions, availability, featured, SEO title/description. A draft may have no price; publishing requires a price and a main image. |
 | A3 | Photos and videos | Drag-and-drop multi-upload, reorder, set main image (must be a photo), alt text required. Photos: JPEG/PNG/WebP, max 10 MB. Videos: MP4/MOV/WebM, max 50 MB and 60 seconds. Video poster picked automatically and changeable. |
 | A4 | Collections | Create, edit, reorder, hide. Slug changes create redirects. Starts with Dhanak, Khaddar, Lajwanti. |
 | A5 | Inquiries | List (new / contacted / closed), view, change status, quick WhatsApp/call/email reply links. |
@@ -88,10 +89,11 @@ The owner's stock posters show other brands' logos, and the owner has no written
 
 *Fields decided later* — the product model has an `attributes` JSON field and the admin form is built from a field config so new fields can be added without a redesign.
 
-### Stock import (owner's existing media)
+### Stock catalog and import
 | # | Feature | Acceptance criteria |
 |---|---|---|
-| I1 | Import script | Imports `Business data/Stock/<Collection>` as **draft** products with no price. Crops posters locally, uploads the result, can be re-run without duplicates, has a dry-run mode, and never writes to `Business data/`. See `docs/project-implementation.md` Phase 5. |
+| I1 | Catalog files | Each suit has a details file at `catalog/<collection>/<design-id>.md`, built from the collection file in `Business data/` plus what the photos show. Price empty; anything unsure marked `check:`. See `docs/catalog.md`. |
+| I2 | Import script | Imports `catalog/` as **draft** products with no price, reading media from `Business data/`. Can be re-run without duplicates, has a dry-run mode, and never writes to `Business data/`. The owner sets prices in admin. See `docs/project-implementation.md` Phase 5. |
 
 ## 5. Non-functional requirements
 
@@ -130,9 +132,10 @@ Sitemap · llms.txt · Open Graph · robots.txt · JSON-LD. The canonical items 
 | Decision | Owner | Blocks | Default if undecided |
 |---|---|---|---|
 | Payment methods, courier charges and timing, return policy | Owner | Launch (How to Order, FAQ) | — |
-| Photo rights: permission or own photos | Owner | Launch sign-off | — |
-| The name "Lajwanti": the posters say "Lajwanti by" another brand, so the collection name may belong to it | Owner | Launch sign-off | Keep the collection name as the owner asked; confirm with the supplier |
-| Whose is the round black and yellow Urdu logo on the Dhanak and Khaddar posters | Owner | Nothing; it is cropped out | — |
+| Every `check:` in `catalog/`: Lajwanti photo frames, KDR-08 car badge, KDR-02 and KDR-03 trousers, outfit styles and others | Owner | Publishing that suit | Stays a draft |
+| 3 videos with other brands' end cards: re-export without them, or leave them out | Owner | Nothing; they're left out | Left out |
+| Rights to the stock videos | Owner | Launch sign-off | — |
+| The name "Lajwanti": old posters and videos say "Lajwanti by" another brand, so the collection name may belong to it | Owner | Launch sign-off | Keep the collection name as the owner asked; confirm with the supplier |
 | Social links | Owner | Nothing; hidden when empty | Hidden |
 | 3D hero concept | Owner | Phase 8 | Flowing-fabric shader with no downloaded model (`docs/design.md` §6) |
 
