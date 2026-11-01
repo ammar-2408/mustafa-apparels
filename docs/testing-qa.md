@@ -123,6 +123,8 @@ For every URL in the sitemap plus representative noindex pages:
 - Reduced motion: no transforms animated, Lenis disabled, content visible immediately.
 - No-JS / no-WebGL: content and poster visible; no console errors.
 - Route change: no leaked ScrollTriggers (count before/after), no WebGL context warnings.
+- Page transition: runs between pages, the cover clears in about 0.5 s, it doesn't trap keyboard focus, and it never shows with reduced motion.
+- Phones: no pinned sections and no backdrop blur. Pages other than Home don't request Three.js.
 - CLS < 0.1 on pages with animations (Lighthouse + `PerformanceObserver` assertion).
 
 ### Caching (protects Netlify credits)
