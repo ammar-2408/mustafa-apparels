@@ -56,7 +56,7 @@ Click every one, on phone and desktop, in the preview.
 - [ ] **Wishlist:** add and remove; guest gets the login prompt
 - [ ] **Account:** edit profile, see inquiries, delete account
 - [ ] **Search:** suggestions, typos, no-results message, "dhanak" also finds Lajwanti
-- [ ] **Filters and sort:** pieces, colour, work, price; URL updates; back button works
+- [ ] **Filters and sort:** every filter in `docs/catalog.md` §4 that shows; empty values hidden; URL updates; back button works
 - [ ] **Contact links:** WhatsApp, Call, Email everywhere they appear
 - [ ] **Admin:** create → upload photo and video → publish → appears on site within a minute → archive → 404
 - [ ] **Admin:** rejected uploads show why: wrong type, photo over 10 MB, video over 50 MB or 60 s
@@ -72,7 +72,7 @@ Click every one, on phone and desktop, in the preview.
 - [ ] First admin's password is strong and unique; seed variables removed from hosting
 - [ ] No secrets in git: GitHub secret scanning on, `git log` checked for `.env`
 - [ ] `Business data/` isn't in git: `git ls-files | grep -i "business data"` prints nothing
-- [ ] Cloudinary: only cropped images uploaded; **no full poster at any public URL**
+- [ ] Cloudinary Media Library: nothing shows another brand's logo, and no left-out file was uploaded
 - [ ] Production `BETTER_AUTH_SECRET` and `REVALIDATE_SECRET` differ from preview's
 - [ ] Neon backup: weekly `pg_dump` workflow ran once; restore tested
 
@@ -109,9 +109,14 @@ Click every one, on phone and desktop, in the preview.
 
 **Only the owner can complete these. Launch is blocked until each is done, unless marked optional.**
 
-- [ ] **Photo and video rights:** written permission confirmed for what's on the site, or own photos in place. Cropping removes logos, but the photos may still belong to the brands that made them. Decide with this in mind:
-  - [ ] Every imported photo and video has been checked: no other brand's logo, name or watermark visible
-- [ ] **The name "Lajwanti":** posters show it as a line by another brand. Confirmed OK to use as a collection name, or renamed
+- [ ] **Every `check:` cleared** in the `catalog/` file of each suit being published. Suits with open items stay drafts
+- [ ] **Lajwanti photos:** poster flowers and frames still show on all 5. Retouched, replaced, or accepted as they are
+- [ ] **KDR-08 photo:** a car badge is visible. Retouched, replaced, or accepted
+- [ ] **KDR-02, KDR-03 trousers:** the file says premium dyed, but the photos look printed. Confirmed
+- [ ] **Left-out videos:** `dhnk1-VID`, `Laj1vid`, `laj3vid` end on cards with other brands' logos. Re-exported without them, or left out for launch
+- [ ] **Video rights:** confirmed for every stock video on the site. The owner's statement below covers photos, and those three videos show another brand's name
+- [ ] **The name "Lajwanti":** old posters and videos show it as a line by another brand. Confirmed OK to use as a collection name, or renamed
+- [ ] **Own-photo records kept:** on 2026-11-01 the owner stated that they or their team shot all 30 stock photos, so this isn't blocked on permission. Keep the original camera files or shoot records somewhere safe, in case anyone questions it. Not independently verified: the same shots appeared earlier on posters with other brands' names
 - [ ] **Payment methods** written (cash on delivery, bank transfer, and so on)
 - [ ] **Courier charges and delivery time** written
 - [ ] **Return and exchange policy** written. Unstitched fabric has its own considerations, such as whether cut fabric can be returned
