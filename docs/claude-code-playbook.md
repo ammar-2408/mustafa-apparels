@@ -45,7 +45,7 @@ You create the service accounts (Neon, Cloudinary, Resend, Upstash, Netlify, Goo
 **Opus 5.5 · high · Auto mode**
 ```
 The scope is final. Review our skills and fill the gaps. Use the skill-creator skill to add these project skills, short and specific to Mustafa Apparels:
-- product-media: my photos and videos: the stock is ad posters with other brands' logos, so cropping them locally before upload is mandatory; the file-name patterns; 3:4 display; uploading to Cloudinary; video posters, limits and muted delivery; alt text written by looking at each photo; never committing raw media; banned brand names; and importing a folder like "Business data/Stock/<Variety>" into draft products with no price. Use docs/design.md §5.2, docs/integrations.md and docs/project-implementation.md Phase 5.
+- product-media: the catalog flow from docs/catalog.md: collection file + photos in "Business data/" → per-suit files in catalog/ → import to drafts → I set prices in admin. Include the checks in §5 (open every photo, sample every video including its last seconds, leave out anything showing another brand), the suit file format, the filter taxonomy, alt text written by looking at each photo, marking anything unsure with "check:", never committing raw media, and how to add a new collection. Use docs/catalog.md, docs/design.md §5.2 and docs/integrations.md.
 - brand-mustafa: logo usage rules, colour tokens, Montserrat, spacing, and the tone for product descriptions (simple English, warm, mentions fabric and season, never another brand's name, never poster text). Use docs/design.md §1.
 Then check every existing project skill (seo-guard, motion-gsap, three-scene, security-check, db-change, write-tests, ship-change, next-step, reference-to-code) against the updated docs and fix anything out of date. Pay special attention to: three-scene has no downloaded model now; ship-change's merge rule must respect Netlify credits; security-check needs the two-tier CSP and media limits. One commit per skill, then push.
 ```
@@ -82,7 +82,7 @@ Small, easy steps (config, copy, simple pages): `/next-step 3` does three steps 
 | 2 Data layer (database, search) | opusplan · medium; **Opus 5.5 · high** for the table/schema steps | Neon account → `DATABASE_URL` in `.env.local` |
 | 3 Auth & security | **Opus 5.5 · high** for every step | Resend + Upstash keys; Spaceship login for email DNS |
 | 4 Admin panel | opusplan · medium | Cloudinary keys |
-| 5 Import my stock | Sonnet 5.5 · medium | Admin and Cloudinary working; ffmpeg installed |
+| 5 Import my stock | Sonnet 5.5 · medium | Admin and Cloudinary working; your answers to the `check:` items in `catalog/` |
 | 6 Storefront pages | opusplan · medium | — |
 | 7 SEO, GEO, analytics | opusplan · medium | — |
 | 8 Motion (GSAP) | **Opus 5.5 · high** | — |
@@ -123,9 +123,9 @@ Change the text "<old>" to "<new>" on <page>. Run the tests that cover it, commi
 ```
 Text in admin (prices, products, contact details) needs no code and no deploy.
 
-**Add new stock later** (Sonnet 5.5 · medium)
+**Add new stock later** (Opus 5.5 · high for looking at the photos, because the details come from them)
 ```
-I added new photos/videos to "Business data/Stock/<Variety>". Use the product-media skill to import only the new files as draft products and show me a table of what was created. Tell me if any file shows a brand name not yet on the banned list.
+I added new photos and videos to "Business data/Stock/<Collection>", with a collection .md file if the folder is new. Follow docs/catalog.md §7 and the product-media skill: open every photo, sample every video including the end, group photos into suits and ask me when unsure, and create catalog/<collection>/<design-id>.md for each new suit with price empty and anything unsure marked "check:". Commit, run the import as drafts, and show me a table per collection: suits found, photos per suit, and anything I must fix or confirm. List anything showing another brand and leave it out.
 ```
 
 **Check hosting usage** (Haiku 5.5 · low)
@@ -137,7 +137,7 @@ I'm looking at Netlify's Account usage insights: <paste the numbers>. Using docs
 
 ## 6. Better product photos (biggest visual upgrade)
 
-Your current photos are supplier posters. Your own photos solve two problems at once: **they look like your brand, and they're yours to use.** Replacing them is on the launch checklist (`docs/launch-checklist.md` §8).
+New photos that show your own shop's style, with several angles per suit, are the biggest visual upgrade available. They also clear the Lajwanti frames and let a suit have more than one photo.
 
 - Daylight near a window, plain light background, phone at 1x zoom (not wide-angle).
 - The same set for every suit: full front, back, dupatta spread open, fabric close-up (shows the Khaddar or Dhanak texture), embroidery detail.
