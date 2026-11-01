@@ -86,7 +86,9 @@ flowchart LR
 │   │   │   ├── (shop)/           # public, indexable, cached pages
 │   │   │   │   ├── page.tsx                  # /
 │   │   │   │   ├── shop/page.tsx             # /shop
+│   │   │   │   ├── shop/page/[n]/page.tsx    # /shop/page/2 and up
 │   │   │   │   ├── collections/[slug]/page.tsx
+│   │   │   │   ├── collections/[slug]/page/[n]/page.tsx
 │   │   │   │   ├── products/[slug]/page.tsx
 │   │   │   │   ├── about|contact|how-to-order|faq|privacy|terms/
 │   │   │   ├── (noindex)/        # search, account, auth pages (dynamic)
@@ -96,6 +98,7 @@ flowchart LR
 │   │   │   ├── api/
 │   │   │   │   ├── auth/[...all]/route.ts    # Better Auth
 │   │   │   │   ├── search/suggest/route.ts
+│   │   │   │   ├── suits/route.ts            # cached list for browser filters
 │   │   │   │   └── revalidate/route.ts       # called by admin
 │   │   │   ├── sitemap.ts  robots.ts  llms.txt/route.ts
 │   │   │   ├── opengraph-image.tsx  not-found.tsx  error.tsx
@@ -128,7 +131,7 @@ flowchart LR
 ```
 
 **Layering rule:** `app/` (routes, UI) → `packages/core` (logic) → `packages/db` (data).
-Pages and server actions stay thin: validate input, check auth, call `core`, return. Business rules live in `core` so they're unit-tested without a browser.
+Pages and server actions stay thin: check auth, validate input, call `core`, return. Business rules live in `core` so they're unit-tested without a browser.
 
 **Naming note:** customers see "collections", and the code keeps the `category` table and `categories` module. Customer URLs use `/collections/`.
 
@@ -136,13 +139,19 @@ Pages and server actions stay thin: validate input, check auth, call `core`, ret
 
 | Page | Strategy | Freshness |
 |---|---|---|
-| Home, collections, product, static pages | Cached (static/ISR, tagged), **no per-request work** | Admin changes trigger on-demand revalidation by tag (`products`, `product:<id>`, `category:<slug>`, `settings`) |
+| Home, shop, collections, `/page/<n>`, product, static pages | Cached (static/ISR, tagged), **no per-request work** | Admin changes trigger on-demand revalidation by tag (`products`, `product:<id>`, `category:<slug>`, `settings`) |
+| `/api/suits` | Cached, tagged `products` | Same |
 | `/search` | Dynamic per request | Live |
 | Account and auth pages | Dynamic, per user, `no-store` | Live |
 | sitemap.xml, llms.txt | Cached, revalidated with `products` tag | On change |
 | Admin | Fully dynamic, `no-store` | Live |
 
 **Why caching is a hard rule:** on Netlify's free plan, compute costs 10 credits per GB-hour, and running out of credits takes both sites offline. A cached page costs almost nothing per visit. Don't make a public page dynamic, and don't apply nonces to it, without a new ADR.
+
+**What keeps a page cached:** cached pages never read `searchParams`, `cookies()`, `headers()` or `connection()`.
+- **Page numbers** come from the path (ADR-017).
+- **Filters and sort** run in the browser (ADR-018). `useSearchParams` sits inside a `<Suspense>` boundary in a client component, so the page stays static.
+- **Per-user UI**, such as the header's account state and wishlist hearts, loads client-side after paint, so cached HTML never holds user data.
 
 **Cross-app revalidation:** the admin is a separate deployment, so it can't clear the storefront cache directly.
 After each successful mutation it calls `POST {WEB_URL}/api/revalidate` with `{ tags: [...] }` and an HMAC signature using `REVALIDATE_SECRET`. The storefront verifies the signature and calls `revalidateTag`. Failures are logged and retried once; the cache also expires after 1 hour as a safety net. **Admin edits never trigger a deploy**, so they cost no deploy credits.
@@ -159,8 +168,8 @@ sequenceDiagram
   participant C as core
   participant P as Postgres
   participant CL as Cloudinary CDN
-  U->>W: GET /products/black-embroidered-dhanak-3-piece-d-18
-  W->>C: getPublishedProductBySlug(slug)
+  U->>W: GET /products/black-embroidered-dhanak-3-piece-dhn-01
+  W->>C: getProductBySlug(slug)
   C->>P: SELECT ... (cached by tag)
   alt slug found
     P-->>W: product + media
@@ -168,7 +177,7 @@ sequenceDiagram
     U->>CL: responsive images (WebP/AVIF)
     U->>CL: muted video, only once its tile is in view
   else old slug in slug_redirect
-    W-->>U: 301 → /products/new-slug
+    W-->>U: permanent redirect → /products/new-slug
   else not found
     W-->>U: 404 page (404 status)
   end
@@ -244,3 +253,5 @@ Add a new row whenever a major decision changes.
 | 014 | Leave `brand` out of Product JSON-LD; Mustafa Apparels is the `seller` | Accepted | The shop may not be the manufacturer, and it has no permission to name other brands |
 | 015 | 3D hero uses a shader, with no downloaded model | Accepted | At 20 credits per GB, a 1.5 MB model costs about 30 credits per 1,000 home visits |
 | 016 | Suit details live in `catalog/` as Markdown files, imported to the database as drafts | Accepted | `Business data/` stays out of git, so reviewable per-suit details need their own home. After import, admin owns prices and later edits |
+| 017 | Path-based pages: `/collections/<slug>/page/<n>` and `/shop/page/<n>`, statically generated, each self-canonical. `/page/1` redirects to the clean URL, and out-of-range pages return 404 | Accepted | Owner's decision. Reading `?page=N` with `searchParams` would make the whole route dynamic, breaking the caching rule. New pages are generated on first request, then cached |
+| 018 | Filters and sort run in the browser over one cached list (`/api/suits`) | Accepted | Owner's decision. Server-side filters would need `searchParams`, so every click would spend compute credits. `?fabric=` URLs still share and work with Back. **Trade-off:** crawlers see only the unfiltered pages, so filtered views can't rank, which the canonical rules already expect |
