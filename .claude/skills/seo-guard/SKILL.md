@@ -12,24 +12,28 @@ Never name another fashion brand in titles, descriptions, slugs, alt text or JSO
 ## Adding or changing a public page — checklist
 1. Export `generateMetadata` (dynamic) or `metadata` (static) built **only** with `buildMetadata()` from `apps/web/lib/seo.ts`:
    ```ts
-   export async function generateMetadata({ params, searchParams }): Promise<Metadata> {
+   export async function generateMetadata({ params }): Promise<Metadata> {
      const { slug } = await params;
-     const { page } = await searchParams;
      const category = await getCategoryBySlug(slug);
      if (!category) notFound();
      return buildMetadata({
        title: category.seoTitle ?? category.name,
        description: category.seoDescription ?? category.description,
        path: `/collections/${slug}`,
-       page: toPageNumber(page),          // adds ?page=N only when N > 1
        image: category.imageUrl,
      });
    }
    ```
+   **Keep the page cached.** Reading `searchParams` in a page or its metadata makes the whole route dynamic, which breaks the caching rule (`docs/architecture.md` §4). How cached pages serve `?page=N` isn't decided yet, so settle it with an ADR at step 6.3 or before. Don't read `searchParams` on a `(shop)` page without one.
 2. Page body: exactly one `<h1>`; breadcrumbs; JSON-LD via `<JsonLd data={...} />` (uses `serializeJsonLd`).
 3. Add the route to `app/sitemap.ts` (if indexable) and to `llms.txt` if it's a key page.
 4. Add the URL to the SEO E2E fixtures list so canonical/meta tests cover it.
 5. Run `pnpm test:seo`.
+
+## Content that ranks and gets quoted (`docs/seo-geo.md` §4, §7)
+- Real text in the server HTML: many AI crawlers don't run JavaScript. Motion and 3D are add-ons.
+- Each suit needs its own description of the fabric, work and pieces, never copied from a poster (`brand-mustafa` skill).
+- Never add fake city pages, invented awards, customer counts or "best in Pakistan" claims, or `Review` or `AggregateRating` data without real reviews. No hidden text.
 
 ## Canonical rules (the owner's checklist — all are mistakes to prevent)
 | ❌ Never | ✅ Always | How |
@@ -45,7 +49,7 @@ Also: filter/sort params (`?pieces=`, `?sort=`) canonicalize to the unfiltered p
 
 ## Helpers (implement once in `apps/web/lib/seo.ts`, unit-test thoroughly)
 - `canonicalUrl(path, { page? })` → absolute URL, normalizes slashes/case, drops tracking/filter params, appends `?page=N` only for N > 1.
-- `buildMetadata({ title, description, path, page?, image?, noindex? })` → title template, description trim (≤ 160), canonical, OG (`og:url` = canonical, absolute 1200×630 image, `og:type`, `og:site_name`, `og:locale=en_PK`), Twitter `summary_large_image`, robots.
+- `buildMetadata({ title, description, path, page?, image?, noindex? })` → title template `%s | Mustafa Apparels` (full title ≤ 60), description trim (≤ 160), canonical, OG (`og:url` = canonical, absolute 1200×630 image, `og:type`, `og:site_name`, `og:locale=en_PK`), Twitter `summary_large_image`, robots.
 - `serializeJsonLd(obj)` → `JSON.stringify(obj).replace(/</g, '\\u003c')`.
 
 ## robots / noindex
@@ -58,10 +62,11 @@ Also: filter/sort params (`?pieces=`, `?sort=`) canonicalize to the unfiltered p
 | Preview deployments, and production before launch (`SITE_INDEXABLE=false`) | `X-Robots-Tag: noindex` header + `Disallow: /` |
 
 ## Files
-- `app/sitemap.ts`: absolute URLs, `lastModified` from `updated_at`, only published/active items; revalidated with tag `products`.
+- `app/sitemap.ts`: absolute URLs, `lastModified` from `updated_at`, only published/active items, including paginated collection pages; revalidated with tag `products`.
 - `app/robots.ts`: live production allows all except `/api`; includes `Sitemap:`; `SITE_INDEXABLE=false` disallows all. **Never disallow `/search`, `/account` or auth pages**: a crawler blocked from a page can't read its `noindex`.
 - `app/llms.txt/route.ts`: `text/plain; charset=utf-8`; `# Mustafa Apparels`, `> summary`, `## Collections`, `## Key pages`, `## Optional`; every link absolute and 200.
-- OG images: `opengraph-image.tsx` per route group (default, collection, product with photo + name + price).
+- OG images: default `/brand/social/og-share-image-1200x630.png`; dynamic `opengraph-image.tsx` for collection and product (photo + name + price). **Cached**, because each generation costs compute credits.
+- IndexNow: the admin pings on publish, unpublish and slug change, and sends nothing unless `SITE_INDEXABLE=true`. A failure never blocks a save.
 
 ## JSON-LD
 - Product: `Product` + `offers` (`price`, `priceCurrency: "PKR"`, `availability` schema.org URL, `url` = canonical, `seller` = Mustafa Apparels) + `BreadcrumbList`. **No `brand`.** Add `VideoObject` when the product has a video.
