@@ -40,8 +40,9 @@ Most customers are on phones. **Use real devices**, not just the browser's emula
 - [ ] Crawl the whole site for broken links (e.g. `npx linkinator https://mustafaapparels.com --recurse`), run against the preview first
 - [ ] No internal link goes to a redirect
 - [ ] Footer, header and social links all work; empty social links are hidden
-- [ ] `/this-does-not-exist`, `/products/not-a-real-suit`, `/collections/nope` and `?page=999` all show the branded page with a real **404** status
-- [ ] Old product slug 301s to the new one
+- [ ] `/this-does-not-exist`, `/products/not-a-real-suit`, `/collections/nope` and `/collections/dhanak/page/999` all show the branded page with a real **404** status
+- [ ] `/collections/dhanak/page/1` 301s to `/collections/dhanak`
+- [ ] Old product slug permanently redirects (301 or 308) to the new one
 - [ ] `www`, `http` and `.netlify.app` all 301 to `https://mustafaapparels.com`
 
 ## 4. Forms and buttons
@@ -79,7 +80,7 @@ Click every one, on phone and desktop, in the preview.
 ## 6. SEO
 
 - [ ] `seo-auditor` agent reports no blockers; `pnpm test:seo` passes against production URLs
-- [ ] `SITE_INDEXABLE=true` and `NEXT_PUBLIC_SITE_URL=https://mustafaapparels.com` on production
+- [ ] `SITE_INDEXABLE=true` and `NEXT_PUBLIC_SITE_URL=https://mustafaapparels.com` on both production sites
 - [ ] `curl -s https://mustafaapparels.com | grep -i canonical`: one tag, absolute, in raw HTML
 - [ ] `robots.txt` live: allows the site, disallows `/api` only, has the sitemap line
 - [ ] `sitemap.xml`: only published, 200, absolute URLs. No drafts
