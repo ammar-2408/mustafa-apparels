@@ -44,7 +44,7 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 ## Resend
 
 - Sends from a verified subdomain: `Mustafa Apparels <no-reply@updates.mustafaapparels.com>`. Resend requires a verified domain, so this is set up at step 3.1, ahead of the login features. DNS steps: `docs/deployment.md` §5.
-- Replies go to the owner's Gmail (`Reply-To`). The inbox stays Gmail for now; Resend only sends.
+- Replies go to `ammarofficial321@gmail.com` (`Reply-To`). The inbox stays Gmail for now; Resend only sends.
 - Free plan: 3,000 emails a month, 100 a day, 3 domains. Plenty for this shop; check Resend's pricing page if volumes grow.
 - Templates in `packages/core/integrations/email-templates/` (React Email or plain HTML + text versions).
 - Emails: `verify-email`, `reset-password`, `new-inquiry` (to shop), `inquiry-received` (to customer, optional).
@@ -58,7 +58,7 @@ telLink(number)            // tel:+92...
 mailtoLink(email, subject, body)
 ```
 Pre-filled WhatsApp text: `Hi! I'm interested in "<suit name>" (<design code>, PKR <price>): <absolute product URL>`.
-Numbers come from `site_setting` (editable in admin), stored in E.164 format: WhatsApp `+923482799707`, phone `+923069558717`. The email address is the owner's Gmail (`TODO-OWNER`). The site shows WhatsApp first, because that's where orders happen.
+Numbers come from `site_setting` (editable in admin), stored in E.164 format: WhatsApp `+923482799707`, phone `+923069558717`. The email address is `ammarofficial321@gmail.com`. The site shows WhatsApp first, because that's where orders happen.
 
 ## IndexNow
 

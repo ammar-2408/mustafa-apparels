@@ -36,7 +36,7 @@ Mustafa Apparels sells women's unstitched suits online, across Pakistan. Custome
 | Hours | No fixed hours. The site says replies come on WhatsApp during the day |
 | WhatsApp | +92 348 2799707 (`+923482799707`) |
 | Phone | +92 306 9558717 (`+923069558717`) |
-| Email | The owner's Gmail: `TODO-OWNER` |
+| Email | ammarofficial321@gmail.com |
 | Social links | `TODO-OWNER`, optional. Empty links stay hidden |
 
 Anything marked `TODO-OWNER` is listed in `docs/launch-checklist.md` §8 and blocks launch unless marked optional.
@@ -129,7 +129,6 @@ Sitemap · llms.txt · Open Graph · robots.txt · JSON-LD. The canonical items 
 
 | Decision | Owner | Blocks | Default if undecided |
 |---|---|---|---|
-| Gmail address | Owner | Launch | — |
 | Payment methods, courier charges and timing, return policy | Owner | Launch (How to Order, FAQ) | — |
 | Photo rights: permission or own photos | Owner | Launch sign-off | — |
 | The name "Lajwanti": the posters say "Lajwanti by" another brand, so the collection name may belong to it | Owner | Launch sign-off | Keep the collection name as the owner asked; confirm with the supplier |

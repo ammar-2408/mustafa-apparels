@@ -97,6 +97,7 @@ Click every one, on phone and desktop, in the preview.
 - [ ] GA4 ID on production only; DebugView shows each event once, no personal data (`docs/analytics.md` §7)
 - [ ] `generate_lead`, `whatsapp_click` and `call_click` marked as key events; Search Console linked
 - [ ] Internal traffic filter on
+- [ ] `SHOP_INBOX_EMAIL` and admin Settings both have `ammarofficial321@gmail.com`
 - [ ] Netlify: credit balance has room for launch-week fixes, usage email confirmed (`docs/deployment.md` §3)
 - [ ] Skip rule tested: a docs-only merge built nothing
 - [ ] Rollback steps read and understood (`docs/deployment.md` §7)
@@ -108,7 +109,6 @@ Click every one, on phone and desktop, in the preview.
 
 **Only the owner can complete these. Launch is blocked until each is done, unless marked optional.**
 
-- [ ] **Gmail address** set in admin Settings and `SHOP_INBOX_EMAIL`
 - [ ] **Photo and video rights:** written permission confirmed for what's on the site, or own photos in place. Cropping removes logos, but the photos may still belong to the brands that made them. Decide with this in mind:
   - [ ] Every imported photo and video has been checked: no other brand's logo, name or watermark visible
 - [ ] **The name "Lajwanti":** posters show it as a line by another brand. Confirmed OK to use as a collection name, or renamed

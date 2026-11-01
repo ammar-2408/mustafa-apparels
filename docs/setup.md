@@ -85,7 +85,7 @@ Every variable, and where it's set:
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | ✓ | ✓ | ✓ | |
 | `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | ✓ | — | ✓ | Secret stays out of the storefront |
 | `RESEND_API_KEY`, `EMAIL_FROM` | ✓ | ✓ | ✓ | |
-| `SHOP_INBOX_EMAIL` | ✓ | ✓ | ✓ | The owner's Gmail (`TODO-OWNER`) |
+| `SHOP_INBOX_EMAIL` | ✓ | ✓ | ✓ | `ammarofficial321@gmail.com` |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | ✓ | ✓ | ✓ | |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | — | Production only | — | Unset means no GA4 |
 | `INDEXNOW_KEY` | — | — | Production only | Not secret |

@@ -47,7 +47,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 2.12 `core.products.setStatus`: publish rules (price, main image, alt text, no banned names) + tests
 - [ ] 2.13 `core.search` (full-text + trigram + design code, filters, suggestions) + ranking tests, incl. "dhanak" finds Lajwanti
 - [ ] 2.14 `core.settings`, `core.audit` + tests
-- [ ] 2.15 Seed script (idempotent): Dhanak, Khaddar, Lajwanti, real WhatsApp and phone, `TODO-OWNER` email, first admin; `--e2e` demo data + test
+- [ ] 2.15 Seed script (idempotent): Dhanak, Khaddar, Lajwanti, real WhatsApp, phone and email, first admin; `--e2e` demo data + test
 
 ## Phase 3 — Authentication & security base
 - [ ] 3.1 Resend: verify `updates.mustafaapparels.com`, add DNS at Spaceship incl. DMARC (`docs/deployment.md` §5); real test email passes SPF and DKIM
@@ -147,7 +147,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 Follow `docs/deployment.md` §8 and `docs/launch-checklist.md`.
 
-- [ ] 10.1 Owner sign-offs (`docs/launch-checklist.md` §8): Gmail, photo rights, the Lajwanti name, payment, courier, returns, prices
+- [ ] 10.1 Owner sign-offs (`docs/launch-checklist.md` §8): photo rights, the Lajwanti name, payment, courier, returns, prices
 - [ ] 10.2 Fill in How to Order, FAQ and Privacy with the owner's real information; add `shippingDetails` and `hasMerchantReturnPolicy` to JSON-LD if the information supports it
 - [ ] 10.3 Production env vars set; production database migrated and seeded; approved products published
 - [ ] 10.4 Launch checklist §1–7 passes on the `develop` preview

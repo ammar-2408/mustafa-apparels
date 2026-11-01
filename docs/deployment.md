@@ -146,7 +146,7 @@ curl -sI https://admin.mustafaapparels.com | grep -i x-robots   # noindex
 
 ## 5. Email DNS
 
-**Sending and receiving are separate.** Site emails send through Resend. Customer replies arrive in the owner's Gmail, so **no MX record or mailbox is needed on the main domain for now**. Later, `hello@mustafaapparels.com` would need a mailbox or forwarding (Spacemail is Spaceship's paid product), added as MX records on `@`.
+**Sending and receiving are separate.** Site emails send through Resend. Customer replies arrive in the shop's Gmail (`ammarofficial321@gmail.com`), so **no MX record or mailbox is needed on the main domain for now**. Later, `hello@mustafaapparels.com` would need a mailbox or forwarding (Spacemail is Spaceship's paid product), added as MX records on `@`.
 
 Do this at step 3.1, because login emails depend on it.
 
@@ -170,7 +170,7 @@ Tighten to `p=quarantine` once emails have delivered well for a few weeks. See R
 
 **4. Verify** in Resend, then send a real password reset to a Gmail address and check "Show original": SPF, DKIM and DMARC should all say PASS.
 
-`EMAIL_FROM` = `Mustafa Apparels <no-reply@updates.mustafaapparels.com>`, with `Reply-To` set to the owner's Gmail.
+`EMAIL_FROM` = `Mustafa Apparels <no-reply@updates.mustafaapparels.com>`, with `Reply-To` set to `ammarofficial321@gmail.com`.
 
 ## 6. Keep `.netlify.app` out of Google
 

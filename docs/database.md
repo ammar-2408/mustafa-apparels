@@ -189,7 +189,7 @@ Rules: never edit an applied migration; never use `drizzle-kit push` on producti
 ## 6. Seed (`pnpm db:seed`)
 
 - Categories: Dhanak (`dhanak`), Khaddar (`khaddar`), Lajwanti (`lajwanti`). The owner can rename or add more.
-- Site settings: `shop_name` = Mustafa Apparels, `whatsapp` = `+923482799707`, `phone` = `+923069558717`, `service_area` = Pakistan, `email` = `TODO-OWNER` placeholder.
+- Site settings: `shop_name` = Mustafa Apparels, `whatsapp` = `+923482799707`, `phone` = `+923069558717`, `service_area` = Pakistan, `email` = `ammarofficial321@gmail.com`.
 - First admin from `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD` env vars (forced to set up 2FA on first login). Idempotent: running twice changes nothing.
 - `--e2e` flag only: 12 demo suits with placeholder images, for tests. **Real stock comes through the import script** (Phase 5), never the seed.
 
