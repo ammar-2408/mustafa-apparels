@@ -52,13 +52,13 @@ Full setup, including free accounts to create: **`docs/setup.md`**. Going live: 
 | `pnpm test:seo` | SEO suite: canonical, meta, sitemap, robots, llms.txt, Open Graph |
 | `pnpm test:a11y` | Accessibility checks (axe) |
 | `pnpm db:generate` / `db:migrate` / `db:seed` | Database migrations and seed data |
-| `pnpm import:stock` | Import `Business data/` as draft products (`--dry-run` to preview) |
+| `pnpm import:stock` | Import `catalog/` as draft products (`--dry-run` to preview) |
 
 ## Before you merge to `main`
 
 Each merge deploys to production and costs Netlify credits. Running out takes both sites offline until the monthly reset. Read `docs/deployment.md` §3 first. Admin edits (prices, products, contact details) don't need a deploy.
 
-`Business data/` holds the owner's raw photos and videos. It stays out of git, and only the import script reads it.
+`Business data/` holds the owner's collection files, photos and videos, and stays out of git. Each suit's details live in `catalog/`, which the import script turns into draft products. The owner sets prices in admin. See `docs/catalog.md`.
 
 ## Documentation
 
@@ -66,6 +66,7 @@ Each merge deploys to production and costs Netlify credits. Running out takes bo
 |---|---|
 | [`docs/prd.md`](docs/prd.md) | Product requirements: what we build and why |
 | [`docs/architecture.md`](docs/architecture.md) | System architecture, data flow, decisions |
+| [`docs/catalog.md`](docs/catalog.md) | Stock flow, suit files, filter taxonomy, media rules, adding a collection |
 | [`docs/database.md`](docs/database.md) | Schema, indexes, migrations, search |
 | [`docs/api.md`](docs/api.md) | Server actions and API routes |
 | [`docs/design.md`](docs/design.md) | Brand, logo, design system, motion, video, 3D, responsive, SEO tags |
