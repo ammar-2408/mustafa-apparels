@@ -99,8 +99,11 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | Slow first video play | Delivery version wasn't created at upload | Eager transformation on upload |
 | Video blocked in the browser | `media-src` missing | Check CSP tier (`docs/auth-security.md` §3.2) |
 | Landscape video cut off | Tile forces portrait | `object-fit: contain` and the video's own ratio |
-| Another brand's logo visible on a photo | Crop box too wide | Fix `scripts/stock-manifest.json`, delete the upload, re-run the import |
-| Importer creates duplicates | `import_key` missing | Check manifest key; the unique index should block this |
+| Another brand's logo visible on a photo or video | Missed in review, or crop box too wide | Remove it from the suit's `catalog/` file or fix `crop`, delete the upload, re-run the import. List it in `_collection.md` |
+| Importer creates duplicates | `design_id` changed, or `import_key` missing | Never change a `design_id`; the unique index should block this |
+| Import fails validation | A value outside the taxonomy, a banned name, or a missing file | The error names the file and field. Fix `catalog/`; add a new value to `docs/catalog.md` §4 and the validator together |
+| Import overwrote a price | Import must never touch price or admin edits | Bug: write a failing test, then fix |
+| Filter option missing on the site | No published suit has that value | Expected. Check the suit is published and has the value |
 
 ### Analytics
 | Symptom | Cause | Fix |
