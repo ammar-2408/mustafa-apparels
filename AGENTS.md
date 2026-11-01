@@ -7,12 +7,18 @@ Claude Code reads this file through `CLAUDE.md`. Humans: see `README.md`.
 
 ## 1. What we are building
 
-A women's dress shop website (brand name and logo not decided yet; written as `<SHOP_NAME>` in the docs).
+**Mustafa Apparels** (https://mustafaapparels.com): an online catalogue of women's **unstitched** 2-piece and 3-piece suits, serving all of Pakistan. Online only, with no public address. The logo reads "MA Apparels by Mustafa Ahmed".
 
-- **Storefront** (`apps/web`): multi-page, 3D/GSAP-animated, SEO-first catalogue of dresses.
-  Visitors browse, search, save favourites and **send an inquiry**. There is **no cart, no payment and no delivery** in v1.
-- **Admin panel** (`apps/admin`): a separate app where the owner uploads dresses (photos, price, category, details), manages categories, reads inquiries and edits shop contact details.
+- **Storefront** (`apps/web`): multi-page, 3D/GSAP-animated, SEO-first catalogue with photos and short videos. Collections: Dhanak, Khaddar, Lajwanti.
+  Visitors browse, search, save favourites and **send an inquiry, mainly on WhatsApp**. There is **no cart, no online payment and no courier booking on the site**; the shop arranges courier delivery and payment in chat.
+- **Admin panel** (`apps/admin`, https://admin.mustafaapparels.com): a separate app where the owner uploads suits (photos, videos, price, collection, details), manages collections, reads inquiries and edits shop contact details.
 - **Customer accounts**: sign up / log in, wishlist, inquiry history. Passwords are hashed and never stored in plain text.
+
+Hard product rules:
+- **No sizes.** Products are unstitched; there are no size fields or filters.
+- **Never name another fashion brand** anywhere customers or search engines can see. The owner has no written permission. A validator enforces it (`docs/database.md` §9).
+- **No Urdu version.** The owner decided this; don't add it.
+- Call products "suits", not "dresses".
 
 Full requirements: `docs/prd.md`. Architecture: `docs/architecture.md`.
 
@@ -24,16 +30,17 @@ Full requirements: `docs/prd.md`. Architecture: `docs/architecture.md`.
 | Framework | Next.js (latest stable, App Router, TypeScript strict), React Server Components |
 | Styling | Tailwind CSS + CSS variables for design tokens |
 | Motion | GSAP (core, ScrollTrigger, SplitText, Flip) via `@gsap/react`, Lenis smooth scroll |
-| 3D | Three.js via React Three Fiber + Drei |
+| 3D | Three.js via React Three Fiber + Drei (shader hero, no downloaded model) |
 | Database | PostgreSQL on Neon (serverless) |
 | ORM | Drizzle ORM + drizzle-kit migrations |
 | Auth | Better Auth (email + password, scrypt hashing; admin plugin; 2FA for admins) |
 | Validation | Zod at every boundary |
-| Images | Cloudinary (signed uploads from admin, auto WebP/AVIF) |
+| Media | Cloudinary (signed uploads from admin, auto WebP/AVIF, video with posters) |
 | Email | Resend (password reset, verification, inquiry notifications) |
 | Rate limiting | Upstash Redis |
+| Analytics | Google Analytics 4 (storefront only) |
 | Tests | Vitest + React Testing Library, Playwright (E2E, responsive, SEO), axe-core, Lighthouse CI |
-| Hosting | Host-agnostic Next.js (see `docs/setup.md` → Hosting) |
+| Hosting | Netlify free plan, two sites from one repo; DNS at Spaceship (`docs/deployment.md`) |
 
 ## 3. Commands
 
@@ -50,23 +57,30 @@ pnpm test:a11y            # axe accessibility checks
 pnpm verify               # lint + typecheck + test + build  (run before every commit)
 pnpm db:generate          # create a migration from schema changes
 pnpm db:migrate           # apply migrations
-pnpm db:seed              # seed categories, demo dresses, first admin
+pnpm db:seed              # seed collections, contact details, first admin
+pnpm import:stock --dry-run   # check the stock manifest; writes nothing
+pnpm import:stock             # import Business data/ as draft products with no price
 ```
 
 ## 4. Repo layout
 
 ```
-apps/web        storefront (public)
-apps/admin      admin panel (private, noindex)
+apps/web        storefront (public), https://mustafaapparels.com
+apps/admin      admin panel (private, noindex), https://admin.mustafaapparels.com
 packages/db     Drizzle schema, client, migrations, seed
 packages/core   business logic (products, search, inquiries) — pure TS, most unit tests live here
 packages/auth   Better Auth config shared by both apps
-packages/validators  Zod schemas shared by apps and core
+packages/validators  Zod schemas shared by apps and core, incl. banned brand names
 packages/ui     shared primitives (Button, Input, Dialog)
 packages/config ESLint, tsconfig, Tailwind preset
+scripts/        import-stock.ts + stock-manifest.json, install-skills.sh
 e2e/            Playwright tests (web, admin, seo, a11y, responsive)
 docs/           all project docs (start with docs/prd.md)
+mustafa-apparels-logos/  official logo pack
+Business data/  owner's raw stock: git-ignored, read-only, used only by the import script
 ```
+
+Public routes: `/`, `/shop`, `/collections/[slug]`, `/products/[slug]`, `/search`, `/about`, `/contact`, `/how-to-order`, `/faq`, `/privacy`, `/terms`.
 
 ## 5. The golden workflow (non-negotiable)
 
@@ -85,16 +99,19 @@ For every change:
 
 If a test fails and you cannot fix it within the change, **stop and report** — never skip, delete or `.only`/`.skip` a test to get green, and never commit with failing tests.
 
-Branches: work on `develop` (every push gets a preview deploy). `main` = production; merge `develop` → `main` only when a feature is complete and CI is green.
+Branches: work on `develop` (every push gets a preview deploy at no deploy cost). `main` = production.
+
+**Merging `develop` → `main` costs Netlify credits: 15 per site that changed, and running out of credits takes both sites offline.** Merge only when a phase or batch of phases is complete and CI is green, and at most 4 times a month. See `docs/deployment.md` §3. Never trigger a production deploy just to test something; use the `develop` preview.
 
 ## 6. Definition of Done (every change)
 
 - [ ] Tests written for the new behaviour, including edge and failure cases
 - [ ] `pnpm verify` passes; relevant E2E suites pass
 - [ ] Works at 360px, 768px, 1280px, 1920px and 2560px widths (if UI)
-- [ ] Keyboard accessible, visible focus, `prefers-reduced-motion` respected (if UI/motion)
+- [ ] Keyboard accessible, visible focus, `prefers-reduced-motion` respected (if UI/motion/video)
 - [ ] No secrets in code; inputs validated with Zod; auth checked on the server (if server code)
 - [ ] SEO rules in section 8 hold (if a public page)
+- [ ] Public pages stay cached: no per-request work added to them
 - [ ] Docs updated; committed; pushed
 
 ## 7. Security rules
@@ -105,7 +122,8 @@ Branches: work on `develop` (every push gets a preview deploy). `main` = product
 - Secrets live in env vars only. Never prefix a secret with `NEXT_PUBLIC_`. Server-only modules import `server-only`.
 - Never read, print or commit `.env*` files (except `.env.example`).
 - No `dangerouslySetInnerHTML` except JSON-LD built with `serializeJsonLd()` (escapes `<`).
-- Image uploads: admin only, signed, image MIME types only, size-capped (see `docs/auth-security.md`).
+- Media uploads: admin only, signed, size-capped. Photos: JPEG, PNG, WebP, 10 MB. Videos: MP4, MOV, WebM, 50 MB, 60 seconds. Re-checked on the server when saving (see `docs/auth-security.md`).
+- CSP has two tiers: a fixed policy on cached public pages, nonces only on dynamic routes and admin. **Never add a nonce to a cached page**: it disables caching (`docs/auth-security.md` §3.2).
 - Auth errors must not reveal whether an email exists.
 - Rate-limit login, signup, password reset, inquiry form and search.
 - Full details: `docs/auth-security.md`.
@@ -115,9 +133,9 @@ Branches: work on `develop` (every push gets a preview deploy). `main` = product
 Every indexable page must have, **rendered on the server in the initial HTML `<head>`**:
 
 - Unique `<title>` and meta description
-- **Exactly one** `<link rel="canonical">`, **absolute** URL (`https://...`), pointing to **this page itself**
+- **Exactly one** `<link rel="canonical">`, **absolute** URL (`https://mustafaapparels.com/...`), pointing to **this page itself**
 - Open Graph + Twitter card tags (title, description, absolute image URL, `og:url` = canonical)
-- JSON-LD where relevant (Product, BreadcrumbList, Organization/ClothingStore)
+- JSON-LD where relevant (Product, VideoObject, BreadcrumbList, OnlineStore). Product has no `brand`; Mustafa Apparels is the `seller`. OnlineStore has no address or opening hours.
 
 Canonical mistakes that must **never** happen (each one has an automated test in `e2e/seo/`):
 
@@ -132,7 +150,8 @@ Canonical mistakes that must **never** happen (each one has an automated test in
 
 Also: dynamic `sitemap.xml`, `robots.txt`, `llms.txt`; `noindex` on search results, account, auth and all admin pages;
 old product slugs 301 to the new slug; unknown slugs and out-of-range pages return a real 404.
-Full details: `docs/design.md` (SEO section) and `.claude/skills/seo-guard/SKILL.md`.
+`robots.txt` disallows `/api` only, because a crawler blocked from a `noindex` page never reads the tag. Before launch and on previews, `SITE_INDEXABLE=false` disallows everything.
+Full details: `docs/design.md` §8, `docs/seo-geo.md` and `.claude/skills/seo-guard/SKILL.md`.
 
 ## 9. Which doc to read before which task
 
@@ -143,19 +162,28 @@ Full details: `docs/design.md` (SEO section) and `.claude/skills/seo-guard/SKILL
 | Schema, migrations, queries | `docs/database.md` |
 | Server actions, route handlers | `docs/api.md` |
 | Login, roles, uploads, headers | `docs/auth-security.md` |
-| UI, motion, 3D, responsive, SEO tags | `docs/design.md` |
+| UI, brand, logo, motion, video, 3D, responsive, SEO tags | `docs/design.md` |
 | Tests | `docs/testing-qa.md` |
 | Something is broken | `docs/debugging.md` |
-| Third-party services | `docs/integrations.md` |
+| Third-party services, Cloudinary video | `docs/integrations.md` |
 | MCP servers | `docs/mcp-connection.md` |
 | What to build next | `docs/project-implementation.md` |
-| Environment setup | `docs/setup.md` |
+| Environment setup, env vars | `docs/setup.md` |
+| Netlify, credits, DNS, email DNS, merging to `main` | `docs/deployment.md` |
+| Search Console, Bing, IndexNow, AI answers, backlinks | `docs/seo-geo.md` |
+| GA4, events, conversions | `docs/analytics.md` |
+| Going live | `docs/launch-checklist.md` |
 
 ## 10. Never
 
 - Never push code that fails `pnpm verify`.
 - Never change the stack, add a paid service, or add a dependency over ~50 kB gzipped to the client without asking.
 - Never copy code, images, logos, fonts or text from reference websites. Use them for ideas only and build original work.
+- Never name another fashion brand in customer-facing text, or copy text from the stock posters.
+- Never upload an uncropped stock poster, or commit or modify anything in `Business data/`.
+- Never redraw, recolour or stretch the logo.
+- Never serve heavy files (video, models, large images) from `public/`: Netlify bandwidth costs credits. Media goes on Cloudinary.
+- Never make a cached public page dynamic without an ADR.
 - Never run destructive commands (`rm -rf`, `git push --force`, `drizzle-kit push` against production, dropping tables) without explicit approval.
 - Never edit migrations that are already applied; create a new one.
 - Never disable a lint rule, type check or test to make CI pass.
