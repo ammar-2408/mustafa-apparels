@@ -20,6 +20,8 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | Browser DevTools (or `chrome-devtools` MCP) | Console errors, CSP violations, network, performance, layout shifts |
 | Playwright trace viewer (`pnpm exec playwright show-trace`) | Flaky or failing E2E: see every step, DOM snapshot, network |
 | `pnpm exec playwright test --ui` / `--debug` | Step through tests |
+| Port 3000 or 3001 busy when E2E starts | Locally, Playwright reuses a server that responds. A hung one, or one returning 5xx, isn't reused and the run fails. Find it with `netstat -ano \| findstr :3000`, check it's your dev server, stop it with `taskkill /PID <pid> /T /F`. Playwright never stops a server it didn't start |
+| `desktop` (Firefox) test fails at `browserContext.close` with `_maybeDontRestoreTabs` | The test's own checks passed; Firefox errored while closing. Seen on Windows in 2026-11 with Playwright 1.64.1 (5–19 of 30 repeats, also at 1 worker), then gone after a reboot with the same code. Cause not found: session-store prefs didn't help. Reboot and re-run with `pnpm exec playwright test --project=desktop --repeat-each=15`. Don't skip the test or raise retries to hide it |
 | `pnpm build && pnpm start` | Reproduce production-only bugs (caching, minification) |
 | Neon console / `neon` MCP | Check data, slow queries (`EXPLAIN ANALYZE`) |
 | Netlify deploy and function logs | Build failures, skipped builds, runtime errors in preview/prod |

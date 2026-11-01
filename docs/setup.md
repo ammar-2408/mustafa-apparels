@@ -61,6 +61,12 @@ pnpm db:seed                 # needs SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD
 pnpm dev                     # web → http://localhost:3000, admin → http://localhost:3001
 ```
 
+Before the first `pnpm test:e2e`, and after any Playwright upgrade, install the browsers. This also removes browser versions Playwright no longer uses:
+
+```bash
+pnpm exec playwright install chromium firefox webkit
+```
+
 ## 5. Import your stock (after Phase 4 exists)
 
 Your photos, videos and collection files in `Business data/` stay on your computer and out of GitHub. Each suit's details live in `catalog/`, which is in git. The import script reads both, and never changes `Business data/`:

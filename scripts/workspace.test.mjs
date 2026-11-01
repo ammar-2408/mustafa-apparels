@@ -175,6 +175,49 @@ for (const [app, port] of [
   });
 }
 
+const playwrightConfig = async () => (await import('../playwright.config.ts')).default;
+
+test('Playwright has the device projects from docs/testing-qa.md', async () => {
+  const { projects } = await playwrightConfig();
+  const summary = Object.fromEntries(
+    projects.map(({ name, use }) => [name, [use.defaultBrowserType, use.viewport]]),
+  );
+  assert.deepEqual(summary, {
+    'mobile-small': ['chromium', { width: 360, height: 780 }],
+    'mobile-ios': ['webkit', { width: 393, height: 659 }],
+    tablet: ['webkit', { width: 810, height: 1080 }],
+    'tablet-landscape': ['webkit', { width: 1080, height: 810 }],
+    laptop: ['chromium', { width: 1366, height: 768 }],
+    desktop: ['firefox', { width: 1920, height: 1080 }],
+    large: ['chromium', { width: 2560, height: 1440 }],
+  });
+});
+
+test('mobile-small behaves like an Android phone', async () => {
+  const { projects } = await playwrightConfig();
+  const { use } = projects.find(({ name }) => name === 'mobile-small');
+  assert.match(use.userAgent, /Android/);
+  assert.equal(use.hasTouch, true);
+});
+
+test('Playwright reuses running servers on both ports, except on CI', async () => {
+  const { webServer } = await playwrightConfig();
+  assert.deepEqual(
+    webServer.map(({ url }) => url),
+    ['http://localhost:3000', 'http://localhost:3001'],
+  );
+  for (const server of webServer) {
+    assert.equal(server.reuseExistingServer, !process.env.CI);
+  }
+});
+
+test('root scripts run E2E and check the e2e folder', () => {
+  const { scripts } = readJson('package.json');
+  assert.equal(scripts['test:e2e'], 'playwright test');
+  assert.match(scripts.lint, /^eslint e2e playwright\.config\.ts && /);
+  assert.match(scripts.typecheck, /^tsc -p e2e && /);
+});
+
 test('root ESLint ignores owner files and build output', async () => {
   for (const file of ['Business data/x.ts', 'apps/web/.next/x.js', '.claude/skills/x/y.mjs']) {
     assert.equal(await eslint.isPathIgnored(file), true, `${file} should be ignored`);

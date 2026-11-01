@@ -5,12 +5,15 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "vitest run --project workspace && turbo run test"
+    "lint": "eslint e2e playwright.config.ts && turbo run lint",
+    "typecheck": "tsc -p e2e && turbo run typecheck",
+    "test": "vitest run --project workspace && turbo run test",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@mustafa/config": "workspace:*",
+    "@playwright/test": "1.64.1",
+    "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.5",
     "prettier": "^3.9.10",

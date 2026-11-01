@@ -23,7 +23,8 @@
 |---|---|---|
 | `mobile-small` | 360×780 | Chromium (Android UA, touch) |
 | `mobile-ios` | iPhone 15 preset | WebKit |
-| `tablet` | iPad (gen 7) preset, portrait + landscape | WebKit |
+| `tablet` | iPad (gen 7) preset, portrait | WebKit |
+| `tablet-landscape` | iPad (gen 7) landscape preset (same device, its own project because a project has one viewport) | WebKit |
 | `laptop` | 1366×768 | Chromium |
 | `desktop` | 1920×1080 | Firefox |
 | `large` | 2560×1440 | Chromium |
