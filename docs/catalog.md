@@ -130,13 +130,13 @@ These are the product-media rules. The `product-media` skill (Prompt 3 in `docs/
 
 **Checking videos:** look at several moments, including the very end, because end cards are easy to miss. Save frames only outside the repo and outside `Business data/`.
 
-**File names today:** `dhnk1.jpeg` + `dhnk1-VID.mp4`; `KDR-1.jpeg` + `KDR-1-VID.mp4`; `Laj1.jpeg` + `Laj1vid.mp4` or `laj3vid.mp4`. Case and pattern differ, so `catalog/` lists exact file names and nothing relies on a pattern.
+**File names today:** `dhnk1.jpeg` + `dhnk1-VID.mp4`; `KDR-1.jpeg` + `KDR-1-VID.mp4`; `Laj2.jpeg` + `Laj2vid.mp4` or `laj5vid.mp4`; and `Laj1.png`. Case, type and pattern differ, so `catalog/` lists exact file names and nothing relies on a pattern.
 
 **Limits and delivery:** photos JPEG, PNG or WebP up to 10 MB; videos MP4, MOV or WebM up to 50 MB and 60 seconds. Delivery rules: `docs/integrations.md` and `docs/design.md` §5.2.
 
 **The main image is always a photo**, listed first in `photos:`.
 
-**Photos are taller than the 3:4 display box** (about 0.55 width to height). See `docs/design.md` §2.
+**Photos are taller than the 3:4 display box** (about 0.4 to 0.6 width to height). See `docs/design.md` §2.
 
 ## 6. Import (`pnpm import:stock`)
 
