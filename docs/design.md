@@ -89,7 +89,7 @@ Rules:
 - Touch targets ≥ 44×44px; hover effects have a tap/focus equivalent.
 - Test portrait **and** landscape on phones and tablets; respect safe areas (`env(safe-area-inset-*)`).
 - Product images: fixed **3:4** aspect ratio boxes (no layout shift), `next/image` + Cloudinary loader, `sizes` set per grid.
-- Stock photos are full-length and tall, about 0.55 width to height, against 0.75 for a 3:4 box. Grid cards fill the box from the top, cutting off the lower part. The product gallery shows the whole photo on the surface colour rather than cutting off the model. Check this with real imports at step 5.6.
+- Stock photos are full-length and tall, about 0.4 to 0.6 width to height, against 0.75 for a 3:4 box. Grid cards fill the box from the top, cutting off the lower part. The product gallery shows the whole photo on the surface colour rather than cutting off the model. Check this with real imports at step 5.6.
 
 ## 3. Page inventory
 
