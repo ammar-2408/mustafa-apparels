@@ -1,6 +1,6 @@
 # Mustafa Apparels logo pack
 
-Brand: **MA Apparels by Mustafa Ahmed**, a women's unstitched clothing brand.
+Brand: **MA Apparels by Mustafa Ahmed**, a women's unstitched clothing brand. The shop's public name on the website is **Mustafa Apparels** (https://mustafaapparels.com).
 This folder holds every official logo file. Use these files as they are. Do not redraw, stretch, recolour or add effects (shadows, gradients, outlines) to them.
 
 ## Folder structure
@@ -89,7 +89,7 @@ Same eight names as svg/, ending in `.png`. Transparent background, 2400 px wide
 
 ## Website implementation (for Claude Code)
 
-Copy this folder into the site's public or static directory, for example `public/brand/` in Next.js or Vite, so the files are served at `/brand/...`.
+Copy the listed files into `apps/web/public/brand/` and `apps/admin/public/brand/`, so they are served at `/brand/...`. The exact list per app is in `docs/design.md` §1.3. PDFs, PNG logos and the profile picture stay out of the apps.
 
 ### Head tags
 
@@ -99,20 +99,20 @@ Copy this folder into the site's public or static directory, for example `public
 <link rel="apple-touch-icon" href="/brand/favicon/apple-touch-icon-180.png">
 <meta name="theme-color" content="#FAF7EC">
 
-<meta property="og:image" content="https://YOUR-DOMAIN/brand/social/og-share-image-1200x630.png">
+<meta property="og:image" content="https://mustafaapparels.com/brand/social/og-share-image-1200x630.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 ```
 
-Replace `YOUR-DOMAIN` with the live domain. Open Graph images need an absolute URL.
+Open Graph images need an absolute URL.
 
 ### Web app manifest (optional)
 
 ```json
 {
-  "name": "MA Apparels",
-  "short_name": "MA Apparels",
+  "name": "Mustafa Apparels",
+  "short_name": "Mustafa Apparels",
   "icons": [
     { "src": "/brand/favicon/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/brand/favicon/icon-512.png", "sizes": "512x512", "type": "image/png" }
@@ -128,7 +128,7 @@ Replace `YOUR-DOMAIN` with the live domain. Open Graph images need an absolute U
 Secondary logo on desktop, submark on mobile:
 
 ```html
-<a href="/" class="site-logo" aria-label="MA Apparels home">
+<a href="/" class="site-logo" aria-label="Mustafa Apparels home">
   <img src="/brand/svg/mustafa-apparels-secondary-black.svg" alt="MA Apparels by Mustafa Ahmed" class="logo-desktop">
   <img src="/brand/svg/mustafa-apparels-submark-black.svg" alt="MA Apparels" class="logo-mobile">
 </a>
@@ -155,7 +155,7 @@ Secondary logo on desktop, submark on mobile:
 
 - Primary and secondary: `MA Apparels by Mustafa Ahmed`
 - Simplified and submark: `MA Apparels`
-- When the logo is inside a link to the homepage, give the link `aria-label="MA Apparels home"`.
+- When the logo is inside a link to the homepage, give the link `aria-label="Mustafa Apparels home"`.
 
 ### Performance notes
 
