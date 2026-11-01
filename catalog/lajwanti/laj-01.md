@@ -27,6 +27,5 @@ also_in_this_design: []
 check:
   - "Very small photo (384 x 691 pixels), and it looks like a frame from the video. It will look blurry on a product page. Replace it with a larger one"
   - "Video left out: Laj1vid.mp4 ends on a card showing another brand's logo and name. It can return if re-exported without that card"
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A blue unstitched 2-piece Dhanak suit. Pale flower sprigs run all over the shirt and matching trousers, with a buttoned neckline and patterned cuffs.

@@ -29,6 +29,5 @@ also_in_this_design: []
 check:
   - "A small printed flower from the poster remains in the bottom-left corner. A crop would cut the sleeve or feet, so retouch it or accept"
   - "Lower resolution than most photos. Check sharpness once imported"
-  - "Outfit style is not in the collection file. Left empty; choose one in admin"
 ---
 A dark brown unstitched 2-piece Dhanak suit. Rust flowers and small leaves run all over the shirt and matching trousers.
