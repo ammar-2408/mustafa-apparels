@@ -6,7 +6,7 @@ The brand comes from the logo pack in `mustafa-apparels-logos/mustafa-apparels-l
 
 ### 1.1 Style
 
-Monochrome, minimal and editorial: an angular, high-contrast MA monogram over widely spaced thin capitals. The site stays quiet so the suits' colours and embroidery carry the page. **There is no accent colour; product photos supply the colour.**
+Monochrome, minimal and editorial: an angular, high-contrast MA monogram over widely spaced thin capitals. The site stays quiet so the suits' colours and embroidery carry the page. **There is no accent colour; product photos supply the colour.** Overall look and motion direction: §9.1.
 
 ### 1.2 Tokens
 
@@ -134,13 +134,16 @@ Filters and sort run in the browser, so pages stay static (ADR-018). The first u
 
 ## 4. Home page structure (draft)
 
-1. **Hero** — 3D fabric scene (see §6) with headline revealed by SplitText; static poster fallback.
-2. **New arrivals** — horizontal scroll-driven gallery (ScrollTrigger pin on desktop, swipe carousel on mobile).
-3. **Collections** — large tiles for Dhanak, Khaddar and Lajwanti, with WebGL hover distortion (desktop) / simple scale (mobile).
-4. **Featured suit** — sticky image + scrolling details, including a muted video when in view.
-5. **How to order** — WhatsApp, courier across Pakistan, payment in chat; text reveal on scroll.
-6. **Contact strip** — WhatsApp first, then call and email. No address or map.
-7. Footer — primary white logo on ink, links, socials (hidden when empty).
+Motion for each section follows §9.1.
+
+1. **Hero** — full-screen 3D fabric scene (see §6) with a large headline revealed line by line by SplitText; static poster fallback. On scroll it insets from the page edges (desktop).
+2. **Statement** — one plain sentence about the shop in large type, each word filling from muted to ink as you scroll.
+3. **New arrivals** — horizontal scroll-driven gallery (ScrollTrigger pin on desktop, swipe carousel on mobile).
+4. **Collections** — three tall panels for Dhanak, Khaddar and Lajwanti with thin dividers, large names and a hover reveal, with WebGL hover distortion (desktop) / simple scale (mobile).
+5. **Featured suit** — sticky image + scrolling details, including a muted video when in view.
+6. **How to order** — WhatsApp, courier across Pakistan, payment in chat, as cards that stack on scroll (desktop) with a text reveal.
+7. **Contact strip** — WhatsApp first, then call and email. No address or map.
+8. Footer — primary white logo on ink, links, socials (hidden when empty).
 
 ## 5. Motion and video
 
@@ -154,7 +157,7 @@ Principles: motion should feel **soft, fabric-like and premium** — never slow 
 | Eases | `power3.out` (enter), `power2.inOut` (move), `expo.out` (hero), `none` (scrubbed scroll) |
 | Stagger | 0.06–0.1s for grids, 0.02s for split characters |
 
-Patterns: text line/char reveals (SplitText), image clip-path reveals, scroll-scrubbed parallax (small: ≤ 15% movement), pinned horizontal galleries, Flip transitions for grid ↔ product image, magnetic buttons (desktop only), page transitions (View Transitions API or GSAP overlay).
+Patterns: text line/char reveals (SplitText), word-by-word text fill on scroll, image clip-path reveals, scroll-scrubbed parallax (small: ≤ 15% movement), pinned horizontal galleries, stacking cards, Flip transitions for grid ↔ product image, magnetic buttons (desktop only), page transitions (a short cream cover with the MA submark, using the View Transitions API or a GSAP overlay). Where and how much: §9.1.
 
 Rules (enforced by the `motion-gsap` skill):
 - Use `useGSAP()` with a scope ref → automatic cleanup on unmount/route change.
@@ -182,7 +185,7 @@ Video appears **on product pages only**, plus at most one featured suit on the h
 
 Admins upload **photos and videos**, not 3D models — so 3D is used for **brand moments and effects**, not for every product.
 
-**Chosen concept: flowing fabric.** A cloth-like plane with a vertex-shader wave, reacting to cursor and scroll, in ink on cream with the MA monogram nearby. It suits a fabric business and fits the monochrome brand. It downloads **no model**, only shader code, because at Netlify's 20 credits per GB a 1.5 MB model would cost about 30 credits per 1,000 home visits.
+**Chosen concept: flowing fabric.** A cloth-like plane with a vertex-shader wave, reacting to cursor and scroll, in ink on cream with the MA monogram nearby. It suits a fabric business and fits the monochrome brand. It should read as real draped cloth, with large soft folds and light across them, rather than a flat wave (§9.1). It downloads **no model**, only shader code, because at Netlify's 20 credits per GB a 1.5 MB model would cost about 30 credits per 1,000 home visits.
 
 **Also planned:** WebGL distortion on collection tiles and product photos on hover (works with uploaded photos).
 
@@ -277,13 +280,59 @@ Route `app/llms.txt/route.ts`, `Content-Type: text/plain; charset=utf-8`, cached
 
 Use references for ideas — layout rhythm, motion timing, interaction patterns — never copy their code, images, fonts, text or logos. Process: `reference-to-code` skill (screenshots at each breakpoint via Playwright MCP → describe structure and motion → rebuild with our tokens and components).
 
-Starting references collected so far (add more as you find them):
+References collected so far (add more as you find them):
 
 | Reference | What to study |
 |---|---|
-| outfit.hellohello.is | GSAP-driven shop interactions, product hover/transition motion |
+| davaris.gr | **Main reference** for look and motion: see §9.1 |
 | ceciliebahnsen.com | Soft, feminine pacing for a clothing brand |
 | almadalabel.com | Clean womenswear store, "shop the look" runway page |
 | immersivebags.miumiu.com | Immersive 3D brand moment |
 | heirest.com | 3D/interactive product view inside a real store |
 | awwwards.com/websites/fashion | Ongoing inspiration (filter by GSAP, 3D, E-commerce) |
+
+### 9.1 Design direction: davaris.gr
+
+**This is the design direction for the brand, storefront and motion phases.** davaris.gr is a textile company, close to what we sell. It's studied for **look and motion only**, not structure: our pages stay as listed in §3, and this style applies across all of them. Never copy its code, images, text, font or logo, and never name it on the site. Studied on 2026-11-01 at 360, 768, 1280 and 1920 px.
+
+| Aspect | What it does | How we adapt it |
+|---|---|---|
+| Layout rhythm | Calm, full-screen moments alternating with large areas of empty cream. Full-bleed media, then generous white space, then type | Same rhythm with `--space-section`. One idea per screen on Home; tighter on Shop and other working pages |
+| Typography feel | Very large, tight headings, set against tiny labels. A wide sans at medium weight | Montserrat Light 300 at large `clamp()` sizes with tight leading (about 1), against our spaced-capital labels. No second font |
+| Fabric photos | Cloth fills the frame: folds, texture and close-ups, with almost nothing on top | Let suits fill the frame, with text beside them rather than over them. **Don't blow photos up to full-bleed:** Lajwanti's are only 384–626 px wide. Full-bleed moments use the shader or ink, until better photos arrive (`docs/claude-code-playbook.md` §6) |
+| Colour | Warm cream and dark brown, with an orange accent | Cream and ink only. No accent: hover states use ink and cream, and photos supply the colour |
+| Menu | A floating side panel over the blurred page: large links, expandable groups, contact details at the bottom | Same idea with our links, WhatsApp first and small corners (`--radius-sm`). Solid backdrop on phones, because blur is slow. Focus trap, Esc closes |
+| Header | Transparent over the hero, then a floating frosted bar on scroll, with the wordmark swapping to a small mark | Same behaviour with our logo rules: secondary, then simplified; submark on phones. Keep the header area light so the black logo never sits on dark cloth. A WhatsApp button stands where its call to action is |
+| Hero | Full-screen draped cloth with a huge headline at the bottom left, rising line by line. The cloth is a **pre-rendered video**, and the page loads 1920×1080 video even on phones | Real-time shader cloth with no video or model: lighter, and it reacts to the cursor and scroll |
+| Section transitions | The hero insets from the page edges on scroll. A small fabric card grows to fill the screen while pinned. Statement text fills word by word. Info cards stack | All four, with photos and shader instead of video, because video stays on product pages (§5.2). Filling words start at `--color-muted`, so they stay readable |
+| Hover | Collection columns: the name changes colour and a short line and link appear in place of the plus. About 0.75 s, easing out | Same reveal for our three collection panels, with ink and cream inversion plus the image distortion in §6 |
+| Page change | A full-screen cream cover with a small mark in the centre, then a full page load and reveal | A short cream cover with the MA submark, faded and never stretched. Client-side navigation keeps it faster, on cached pages |
+
+**More motion than the reference.** It relies on video and scroll effects. We add:
+- **Smooth scrolling** with Lenis on every page.
+- **A live fabric hero** that responds to the cursor and scroll.
+- **Text reveals:** lines rise from a mask, and words fill on scroll.
+- **Image reveals:** clip-path reveals and small parallax on suit and collection images.
+- **Hover effects:** WebGL distortion on collection panels, photo zoom on product cards, magnetic buttons, and animated link underlines.
+- **Page transitions** between every page, plus a Flip from product card to product image.
+
+**Across our pages:**
+
+| Page | Style and motion |
+|---|---|
+| Home | The full set, including the 3D hero (§4) |
+| Shop, Collection | Large heading reveal, card reveals with a short stagger, hover on cards. Filters stay instant |
+| Product | Image reveal, sticky gallery beside the details, Flip from the card. Video follows §5.2. The WhatsApp button never waits on animation |
+| About, Contact, How to Order, FAQ | Large type, word fill on the lead sentence, section reveals. FAQ answers expand smoothly |
+| Search, Account, login and register | Same type and page transitions, with only light fades, because shoppers are working here |
+| Privacy, Terms | Heading reveal only. Long text stays still |
+| Admin | No motion direction applies: clean and fast (§3) |
+
+**Fast on phones, and respectful of reduced motion:**
+- Everything in §5.1 and §6 still applies: `transform` and `opacity` only, content visible without JavaScript, Lighthouse mobile ≥ 90, CLS < 0.1, and the poster as LCP.
+- **Phones:** pinning, the hero inset and stacking cards turn into normal scrolling, with swipe for galleries, at most one scrubbed effect per screen, and no blur or cursor effects.
+- **Page cover:** about 0.25 s in and 0.25 s out, and it never waits on slow data.
+- **Reduced motion:** no smooth scroll, parallax, pinning, word fill, 3D or cover. Quick opacity fades at most.
+- **Budgets:** 3D JS ≤ 250 kB, Home only. Other pages don't load Three.js.
+
+**Don't take:** its orange, font, emblem, wording, photos, videos, page structure, or the look of any one section so closely that it could be mistaken for theirs.
