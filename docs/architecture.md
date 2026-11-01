@@ -118,7 +118,8 @@ flowchart LR
 │   ├── validators/  product.ts, media.ts, banned-terms.ts, inquiry.ts, auth.ts, search.ts ...
 │   ├── ui/          primitives shared by both apps
 │   └── config/      eslint, tsconfig, tailwind preset, prettier
-├── scripts/         import-stock.ts, stock-manifest.json (Phase 5), install-skills.sh
+├── catalog/         one details file per suit, grouped by collection (docs/catalog.md)
+├── scripts/         import-stock.ts (Phase 5), install-skills.sh
 ├── e2e/             web/, admin/, seo/, a11y/, responsive/, security/
 ├── mustafa-apparels-logos/   # official logo pack (source of public/brand files)
 ├── Business data/   # owner's raw stock, git-ignored, read-only
@@ -186,13 +187,13 @@ Product page → "Inquire" → form (Zod on client + server) → rate limit (5 p
 Better Auth handles `/api/auth/*`: scrypt password hashing, DB sessions, httpOnly secure cookies, built-in rate limits, email verification and reset tokens. Details: `docs/auth-security.md`.
 
 ### 5.5 Stock import
-`scripts/import-stock.ts` reads `Business data/Stock/<Collection>` (read-only) and `scripts/stock-manifest.json`, crops each poster in memory, uploads the cropped image and the video to Cloudinary, and creates a **draft** product with no price. It uses `import_key` so re-running changes nothing. Uploading the crop means the full posters, with other brands' logos, never reach a public URL. See `docs/project-implementation.md` Phase 5.
+`Business data/Stock/<Collection>/` (collection file + photos + videos, read-only) → `catalog/<collection>/<design-id>.md` (one details file per suit, in git) → `scripts/import-stock.ts` validates the catalog, applies any crop in memory, uploads photos and videos to Cloudinary, and creates a **draft** product with no price → the owner clears any `check:`, sets the price in admin and publishes. `import_key` means re-running creates no duplicates. Media that shows another brand is listed as left out, and never uploaded. Details: `docs/catalog.md`.
 
 ## 6. Search design
 
-- Postgres generated `tsvector` column on products (name weight A; fabric, colours, work and design code weight B; description weight C) with a GIN index.
+- Postgres generated `tsvector` column on products (name weight A; fabric, colours, design and design code weight B; description weight C) with a GIN index.
 - `pg_trgm` trigram index on product name for typo tolerance ("khadar" → "khaddar"). Product names include the fabric, so this covers spelling variants of fabric names.
-- Query: exact design code match first, then full-text rank, with trigram similarity as fallback; filters (collection, pieces, colour, work, price) applied in SQL; paginated.
+- Query: exact design code match first, then full-text rank, with trigram similarity as fallback; filters (`docs/catalog.md` §4) applied in SQL; paginated.
 - Lajwanti suits have fabric Dhanak, so a "dhanak" search finds them across collections.
 - Suggestions endpoint returns top 6 names + collections, debounced 250 ms on the client, rate-limited.
 - No external search service needed at this size; switch to Meilisearch/Typesense only if the catalogue passes ~50k items.
@@ -242,3 +243,4 @@ Add a new row whenever a major decision changes.
 | 013 | `OnlineStore` search data; no Google Business Profile | Accepted | Online-only with no address. Google requires a location customers can visit, or travelling to customers |
 | 014 | Leave `brand` out of Product JSON-LD; Mustafa Apparels is the `seller` | Accepted | The shop may not be the manufacturer, and it has no permission to name other brands |
 | 015 | 3D hero uses a shader, with no downloaded model | Accepted | At 20 credits per GB, a 1.5 MB model costs about 30 credits per 1,000 home visits |
+| 016 | Suit details live in `catalog/` as Markdown files, imported to the database as drafts | Accepted | `Business data/` stays out of git, so reviewable per-suit details need their own home. After import, admin owns prices and later edits |
