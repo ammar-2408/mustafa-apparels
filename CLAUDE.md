@@ -11,7 +11,9 @@ Everything in AGENTS.md applies. This file adds Claude Code–specific behaviour
 3. Check skills (section below). Install any missing skill from the registry before starting the task it covers.
 4. The user's prompt order and model choices are in `docs/claude-code-playbook.md`. When you finish a step, name the model it recommends for the next one.
 
-`Business data/` holds the owner's original stock photos and videos. Read them (you can view images) but never modify, move or commit them; imports go through the `product-media` workflow.
+`Business data/` holds the owner's original stock photos and videos. Read them (you can view images) but never modify, move or commit them, and never save screenshots or other output inside it. Imports go only through `scripts/import-stock.ts` and the `product-media` skill.
+
+The stock posters show other brands' logos, and the owner has no permission to use those names: see the hard product rules in AGENTS.md §1.
 
 ## How to work
 
@@ -39,6 +41,8 @@ Skills live in `.claude/skills/` (project) and `~/.claude/skills/` (user). Befor
 | `reference-to-code` | Turning a reference website or screenshot into original UI ("image to code") |
 | `security-check` | Any server action, route handler, auth, upload, or env change |
 | `db-change` | Any schema or migration change |
+
+Two more are planned for this shop, created by Prompt 3 in `docs/claude-code-playbook.md`: `product-media` (photos, videos, stock import) and `brand-mustafa` (logo, tokens, tone). Until they exist, follow `docs/project-implementation.md` Phase 5 and `docs/design.md` §1.
 
 ### External skills registry (install automatically when needed)
 
@@ -87,6 +91,6 @@ If a hook blocks you, fix the cause; don't work around it.
 
 ## Git
 
-- Commit and push after every verified change (see AGENTS.md section 5).
-- Use `gh` for PRs: `develop` → `main` when a phase from `docs/project-implementation.md` is done.
+- Commit and push after every verified change (see AGENTS.md section 5). Pushing to `develop` costs no deploy credits.
+- Use `gh` for PRs: `develop` → `main` when a phase from `docs/project-implementation.md`, or a batch of phases, is done. **Each merge costs Netlify credits, and running out takes both sites offline.** Before opening a PR, say what it will cost and check it against the budget in `docs/deployment.md` §3. At most 4 merges a month. The owner does the merging.
 - Never force-push. Never commit `.env*`, build output or `node_modules`.
