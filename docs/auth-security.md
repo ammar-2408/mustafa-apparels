@@ -121,7 +121,7 @@ GA4 hosts come from Google's CSP guide for GA4 without Ads features (`docs/analy
 4. Cloudinary strips EXIF/GPS metadata on delivery (`fl_strip_profile` or the account default). Videos are delivered with no audio track.
 5. Deleting media removes it from Cloudinary too.
 
-The import script (`scripts/import-stock.ts`) runs only on the owner's machine with the owner's keys, never on the server. It crops posters **before** upload, so the full posters with other brands' logos never reach a public URL.
+The import script (`scripts/import-stock.ts`) runs only on the owner's machine with the owner's keys, never on the server. It uploads only the media listed in `catalog/`. Media showing another brand is left out of the catalog, because anything uploaded could be reached at a public URL, and any crop is applied **before** upload for the same reason (`docs/catalog.md` §5).
 
 ## 6. Secrets & environment
 
