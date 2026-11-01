@@ -96,16 +96,16 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 
 ## Phase 6 — Storefront
 
-**Design direction:** `docs/design.md` §9.1, applied to every page in `docs/design.md` §3. The reference guides look and motion only: the pages below stay as planned.
+**Design direction:** `docs/design.md` §9.1, applied to every page in `docs/design.md` §3. The reference guides look and motion only: the pages below stay as planned. Shopping patterns for the menu, grid, filters, suit cards and product page: `docs/design.md` §9.2.
 
 - [ ] 6.1 Root layout: header (`<Logo>`, side-panel menu, search, account, WhatsApp button; floating bar on scroll), footer (primary white logo on ink), skip link, `.js` class. Account state loads client-side after paint, so the layout never reads cookies
-- [ ] 6.2 Product card (3:4 image, name, pieces, price, wishlist toggle), no video. Wishlist state loads client-side + component tests
+- [ ] 6.2 Product card (3:4 image, finish and fabric line, name, pieces, price, wishlist toggle), no video. Wishlist state loads client-side + component tests
 - [ ] 6.3 `/shop` grid + `/shop/page/[n]` (ADR-017: static, self-canonical, `/page/1` 301, invalid or out-of-range 404) + E2E
 - [ ] 6.4 `/collections/[slug]` + `/collections/[slug]/page/[n]` with the same rules, and real text for each collection (drafted here, fabric facts checked by the owner) + E2E
-- [ ] 6.4a Filters and sort in the browser (ADR-018): cached `/api/suits`, taxonomy values with none hidden (`docs/catalog.md` §4), URL updates and Back, client-side paging while filtered, `useSearchParams` inside `<Suspense>` + E2E, incl. "page stays static"
-- [ ] 6.5 `/products/[slug]` product page: gallery (swipe/zoom), design code, pieces, fabric, colour, design, care, "Also in this design", related + permanent slug redirect + 404
+- [ ] 6.4a Filters and sort in the browser (ADR-018): cached `/api/suits`, taxonomy values with none hidden (`docs/catalog.md` §4), one-tap chips above the grid, suit count, URL updates and Back, client-side paging while filtered, `useSearchParams` inside `<Suspense>` + E2E, incl. "page stays static"
+- [ ] 6.5 `/products/[slug]` product page: gallery (swipe/zoom), design code, "What's included" with one row per piece (fabric, finish, length when known), fabric, colour, design, care, "Also in this design", related + permanent slug redirect + 404
 - [ ] 6.6 Product video tile: poster first, loads in view, muted, pause control, reduced motion and Save-Data rules (`docs/design.md` §5.2) + tests
-- [ ] 6.7 Contact buttons (WhatsApp first, Call, Email) on product page + sticky mobile WhatsApp bar
+- [ ] 6.7 Contact buttons (WhatsApp first, Call, Email) on product page + sticky mobile WhatsApp bar + short delivery, payment and reply line from settings + out-of-stock wording
 - [ ] 6.8 Inquiry form + server action + rate limit + email (see feature-development.md example)
 - [ ] 6.9 Search page + suggestions dropdown (debounced, keyboard accessible)
 - [ ] 6.10 Account: profile, wishlist, my inquiries, delete account
