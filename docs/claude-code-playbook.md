@@ -29,67 +29,25 @@ Change it from the model chip at the bottom of the Claude Code panel (it shows s
 
 ---
 
-## 2. Before Claude Code (manual, about 15 minutes)
+## 2. Before Claude Code (done)
 
-1. Install **Git for Windows** (Claude Code uses its Git Bash), **Node.js LTS**, and **GitHub CLI** (`winget install GitHub.cli`). Then in a terminal: `corepack enable` (gives you pnpm) and `gh auth login`.
-2. Extract the kit into the **root** of your `Mustafa Apparels` folder, so it looks like this:
-   ```
-   Mustafa Apparels/
-   ├─ Business data/Stock/Dhanak | Khaddar | Lajwanti   ← raw photos/videos (git-ignored)
-   ├─ mustafa-apparels-logos/                           ← logo files
-   ├─ .claude/  .github/  docs/  scripts/
-   └─ AGENTS.md  CLAUDE.md  README.md  .mcp.json  .env.example  .gitignore
-   ```
-3. Reopen the folder in VS Code and start a new Claude Code conversation.
+Git, Node, pnpm and GitHub CLI are installed, the kit is in the `Mustafa Apparels` folder, and the repo is at `ammar-06/mustafa-apparels`.
 
-You create the service accounts (Neon, Cloudinary, Resend, Upstash, Netlify) when Claude Code asks for them, and you paste the keys into `.env.local` yourself. Claude Code is blocked from reading that file.
+You create the service accounts (Neon, Cloudinary, Resend, Upstash, Netlify, Google Analytics) when Claude Code asks for them, and you paste the keys into `.env.local` yourself. Claude Code is blocked from reading that file.
 
 ---
 
 ## 3. Prompts before any code (scope, docs, skills)
 
-### Prompt 1 — Setup: git, GitHub, skills, MCP
-**Sonnet 5.5 · medium · Auto mode**
-```
-Set up this project for development. Read CLAUDE.md first, then do these in order and report after each:
-1. Check tools: node -v, pnpm -v (if missing, run corepack enable), git --version, gh --version, gh auth status. Tell me what's missing and how to install it on Windows.
-2. git init with branch "develop". Confirm with git check-ignore that "Business data/" is ignored, so my photos and videos never go to GitHub. Make the first commit: "docs: project kit".
-3. Create a private GitHub repo "mustafa-apparels" with gh and push develop.
-4. Run: bash scripts/install-skills.sh. List every skill now available (project and installed) and add new ones to the skills registry table in CLAUDE.md. Commit and push.
-5. Prove the hooks work on this Windows machine: try to create .env.local (it must be blocked), then try to edit a file inside "Business data/" (it must be blocked). Don't create anything else.
-6. Tell me to approve the MCP servers from .mcp.json and how to check them.
-```
-
-### Prompt 2 — Make the scope "Mustafa Apparels"
-**Opus 5.5 · Extra high · Plan mode** (one-time, worth the extra usage)
-```
-We're building the website for my shop "Mustafa Apparels". The docs in this folder were written for a generic "<SHOP_NAME>" dress shop. Adapt them to my real business before any code is written.
-
-1. Read CLAUDE.md, AGENTS.md and every file in docs/.
-2. Look at my real material:
-   - "Business data/Stock": the folders Dhanak, Khaddar and Lajwanti hold photos and videos of each variety. List every file, open a sample of the photos and tell me what you see (product type, colours, quality). Flag files that break the naming pattern, e.g. "KDR-1-VID.png" is an image, not a video.
-   - "mustafa-apparels-logos": open the logo files (png/svg/favicon) and work out the brand colours and style.
-3. Before editing anything, ask me what you need (use AskUserQuestion), for example: stitched or unstitched, 2-piece or 3-piece, do sizes apply, price range, city and address, phone, WhatsApp, email, opening hours, Urdu later or not, anything else that changes the scope.
-4. Then plan the doc updates:
-   - replace <SHOP_NAME> with "Mustafa Apparels" everywhere
-   - starting categories: Dhanak, Khaddar, Lajwanti (the admin can add more)
-   - products have photos AND videos: video upload, Cloudinary video, poster frames, size limits, a muted autoplay preview on the product page
-   - product fields that fit my answers (fabric, pieces, colours; sizes only if they apply)
-   - real brand colours and typography direction from the logo in docs/design.md
-   - which logo/favicon files go into the apps
-   - "Business data/" stays out of git and is used only by an import script
-   - move the brand phase earlier because the logo is ready
-   - add a step to import my stock into the catalogue as draft products for me to review and price
-Show me the plan. After I approve, update the docs one file per commit ("docs: ...") and push. Don't write app code.
-```
+**Prompt 1 (setup) and Prompt 2 (scope and doc rewrite) are done.** The docs now describe the real business.
 
 ### Prompt 3 — Project skills for this shop
 **Opus 5.5 · high · Auto mode**
 ```
 The scope is final. Review our skills and fill the gaps. Use the skill-creator skill to add these project skills, short and specific to Mustafa Apparels:
-- product-media: my photos and videos: naming, compressing, 3:4 crops, uploading to Cloudinary, video posters, alt text written by looking at each photo, never committing raw media, and importing a folder like "Business data/Stock/<Variety>" into draft products.
-- brand-mustafa: logo usage rules, colour tokens, fonts, spacing, and the tone for product descriptions (simple English, warm, mentions fabric and season).
-Then check every existing project skill (seo-guard, motion-gsap, three-scene, security-check, db-change, write-tests, ship-change, next-step, reference-to-code) against the updated docs and fix anything out of date. One commit per skill, then push.
+- product-media: my photos and videos: the stock is ad posters with other brands' logos, so cropping them locally before upload is mandatory; the file-name patterns; 3:4 display; uploading to Cloudinary; video posters, limits and muted delivery; alt text written by looking at each photo; never committing raw media; banned brand names; and importing a folder like "Business data/Stock/<Variety>" into draft products with no price. Use docs/design.md §5.2, docs/integrations.md and docs/project-implementation.md Phase 5.
+- brand-mustafa: logo usage rules, colour tokens, Montserrat, spacing, and the tone for product descriptions (simple English, warm, mentions fabric and season, never another brand's name, never poster text). Use docs/design.md §1.
+Then check every existing project skill (seo-guard, motion-gsap, three-scene, security-check, db-change, write-tests, ship-change, next-step, reference-to-code) against the updated docs and fix anything out of date. Pay special attention to: three-scene has no downloaded model now; ship-change's merge rule must respect Netlify credits; security-check needs the two-tier CSP and media limits. One commit per skill, then push.
 ```
 
 ### Prompt 4 — Final scope check
@@ -97,7 +55,7 @@ First type `/doctor prompt-audit` (it finds conflicting instructions across CLAU
 
 **Opus 5.5 · high · Plan mode**
 ```
-Act as the project lead before we build. Check that prd.md, architecture.md, database.md, api.md, design.md, auth-security.md, testing-qa.md, project-implementation.md, CLAUDE.md, AGENTS.md and all skills agree with each other and with my answers. List conflicts, gaps and open questions, and ask me anything only I can decide. After I answer, fix the docs (one commit per file), push, and tell me the first build step and which model to use for it.
+Act as the project lead before we build. Check that prd.md, architecture.md, database.md, api.md, design.md, auth-security.md, testing-qa.md, deployment.md, seo-geo.md, analytics.md, launch-checklist.md, project-implementation.md, CLAUDE.md, AGENTS.md and all skills agree with each other and with my answers. List conflicts, gaps and open questions, and ask me anything only I can decide. After I answer, fix the docs (one commit per file), push, and tell me the first build step and which model to use for it.
 ```
 
 ---
@@ -119,24 +77,25 @@ Small, easy steps (config, copy, simple pages): `/next-step 3` does three steps 
 
 | Phase | Model · effort | Have this ready first |
 |---|---|---|
-| Foundation (repo, tests, CI, deploy) | opusplan · medium | Netlify account (deploy step) |
-| Data layer (database, search) | opusplan · medium; **Opus 5.5 · high** for the table/schema steps | Neon account → `DATABASE_URL` in `.env.local` |
-| Auth & security | **Opus 5.5 · high** for every step | Resend + Upstash keys |
-| Admin panel | opusplan · medium | Cloudinary keys |
-| Import my stock | Sonnet 5.5 · medium | Admin panel and Cloudinary working |
-| Storefront pages | opusplan · medium | — |
-| SEO | opusplan · medium | — |
-| Brand (logo, colours, fonts) | **Opus 5.5 · high** | — |
-| Motion (GSAP) | **Opus 5.5 · high** | — |
-| 3D hero and WebGL effects | **Opus 5.5 · xhigh** | Pick the 3D idea (see `docs/design.md` §6) |
-| Hardening | Opus 5.5 · high for reviews, Sonnet 5.5 for fixes | — |
-| Launch | Sonnet 5.5 · medium | Google Search Console access |
+| 0 Foundation (repo, tests, CI, deploy) | opusplan · medium | Netlify account (step 0.11) |
+| 1 Brand (logo, colours, Montserrat) | **Opus 5.5 · high** | — |
+| 2 Data layer (database, search) | opusplan · medium; **Opus 5.5 · high** for the table/schema steps | Neon account → `DATABASE_URL` in `.env.local` |
+| 3 Auth & security | **Opus 5.5 · high** for every step | Resend + Upstash keys; Spaceship login for email DNS |
+| 4 Admin panel | opusplan · medium | Cloudinary keys |
+| 5 Import my stock | Sonnet 5.5 · medium | Admin and Cloudinary working; ffmpeg installed |
+| 6 Storefront pages | opusplan · medium | — |
+| 7 SEO, GEO, analytics | opusplan · medium | — |
+| 8 Motion (GSAP) | **Opus 5.5 · high** | — |
+| 8 3D hero and WebGL effects | **Opus 5.5 · xhigh** | Default is the fabric shader (`docs/design.md` §6); say if you want otherwise |
+| 9 Hardening | Opus 5.5 · high for reviews, Sonnet 5.5 for fixes | — |
+| 10 Launch | Sonnet 5.5 · medium | Spaceship, Search Console, Bing and Google Analytics access; your sign-offs (`docs/launch-checklist.md` §8) |
 
 ### End of each phase — review and release
 **Opus 5.5 · high · Auto mode**
 ```
-This phase is done. Run the code-reviewer, qa-tester and security-auditor agents (and seo-auditor if public pages changed) on everything since the last merge to main. Show me the findings, then fix the blockers one change at a time with tests, committing and pushing each. When everything is green, open a pull request from develop to main with gh and show me the CI result. I will merge it myself.
+This phase is done. Run the code-reviewer, qa-tester and security-auditor agents (and seo-auditor if public pages changed) on everything since the last merge to main. Show me the findings, then fix the blockers one change at a time with tests, committing and pushing each. Then tell me how many Netlify credits a merge would cost and whether this month's budget allows it (docs/deployment.md §3). If it does and everything is green, open a pull request from develop to main with gh and show me the CI result. I will merge it myself.
 ```
+If the budget doesn't allow a merge, keep building on `develop`. Its previews are free, and the next merge can carry several phases.
 
 ---
 
@@ -162,15 +121,23 @@ I want: <feature>. Update docs/prd.md with the requirement and acceptance criter
 ```
 Change the text "<old>" to "<new>" on <page>. Run the tests that cover it, commit and push.
 ```
+Text in admin (prices, products, contact details) needs no code and no deploy.
 
 **Add new stock later** (Sonnet 5.5 · medium)
 ```
-I added new photos/videos to "Business data/Stock/<Variety>". Use the product-media skill to import only the new files as draft products and show me a table of what was created.
+I added new photos/videos to "Business data/Stock/<Variety>". Use the product-media skill to import only the new files as draft products and show me a table of what was created. Tell me if any file shows a brand name not yet on the banned list.
+```
+
+**Check hosting usage** (Haiku 5.5 · low)
+```
+I'm looking at Netlify's Account usage insights: <paste the numbers>. Using docs/deployment.md §3, tell me whether we're on budget, and what to do if we're not.
 ```
 
 ---
 
 ## 6. Better product photos (biggest visual upgrade)
+
+Your current photos are supplier posters. Your own photos solve two problems at once: **they look like your brand, and they're yours to use.** Replacing them is on the launch checklist (`docs/launch-checklist.md` §8).
 
 - Daylight near a window, plain light background, phone at 1x zoom (not wide-angle).
 - The same set for every suit: full front, back, dupatta spread open, fabric close-up (shows the Khaddar or Dhanak texture), embroidery detail.
