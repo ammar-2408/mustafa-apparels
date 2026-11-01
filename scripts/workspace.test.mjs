@@ -107,7 +107,7 @@ test('root ESLint looks for Next.js routes inside the apps', async () => {
   assert.deepEqual(settings.next.rootDir, ['apps/*/']);
 });
 
-const lintLinkToHome = (cwd) =>
+const lintLinkToHome = (cwd, app) =>
   spawnSync(
     process.execPath,
     [
@@ -116,7 +116,7 @@ const lintLinkToHome = (cwd) =>
       'json',
       '--stdin',
       '--stdin-filename',
-      fromRoot('apps/web/app/link-probe.tsx'),
+      fromRoot(`${app}/app/link-probe.tsx`),
     ],
     {
       cwd: fromRoot(cwd),
@@ -125,15 +125,28 @@ const lintLinkToHome = (cwd) =>
     },
   );
 
-for (const [where, cwd] of [
-  ['the repo root', ''],
-  ['apps/web', 'apps/web'],
+for (const [where, cwd, app] of [
+  ['the repo root', '', 'apps/web'],
+  ['apps/web', 'apps/web', 'apps/web'],
+  ['the repo root', '', 'apps/admin'],
+  ['apps/admin', 'apps/admin', 'apps/admin'],
 ]) {
-  test(`ESLint from ${where} flags a plain link to a page, with no missing-pages warning`, () => {
-    const { stdout, stderr } = lintLinkToHome(cwd);
+  test(`ESLint from ${where} flags a plain link in ${app}, with no missing-pages warning`, () => {
+    const { stdout, stderr } = lintLinkToHome(cwd, app);
     assert.doesNotMatch(stdout + stderr, /Pages directory cannot be found/);
     const [{ messages }] = JSON.parse(stdout);
     assert.ok(messages.some((m) => m.ruleId === '@next/next/no-html-link-for-pages'));
+  });
+}
+
+for (const [app, port] of [
+  ['web', 3000],
+  ['admin', 3001],
+]) {
+  test(`${app} serves on port ${port}`, () => {
+    const { scripts } = readJson(`apps/${app}/package.json`);
+    assert.equal(scripts.dev, `next dev --port ${port}`);
+    assert.equal(scripts.start, `next start --port ${port}`);
   });
 }
 
