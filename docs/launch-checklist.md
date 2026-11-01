@@ -110,8 +110,7 @@ Click every one, on phone and desktop, in the preview.
 **Only the owner can complete these. Launch is blocked until each is done, unless marked optional.**
 
 - [ ] **Every `check:` cleared** in the `catalog/` file of each suit being published. Suits with open items stay drafts
-- [ ] **Lajwanti photos:** poster flowers and frames still show on all 5. Retouched, replaced, or accepted as they are
-- [ ] **KDR-08 photo:** a car badge is visible. Retouched, replaced, or accepted
+- [ ] **Lajwanti photos:** all 5 are small (LAJ-01 is only 384 × 691), and a small poster flower remains in the corner of LAJ-02 to 05. Replaced, retouched, or accepted as they are
 - [ ] **Left-out videos:** `dhnk1-VID`, `Laj1vid`, `laj3vid` end on cards with other brands' logos. Re-exported without them, or left out for launch
 - [ ] **Video rights:** confirmed for every stock video on the site. The owner's statement below covers photos, and those three videos show another brand's name
 - [ ] **The name "Lajwanti":** old posters and videos show it as a line by another brand. Confirmed OK to use as a collection name, or renamed
