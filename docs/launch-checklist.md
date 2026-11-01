@@ -112,7 +112,6 @@ Click every one, on phone and desktop, in the preview.
 - [ ] **Every `check:` cleared** in the `catalog/` file of each suit being published. Suits with open items stay drafts
 - [ ] **Lajwanti photos:** poster flowers and frames still show on all 5. Retouched, replaced, or accepted as they are
 - [ ] **KDR-08 photo:** a car badge is visible. Retouched, replaced, or accepted
-- [ ] **KDR-02, KDR-03 trousers:** the file says premium dyed, but the photos look printed. Confirmed
 - [ ] **Left-out videos:** `dhnk1-VID`, `Laj1vid`, `laj3vid` end on cards with other brands' logos. Re-exported without them, or left out for launch
 - [ ] **Video rights:** confirmed for every stock video on the site. The owner's statement below covers photos, and those three videos show another brand's name
 - [ ] **The name "Lajwanti":** old posters and videos show it as a line by another brand. Confirmed OK to use as a collection name, or renamed
