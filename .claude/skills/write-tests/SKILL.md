@@ -13,7 +13,7 @@ Full strategy: `docs/testing-qa.md`. This skill is the quick decision guide.
 | Pure logic (validator, formatter, slug rule, HMAC, guard) | **Unit** — `*.test.ts` next to the file |
 | A `packages/core` function that hits the DB | **Integration** — `*.int.test.ts`, PGlite/Neon test branch, factories |
 | A React component with behaviour | **Component** — RTL, test what the user sees/does (roles, labels), not implementation |
-| A user journey or page | **E2E** — Playwright in `e2e/web` or `e2e/admin`, runs on all 6 device projects |
+| A user journey or page | **E2E** — Playwright in `e2e/web` or `e2e/admin`. CI runs all 7 device projects; locally run `mobile-small` and `laptop` |
 | Public page/metadata | **SEO** — `e2e/seo/*` (raw HTML, canonical rules) |
 | Auth/admin/API/headers | **Security** — `e2e/security/*` + unit tests for guards/schemas |
 | Any page template | **a11y** — axe check in `e2e/a11y` |
@@ -24,7 +24,9 @@ Full strategy: `docs/testing-qa.md`. This skill is the quick decision guide.
 
 Usually a change needs 2 levels: the logic (unit/integration) and how a user reaches it (component or E2E).
 
-## 2. Cases to cover (checklist)
+**Right-size it.** Cover the real behaviour and the edge cases that could actually break: boundaries, bad input, wrong role, a failing service. Don't write a test for every imaginable case, and don't add a test that repeats another one or only checks the framework. A docs-only change needs no test.
+
+## 2. Cases to consider (pick the ones that apply)
 - [ ] Happy path
 - [ ] Each validation rule: valid boundary, invalid boundary (min-1, max+1), empty, wrong type
 - [ ] Unauthenticated → 401/redirect; wrong role → 403
@@ -42,7 +44,7 @@ Usually a change needs 2 levels: the logic (unit/integration) and how a user rea
 - [ ] Media: wrong type, photo over 10 MB, video over 50 MB or 60 s rejected; video never in grids or as the main item; poster first, muted, `ac_none`
 - [ ] Public page stays cached (no nonce, no per-request work)
 
-Required cases per feature: `docs/testing-qa.md` §3. Coverage floors: `packages/core`, `validators` and `auth` ≥ 90% lines and ≥ 85% branches; server actions and route handlers ≥ 80% lines.
+Cases per feature: `docs/testing-qa.md` §3. They show what can go wrong; write the ones this change can break. Coverage floors: `packages/core`, `validators` and `auth` ≥ 90% lines and ≥ 85% branches; server actions and route handlers ≥ 80% lines.
 
 ## 3. Conventions
 - Name tests as behaviour: `it('rejects a compare-at price lower than the price')`.
@@ -53,7 +55,7 @@ Required cases per feature: `docs/testing-qa.md` §3. Coverage floors: `packages
 - Deterministic: freeze time (`vi.useFakeTimers()` / Playwright clock) when dates matter.
 
 ## 4. Red → green
-1. Write the tests. 2. Run them: `pnpm exec vitest run <path>` or `pnpm exec playwright test <path>` — confirm they **fail for the right reason**. 3. Implement. 4. Re-run until green. 5. Hand off to `ship-change`.
+1. Write the tests. 2. Run them: `pnpm exec vitest run <path>` or `pnpm exec playwright test <path> --project=mobile-small --project=laptop` — confirm they **fail for the right reason**. 3. Implement. 4. Re-run until green. 5. Hand off to `ship-change`.
 
 ## 5. Examples
 
