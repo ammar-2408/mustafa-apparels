@@ -17,22 +17,23 @@ Run these steps in order. Stop and report at the first failure — never skip a 
 - Bug fix → a test that failed before the fix.
 - No `.only`, `.skip`, `test.fixme`, or commented-out tests in the diff: `git diff | grep -nE '\.(only|skip)\(|fixme'` must print nothing.
 
-## 3. Verify
+## 3. Verify (once)
+**Docs-only change** (`docs/`, `.claude/`, `*.md` that no test reads): no `pnpm verify`, no E2E. Go to step 4.
+
+Anything else: run `pnpm verify` **once** (lint + typecheck + unit/integration + build). Don't run lint, typecheck or tests again by hand; the commit hooks don't repeat them (step 5).
+
+Then, for a UI or page change, run E2E **only for the pages the change touches**, on 2 projects (`mobile-small` and `laptop`):
 ```bash
-pnpm verify                # lint + typecheck + unit/integration + build
+pnpm exec playwright test <spec or --grep feature> --project=mobile-small --project=laptop
 ```
-Then run the E2E projects the change touches:
-| Change touches | Run |
+| Change touches | Also run locally |
 |---|---|
-| Any page/UI | `pnpm test:e2e -- --grep <feature>` (all device projects) |
-| Public page, metadata, sitemap, robots, llms.txt | `pnpm test:seo` |
-| UI components/pages | `pnpm test:a11y` |
-| Auth, admin, API, headers | `pnpm exec playwright test e2e/security` |
 | `catalog/` or the import script | `pnpm import:stock --dry-run` |
+| Anything else | nothing more; CI covers it |
 
-All green. Read warnings — fix new ones rather than ignoring them.
+**CI runs the rest on every push:** all 7 device projects, SEO, a11y and security suites. Locally you run them in full only at the end of a phase (or when the change is about them, e.g. a new SEO rule). After the push, check `gh run list --limit 1` before starting a change that depends on this one; fix a red run before anything else.
 
-**Docs or skills only:** there's nothing for these to test. Before step 0.7 adds `pnpm verify`, run only what exists and say in the report what you couldn't run.
+All green. Read warnings and fix new ones rather than ignoring them.
 
 **Keep public pages cached:** nothing in the diff may add per-request work (`searchParams`, `cookies()`, `headers()`, a nonce) to a public cached page without an ADR. Uncached pages cost Netlify compute credits. In the browser, `useSearchParams` needs a `<Suspense>` boundary around its client component.
 
@@ -49,23 +50,25 @@ git commit -m "<type>(<scope>): <summary>" -m "<why, and what tests cover it>"
 - Types: feat, fix, test, refactor, perf, style, docs, chore, ci, build
 - Scopes: web, admin, db, core, auth, ui, validators, config, catalog, seo, motion, 3d, e2e, deps
 - Summary ≤ 72 chars, present tense. Example: `feat(web): add inquiry form to product page`
-- The pre-commit hook re-runs lint/typecheck/tests; if it blocks, fix and retry (never `--no-verify`).
+- Husky runs lint-staged and typecheck on commit; the Claude hook only refuses `--no-verify`. If a hook blocks, fix the cause and retry (never `--no-verify`).
+- Commit bodies: lines ≤ 100 characters (commitlint).
 - Never commit `.env*`, or anything from `Business data/`, including frames and screenshots. Never use `git add -f`.
 
 ## 6. Push
 ```bash
 git push            # current branch, normally develop
 ```
-If the push is rejected because the remote moved: `git pull --rebase`, re-run `pnpm verify`, push again. Never force-push. Never push directly to `main`.
+If the push is rejected because the remote moved: `git pull --rebase`, re-run `pnpm verify` (code changes only), push again. Never force-push. Never push directly to `main`.
 
-## 7. Report to the user
+## 7. Report to the user (short)
 ```
 Change: <one line>
-Tests:  <suites run> — <passed>/<total>, coverage <x>% (if measured)
+Tests:  <what ran> — <passed>/<total>   (or "docs only, nothing run")
 Commit: <short hash> <message>
-Pushed: <branch> → preview updates (skipped if no app or package files changed)
-Next:   <next unchecked step in docs/project-implementation.md>, and the model the playbook recommends for it
+Next:   <next unchecked step>, and the model the playbook recommends
+You:    <anything the owner must do, or "nothing">
 ```
+No long summaries. Say more only when something failed, was skipped, or needs a decision.
 
 ## Merging to `main`: not part of a normal ship
 
