@@ -53,7 +53,7 @@ Messages are safe to show users; never include stack traces, SQL or whether an e
 ### Page data (Server Components, via `core`)
 `getHomeData()`, `listProducts({ category?, page, sort, filters })`, `getProductBySlug(slug)`, `resolveSlugRedirect(entity, slug)`, `searchProducts({ q, page, filters })`, `getSiteSettings()`, `getWishlist(userId)`, `listMyInquiries(userId)`.
 
-`filters`: `{ pieces?, dressCategories?, fabric?, design?, season?, outfitStyle?, colorFamily?, priceMin?, priceMax? }`. Allowed values: `docs/catalog.md` §4. There is no size filter. `listProducts` also returns which values exist among published suits, so the UI hides empty options. `/search` and admin pass `filters` to the server. `/shop` and collection pages never do: they filter and sort `/api/suits` in the browser (ADR-018).
+`filters`: `{ pieces?, dressCategories?, fabric?, design?, season?, outfitStyle?, colorFamily?, priceMin?, priceMax? }` (`productFilters` in `packages/validators/search.ts`). Each filter except price takes a list: a suit matches any value within one filter, and every filter that is set. Allowed values: `docs/catalog.md` §4. There is no size filter. `listProducts` also returns which values exist among published suits, so the UI hides empty options. `/search` and admin pass `filters` to the server. `/shop` and collection pages never do: they filter and sort `/api/suits` in the browser (ADR-018).
 
 ### Listing URLs (ADR-017)
 
@@ -160,7 +160,15 @@ export const productInput = z.object({
   });
 ```
 
-`DRESS_CATEGORIES`, `FABRICS`, `DESIGNS`, `OUTFIT_STYLES` and `COLOR_FAMILIES` live in `packages/validators/taxonomy.ts` and match `docs/catalog.md` §4.
+`DRESS_CATEGORIES`, `FABRICS`, `DESIGNS`, `OUTFIT_STYLES` and `COLOR_FAMILIES` live in `packages/validators/taxonomy.ts` and match `docs/catalog.md` §4 (a test reads the doc's table).
+
+As built (step 2.9), `packages/validators/product.ts` also exports:
+- `productUpdateInput`: `id` plus only the fields that change, with no defaults. Zod 4 applies a `.default()` even inside `.partial()`, which would reset fields an update never sent, so update schemas never carry defaults.
+- `productRuleErrors(row)`: the cross-field rules (price and colour before publishing, compare-at above price). `productInput` runs them; `core` runs them again on the stored row merged with an update.
+- `productStatusInput` (`{ id, status }`) and `productListInput` (`{ categorySlug?, page, sort: newest | price_asc | price_desc, filters }`).
+- `pieceDetails` lists each piece once, with at most 2 on a 2-piece suit.
+
+The other modules are `category.ts` (`categoryInput`, `categoryUpdateInput`, `categoryReorderInput`), `inquiry.ts` (a phone or an email is required; blank form fields count as not given), `search.ts` (`searchInput`, `suggestInput`, `productFilters`; the query has control characters removed and spaces collapsed, then 2–60 characters), `settings.ts` (`settingInput`, one schema per key) and `phone.ts` (`pkMobile`: a Pakistani mobile in any common format, stored as E.164).
 
 ### 5.2 Media
 

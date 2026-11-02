@@ -109,6 +109,7 @@ Notes:
 - **"Printed" isn't an allowed value.** The collection files say "Printed", so use the print type you can see: Floral, Geometric or All-Over. Digital and Block Print can't be told from a photo, so only the owner can set them.
 - **`piece_details`:** 3 Piece is shirt + trouser + dupatta. 2 Piece is shirt + trouser or shirt + dupatta, as stated for that product. `fabric`, `finish` and `length_m` are optional, so leave out anything the collection file doesn't give. `length_m` is the fabric length in metres, for example `{ piece: shirt, fabric: Dhanak, length_m: 3 }`: only the owner can supply it, so never estimate it.
 - **`collection_type`** (Premium) is a display tag, not a filter.
+- **Price bands** include their lower bound, so 6,000 is in "6,000–8,000" and 10,000 is in "over 10,000" (`PRICE_BANDS` in `packages/validators/taxonomy.ts`).
 - **Lajwanti's fabric is Dhanak**, so the Fabric filter and a "dhanak" search include it.
 - **Adding a value** means updating this table and the validator in `packages/validators`, in the same commit.
 
