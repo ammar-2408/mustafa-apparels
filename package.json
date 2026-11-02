@@ -15,6 +15,7 @@
     "env:check": "node packages/config/check-env.mjs web && node packages/config/check-env.mjs admin",
     "db:generate": "pnpm --filter @mustafa/db generate",
     "db:migrate": "pnpm --filter @mustafa/db migrate",
+    "db:seed": "pnpm --filter @mustafa/db seed",
     "prepare": "husky || exit 0"
   },
   "devDependencies": {

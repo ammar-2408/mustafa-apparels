@@ -57,7 +57,7 @@ Approve the project MCP servers when Claude Code asks (they come from `.mcp.json
 cp .env.example .env.local   # fill in values from §2
 pnpm install                 # also installs the git hooks (Husky)
 pnpm db:migrate
-pnpm db:seed                 # needs SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD
+pnpm db:seed                 # collections + settings; the first admin from SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD from step 3.2
 pnpm dev                     # web → http://localhost:3000, admin → http://localhost:3001
 ```
 

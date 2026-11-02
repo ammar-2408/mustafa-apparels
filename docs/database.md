@@ -211,10 +211,11 @@ Rules: never edit an applied migration; never use `drizzle-kit push` on producti
 
 ## 6. Seed (`pnpm db:seed`)
 
-- Categories: Dhanak (`dhanak`), Khaddar (`khaddar`), Lajwanti (`lajwanti`). The owner can rename or add more.
-- Site settings: `shop_name` = Mustafa Apparels, `whatsapp` = `+923482799707`, `phone` = `+923069558717`, `service_area` = Pakistan, `email` = `ammarofficial321@gmail.com`.
-- First admin from `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD` env vars (forced to set up 2FA on first login). Idempotent: running twice changes nothing.
-- `--e2e` flag only: 12 demo suits with placeholder images, for tests. **Real stock comes from `catalog/` through the import script** (`docs/catalog.md` §6), never the seed.
+- Categories: Dhanak (`dhanak`), Khaddar (`khaddar`), Lajwanti (`lajwanti`). The owner can rename or add more. Seeded **only when there are no collections at all**, so a later run never brings back one the owner renamed or deleted.
+- Site settings: `shop_name` = Mustafa Apparels, `whatsapp` = `+923482799707`, `phone` = `+923069558717`, `service_area` = Pakistan, `email` = `ammarofficial321@gmail.com`. Each is inserted only when its key is missing, so the owner's edits stay. The other keys (delivery, payment, returns, reply note, socials, default SEO) stay unset until the owner fills them in admin.
+- First admin from `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD` env vars (forced to set up 2FA on first login). **Added at step 3.2**, when Better Auth's tables and hashing exist. Idempotent: running twice changes nothing.
+- `--e2e` flag only: 12 demo suits for tests (`E2E-01`…`E2E-12`): 10 published, 1 draft, 1 archived, across all three collections, both piece counts and every price band, one with a video and one with an old slug that redirects. Media use `products/e2e/demo-NN` on the `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` cloud. Refused when `APP_ENV` is `preview` or `production`. CI's `e2e` job runs `pnpm db:seed -- --e2e`. **Real stock comes from `catalog/` through the import script** (`docs/catalog.md` §6), never the seed.
+- Code: `packages/db/seed.ts` (tested in `seed.int.test.ts`), run by `packages/db/bin/seed.ts` with `DATABASE_URL_UNPOOLED` (or `DATABASE_URL`).
 
 ## 7. Data rules
 

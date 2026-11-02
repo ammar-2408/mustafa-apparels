@@ -103,6 +103,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm db:migrate
+      - run: pnpm db:seed -- --e2e # 12 demo suits for the pages that read the database
       - run: pnpm build
       - run: pnpm test:e2e # Playwright webServer starts web (3000) + admin (3001)
       - uses: actions/upload-artifact@v7

@@ -417,6 +417,9 @@ importers:
       '@mustafa/config':
         specifier: workspace:*
         version: link:../config
+      '@mustafa/validators':
+        specifier: workspace:*
+        version: link:../validators
       '@types/node':
         specifier: ^24
         version: 24.19.2

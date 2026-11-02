@@ -14,11 +14,13 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
     "generate": "drizzle-kit generate",
-    "migrate": "tsx bin/migrate.ts"
+    "migrate": "tsx bin/migrate.ts",
+    "seed": "tsx bin/seed.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.14",
     "@mustafa/config": "workspace:*",
+    "@mustafa/validators": "workspace:*",
     "@types/node": "^24",
     "@types/pg": "^8.23.1",
     "@vitest/coverage-v8": "^5.0.5",

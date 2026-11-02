@@ -194,6 +194,15 @@ test('root db scripts run the @mustafa/db package scripts', () => {
   const { scripts } = readJson('package.json');
   assert.equal(scripts['db:generate'], 'pnpm --filter @mustafa/db generate');
   assert.equal(scripts['db:migrate'], 'pnpm --filter @mustafa/db migrate');
+  assert.equal(scripts['db:seed'], 'pnpm --filter @mustafa/db seed');
+});
+
+test('CI "e2e" job seeds the demo suits after migrating and before the E2E run', () => {
+  const block = ciJob('e2e');
+  const migrateAt = block.indexOf('- run: pnpm db:migrate');
+  const seedAt = block.indexOf('- run: pnpm db:seed -- --e2e');
+  assert.ok(seedAt > migrateAt && migrateAt >= 0, 'seed --e2e must come after migrate');
+  assert.ok(seedAt < block.indexOf('- run: pnpm test:e2e'));
 });
 
 const ciJob = (job) => {
