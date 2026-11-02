@@ -46,7 +46,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 2.7 PGlite test harness + factories (`makeProduct`, `makeMedia`, `makeCategory`, `makeUser`)
 - [x] 2.8 `packages/validators`: banned brand names helper + exhaustive unit tests (`docs/database.md` §9)
 - [x] 2.9 `packages/validators`: filter taxonomy (`docs/catalog.md` §4), then product, media, category, inquiry, search, settings schemas + exhaustive unit tests
-- [ ] 2.10 `core.categories` (list, getBySlug, create, update w/ redirect, reorder) + tests
+- [x] 2.10 `core.categories` (list, getBySlug, create, update w/ redirect, reorder) + tests
 - [ ] 2.11 `core.products` (list w/ filters+sort+pagination, getBySlug, create, update w/ redirect, duplicate, archive) + tests
 - [ ] 2.12 `core.products.setStatus`: publish rules (price, colour, main image, alt text, no banned names) + tests
 - [ ] 2.13 `core.search` (full-text + trigram + design code, filters, suggestions) + ranking tests, incl. "dhanak" finds Lajwanti

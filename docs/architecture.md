@@ -143,6 +143,8 @@ flowchart LR
 **Layering rule:** `app/` (routes, UI) → `packages/core` (logic) → `packages/db` (data).
 Pages and server actions stay thin: check auth, validate input, call `core`, return. Business rules live in `core` so they're unit-tested without a browser.
 
+**`core` conventions** (from step 2.10): every function takes the database client first (`categories.update(db, input, { actorId })`), so integration tests pass a PGlite client and nothing is mocked. Inputs arrive already parsed by `packages/validators`. Mutations run in one transaction and write their `audit_log` row inside it, with only the changed fields as `{ before, after }`. Expected failures throw `CoreError` with `NOT_FOUND`, `CONFLICT` or `VALIDATION` (plus `fieldErrors`), which server actions map to `ActionResult`. Unique and foreign-key violations are turned into those codes, never shown raw.
+
 **Naming note:** customers see "collections", and the code keeps the `category` table and `categories` module. Customer URLs use `/collections/`.
 
 ## 4. Rendering and caching

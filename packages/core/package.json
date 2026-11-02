@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": {},
+  "exports": {
+    "./audit": "./audit/index.ts",
+    "./categories": "./categories/index.ts",
+    "./errors": "./errors.ts"
+  },
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -11,6 +15,7 @@
   },
   "dependencies": {
     "@mustafa/db": "workspace:*",
+    "@mustafa/validators": "workspace:*",
     "drizzle-orm": "^0.45.4"
   },
   "devDependencies": {

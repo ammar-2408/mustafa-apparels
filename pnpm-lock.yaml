@@ -373,6 +373,9 @@ importers:
       '@mustafa/db':
         specifier: workspace:*
         version: link:../db
+      '@mustafa/validators':
+        specifier: workspace:*
+        version: link:../validators
       drizzle-orm:
         specifier: ^0.45.4
         version: 0.45.4(@electric-sql/pglite@0.5.14)(@neondatabase/serverless@1.2.0)(@types/pg@8.23.1)(pg@8.23.1)
