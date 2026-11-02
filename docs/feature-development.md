@@ -9,11 +9,13 @@ How every feature gets built: **one small change at a time, each tested, committ
  │   2. Read the doc(s) for that area (AGENTS.md §9)
  │   3. Write the failing test(s)
  │   4. Implement the minimum code
- │   5. pnpm verify  (+ the E2E suite it touches)
+ │   5. pnpm verify once  (+ E2E for touched pages: mobile-small, laptop)
  │   6. Update docs if behaviour/schema/API changed
  │   7. git commit (Conventional Commit)  →  git push
  └── 8. Tick the step in project-implementation.md (same commit)
 ```
+
+Docs-only changes skip steps 3–5 (no tests, no verify, no E2E). CI runs the full suites on every push.
 
 A change is "small" when: it has one purpose, its diff is reviewable in a few minutes (aim < 300 lines excluding tests/snapshots), and it can be reverted alone without breaking anything else.
 
@@ -37,7 +39,7 @@ A change is "small" when: it has one purpose, its diff is reviewable in a few mi
 ## 3. Prompt templates for Claude Code
 
 **Start a step**
-> Next step from `docs/project-implementation.md`. Read the relevant docs, propose the change in 1–3 lines and the tests you'll write, then do it: tests first, implement, `pnpm verify`, commit and push. Report using the CLAUDE.md format.
+> Next step from `docs/project-implementation.md`. Read the relevant docs, propose the change in 1–3 lines and the tests you'll write, then do it: tests first (real behaviour and key edge cases), implement, `pnpm verify` once, E2E for touched pages on `mobile-small` and `laptop`, commit and push. Report briefly using the CLAUDE.md format.
 
 **New feature not in the plan**
 > I want: <describe feature>. Use plan mode. Update `docs/prd.md` with the requirement and acceptance criteria, break it into small changes in `docs/project-implementation.md`, then wait for my approval before coding.
@@ -49,7 +51,7 @@ A change is "small" when: it has one purpose, its diff is reviewable in a few mi
 > Bug: <what happens> / expected: <what should happen> / where: <page, device>. Follow `docs/debugging.md`: reproduce with a failing test first, then fix, verify, commit, push.
 
 **Review before release**
-> Run the `code-reviewer`, `security-auditor` and `seo-auditor` agents on everything since the last merge to main, then fix blockers one change at a time.
+> Only at the end of Phase 3 and Phase 6 and before launch (and `seo-auditor` at the end of Phase 7): run the `code-reviewer`, `qa-tester` and `security-auditor` agents on everything since the last review, then fix blockers one change at a time.
 
 ## 4. Git conventions
 
@@ -59,11 +61,12 @@ A change is "small" when: it has one purpose, its diff is reviewable in a few mi
   - types: `feat`, `fix`, `test`, `refactor`, `perf`, `style`, `docs`, `chore`, `ci`, `build`
   - scopes: `web`, `admin`, `db`, `core`, `auth`, `ui`, `validators`, `config`, `catalog`, `seo`, `motion`, `3d`, `e2e`, `deps`
 - One logical change per commit. Tests go in the same commit as the code they test.
+- Don't spend more than about 10 minutes on a tool quirk: note it in `docs/debugging.md` and move on, unless it blocks the step.
 - Push after every commit. PR `develop` → `main` when a phase or batch of phases is done and the credit budget allows; CI must be green; squash not required (history is already small commits).
 
 ## 5. Definition of Done
 
-See `AGENTS.md` §6. A feature is done when all its changes are pushed, its E2E journey passes on all device projects, docs are updated, and the step is ticked in `project-implementation.md`.
+See `AGENTS.md` §6. A feature is done when all its changes are pushed, its E2E journey passes locally on `mobile-small` and `laptop` and in CI on all device projects, docs are updated, and the step is ticked in `project-implementation.md`.
 
 ## 6. Adding a new admin field later
 
