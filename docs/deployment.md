@@ -166,13 +166,13 @@ Do this at step 3.1, because login emails depend on it.
 
 **1. Resend:** Domains → Add → `updates.mustafaapparels.com`. Resend recommends sending from a subdomain, which protects the main domain's reputation.
 
-**2. Spaceship:** add exactly what Resend shows. Records normally look like this, with **values copied from the dashboard**:
+**2. Spaceship:** add exactly what Resend shows, with **values copied from the dashboard**. Spaceship appends `.mustafaapparels.com`, so the host is only the part before it. Our domain uses **Resend Forge**, so SPF and bounces are `CNAME` records rather than the older `MX` + `TXT` pair:
 
 | Type | Host | Value | Purpose |
 |---|---|---|---|
-| `MX` | `send.updates` | `feedback-smtp.<region>.amazonses.com`, priority 10 | Bounce handling |
-| `TXT` | `send.updates` | `v=spf1 include:amazonses.com ~all` | SPF |
-| `TXT` | `resend._domainkey.updates` | Long key from Resend | DKIM |
+| `CNAME` | `send.updates` | `send.forge.rmta.net` | SPF and bounce handling (Resend serves the SPF `TXT` and `MX` behind it) |
+| `CNAME` | `rsend.updates` | `rsend.forge.rmta.net` | Resend Forge |
+| `TXT` | `resend._domainkey.updates` | Long `p=…` key from Resend | DKIM |
 
 **3. DMARC:** add at the root, starting in monitoring mode:
 
@@ -182,9 +182,23 @@ Do this at step 3.1, because login emails depend on it.
 
 Tighten to `p=quarantine` once emails have delivered well for a few weeks. See Resend's [DMARC guide](https://resend.com/docs/dashboard/domains/dmarc).
 
-**4. Verify** in Resend, then send a real password reset to a Gmail address and check "Show original": SPF, DKIM and DMARC should all say PASS.
+**4. Verify** in Resend, then send a real email to a Gmail address and check "Show original": SPF, DKIM and DMARC should all say PASS.
+
+Leave click and open tracking off: tracking rewrites links, which breaks verification and reset links.
 
 `EMAIL_FROM` = `Mustafa Apparels <no-reply@updates.mustafaapparels.com>`, with `Reply-To` set to `ammarofficial321@gmail.com`.
+
+**API keys:** one per environment, each with **Sending access** limited to `updates.mustafaapparels.com`. `local-dev` lives in the root `.env.local`. Create `netlify-production` when the production variables are set. Previews stay in mock mode and need no key.
+
+**Done on 2026-11-02 (step 3.1):**
+- **Resend:** `updates.mustafaapparels.com` verified in **North Virginia (us-east-1)** with Resend Forge on. TLS is Opportunistic, and click and open tracking are off.
+- **DNS:** checked with `nslookup` against 1.1.1.1:
+  - `send.updates` → `send.forge.rmta.net`, which serves `v=spf1 ip4:52.3.252.119 ip4:44.222.39.36 ip4:199.249.231.0/24 ~all` and MX 10 `feedback.forge.rmta.net`
+  - `rsend.updates` → `rsend.forge.rmta.net`
+  - the DKIM `p=MIGf…` key at `resend._domainkey.updates`
+  - `_dmarc` = `v=DMARC1; p=none;`
+- **Test email:** one sent to the shop Gmail, accepted by Resend (200).
+- **Still to check:** the owner confirms SPF, DKIM and DMARC PASS in Gmail's "Show original". The real password-reset check waits for the first environment running in live mode.
 
 ## 6. Keep `.netlify.app` out of Google
 
