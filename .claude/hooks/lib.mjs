@@ -4,14 +4,14 @@ import path from 'node:path';
 
 export const root = process.env.CLAUDE_PROJECT_DIR || process.cwd();
 
-/** Read the hook's JSON input from stdin. Returns {} if it can't be parsed. */
+/** Read the hook's JSON input from stdin. Returns null if it can't be parsed. */
 export async function readInput() {
   const chunks = [];
   for await (const chunk of process.stdin) chunks.push(chunk);
   try {
     return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}');
   } catch {
-    return {};
+    return null;
   }
 }
 
