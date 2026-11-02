@@ -13,6 +13,7 @@ import { type FormEvent, useState } from 'react';
 
 import { authClient } from '../../lib/auth-client';
 import { FormError } from './form-error';
+import { PasswordStrengthMeter } from './password-strength-meter';
 
 // The answer is the same whether or not the email already has an account.
 export const CHECK_EMAIL =
@@ -23,6 +24,7 @@ export function RegisterForm() {
   const [formError, setFormError] = useState('');
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
+  const [password, setPassword] = useState('');
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,7 +74,9 @@ export function RegisterForm() {
         maxLength={PASSWORD_MAX}
         hint={`${PASSWORD_MIN} to ${PASSWORD_MAX} characters. A few unrelated words make a strong one.`}
         error={fieldErrors.password?.[0]}
+        onChange={(event) => setPassword(event.target.value)}
       />
+      <PasswordStrengthMeter password={password} />
       <FormError message={formError} />
       <Button type="submit" disabled={pending}>
         {pending ? 'Creating account…' : 'Create account'}

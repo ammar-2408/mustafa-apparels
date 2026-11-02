@@ -17,6 +17,12 @@ vi.mock('@mustafa/auth', () => ({ createAuth }));
 vi.mock('@mustafa/core/integrations/email', () => ({
   createMailer: (options: unknown) => ({ options }),
 }));
+vi.mock('@mustafa/core/integrations/rate-limit', () => ({
+  createLimiter: (options: unknown) => ({ options }),
+}));
+vi.mock('@mustafa/core/integrations/breached-passwords', () => ({
+  createBreachCheck: (options: unknown) => ({ options }),
+}));
 vi.mock('next/headers', () => ({
   headers: async () => new Headers({ cookie: 'ma.session_token=x' }),
 }));
@@ -60,6 +66,8 @@ describe('getAuth', () => {
       baseURL: 'https://mustafaapparels.com',
       secret: 's'.repeat(40),
       sendEmail: { options: { mode: 'mock', appEnv: 'test', from: 'Shop <a@example.com>' } },
+      limiter: { options: { mode: 'mock', appEnv: 'test', secret: 's'.repeat(40) } },
+      isBreached: { options: { mode: 'mock' } },
     });
   });
 });

@@ -174,3 +174,20 @@ describe('ResetPasswordForm', () => {
     expect((await screen.findByRole('alert')).textContent).toBe(AUTH_MESSAGES.linkExpired);
   });
 });
+
+describe('PasswordStrengthMeter', () => {
+  it('appears as the password is typed and names the strength in words', async () => {
+    render(<RegisterForm />);
+    expect(screen.queryByText(/Password strength/)).toBeNull();
+    type('Password', 'short');
+    expect(screen.getByText('Password strength: Too short')).toBeTruthy();
+    type('Password', 'maroon kettle river lamp');
+    expect(screen.getByText('Password strength: Strong')).toBeTruthy();
+  });
+
+  it('shows on the reset form too', () => {
+    render(<ResetPasswordForm token="abc" />);
+    type('New password', 'password1234');
+    expect(screen.getByText('Password strength: Weak')).toBeTruthy();
+  });
+});

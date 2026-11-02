@@ -14,6 +14,7 @@ import { type FormEvent, useState } from 'react';
 
 import { authClient } from '../../lib/auth-client';
 import { FormError } from './form-error';
+import { PasswordStrengthMeter } from './password-strength-meter';
 
 export const PASSWORD_CHANGED =
   'Your password is changed, and you’ve been logged out everywhere. Log in with the new one.';
@@ -23,6 +24,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
   const [formError, setFormError] = useState('');
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
+  const [password, setPassword] = useState('');
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,7 +69,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
         maxLength={PASSWORD_MAX}
         hint={`${PASSWORD_MIN} to ${PASSWORD_MAX} characters. A few unrelated words make a strong one.`}
         error={fieldErrors.newPassword?.[0]}
+        onChange={(event) => setPassword(event.target.value)}
       />
+      <PasswordStrengthMeter password={password} />
       <FormError message={formError} />
       <Button type="submit" disabled={pending}>
         {pending ? 'Saving…' : 'Set new password'}

@@ -2,6 +2,7 @@
 // its own lib/auth.ts, so `next build` never constructs one.
 import { createHmac } from 'node:crypto';
 
+import type { BreachCheck } from '@mustafa/core/integrations/breached-passwords';
 import type { Mailer } from '@mustafa/core/integrations/email';
 import {
   existingAccount,
@@ -9,15 +10,18 @@ import {
   type Template,
   verifyEmail,
 } from '@mustafa/core/integrations/email-templates';
+import type { Limiter } from '@mustafa/core/integrations/rate-limit';
 import type { Database } from '@mustafa/db/client';
 import { uuidv7 } from '@mustafa/db/id';
 import { account, session, twoFactor, user, verification } from '@mustafa/db/schema';
-import { PASSWORD_MAX, PASSWORD_MIN, signUpInput } from '@mustafa/validators/auth';
-import { APIError, betterAuth } from 'better-auth';
+import { AUTH_MESSAGES, PASSWORD_MAX, PASSWORD_MIN, signUpInput } from '@mustafa/validators/auth';
+import { APIError, betterAuth, type BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { createAuthMiddleware } from 'better-auth/api';
+import { createAuthMiddleware, getIP, isAPIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { eq } from 'drizzle-orm';
+
+import { LOGIN_FAILURES, loginKey, rateLimitOptions, tooManyAttempts } from './limits';
 
 export type AuthApp = 'web' | 'admin';
 
@@ -28,6 +32,10 @@ export type CreateAuthOptions = {
   baseURL: string;
   secret: string;
   sendEmail: Mailer;
+  // Leave out only in tests: without it, nothing is rate-limited.
+  limiter?: Limiter;
+  // Have I Been Pwned (packages/core/integrations/breached-passwords.ts).
+  isBreached?: BreachCheck;
   // Runs slow work (emails) after the response, so timing never shows whether an account exists.
   background?: (task: Promise<unknown>) => void;
 };
@@ -49,7 +57,16 @@ export const invalidCredentials = () =>
 export const hashIp = (ip: string, secret: string) =>
   createHmac('sha256', secret).update(`ip:${ip}`).digest('hex');
 
-export function createAuth({ app, db, baseURL, secret, sendEmail, background }: CreateAuthOptions) {
+export function createAuth({
+  app,
+  db,
+  baseURL,
+  secret,
+  sendEmail,
+  limiter,
+  isBreached,
+  background,
+}: CreateAuthOptions) {
   const admin = app === 'admin';
   // A failed send is logged by the mailer. The visitor sees the same answer either way, and can
   // ask again, so the request itself still succeeds.
@@ -117,14 +134,36 @@ export function createAuth({ app, db, baseURL, secret, sendEmail, background }: 
       ipAddress: { ipAddressHeaders: ['x-nf-client-connection-ip'] },
       ...(background && { backgroundTasks: { handler: background } }),
     },
+    rateLimit: rateLimitOptions(limiter),
     hooks: {
-      // The same strict schema as the form: an unexpected field, such as role, is refused outright.
       before: createAuthMiddleware(async (ctx) => {
+        // The same strict schema as the form: an unexpected field, such as role, is refused.
         if (ctx.path === '/sign-up/email' && !signUpInput.safeParse(ctx.body).success) {
           throw new APIError('BAD_REQUEST', {
             code: 'VALIDATION',
             message: 'Check the highlighted fields',
           });
+        }
+        const field = PASSWORD_FIELD[ctx.path];
+        const password = field ? (ctx.body as Record<string, unknown> | undefined)?.[field] : null;
+        if (isBreached && typeof password === 'string' && (await isBreached(password))) {
+          throw new APIError('BAD_REQUEST', {
+            code: 'PASSWORD_COMPROMISED',
+            message: AUTH_MESSAGES.breached,
+          });
+        }
+        if (limiter && ctx.path === '/sign-in/email') {
+          const key = loginKey(clientIp(ctx), ctx.body?.email);
+          const { allowed, retryAfter } = await limiter.check(LOGIN_FAILURES, key);
+          if (!allowed) throw tooManyAttempts(retryAfter);
+        }
+      }),
+      // Counts only wrong passwords, so a customer who logs in often is never locked out.
+      after: createAuthMiddleware(async (ctx) => {
+        const returned = ctx.context.returned;
+        if (!limiter || ctx.path !== '/sign-in/email') return;
+        if (isAPIError(returned) && returned.statusCode === 401) {
+          await limiter.consume(LOGIN_FAILURES, loginKey(clientIp(ctx), ctx.body?.email));
         }
       }),
     },
@@ -152,6 +191,19 @@ export function createAuth({ app, db, baseURL, secret, sendEmail, background }: 
     plugins: [nextCookies()],
   });
 }
+
+// Server-side calls through auth.api have no request, and so no IP.
+const clientIp = (ctx: {
+  request?: Request | undefined;
+  context: { options: BetterAuthOptions };
+}) => (ctx.request ? getIP(ctx.request, ctx.context.options) : null);
+
+// Where each endpoint carries the new password.
+const PASSWORD_FIELD: Record<string, string> = {
+  '/sign-up/email': 'password',
+  '/reset-password': 'newPassword',
+  '/change-password': 'newPassword',
+};
 
 const sessionFields = {
   app: { type: 'string', required: false, input: false },

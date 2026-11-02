@@ -32,7 +32,7 @@ export async function updateProduct(raw: unknown): Promise<ActionResult<{ id: st
 - [ ] Customer-facing text goes through `noBannedTerms` (`docs/database.md` §9)
 - [ ] Only Drizzle parameterized queries; no string-built SQL
 - [ ] Errors returned as safe messages; no stack traces, SQL or "email not found"
-- [ ] Rate limit for public or expensive endpoints (login, signup, reset, inquiry, search, upload sign). If Upstash is down, fail **open** for search and **closed** for login, reset and inquiry
+- [ ] Rate limit for public or expensive endpoints (login, signup, reset, inquiry, search, upload sign). If Upstash is down, log it, then fail **closed** for login, 2FA and password reset only, and **open** for everything else, including the inquiry form (owner's decision, 2026-11-02). Each `Limit` in `packages/core/integrations/rate-limit.ts` declares its `failMode`
 - [ ] Public forms: honeypot, rate limit and time check (submitted < 2 s after the form mounts = bot). Set the timestamp in the browser on mount, because a cached page's render time may be hours old
 - [ ] Secrets only from validated env; file imports `server-only`; nothing secret in `NEXT_PUBLIC_*`
 - [ ] No `dangerouslySetInnerHTML` (except `serializeJsonLd`)

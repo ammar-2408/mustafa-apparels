@@ -7,7 +7,7 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 | Neon PostgreSQL | `packages/db/client.ts` | All data | Yes | Pages show error boundary; health check alerts |
 | Cloudinary | `integrations/media.ts` | Upload signing, metadata check, delete, image and video URL builders | Yes | Admin shows retry; storefront falls back to placeholder |
 | Resend | `integrations/email.ts` | Verification, password reset, inquiry notifications | Yes | Inquiry still saved; error logged. Sign-up, verify and reset answer the same either way, so the person simply asks again |
-| Upstash Redis | `integrations/rate-limit.ts` | Rate limits | Yes | Fail **open** for search, fail **closed** for login/reset/inquiry (in-memory fallback limiter) |
+| Upstash Redis | `integrations/rate-limit.ts` | Rate limits | Yes | Down, slow (2 s) or over the free plan's limit: the error is logged, then fail **closed** for login, 2FA and password reset, and **open** for everything else, including sign-up, search and the inquiry form (owner's decision, 2026-11-02) |
 | IndexNow | `integrations/indexnow.ts` | Tells Bing and others when a URL changes | Free | Logged; never blocks a save |
 | WhatsApp | `lib/contact-links.ts` | Click-to-chat links | Free | n/a |
 | Google Analytics 4 | `apps/web/lib/analytics.ts` | Events and conversions (`docs/analytics.md`) | Free | Never blocks UI |

@@ -13,7 +13,8 @@
     "./product": "./product.ts",
     "./search": "./search.ts",
     "./settings": "./settings.ts",
-    "./taxonomy": "./taxonomy.ts"
+    "./taxonomy": "./taxonomy.ts",
+    "./password-strength": "./password-strength.ts"
   },
   "scripts": {
     "lint": "eslint .",

@@ -12,7 +12,9 @@
     "./search": "./search/index.ts",
     "./settings": "./settings/index.ts",
     "./integrations/email": "./integrations/email.ts",
-    "./integrations/email-templates": "./integrations/email-templates.ts"
+    "./integrations/email-templates": "./integrations/email-templates.ts",
+    "./integrations/breached-passwords": "./integrations/breached-passwords.ts",
+    "./integrations/rate-limit": "./integrations/rate-limit.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -22,6 +24,8 @@
   "dependencies": {
     "@mustafa/db": "workspace:*",
     "@mustafa/validators": "workspace:*",
+    "@upstash/ratelimit": "2.2.0",
+    "@upstash/redis": "1.41.0",
     "drizzle-orm": "^0.45.4"
   },
   "devDependencies": {

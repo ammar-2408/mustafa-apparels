@@ -5,7 +5,9 @@ import 'server-only';
 import { createAuth } from '@mustafa/auth';
 import { requireUser as guardUser } from '@mustafa/auth/guards';
 import { getEnv } from '@mustafa/config/env';
+import { createBreachCheck } from '@mustafa/core/integrations/breached-passwords';
 import { createMailer } from '@mustafa/core/integrations/email';
+import { createLimiter } from '@mustafa/core/integrations/rate-limit';
 import { getDb } from '@mustafa/db/client';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -33,6 +35,14 @@ export function getAuth() {
               from: env.EMAIL_FROM,
               replyTo: env.SHOP_INBOX_EMAIL,
             }),
+            limiter: createLimiter({
+              mode: env.INTEGRATIONS_MODE,
+              appEnv: env.APP_ENV,
+              secret: env.BETTER_AUTH_SECRET,
+              url: env.UPSTASH_REDIS_REST_URL,
+              token: env.UPSTASH_REDIS_REST_TOKEN,
+            }),
+            isBreached: createBreachCheck({ mode: env.INTEGRATIONS_MODE }),
             background: (task) => after(task),
           })
         : null;

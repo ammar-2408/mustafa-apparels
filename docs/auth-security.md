@@ -7,14 +7,28 @@
 | Library | Better Auth, configured once in `packages/auth` (`createAuth({ app: 'web' | 'admin' })`) |
 | Method | Email + password (v1). Google sign-in can be added later with one plugin. |
 | Password hashing | **scrypt** (Better Auth default, memory-hard, OWASP-acceptable). |
-| Password policy | Min 10, max 128 chars; no composition rules; block known-breached passwords (Better Auth Have I Been Pwned plugin); show a strength meter. |
+| Password policy | Min 10, max 128 chars; no composition rules. A strength meter (`packages/validators/password-strength.ts`, small on purpose) guides without blocking.
+
+Known-breached passwords are refused on sign-up, reset and change-password:
+- **How:** our own hook calls Have I Been Pwned's range API, sending only the first 5 characters of the SHA-1, with padding.
+- **When HIBP is down or slow:** after 3 seconds the password is allowed and the error logged (owner's decision, 2026-11-02). Better Auth's plugin isn't used, because it fails closed with no timeout.
+- **In mock mode:** a short list in `breached-passwords.ts` stands in, so E2E can see the refusal. |
 | Email verification | Required before the first login (owner's decision, 2026-11-02). Sign-up never signs in and always says "check your email". The link lasts 24 hours and signs the person in. A login before confirming answers "verify first" and sends a fresh link. A sign-up with a registered email sends that inbox an "you already have an account" email instead. Anyone can still send an inquiry without an account, because leads come first. |
 | Password reset | Single-use token, 1-hour expiry, emailed via Resend; all sessions revoked after reset (`revokeSessionsOnPasswordReset`). |
 | Sessions | Stored in DB; cookie `httpOnly`, `secure`, `sameSite=lax`; 7-day expiry with sliding refresh; "log out everywhere" in account settings. |
 | User enumeration | Sign-up, login and reset return the same generic message whether the email exists or not. |
 | Sign-up input | `signUpInput` (`packages/validators/auth.ts`, `.strict()`) runs in the form and again in a Better Auth `before` hook, so an extra field such as `role: "admin"` is refused with 400, not quietly dropped. `role`, `phone` and `banned` are also `input: false` |
 | Error text | Every auth error goes through `authErrorMessage()`: wrong password, unknown email and banned all read "Email or password is incorrect." Unknown server errors show a generic message |
-| Brute force | Better Auth built-in rate limit on `/api/auth/*` + Upstash limit: 5 failed logins / 15 min / (IP + email), then backoff. |
+| Brute force | Better Auth's limiter on `/api/auth/*`, stored in Upstash through `packages/core/integrations/rate-limit.ts` (rules in `packages/auth/limits.ts`):
+- sign-in: 10 a minute per IP
+- sign-up: 5 per 10 minutes
+- reset request: 3 per 15 minutes
+- reset: 10 per 15 minutes
+- resend verification: 3 per 15 minutes
+- `/two-factor/*`: 5 a minute
+- `/get-session`: not counted, to save commands
+
+On top of that, **5 failed logins per 15 minutes per IP and email**: only wrong passwords count, and the 6th try gets 429, even with the right password. Keys are HMACs, so no IP or email reaches Upstash. If Upstash is down, slow or over its limit, sign-in, 2FA and reset are refused and everything else is allowed, with the error logged. The IP comes from Netlify's `x-nf-client-connection-ip`. |
 
 ### Admins
 - Separate app (`apps/admin`) at `https://admin.mustafaapparels.com`, separate host-only cookie, **sign-up disabled**. Don't enable cross-subdomain cookies: a storefront session must never be readable by admin, or the reverse.
