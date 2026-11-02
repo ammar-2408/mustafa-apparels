@@ -24,12 +24,12 @@ export function relPath(file) {
  * Run a command in the project root. On Windows, tools like pnpm are .cmd shims,
  * so they need a shell; arguments with spaces are quoted.
  */
-export function run(cmd, args = []) {
+export function run(cmd, args = [], { timeout } = {}) {
   if (process.platform === 'win32') {
     const line = [cmd, ...args.map((a) => (/[\s&()^|<>]/.test(a) ? `"${a}"` : a))].join(' ');
-    return spawnSync(line, { cwd: root, shell: true, encoding: 'utf8' });
+    return spawnSync(line, { cwd: root, shell: true, encoding: 'utf8', timeout });
   }
-  return spawnSync(cmd, args, { cwd: root, encoding: 'utf8' });
+  return spawnSync(cmd, args, { cwd: root, encoding: 'utf8', timeout });
 }
 
 /** Block the tool call: message goes back to Claude, exit code 2. */
