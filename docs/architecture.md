@@ -136,6 +136,8 @@ flowchart LR
 - **`next` is a dependency of `@mustafa/config`:** `eslint-config-next` loads its parser from `next` without declaring it. Keep this version the same as the apps'.
 - **Install scripts stay off unless reviewed** (`allowBuilds` in `pnpm-workspace.yaml`). A new package with one fails the install until it's listed.
 
+**Turbo cache keys:** `lint`, `typecheck` and `test` depend on a `transit` task that has no script. It only carries each workspace package's hash into the apps' cache keys, so changing `packages/core` re-runs the apps' checks while the tasks still run in parallel. A new workspace package needs nothing extra, as long as the app lists it in `package.json`.
+
 **Formatting:** Prettier skips all Markdown and `catalog/` (`.prettierignore`), so hand-written docs and suit files aren't rewritten.
 
 **Layering rule:** `app/` (routes, UI) → `packages/core` (logic) → `packages/db` (data).

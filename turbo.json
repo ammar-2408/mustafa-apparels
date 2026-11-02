@@ -62,9 +62,17 @@
         "SEED_ADMIN_PASSWORD"
       ]
     },
-    "lint": {},
-    "typecheck": {},
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "lint": {
+      "dependsOn": ["transit"]
+    },
+    "typecheck": {
+      "dependsOn": ["transit"]
+    },
     "test": {
+      "dependsOn": ["transit"],
       "outputs": ["coverage/**"]
     }
   }

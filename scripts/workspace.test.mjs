@@ -126,6 +126,38 @@ test('turbo rebuilds when the root or app env file changes', () => {
   assert.deepEqual(tasks.build.inputs, ['$TURBO_DEFAULT$', '.env.local']);
 });
 
+// Every task the given one depends on, directly or not, from Turbo's own task graph.
+const turboTaskDeps = (task, filter) => {
+  const dry = spawnSync(`pnpm turbo run ${task} --filter=${filter} --dry=json`, {
+    cwd: fromRoot(''),
+    shell: true,
+    encoding: 'utf8',
+  });
+  assert.equal(dry.status, 0, dry.stderr);
+  const tasks = new Map(JSON.parse(dry.stdout).tasks.map((t) => [t.taskId, t.dependencies]));
+  const seen = new Set();
+  const walk = (id) => {
+    for (const dep of tasks.get(id) ?? []) {
+      if (seen.has(dep)) continue;
+      seen.add(dep);
+      walk(dep);
+    }
+  };
+  walk(`${filter}#${task}`);
+  return [...seen];
+};
+
+for (const task of ['lint', 'typecheck', 'test']) {
+  test(`turbo re-runs "${task}" in an app when a workspace package it uses changes`, () => {
+    for (const app of ['web', 'admin']) {
+      assert.ok(
+        turboTaskDeps(task, app).some((id) => id.startsWith('@mustafa/config#')),
+        `${app}#${task} does not depend on @mustafa/config, so its cache ignores package changes`,
+      );
+    }
+  });
+}
+
 test('turbo lets the env check see the Netlify deploy context', () => {
   assert.deepEqual(readJson('turbo.json').tasks.build.passThroughEnv, ['NETLIFY', 'CONTEXT']);
 });
