@@ -499,6 +499,20 @@ for (const command of [
   });
 }
 
+for (const command of ['pnpm add left-pad', 'pnpm add -D msw', 'npx -y skills add some/skill']) {
+  test(`Claude Code asks before "${command}": a new dependency or skill is a decision`, () => {
+    const { allow, ask } = permissions();
+    assert.equal(bashRuleMatches(allow, command), false);
+    assert.ok(bashRuleMatches(ask, command));
+  });
+}
+
+test('the protect-files hook also checks shell commands', () => {
+  const { PreToolUse } = readJson('.claude/settings.json').hooks;
+  const bash = PreToolUse.find((entry) => entry.matcher === 'Bash');
+  assert.ok(bash.hooks.some((hook) => hook.args?.[0]?.endsWith('/protect-files.mjs')));
+});
+
 test('Claude Code asks before a bare git push, which follows whatever branch is checked out', () => {
   assert.equal(bashRuleMatches(permissions().allow, 'git push'), false);
 });

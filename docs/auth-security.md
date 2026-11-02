@@ -182,6 +182,10 @@ The import script (`scripts/import-stock.ts`) runs only on the owner's machine w
 - **How Better Auth treats a bad setup** (1.7.15, checked at step 3.2): with no secret it throws under `NODE_ENV=production`, which includes `next build`, but in development it quietly uses a built-in default. So the env check requires `BETTER_AUTH_SECRET` whenever `DATABASE_URL` is set, and each app builds its auth instance lazily, never at build time. An `http` base URL silently turns off the `Secure` flag and the `__Secure-` cookie prefix, so `useSecureCookies` is forced on whenever the base URL is https, and production already requires https URLs. Weak secrets only get a warning from Better Auth, so production refuses CI placeholders, secrets with fewer than 16 distinct characters, and the same value for both secrets.
 - Modules that use secrets start with `import 'server-only'`.
 - `.env*` git-ignored (except `.env.example`); Claude Code is denied read access to them (`.claude/settings.json`).
+- The `protect-files` hook blocks Claude Code from changing `.env*` (except the example), `Business data/`, `pnpm-lock.yaml` and committed migrations. It covers Edit and Write, and since step 3.11 Bash too.
+  - **In shell commands it catches:** redirect targets, `tee`, `sed -i`, the destination of `cp`, `mv`, `install` and `ln`, and the files given to `rm`, `touch`, `truncate` and PowerShell's `Set-Content`, `Add-Content`, `Out-File` and `Remove-Item`.
+  - **Its limit:** it reads the words of the command, so a path built from a variable (`f=.env; echo x > $f`), or a script or program that writes the file itself, isn't caught. The permission rules and code review are the other layers.
+- `pnpm add` and `npx -y skills add` need the user's approval each time: a new dependency or skill is a decision.
 - Rotate secrets if they ever appear in a log, screenshot or commit; use GitHub secret scanning.
 
 ## 7. Privacy

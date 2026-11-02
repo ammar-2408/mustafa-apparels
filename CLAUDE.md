@@ -88,7 +88,8 @@ Outside those points, use `security-check` and `seo-guard` while you write the c
 ## Hooks (`.claude/settings.json`)
 
 Hooks are Node scripts (`.claude/hooks/*.mjs`), so they work the same on Windows, macOS and Linux.
-- Before any edit: `.env*` files (except `.env.example`), anything in `Business data/`, `pnpm-lock.yaml` and already-committed migrations are blocked (`protect-files.mjs`).
+- Before any edit, and before any shell command that writes to them: `.env*` files (except `.env.example`), anything in `Business data/`, `pnpm-lock.yaml` and already-committed migrations are blocked (`protect-files.mjs`). The shell check reads the command's words, so it can't see a path built from a variable (`docs/auth-security.md` §6).
+- `pnpm add` and `npx -y skills add` ask the user first.
 - After every file edit: Prettier + ESLint fix run on that file automatically (`format-file.mjs`).
 - Before any `git commit`: `pre-commit-gate.mjs` refuses `--no-verify`. It runs no checks itself.
 - Checks run once at each level: `ship-change` runs `pnpm verify`; Git's pre-commit (Husky + lint-staged + typecheck) checks the staged files; CI on GitHub runs everything, including all 7 devices and the SEO, a11y and security suites.

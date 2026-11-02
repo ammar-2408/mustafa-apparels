@@ -130,6 +130,64 @@ describe('protect-files hook', () => {
   });
 });
 
+describe('protect-files hook on shell commands', () => {
+  let root;
+  const shell = (command) => runHook('protect-files.mjs', { tool_input: { command } }, root);
+
+  beforeAll(() => {
+    root = mkdtempSync(path.join(tmpdir(), 'protect-bash-'));
+    mkdirSync(path.join(root, 'packages/db/migrations'), { recursive: true });
+    writeFileSync(path.join(root, 'packages/db/migrations/0000_init.sql'), 'select 1;\n');
+    spawnSync('git', ['init', '-q'], { cwd: root });
+    spawnSync('git', ['add', 'packages/db/migrations/0000_init.sql'], { cwd: root });
+  });
+
+  afterAll(() => rmSync(root, { recursive: true, force: true }));
+
+  const blocked = [
+    'echo SECRET=1 > .env.local',
+    'echo x >> ".env"',
+    "printf x>'.ENV.local'",
+    'echo x > .env::$DATA',
+    'cat notes.txt | tee -a "Business data/notes.txt"',
+    'sed -i s/a/b/ pnpm-lock.yaml',
+    "sed --in-place 's/a/b/' apps/web/.env.production",
+    'cp other.sql packages/db/migrations/0000_init.sql',
+    'mv draft.txt "Business data/Dhanak/notes.txt"',
+    'rm -f "Business data/photo.jpg"',
+    'touch .env.local',
+    'truncate -s 0 pnpm-lock.yaml',
+    'Set-Content -Path .env.local -Value x',
+    'pnpm verify && echo done > .env',
+  ];
+  for (const command of blocked) {
+    test(`blocks ${JSON.stringify(command)}`, () => {
+      const result = shell(command);
+      assert.equal(result.status, 2, result.stderr);
+      assert.match(result.stderr, /Blocked/);
+    });
+  }
+
+  const allowed = [
+    'echo x > .env.example',
+    'cat .env.example > /tmp/env-copy.txt',
+    'git add pnpm-lock.yaml docs/setup.md',
+    'pnpm verify > /tmp/verify.log 2>&1',
+    'node script.mjs 2>&1 | tail -5',
+    'ls "Business data"',
+    'cp a.sql packages/db/migrations/0001_new.sql',
+    'rm -rf node_modules/.cache',
+    'pnpm install',
+    'grep -n "x" pnpm-lock.yaml',
+  ];
+  for (const command of allowed) {
+    test(`allows ${JSON.stringify(command)}`, () => {
+      const result = shell(command);
+      assert.equal(result.status, 0, result.stderr);
+    });
+  }
+});
+
 describe('pre-commit-gate hook', () => {
   const gate = (command) =>
     spawnSync(process.execPath, [hookPath('pre-commit-gate.mjs')], {
