@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
+    // Testing Library registers afterEach(cleanup) only when afterEach is a global.
+    // Tests still import describe, it and expect from 'vitest'.
+    globals: true,
     coverage: {
       provider: 'v8',
       // Listed so a file with no tests still counts against the floor.
