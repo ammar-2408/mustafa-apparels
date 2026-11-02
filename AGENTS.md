@@ -49,8 +49,8 @@ Full requirements: `docs/prd.md`. Architecture: `docs/architecture.md`.
 pnpm install              # install everything
 pnpm dev                  # run web (3000) + admin (3001)
 pnpm dev --filter web     # run one app
-pnpm lint                 # ESLint
-pnpm typecheck            # tsc --noEmit across workspace
+pnpm lint                 # ESLint (apps, packages, e2e, scripts, .claude/hooks)
+pnpm typecheck            # tsc --noEmit across workspace, incl. e2e, scripts and .claude/hooks
 pnpm test                 # Vitest unit + integration
 pnpm test:e2e             # Playwright (all 7 devices): CI, and locally at the end of a phase
 pnpm exec playwright test <spec> --project=mobile-small --project=laptop   # local run for a change

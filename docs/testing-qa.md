@@ -12,6 +12,8 @@
 | Locally, end of a phase | The full set once: all 7 projects, `pnpm test:seo`, `pnpm test:a11y`, `e2e/security` |
 | Review agents | End of Phase 3 and Phase 6 (`code-reviewer`, `qa-tester`, `security-auditor`), end of Phase 7 (`seo-auditor`), and all four before launch |
 
+Root `pnpm lint` and `pnpm typecheck` also cover `e2e/`, `scripts/` and `.claude/hooks/`, so `pnpm verify` catches what Husky would. `scripts/tsconfig.json` type-checks their JavaScript in strict mode, minus `noImplicitAny` and `noUncheckedIndexedAccess`: it catches null and `unknown` mistakes without JSDoc on every parameter.
+
 ## 1. Test pyramid and tools
 
 | Level | Tool | Lives in | What it covers | Speed |

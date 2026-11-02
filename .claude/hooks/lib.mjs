@@ -23,6 +23,9 @@ export function relPath(file) {
 /**
  * Run a command in the project root. On Windows, tools like pnpm are .cmd shims,
  * so they need a shell; arguments with spaces are quoted.
+ * @param {string} cmd
+ * @param {string[]} [args]
+ * @param {{ timeout?: number }} [options]
  */
 export function run(cmd, args = [], { timeout } = {}) {
   if (process.platform === 'win32') {

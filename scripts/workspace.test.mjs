@@ -22,7 +22,7 @@ const prettierIgnores = async (file) => {
 
 const exampleEnv = () => parseDotenv(read('.env.example'));
 const ciEnv = () => {
-  const block = read('.github/workflows/ci.yml').match(/^env:\n((?: {2}.*\n)+)/m)[1];
+  const block = read('.github/workflows/ci.yml').match(/^env:\n((?: {2}.*\n)+)/m)?.[1] ?? '';
   return parseDotenv(block.replace(/^ {2}(\w+): /gm, '$1=').replace(/ # .*$/gm, ''));
 };
 
@@ -41,9 +41,11 @@ test('.env.example has the real shop details, not the kit placeholders', () => {
 });
 
 const netlifyValue = (app, key) =>
-  read(`apps/${app}/netlify.toml`)
-    .match(new RegExp(`^\\s*${key}\\s*=\\s*"(.*)"\\s*$`, 'm'))?.[1]
-    .replaceAll('\\"', '"');
+  (
+    read(`apps/${app}/netlify.toml`).match(
+      new RegExp(`^\\s*${key}\\s*=\\s*"(.*)"\\s*$`, 'm'),
+    )?.[1] ?? ''
+  ).replaceAll('\\"', '"');
 
 for (const [app, otherApp] of [
   ['web', 'admin'],
@@ -80,7 +82,7 @@ for (const [app, otherApp] of [
   });
 }
 
-for (const app of ['web', 'admin']) {
+for (const app of /** @type {const} */ (['web', 'admin'])) {
   test(`a fresh copy of .env.example is valid for ${app}`, () => {
     parseEnv(app, exampleEnv());
   });
@@ -205,10 +207,15 @@ for (const pkg of ['apps/web', 'apps/admin', 'packages/config']) {
 
 test('root Vitest config covers the apps, the packages and the workspace tests', async () => {
   const { default: config } = await import('../vitest.config.mjs');
-  const { projects } = config.test;
+  const { projects = [] } = config.test ?? {};
   assert.ok(projects.includes('apps/*'));
   assert.ok(projects.includes('packages/*'));
-  assert.ok(projects.some((project) => project.test?.name === 'workspace'));
+  assert.ok(
+    projects.some(
+      (project) =>
+        typeof project === 'object' && 'test' in project && project.test?.name === 'workspace',
+    ),
+  );
 });
 
 test('dev is uncached and persistent', () => {
@@ -328,9 +335,9 @@ for (const [app, port] of [
 const playwrightConfig = async () => (await import('../playwright.config.ts')).default;
 
 test('Playwright has the device projects from docs/testing-qa.md', async () => {
-  const { projects } = await playwrightConfig();
+  const { projects = [] } = await playwrightConfig();
   const summary = Object.fromEntries(
-    projects.map(({ name, use }) => [name, [use.defaultBrowserType, use.viewport]]),
+    projects.map(({ name, use }) => [name, [use?.defaultBrowserType, use?.viewport]]),
   );
   assert.deepEqual(summary, {
     'mobile-small': ['chromium', { width: 360, height: 780 }],
@@ -344,14 +351,14 @@ test('Playwright has the device projects from docs/testing-qa.md', async () => {
 });
 
 test('mobile-small behaves like an Android phone', async () => {
-  const { projects } = await playwrightConfig();
-  const { use } = projects.find(({ name }) => name === 'mobile-small');
-  assert.match(use.userAgent, /Android/);
-  assert.equal(use.hasTouch, true);
+  const { projects = [] } = await playwrightConfig();
+  const use = projects.find(({ name }) => name === 'mobile-small')?.use;
+  assert.match(use?.userAgent ?? '', /Android/);
+  assert.equal(use?.hasTouch, true);
 });
 
 test('Playwright reuses running servers on both ports, except on CI', async () => {
-  const { webServer } = await playwrightConfig();
+  const webServer = [(await playwrightConfig()).webServer ?? []].flat();
   assert.deepEqual(
     webServer.map(({ url }) => url),
     ['http://localhost:3000', 'http://localhost:3001'],
@@ -361,11 +368,17 @@ test('Playwright reuses running servers on both ports, except on CI', async () =
   }
 });
 
-test('root scripts run E2E and check the e2e folder', () => {
+test('root scripts run E2E and check the e2e folder, the scripts and the Claude Code hooks', () => {
   const { scripts } = readJson('package.json');
   assert.equal(scripts['test:e2e'], 'playwright test');
-  assert.match(scripts.lint, /^eslint e2e playwright\.config\.ts && /);
-  assert.match(scripts.typecheck, /^tsc -p e2e && /);
+  assert.match(scripts.lint, /^eslint e2e playwright\.config\.ts scripts \.claude\/hooks && /);
+  assert.match(scripts.typecheck, /^tsc -p e2e && tsc -p scripts && /);
+});
+
+test('scripts typecheck covers their JS and the Claude Code hooks', () => {
+  const { compilerOptions, include } = readJson('scripts/tsconfig.json');
+  assert.equal(compilerOptions.checkJs, true);
+  assert.ok(include.includes('../.claude/hooks/*.mjs'));
 });
 
 const commitlint = (message) =>

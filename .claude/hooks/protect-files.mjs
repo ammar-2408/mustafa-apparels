@@ -65,7 +65,9 @@ try {
     );
   }
 } catch (error) {
-  block(`Blocked edit: the protect-files hook failed (${error.message}).`);
+  block(
+    `Blocked edit: the protect-files hook failed (${error instanceof Error ? error.message : error}).`,
+  );
 }
 
 process.exit(0);

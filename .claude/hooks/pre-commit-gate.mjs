@@ -28,7 +28,9 @@ try {
     block('Commit blocked: never use --no-verify. Fix what the git hooks report instead.');
   }
 } catch (error) {
-  block(`Commit blocked: the pre-commit gate failed (${error.message}).`);
+  block(
+    `Commit blocked: the pre-commit gate failed (${error instanceof Error ? error.message : error}).`,
+  );
 }
 
 process.exit(0);
