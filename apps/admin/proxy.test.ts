@@ -45,3 +45,52 @@ describe('admin proxy', () => {
     expect(first).not.toBe(csp('/login'));
   });
 });
+
+describe('admin gate', () => {
+  const get = (path: string, cookie?: string) =>
+    proxy(
+      new NextRequest(`http://localhost:3001${path}`, {
+        headers: cookie ? { cookie } : {},
+      }),
+    );
+
+  it('sends a signed-out visitor on any page to the login page', () => {
+    for (const path of ['/', '/products', '/setup-2fa', '/settings?tab=contact']) {
+      const response = get(path);
+      expect(response.status, path).toBe(307);
+      expect(new URL(response.headers.get('location')!).pathname).toBe('/login');
+    }
+  });
+
+  it('answers 401 to a signed-out API call instead of redirecting', async () => {
+    const response = get('/api/upload/sign');
+    expect(response.status).toBe(401);
+    expect(await response.json()).toMatchObject({ error: { code: 'UNAUTHENTICATED' } });
+  });
+
+  it('lets the login pages and Better Auth through without a session', () => {
+    for (const path of ['/login', '/login/verify', '/api/auth/sign-in/email']) {
+      expect(get(path).status, path).toBe(200);
+    }
+  });
+
+  it("ignores the storefront's cookie", () => {
+    expect(get('/', 'ma.session_token=abc.def').status).toBe(307);
+  });
+
+  it('passes a request with an admin cookie on, for the page itself to check', () => {
+    const response = get('/', 'ma-admin.session_token=abc.def');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-security-policy')).toContain("'strict-dynamic'");
+  });
+
+  it('keeps the CSP on redirects too', () => {
+    expect(get('/').headers.get('content-security-policy')).toContain("'strict-dynamic'");
+  });
+});
+
+it('uses the same cookie prefix as the admin auth instance', async () => {
+  const { COOKIE_PREFIX } = await import('@mustafa/auth');
+  const { ADMIN_COOKIE_PREFIX } = await import('./proxy');
+  expect(ADMIN_COOKIE_PREFIX).toBe(COOKIE_PREFIX.admin);
+});

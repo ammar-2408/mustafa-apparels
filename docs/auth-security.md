@@ -43,7 +43,12 @@ On top of that, **5 failed logins per 15 minutes per IP and email**: only wrong 
 - **Admin accounts can't sign in on the storefront**: that would be a login without 2FA. The owner uses a separate customer account to shop. The storefront also answers 404 for `/two-factor/*`.
 - First admin is created only by `pnpm db:seed` from env vars; more admins only by an existing admin (audit-logged).
 - Admin sessions: 12-hour max, re-auth required for destructive actions (purge, role change).
-- `apps/admin/proxy.ts` redirects every unauthenticated request to `/login`, and every page/action **also** calls `requireAdmin()` (defence in depth — the proxy alone is not trusted).
+- `apps/admin/proxy.ts` redirects every unauthenticated request to `/login`, and every page/action **also** calls `requireAdmin()` (defence in depth — the proxy alone is not trusted). As built at step 3.10:
+  - **What the proxy checks:** only that a `ma-admin` session cookie exists. Without one, a page redirects to `/login` and an `/api/*` call gets 401.
+  - **What it lets through:** `/login`, `/login/verify` and `/api/auth/*`. Static files, `/favicon.ico`, `/manifest.webmanifest` and `/brand/*` are outside its matcher.
+  - **Pages:** each calls `requireAdminPage()`.
+  - **Actions:** each is built with `adminAction(schema, handler)` (`apps/admin/lib/action.ts`), which runs `requireAdmin()` first and `.strict()` Zod second.
+  - **The loop test:** `apps/admin/test/admin-actions-authz.test.ts` finds every `app/**/actions.ts` export and checks it answers `UNAUTHENTICATED` when signed out, and `FORBIDDEN` to a customer or to a storefront session. It also checks that the action never reached Better Auth or the database.
 
 ### Authorization helpers (`packages/auth/guards.ts`)
 The guards take the session the app already read, so they stay pure. Each app's `lib/auth.ts` reads it once per request (`getSession()`, wrapped in React `cache`) and offers `requireUser()` for actions and route handlers (throws `UNAUTHENTICATED`) and `requireUserPage()` for pages (redirects to `/login`). A banned user counts as signed out. The auth instance is built on first use, never at build time, and is `null` in mock mode with no database.

@@ -6,7 +6,9 @@ vi.mock('../../../../lib/auth', () => ({ getAuth }));
 
 import { GET, POST } from './route';
 
-beforeEach(() => getAuth.mockReset());
+beforeEach(() => {
+  getAuth.mockReset();
+});
 
 it('answers 503 when sign-in is not set up (mock mode, no database)', async () => {
   getAuth.mockReturnValue(null);

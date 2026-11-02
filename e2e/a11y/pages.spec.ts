@@ -5,7 +5,7 @@ import { expect, test } from '@playwright/test';
 // Add each new page template here.
 const PAGES = [
   { name: 'storefront home', url: 'http://localhost:3000/' },
-  { name: 'admin home', url: 'http://localhost:3001/' },
+  { name: 'admin login', url: 'http://localhost:3001/login' },
 ];
 
 for (const { name, url } of PAGES) {

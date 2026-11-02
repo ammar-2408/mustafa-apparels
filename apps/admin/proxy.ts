@@ -1,17 +1,40 @@
-// Every admin page gets a fresh CSP nonce (docs/auth-security.md §3.2). The admin is dynamic
-// anyway, so this costs no caching. Static files and the brand icons are left out.
+// Runs before every admin page and route (docs/auth-security.md §1, §3.2):
+// - a fresh CSP nonce for each request;
+// - a first gate: no admin session cookie means the login page (or 401 for an API call).
+// The cookie is only checked for being there. Every page and action still calls requireAdmin(),
+// which checks the session itself, its role and 2FA: this gate is never trusted alone.
 import { nonceCsp } from '@mustafa/config/headers';
+import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
+
+// COOKIE_PREFIX.admin in packages/auth (a test keeps them equal). Not imported, so this file
+// stays free of the auth server code.
+export const ADMIN_COOKIE_PREFIX = 'ma-admin';
+
+// Reachable without a session: the login steps and Better Auth's own endpoints.
+const PUBLIC = [/^\/login(\/|$)/, /^\/api\/auth(\/|$)/];
 
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const csp = nonceCsp('admin', nonce, { dev: process.env.NODE_ENV === 'development' });
+  const { pathname } = request.nextUrl;
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-nonce', nonce);
-  requestHeaders.set('Content-Security-Policy', csp);
-
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  let response: NextResponse;
+  const signedIn = getSessionCookie(request, { cookiePrefix: ADMIN_COOKIE_PREFIX }) !== null;
+  if (signedIn || PUBLIC.some((path) => path.test(pathname))) {
+    // Next reads the nonce from the request's CSP and adds it to its own scripts.
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-nonce', nonce);
+    requestHeaders.set('Content-Security-Policy', csp);
+    response = NextResponse.next({ request: { headers: requestHeaders } });
+  } else if (pathname.startsWith('/api/')) {
+    response = NextResponse.json(
+      { error: { code: 'UNAUTHENTICATED', message: 'Please log in to continue.' } },
+      { status: 401 },
+    );
+  } else {
+    response = NextResponse.redirect(new URL('/login', request.url));
+  }
   response.headers.set('Content-Security-Policy', csp);
   return response;
 }

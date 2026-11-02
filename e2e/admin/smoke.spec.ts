@@ -4,23 +4,24 @@ import { montserratWeights } from '../support/fonts';
 
 test.use({ baseURL: 'http://localhost:3001' });
 
-test('admin home page loads with a title and a main heading', async ({ page }) => {
-  const response = await page.goto('/');
+// Every other admin page needs a session (e2e/admin/gate.spec.ts), so these start at /login.
+test('admin login page loads with a title and a main heading', async ({ page }) => {
+  const response = await page.goto('/login');
   expect(response?.status()).toBe(200);
-  await expect(page).toHaveTitle('Mustafa Apparels Admin');
+  await expect(page).toHaveTitle('Log in | Mustafa Apparels Admin');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
-test('admin home page uses the brand cream and ink', async ({ page }) => {
-  await page.goto('/');
+test('admin login page uses the brand cream and ink', async ({ page }) => {
+  await page.goto('/login');
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(250, 247, 236)');
   await expect(page.locator('body')).toHaveCSS('color', 'rgb(17, 17, 17)');
 });
 
-test('admin home page is set in Montserrat, loaded in weights 300 and 400 only', async ({
+test('admin login page is set in Montserrat, loaded in weights 300 and 400 only', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/login');
   await expect(page.locator('body')).toHaveCSS('font-family', /Montserrat/);
   expect(await montserratWeights(page)).toEqual(['300', '400']);
 });

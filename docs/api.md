@@ -74,7 +74,7 @@ As built (`core.products`, step 2.11): `list(db, input, { scope })` returns `{ i
 
 ## 3. Admin (`apps/admin`)
 
-All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). All mutations write `audit_log` and trigger storefront revalidation.
+All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). Build each with `adminAction(schema, handler)` from `apps/admin/lib/action.ts`: it runs the guard, then the schema, then the handler, and returns an `ActionResult`. The loop test in `apps/admin/test/admin-actions-authz.test.ts` picks up every `app/**/actions.ts` export automatically. The one exception is `startTwoFactorSetup`, which allows only an admin who hasn't turned 2FA on yet, and is in the loop too. All mutations write `audit_log` and trigger storefront revalidation.
 
 ### Server actions
 | Action | Input | Revalidates |

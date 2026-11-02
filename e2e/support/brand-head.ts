@@ -1,8 +1,9 @@
 import { expect, type Page } from '@playwright/test';
 
 // The favicons, theme colour and manifest every page links to (docs/design.md §1.3).
-export async function expectBrandHead(page: Page, manifestName: string) {
-  await page.goto('/');
+// The admin's pages sit behind its login, so its check starts at /login.
+export async function expectBrandHead(page: Page, manifestName: string, path = '/') {
+  await page.goto(path);
   const head = page.locator('head');
   await expect(head.locator('meta[name="theme-color"]')).toHaveAttribute('content', /^#faf7ec$/i);
   await expect(head.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveCount(1);
