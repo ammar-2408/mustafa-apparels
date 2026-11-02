@@ -32,11 +32,22 @@ test.describe('admin login', () => {
     await page.goto('/login');
     await page.getByLabel('Email').fill(admin.email);
     await page.getByLabel('Password').fill(admin.password);
+    const signIn = page.waitForResponse('**/api/auth/sign-in/email');
     await page.getByRole('button', { name: 'Log in' }).click();
     await expect(page).not.toHaveURL(/\/login$/);
+
+    // The header the server sent: Playwright's WebKit on Windows and Linux reports every
+    // cookie's SameSite as None in its cookie store, whatever the server said.
+    const setCookie = (await (await signIn).headerValues('set-cookie')).find((c) =>
+      c.startsWith('ma-admin.session_token='),
+    );
+    expect(setCookie).toMatch(/; HttpOnly/i);
+    expect(setCookie).toMatch(/; SameSite=Lax/i);
+    expect(setCookie).not.toMatch(/; Domain=/i);
+
     const cookie = (await page.context().cookies()).find(
       (c) => c.name === 'ma-admin.session_token',
     );
-    expect(cookie).toMatchObject({ domain: 'localhost', httpOnly: true, sameSite: 'Lax' });
+    expect(cookie).toMatchObject({ domain: 'localhost', httpOnly: true });
   });
 });
