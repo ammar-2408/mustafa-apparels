@@ -400,6 +400,64 @@ for (const [problem, message, rule] of [
   });
 }
 
+// Claude Code permission rules: `Bash(<glob>)` where `*` matches anything.
+const permissions = () => readJson('.claude/settings.json').permissions;
+const bashRuleMatches = (rules, command) =>
+  rules.some((rule) => {
+    const glob = rule.match(/^Bash\((.*)\)$/)?.[1];
+    if (glob === undefined) return false;
+    const pattern = glob.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replaceAll('*', '.*');
+    return new RegExp(`^${pattern}$`).test(command);
+  });
+
+for (const command of [
+  'git diff --no-index /dev/null .env.local',
+  'git diff --stat --no-index a .env',
+  'git switch main',
+  'git switch -c main',
+  'git checkout main',
+  'git push origin main',
+  'git push -u origin main',
+  'git push origin HEAD:main',
+  'git push origin develop:main',
+]) {
+  test(`Claude Code is denied "${command}"`, () => {
+    assert.ok(bashRuleMatches(permissions().deny, command));
+  });
+}
+
+test('Claude Code asks before a bare git push, which follows whatever branch is checked out', () => {
+  assert.equal(bashRuleMatches(permissions().allow, 'git push'), false);
+});
+
+for (const command of ['git push origin develop', 'git diff --stat', 'git switch develop']) {
+  test(`Claude Code can still run "${command}" without asking`, () => {
+    const { allow, deny } = permissions();
+    assert.ok(bashRuleMatches(allow, command));
+    assert.equal(bashRuleMatches(deny, command), false);
+  });
+}
+
+test('Claude Code is denied reading every non-example env file name the docs mention', () => {
+  const { deny } = permissions();
+  for (const name of [
+    '.env',
+    '.env.local',
+    '.env.*.local',
+    '.env.development',
+    '.env.production',
+  ]) {
+    for (const dir of ['./', './**/']) {
+      assert.ok(deny.includes(`Read(${dir}${name})`), `Read(${dir}${name})`);
+    }
+  }
+  for (const name of ['.env.test', '.env.preview', '.env.staging']) {
+    for (const dir of ['./', './**/']) {
+      assert.ok(deny.includes(`Read(${dir}${name})`), `Read(${dir}${name})`);
+    }
+  }
+});
+
 test('installing the workspace installs the git hooks', () => {
   assert.equal(readJson('package.json').scripts.prepare, 'husky || exit 0');
 });
