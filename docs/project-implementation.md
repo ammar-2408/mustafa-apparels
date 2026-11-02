@@ -40,7 +40,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 2.1 `packages/db`: Drizzle + Neon client, drizzle-kit config, first migration enabling `pg_trgm` and creating `immutable_array_to_string`. Add a `postgres:18` service (Neon runs 18) and `pnpm db:migrate` to both CI jobs (removed in step 0.9 until this exists). When `db:seed` exists, add `pnpm db:seed -- --e2e` to the `e2e` job. Change the build command in `apps/web/netlify.toml` to `pnpm db:migrate && pnpm turbo build --filter=web`, and update its test (left out at step 0.11 because the script didn't exist)
 - [x] 2.2 `category` table + migration + integration test
 - [x] 2.3 `product` table: design code, import key, nullable price, pieces, piece details, collection type, dress categories, fabric, design, season, outfit style, main colour, colour family, accent colours, motifs, related design codes, care; publish-needs-price check; generated `search_vector`; indexes + tests
-- [ ] 2.4 `product_media` table: `kind`, poster, duration, bytes; one-primary index; primary-must-be-image and video-duration checks + tests
+- [x] 2.4 `product_media` table: `kind`, poster, duration, bytes; one-primary index; primary-must-be-image and video-duration checks + tests
 - [ ] 2.5 `slug_redirect`, `site_setting`, `audit_log` tables + tests
 - [ ] 2.6 `inquiry`, `wishlist_item` tables + tests
 - [ ] 2.7 PGlite test harness + factories (`makeProduct`, `makeMedia`, `makeCategory`, `makeUser`)

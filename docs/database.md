@@ -95,7 +95,7 @@ There is **no sizes column**. Suits are unstitched. Allowed filter values live i
 |---|---|---|
 | id | text PK | |
 | product_id | text → product, cascade | |
-| kind | enum `image` \| `video`, not null | |
+| kind | enum `media_kind`: `image` \| `video`, not null | |
 | url | text not null | Cloudinary delivery URL |
 | public_id | text unique not null | |
 | alt | text not null | Required for photos and videos |
