@@ -53,6 +53,13 @@ Each app loads the font in `app/fonts.ts` (`next/font/google`, served from our o
 
 Headings pair a size with `font-light`, e.g. `text-h1 font-light`; `h1`–`h3` get `text-wrap: balance`. Spaced capitals use `caps` (12px Regular 400, uppercase, `0.4em`), or `caps-tight` (`0.2em`) where they would wrap on phones, e.g. `caps-tight sm:caps`.
 
+**Focus ring:** the theme gives every `:focus-visible` element a 2px ink outline, 2px outside it (17.61:1 on cream). On ink sections add `focus-visible:outline-bg`.
+
+**Shared primitives (`packages/ui`, both apps):**
+- `Button` (`@mustafa/ui/button`): `primary` (ink with cream text) or `secondary` (ink outline). Hover swaps ink and cream. The label is in spaced capitals (`caps-tight`, `caps` from `sm`), the button is 48px tall, and `type="button"` unless set. `buttonClass(variant)` gives links the same look, for WhatsApp, Call and Email.
+- `Input` (`@mustafa/ui/input`): a visible `caps-tight` label, an optional hint, and an error tied to the field with `aria-describedby` and `aria-invalid`. The error sits in an `aria-live` region that is on the page from the start, so it is announced. The field is 48px tall with 16px text, so iOS doesn't zoom.
+- `Dialog` (`@mustafa/ui/dialog`): a native modal `<dialog>`. The browser traps focus, closes it on Esc and returns focus afterwards; the backdrop click and the 44px close button call `onClose`. It is named by its title, keeps the page gutter on phones and is 512px at most. While it is open, the page behind doesn't scroll. Pass `className` to make a side panel or bottom sheet.
+
 Radius: small or none (`--radius-sm: 2px`, the only radius token; `rounded-full` still works for round icons), to match the logo's angular shapes. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
 
 ### 1.3 Logo files

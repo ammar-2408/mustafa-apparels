@@ -76,11 +76,23 @@ describe('colour tokens', () => {
 
 describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) => {
   const base = resolve(root, `apps/${app}/app`);
-  const build = async (candidates) => {
-    const css = readFileSync(resolve(base, 'globals.css'), 'utf8');
-    const compiler = await compile(css, { base, onDependency: () => {} });
-    return compiler.build(candidates);
-  };
+  const compileApp = () =>
+    compile(readFileSync(resolve(base, 'globals.css'), 'utf8'), { base, onDependency: () => {} });
+  const build = async (candidates) => (await compileApp()).build(candidates);
+
+  test('gives every focused control the same ink focus ring', async () => {
+    const out = await build([]);
+    assert.match(
+      out,
+      /:focus-visible\s*\{\s*outline: 2px solid var\(--color-fg\);\s*outline-offset: 2px;/,
+    );
+  });
+
+  test('scans packages/ui for class names', async () => {
+    const { sources } = await compileApp();
+    const dirs = sources.map((source) => resolve(source.base, source.pattern));
+    assert.ok(dirs.includes(resolve(root, 'packages/ui/src')), dirs.join(', '));
+  });
 
   test('defines every brand token as a CSS variable, used or not', async () => {
     const out = await build([]);

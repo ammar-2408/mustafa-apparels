@@ -4,6 +4,10 @@
  * The default colour, breakpoint, radius and shadow sets are cleared, so only brand values exist.
  * `static` writes every variable to :root, so components and scripts can read any token.
  */
+
+/* The shared components in packages/ui use these utilities too. */
+@source '../../ui/src';
+
 @theme static {
   --color-*: initial;
   --color-bg: #faf7ec;
@@ -106,5 +110,16 @@
   h2,
   h3 {
     text-wrap: balance;
+  }
+
+  /* One visible ring for every control. On ink sections add focus-visible:outline-bg. */
+  :focus-visible {
+    outline: 2px solid var(--color-fg);
+    outline-offset: 2px;
+  }
+
+  /* The page behind an open modal dialog doesn't scroll. */
+  :root:has(dialog:modal) {
+    overflow: hidden;
   }
 }
