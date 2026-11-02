@@ -27,7 +27,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 **Design direction:** `docs/design.md` §9.1. Cream and ink, Montserrat, very large headings set against tiny spaced labels, and generous empty space.
 
-- [ ] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists Phase 0 review: root `lint` and `typecheck` skip `scripts/` and `.claude/hooks/` (Husky caught a lint error that `pnpm verify` missed). Add them to the root lint and typecheck (or give them their own tsconfig) and fix what shows up, in a commit before the logo copy
+- [x] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists Phase 0 review: root `lint` and `typecheck` skip `scripts/` and `.claude/hooks/` (Husky caught a lint error that `pnpm verify` missed). Add them to the root lint and typecheck (or give them their own tsconfig) and fix what shows up, in a commit before the logo copy
 - [ ] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, spacing tokens (`docs/design.md` §1.4) and the custom breakpoints (`docs/design.md` §2), in the Tailwind preset and `globals.css` + contrast unit test
 - [ ] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()` and tight leading on large headings, spaced-capitals label style
 - [ ] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
