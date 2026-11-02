@@ -13,7 +13,7 @@ Source of truth: `docs/design.md` §1. If this skill and that doc disagree, the 
 
 ## Colour tokens
 
-Components use tokens, never hard-coded colours. Tokens live in `packages/config/tailwind` and `apps/*/app/globals.css`.
+Components use tokens, never hard-coded colours. Tokens live in `packages/config/tailwind/theme.css` (Tailwind v4 `@theme static`), imported by `apps/*/app/globals.css`. Tailwind's default colours, radii and shadows are cleared: use `bg-bg`, `text-fg`, `text-muted`, `border-border-strong`, `text-error` and so on.
 
 | Token | Value | Use |
 |---|---|---|
@@ -25,8 +25,9 @@ Components use tokens, never hard-coded colours. Tokens live in `packages/config
 | `--color-border-strong` | `#8A8578` | Form fields, UI borders |
 | `--color-border` | `#D9D3C3` | Decorative lines only: too faint (1.39:1) for anything that must be seen |
 | `--color-inverse-bg` / `--color-inverse-muted` | `#111111` / `#BDB7A6` | Footer and dark sections / secondary text on them |
+| `--color-error` / `--color-success` | `#A3271B` / `#2E6B3F` | Error and success text and borders on cream or white; never the only signal |
 
-Only ink, cream and white are official; the rest are derived. Error and success colours are chosen and contrast-tested at step 1.2. Contrast must reach 4.5:1 for text and 3:1 for large text and UI.
+Only ink, cream and white are official; the rest are derived. Contrast must reach 4.5:1 for text and 3:1 for large text and UI.
 
 ## Type: Montserrat only
 
@@ -43,8 +44,8 @@ Don't use Light 300 under about 20px: it gets hard to read on phones.
 ## Spacing and shape
 
 - Use Tailwind's 4px scale, limited to 4, 8, 12, 16, 24, 32, 48, 64, 96 and 128px, with no one-off values (`docs/design.md` §1.4).
-- Tokens: `--space-gutter` for page side padding, `--space-grid` between product cards, `--space-section` between page sections.
-- Max content width: 1440px at `2xl`, 1760px at `4xl`. Layout per breakpoint: `docs/design.md` §2.
+- Tokens: `--spacing-gutter` (`px-gutter`) for page side padding, `--spacing-grid` (`gap-grid`) between product cards, `--spacing-section` (`py-section`) between page sections.
+- Max content width: 1440px at `2xl` (`max-w-content`), 1760px at `4xl` (`max-w-content-wide`). Layout per breakpoint: `docs/design.md` §2.
 - Touch targets are at least 44×44px. Respect safe areas with `env(safe-area-inset-*)`.
 - Radius is small or none (`--radius-sm: 2px`), to match the logo's angular shapes. Use `--shadow-soft` sparingly.
 

@@ -10,7 +10,7 @@ Monochrome, minimal and editorial: an angular, high-contrast MA monogram over wi
 
 ### 1.2 Tokens
 
-Tokens live in `packages/config/tailwind` (Tailwind theme reads CSS variables) and `apps/*/app/globals.css`.
+Tokens live in `packages/config/tailwind/theme.css`, a Tailwind v4 `@theme static` block that each app's `apps/*/app/globals.css` imports right after Tailwind. It clears Tailwind's default colours, breakpoints, radii and shadows, so `bg-red-500` or `rounded-xl` produce nothing and only brand values exist. Every token is also a CSS variable on `:root`. Utilities follow the token names: `bg-bg`, `bg-surface`, `text-fg`, `text-muted`, `bg-accent`, `text-accent-fg`, `border-border-strong`, `text-error`. `packages/config/test/tailwind-theme.test.mjs` checks every contrast pair below and compiles both apps' CSS.
 
 | Token | Value | Use | Contrast |
 |---|---|---|---|
@@ -24,8 +24,10 @@ Tokens live in `packages/config/tailwind` (Tailwind theme reads CSS variables) a
 | `--color-border` | `#D9D3C3` | Decorative lines only | 1.39:1 (not for anything that must be seen) |
 | `--color-inverse-bg` | `#111111` ink | Footer, dark sections | — |
 | `--color-inverse-muted` | `#BDB7A6` | Secondary text on ink | 9.43:1 on ink |
+| `--color-error` | `#A3271B` deep brick | Error text, invalid field borders | 6.84:1 on cream, 7.33:1 on white |
+| `--color-success` | `#2E6B3F` deep green | Success text | 5.95:1 on cream, 6.38:1 on white |
 
-Error and success colours are chosen and contrast-tested at step 1.2. `--color-border-strong` and `--color-muted` are derived from the logo's ink and cream; only `#111111`, `#FAF7EC` and `#FFFFFF` are official.
+Error and success are muted, deep tones so they sit with the monochrome palette. They are for text and borders on cream or white, never on ink, and never the only signal: pair them with words or an icon. `--color-border-strong` and `--color-muted` are derived from the logo's ink and cream; only `#111111`, `#FAF7EC` and `#FFFFFF` are official.
 
 **Typography:** Montserrat only, via `next/font` (self-hosted).
 | Use | Weight | Style |
@@ -36,7 +38,7 @@ Error and success colours are chosen and contrast-tested at step 1.2. `--color-b
 
 Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300 and 400. The logo pack's readme suggests Light 300 for spaced capitals, but these labels are small, so Regular 400 is the deliberate choice here.
 
-Radius: small or none (`--radius-sm: 2px`), to match the logo's angular shapes. Shadows: `--shadow-soft`, sparingly. Dark mode: not in v1.
+Radius: small or none (`--radius-sm: 2px`, the only radius token; `rounded-full` still works for round icons), to match the logo's angular shapes. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
 
 ### 1.3 Logo files
 
@@ -78,9 +80,13 @@ Generous and even, so the suits have room. Use Tailwind's 4px scale, limited to 
 
 | Token | Value | Use |
 |---|---|---|
-| `--space-gutter` | `clamp(1rem, 4vw, 3rem)` | Page side padding (16px on phones) |
-| `--space-grid` | `clamp(0.75rem, 2vw, 1.5rem)` | Gap between product cards |
-| `--space-section` | `clamp(4rem, 10vw, 10rem)` | Space between page sections |
+| `--spacing-gutter` | `clamp(1rem, 4vw, 3rem)` | Page side padding (16px on phones): `px-gutter` |
+| `--spacing-grid` | `clamp(0.75rem, 2vw, 1.5rem)` | Gap between product cards: `gap-grid` |
+| `--spacing-section` | `clamp(4rem, 10vw, 10rem)` | Space between page sections: `py-section` |
+| `--container-content` | `90rem` (1440px) | Max content width from `2xl`: `max-w-content` |
+| `--container-content-wide` | `110rem` (1760px) | Max content width from `4xl`: `max-w-content-wide` |
+
+The names use Tailwind v4's `--spacing-*` and `--container-*` namespaces so the utilities exist. Tailwind's numeric scale stays whole, because it also sizes things (`size-11` is a 44px touch target); keep padding, margins and gaps to the steps above.
 
 ### 1.5 Tone
 
@@ -297,7 +303,7 @@ References collected so far (add more as you find them):
 
 | Aspect | What it does | How we adapt it |
 |---|---|---|
-| Layout rhythm | Calm, full-screen moments alternating with large areas of empty cream. Full-bleed media, then generous white space, then type | Same rhythm with `--space-section`. One idea per screen on Home; tighter on Shop and other working pages |
+| Layout rhythm | Calm, full-screen moments alternating with large areas of empty cream. Full-bleed media, then generous white space, then type | Same rhythm with `--spacing-section`. One idea per screen on Home; tighter on Shop and other working pages |
 | Typography feel | Very large, tight headings, set against tiny labels. A wide sans at medium weight | Montserrat Light 300 at large `clamp()` sizes with tight leading (about 1), against our spaced-capital labels. No second font |
 | Fabric photos | Cloth fills the frame: folds, texture and close-ups, with almost nothing on top | Let suits fill the frame, with text beside them rather than over them. **Don't blow photos up to full-bleed:** Lajwanti's are only 384–626 px wide. Full-bleed moments use the shader or ink, until better photos arrive (`docs/claude-code-playbook.md` §6) |
 | Colour | Warm cream and dark brown, with an orange accent | Cream and ink only. No accent: hover states use ink and cream, and photos supply the colour |

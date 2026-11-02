@@ -9,6 +9,7 @@
     "./eslint/base": "./eslint/base.mjs",
     "./eslint/next": "./eslint/next.mjs",
     "./prettier": "./prettier.mjs",
+    "./tailwind/theme.css": "./tailwind/theme.css",
     "./tsconfig/base.json": "./tsconfig/base.json",
     "./tsconfig/nextjs.json": "./tsconfig/nextjs.json",
     "./vitest/app": "./vitest/app.mjs",
@@ -33,6 +34,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@tailwindcss/node": "^4.3.3",
     "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.5",
     "prettier": "^3.9.10",

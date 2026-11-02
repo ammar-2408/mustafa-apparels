@@ -1,0 +1,54 @@
+/*
+ * Brand tokens for both apps: docs/design.md §1.2 (colour), §1.4 (spacing) and §2 (breakpoints).
+ * Import it right after Tailwind in each app's globals.css.
+ * The default colour, breakpoint, radius and shadow sets are cleared, so only brand values exist.
+ * `static` writes every variable to :root, so components and scripts can read any token.
+ */
+@theme static {
+  --color-*: initial;
+  --color-bg: #faf7ec;
+  --color-surface: #ffffff;
+  --color-fg: #111111;
+  --color-muted: #5c584e;
+  --color-accent: #111111;
+  --color-accent-fg: #faf7ec;
+  --color-border-strong: #8a8578;
+  --color-border: #d9d3c3;
+  --color-inverse-bg: #111111;
+  --color-inverse-muted: #bdb7a6;
+  --color-error: #a3271b;
+  --color-success: #2e6b3f;
+
+  --breakpoint-*: initial;
+  --breakpoint-sm: 30rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+  --breakpoint-3xl: 120rem;
+  --breakpoint-4xl: 160rem;
+
+  --spacing-gutter: clamp(1rem, 4vw, 3rem);
+  --spacing-grid: clamp(0.75rem, 2vw, 1.5rem);
+  --spacing-section: clamp(4rem, 10vw, 10rem);
+
+  --container-content: 90rem;
+  --container-content-wide: 110rem;
+
+  --radius-*: initial;
+  --radius-sm: 2px;
+
+  --shadow-*: initial;
+  --shadow-soft: 0 1px 2px rgb(17 17 17 / 0.04), 0 12px 32px -12px rgb(17 17 17 / 0.12);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+  }
+}
