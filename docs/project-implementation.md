@@ -60,7 +60,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 3.4 Sign-up / login / logout pages (forms, Zod, generic errors) + E2E
 - [x] 3.5 Email verification + password reset via Resend + E2E (email mocked)
 - [x] 3.6 Breached-password check, password policy, rate limits (Better Auth + Upstash) + tests
-- [ ] 3.7 Admin auth: sign-up disabled, admin-only sign-in hook, `requireAdmin`, host-only cookies + tests
+- [x] 3.7 Admin auth: sign-up disabled, admin-only sign-in hook, `requireAdmin`, host-only cookies + tests
 - [ ] 3.8 Admin 2FA (TOTP) mandatory on first login + E2E
 - [ ] 3.9 Security headers + two-tier CSP (`docs/auth-security.md` §3): fixed policy on cached pages, `proxy.ts` nonce on dynamic routes and admin. Try experimental SRI first on a real build, and record the result + header tests incl. "no nonce on cached pages". Add them to `e2e/security/headers.spec.ts`, which already checks noindex and no `X-Powered-By` on both apps
 - [ ] 3.10 Admin `proxy.ts` gate + "customer gets 403 on every admin action" test loop. Let `/favicon.ico`, `/manifest.webmanifest` and `/brand/*` through without a session (from step 1.4), so the login page keeps its icons; `e2e/admin/icons.spec.ts` must stay green

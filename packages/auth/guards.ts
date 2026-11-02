@@ -18,3 +18,28 @@ export function requireUser<S extends SessionData>(current: S | null | undefined
 export function assertOwner(userId: string, resourceUserId: string | null | undefined) {
   if (userId !== resourceUserId) throw forbidden();
 }
+
+export type AdminSessionData = {
+  user: SessionData['user'] & { twoFactorEnabled?: boolean | null };
+  session: SessionData['session'];
+};
+
+// Where an admin request stands. Only a session the admin app created counts: the storefront has
+// no 2FA, so its sessions are never accepted here, even for an admin's account (ADR-020).
+export function adminAccess(
+  current: AdminSessionData | null | undefined,
+): 'ok' | 'signed-out' | 'forbidden' | 'needs-2fa' {
+  if (!current) return 'signed-out';
+  const { user, session } = current;
+  if (session.app !== 'admin' || user.role !== 'admin' || user.banned) return 'forbidden';
+  if (!user.twoFactorEnabled) return 'needs-2fa';
+  return 'ok';
+}
+
+// First line of every admin action and route handler: an admin with 2FA, or it throws.
+export function requireAdmin<S extends AdminSessionData>(current: S | null | undefined): S {
+  const access = adminAccess(current);
+  if (access === 'signed-out') throw unauthenticated();
+  if (access !== 'ok') throw forbidden();
+  return current!;
+}

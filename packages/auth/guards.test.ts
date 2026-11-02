@@ -1,7 +1,7 @@
 import { CoreError } from '@mustafa/core/errors';
 import { describe, expect, it } from 'vitest';
 
-import { assertOwner, requireUser } from './guards';
+import { adminAccess, assertOwner, requireAdmin, requireUser } from './guards';
 
 const session = (user: Record<string, unknown> = {}) => ({
   user: { id: 'u1', role: 'customer', banned: false, ...user },
@@ -41,5 +41,39 @@ describe('assertOwner', () => {
   it('throws FORBIDDEN for anyone else, including a missing owner', () => {
     expect(codeOf(() => assertOwner('u1', 'u2'))).toBe('FORBIDDEN');
     expect(codeOf(() => assertOwner('u1', null))).toBe('FORBIDDEN');
+  });
+});
+
+describe('adminAccess and requireAdmin', () => {
+  const admin = (user: Record<string, unknown> = {}, app = 'admin') => ({
+    user: { id: 'a1', role: 'admin', banned: false, twoFactorEnabled: true, ...user },
+    session: { app },
+  });
+
+  it('lets a signed-in admin with 2FA through', () => {
+    const current = admin();
+    expect(adminAccess(current)).toBe('ok');
+    expect(requireAdmin(current)).toBe(current);
+  });
+
+  it('treats no session as signed out', () => {
+    expect(adminAccess(null)).toBe('signed-out');
+    expect(codeOf(() => requireAdmin(null))).toBe('UNAUTHENTICATED');
+  });
+
+  it.each([
+    ['a customer', admin({ role: 'customer' })],
+    ['a banned admin', admin({ banned: true })],
+    ['a storefront session, even for an admin', admin({}, 'web')],
+    ['a session with no app recorded', admin({}, '')],
+  ])('refuses %s with FORBIDDEN', (_name, current) => {
+    expect(adminAccess(current)).toBe('forbidden');
+    expect(codeOf(() => requireAdmin(current))).toBe('FORBIDDEN');
+  });
+
+  it('sends an admin without 2FA to set it up, and refuses everything else', () => {
+    const current = admin({ twoFactorEnabled: false });
+    expect(adminAccess(current)).toBe('needs-2fa');
+    expect(codeOf(() => requireAdmin(current))).toBe('FORBIDDEN');
   });
 });

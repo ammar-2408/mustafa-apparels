@@ -32,7 +32,10 @@ On top of that, **5 failed logins per 15 minutes per IP and email**: only wrong 
 
 ### Admins
 - Separate app (`apps/admin`) at `https://admin.mustafaapparels.com`, separate host-only cookie, **sign-up disabled**. Don't enable cross-subdomain cookies: a storefront session must never be readable by admin, or the reverse.
-- Sign-in hook rejects any user whose `role !== 'admin'` (generic error).
+- Sign-in hook rejects any user whose `role !== 'admin'` (generic error). It's the admin instance's `session.create.before` hook, which runs after the password check, so a customer with the right password gets the same answer, at the same speed, as a wrong password.
+- **Admin cookies:** `ma-admin.session_token`, host-only, `HttpOnly`, `SameSite=Lax`, and `Secure` with an https URL. The storefront uses `ma.session_token`, and the admin never reads it.
+- **Session origin:** a storefront session replayed under the admin's cookie name is still refused, because `session.app` is `web` (ADR-020).
+- **Guards:** `adminAccess()` returns `ok`, `signed-out`, `forbidden` or `needs-2fa`. `requireAdmin()` throws `UNAUTHENTICATED` or `FORBIDDEN`. Pages use `requireAdminPage()`, which redirects to `/login`, or to `/setup-2fa` until 2FA is on.
 - **2FA (TOTP) mandatory**: first login forces setup; backup codes shown once.
 - First admin is created only by `pnpm db:seed` from env vars; more admins only by an existing admin (audit-logged).
 - Admin sessions: 12-hour max, re-auth required for destructive actions (purge, role change).

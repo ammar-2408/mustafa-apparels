@@ -180,6 +180,7 @@ describe('admin instance', () => {
 
   it('records admin sessions under its own cookie, lasting 12 hours without sliding', async () => {
     await signUp(webAuth(), { email: 'owner@example.com' });
+    await db.update(user).set({ role: 'admin' });
     const before = Date.now();
     const response = await post(adminAuth(), '/sign-in/email', {
       email: 'owner@example.com',

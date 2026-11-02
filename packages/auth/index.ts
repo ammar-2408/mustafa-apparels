@@ -172,10 +172,13 @@ export function createAuth({
         create: {
           before: async (data) => {
             const [owner] = await db
-              .select({ banned: user.banned })
+              .select({ banned: user.banned, role: user.role })
               .from(user)
               .where(eq(user.id, data.userId));
             if (!owner || owner.banned) throw invalidCredentials();
+            // The admin signs in admins only. This runs after the password check, so a customer
+            // gets the wrong-password answer at the same speed (docs/auth-security.md §1).
+            if (admin && owner.role !== 'admin') throw invalidCredentials();
             return {
               data: {
                 ...data,
