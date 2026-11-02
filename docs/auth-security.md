@@ -23,6 +23,7 @@
 - `apps/admin/proxy.ts` redirects every unauthenticated request to `/login`, and every page/action **also** calls `requireAdmin()` (defence in depth — the proxy alone is not trusted).
 
 ### Authorization helpers (`packages/auth/guards.ts`)
+The guards take the session the app already read, so they stay pure. Each app's `lib/auth.ts` reads it once per request (`getSession()`, wrapped in React `cache`) and offers `requireUser()` for actions and route handlers (throws `UNAUTHENTICATED`) and `requireUserPage()` for pages (redirects to `/login`). A banned user counts as signed out. The auth instance is built on first use, never at build time, and is `null` in mock mode with no database.
 ```ts
 export async function requireUser()  { /* session or throw UNAUTHENTICATED */ }
 export async function requireAdmin() { /* session + role admin + 2FA verified, or throw FORBIDDEN */ }

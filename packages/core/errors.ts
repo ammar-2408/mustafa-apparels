@@ -1,7 +1,9 @@
-// Errors core throws on purpose. Server actions map `code` to ActionResult (docs/api.md §1);
-// messages are safe to show the admin. Anything else is a bug and becomes INTERNAL.
+// Errors thrown on purpose, by core and by the auth guards. Server actions map `code` to
+// ActionResult (./action-result.ts, docs/api.md §1); messages are safe to show.
+// Anything else is a bug and becomes INTERNAL.
 
-export type CoreErrorCode = 'NOT_FOUND' | 'CONFLICT' | 'VALIDATION';
+export type CoreErrorCode =
+  'NOT_FOUND' | 'CONFLICT' | 'VALIDATION' | 'UNAUTHENTICATED' | 'FORBIDDEN' | 'RATE_LIMITED';
 export type FieldErrors = Record<string, string[]>;
 
 export class CoreError extends Error {
@@ -17,6 +19,13 @@ export class CoreError extends Error {
 }
 
 export const notFound = (what: string) => new CoreError('NOT_FOUND', `${what} not found`);
+
+export const unauthenticated = () => new CoreError('UNAUTHENTICATED', 'Please log in to continue.');
+
+export const forbidden = () => new CoreError('FORBIDDEN', "You don't have access to this.");
+
+export const rateLimited = () =>
+  new CoreError('RATE_LIMITED', 'Too many attempts. Please try again in a few minutes.');
 
 export const invalid = (fieldErrors: FieldErrors) =>
   new CoreError('VALIDATION', 'Check the highlighted fields', fieldErrors);

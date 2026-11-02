@@ -210,3 +210,10 @@ describe('options', () => {
     await expect(ctx.internalAdapter.createSession('no-such-user', false)).rejects.toThrow();
   });
 });
+
+describe('route', () => {
+  it('answers the health check', async () => {
+    const response = await webAuth().handler(new Request('http://localhost:3000/api/auth/ok'));
+    expect(response.status).toBe(200);
+  });
+});

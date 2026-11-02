@@ -14,6 +14,8 @@ The apps talk to the server in two ways:
 5. Revalidate caches / write audit log.
 6. Return a typed result.
 
+Guards and core throw `CoreError` (`packages/core/errors.ts`), with codes `NOT_FOUND`, `CONFLICT`, `VALIDATION`, `UNAUTHENTICATED`, `FORBIDDEN` and `RATE_LIMITED`. `toActionError()` in `packages/core/action-result.ts` turns one into an `ActionResult` with its safe message, and anything else into `INTERNAL` with a generic message, so SQL or stack details never reach the browser.
+
 **Result type for server actions**
 ```ts
 type ActionResult<T> =
@@ -40,7 +42,7 @@ Messages are safe to show users; never include stack traces, SQL or whether an e
 ### Route handlers
 | Route | Method | Purpose | Auth | Notes |
 |---|---|---|---|---|
-| `/api/auth/[...all]` | GET, POST | Better Auth: sign-up, sign-in, sign-out, session, verify email, forgot/reset password | — | Better Auth built-in rate limits on |
+| `/api/auth/[...all]` | GET, POST | Better Auth: sign-up, sign-in, sign-out, session, verify email, forgot/reset password | — | Better Auth built-in rate limits on. **503** `UNAVAILABLE` in mock mode with no database (a fresh preview) |
 | `/api/search/suggest?q=` | GET | Top 6 product/collection suggestions | none | 30 / min / IP; `q` 2–60 chars; `Cache-Control: s-maxage=60` |
 | `/api/suits` | GET | Card data for every published suit, for filtering and sorting in the browser (ADR-018) | none | Cached and revalidated with the `products` tag, so it does no per-request work. Published suits only. Loaded the first time a shopper filters or sorts |
 | `/api/revalidate` | POST | Clear storefront cache tags after admin changes | HMAC | See §4 |
