@@ -2,6 +2,8 @@
 // another brand; remove one only with that brand's written permission.
 // Matching ignores case, accents and punctuation, and finds whole names only, with or without
 // spaces inside them: "Maria.B", "MARIAB" and "so-kamal" match, "Khaddar" and "also Kamal" don't.
+import './zod-config';
+
 import { z } from 'zod';
 
 export const BANNED_TERMS = [

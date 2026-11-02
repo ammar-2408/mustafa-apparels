@@ -1,5 +1,7 @@
 // Site settings, one schema per key (docs/database.md §2 site_setting). The shop is online
 // only, so there is no address or opening-hours setting.
+import './zod-config';
+
 import { z } from 'zod';
 
 import { noBannedTerms } from './banned-terms';

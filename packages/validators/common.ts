@@ -1,6 +1,8 @@
 // Field schemas shared by the other validators.
 // Update schemas are built from fields with no .default(): Zod 4 applies a default even inside
 // .partial(), which would reset fields an update never sent. Defaults belong on create schemas.
+import './zod-config';
+
 import { z } from 'zod';
 
 import { noBannedTerms } from './banned-terms';

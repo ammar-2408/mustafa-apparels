@@ -105,13 +105,25 @@ frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
 ```
 **Trade-off:** `'unsafe-inline'` weakens protection against injected scripts on these pages. To compensate: they render no user-supplied HTML, the only `dangerouslySetInnerHTML` is JSON-LD through `serializeJsonLd()`, and login and account pages sit in Tier B.
 
-Step 3.9 **first tries experimental SRI** (`experimental.sri`) with `script-src 'self'` against a real production build, including Next's inline bootstrap scripts and GA4. Use it only if every template works with no CSP errors. If not, ship the policy above.
+Step 3.9 tried **experimental SRI** first (`experimental.sri`, sha256) with `script-src 'self'`, against a real production build of the storefront (Next 16.4.3, 2026-11-02):
+- **What SRI covered:** it added `integrity` to the 6 external scripts on `/`.
+- **What it didn't:** Next's 3 inline bootstrap scripts were still blocked, giving 3 violations.
+- **Outcome:** SRI can't replace `'unsafe-inline'` on cached pages, so the policy above ships. Try again if Next starts hashing its inline scripts.
 
 **Tier B: dynamic pages** (`/search`, `/account/*`, `/login`, `/register`, password pages). `proxy.ts` sets a per-request nonce, and its `matcher` lists only these paths, so it never runs on cached pages:
 ```
 script-src 'self' 'nonce-{NONCE}' 'strict-dynamic';
 (other directives as Tier A)
 ```
+
+**As built (step 3.9):**
+- **Builders:** `packages/config/headers.ts` has `securityHeaders()`, `cspTierA()`, `nonceCsp()` and `TIER_B_PATHS`.
+- **Tier A:** set in `next.config.ts` on `TIER_A_SOURCE`, which matches every path except the Tier B ones, so a page never gets two policies.
+- **Tier B:** `apps/web/proxy.ts` makes a fresh nonce per request. Its matcher is a literal copy of `TIER_B_PATHS`, and a test keeps them equal and checks that no cached path matches.
+  - Tier B pages render per request, through `await connection()` or by reading the session, so Next can put the nonce on its scripts.
+  - The admin's root layout does the same.
+- **Development:** only there, both tiers add `'unsafe-eval'` for fast refresh.
+- **Zod:** Zod 4 probes for `new Function`, which the browser reports as a violation. So `packages/validators/zod-config.ts` turns on `jitless` parsing, and every schema module imports it first.
 
 **Admin app:** nonce on every route (it's dynamic anyway). No GA4.
 ```

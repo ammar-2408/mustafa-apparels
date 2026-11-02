@@ -2,6 +2,7 @@ import './globals.css';
 
 import { brandIcons, brandViewport } from '@mustafa/config/brand';
 import type { Metadata, Viewport } from 'next';
+import { connection } from 'next/server';
 import type { ReactNode } from 'react';
 
 import { montserrat } from './fonts';
@@ -13,7 +14,9 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = brandViewport;
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+// Every admin page renders per request, so Next can put proxy.ts's nonce on its scripts.
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  await connection();
   return (
     <html lang="en" className={montserrat.variable}>
       <body>{children}</body>

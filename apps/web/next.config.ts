@@ -1,12 +1,16 @@
 import { loadEnvFiles } from '@mustafa/config/env';
-import { robotsHeaders } from '@mustafa/config/headers';
+import { robotsHeaders, webHeaders } from '@mustafa/config/headers';
 import type { NextConfig } from 'next';
 
 loadEnvFiles();
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  headers: async () => robotsHeaders('web'),
+  // Security headers and Tier A's fixed CSP; Tier B pages get theirs from proxy.ts.
+  headers: async () => [
+    ...webHeaders({ dev: process.env.NODE_ENV === 'development' }),
+    ...robotsHeaders('web'),
+  ],
 };
 
 export default nextConfig;

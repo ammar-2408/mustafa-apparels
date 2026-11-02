@@ -1,5 +1,7 @@
 // Pakistani mobile numbers, stored as E.164 (docs/database.md §7). Mobiles only, because the
 // shop replies on WhatsApp.
+import './zod-config';
+
 import { z } from 'zod';
 
 export function toPkMobile(raw: string): string | null {

@@ -1,5 +1,7 @@
 // Search, suggestion and list filters (docs/api.md §2). Every filter takes a list of values:
 // a suit matches any value within one filter, and every filter that is set.
+import './zod-config';
+
 import { z } from 'zod';
 
 import {

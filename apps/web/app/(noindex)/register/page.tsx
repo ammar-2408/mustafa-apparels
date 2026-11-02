@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { connection } from 'next/server';
 
 import { RegisterForm } from '../../../components/auth/register-form';
 import { buildMetadata } from '../../../lib/seo';
@@ -12,7 +13,9 @@ export const metadata = buildMetadata({
   nofollow: true,
 });
 
-export default function RegisterPage() {
+// Per request, so proxy.ts's CSP nonce reaches Next's scripts (Tier B).
+export default async function RegisterPage() {
+  await connection();
   return (
     <>
       <p className="caps-tight text-muted sm:caps">Account</p>

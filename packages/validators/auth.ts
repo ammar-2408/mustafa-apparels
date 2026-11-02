@@ -1,5 +1,7 @@
 // Sign-up and sign-in forms (docs/auth-security.md §1), shared by the browser and Better Auth's
 // sign-up hook. Password policy: 10 to 128 characters, no composition rules.
+import './zod-config';
+
 import { z } from 'zod';
 
 export const PASSWORD_MIN = 10;
