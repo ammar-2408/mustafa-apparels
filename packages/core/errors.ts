@@ -21,14 +21,15 @@ export const notFound = (what: string) => new CoreError('NOT_FOUND', `${what} no
 export const invalid = (fieldErrors: FieldErrors) =>
   new CoreError('VALIDATION', 'Check the highlighted fields', fieldErrors);
 
-// Postgres error codes, from the error or the cause Drizzle wraps it in.
-const pgCode = (error: unknown): string | undefined => {
+// A field of the Postgres error, or of the cause Drizzle wraps it in.
+const pgField = (error: unknown, field: 'code' | 'constraint'): string | undefined => {
   for (let e = error; e && typeof e === 'object'; e = (e as { cause?: unknown }).cause) {
-    const code = (e as { code?: unknown }).code;
-    if (typeof code === 'string') return code;
+    const value = (e as Record<string, unknown>)[field];
+    if (typeof value === 'string') return value;
   }
   return undefined;
 };
 
-export const isUniqueViolation = (error: unknown) => pgCode(error) === '23505';
-export const isForeignKeyViolation = (error: unknown) => pgCode(error) === '23503';
+export const isUniqueViolation = (error: unknown) => pgField(error, 'code') === '23505';
+export const isForeignKeyViolation = (error: unknown) => pgField(error, 'code') === '23503';
+export const violatedConstraint = (error: unknown) => pgField(error, 'constraint');

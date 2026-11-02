@@ -6,7 +6,8 @@
   "exports": {
     "./audit": "./audit/index.ts",
     "./categories": "./categories/index.ts",
-    "./errors": "./errors.ts"
+    "./errors": "./errors.ts",
+    "./products": "./products/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
