@@ -1,6 +1,16 @@
 # Testing & QA
 
-**Rule:** every change ships with tests for every case and scenario it affects — happy path, edge cases, invalid input, unauthorized access, and failure of external services. Tests are written **first**, run, seen failing, then made to pass.
+**Rule:** every change ships with tests for the real behaviour it affects and its important edge cases — invalid input, unauthorized access, failure of external services, and the boundaries that could break. Not every imaginable case: skip tests that repeat another test or only check the framework. Tests are written **first**, run, seen failing, then made to pass. Docs-only changes need none.
+
+**Where tests run** (checks run once per level, not repeated):
+
+| Where | What runs |
+|---|---|
+| Locally, per change | `pnpm verify` once (in `ship-change`), plus E2E for the touched pages on `mobile-small` and `laptop`. Docs-only changes: nothing. |
+| Husky on commit | lint-staged and typecheck. The Claude commit hook only refuses `--no-verify` |
+| CI on every push | Everything: lint, typecheck, unit + integration, build, all 7 device projects, SEO, a11y and security suites |
+| Locally, end of a phase | The full set once: all 7 projects, `pnpm test:seo`, `pnpm test:a11y`, `e2e/security` |
+| Review agents | End of Phase 3 and Phase 6 (`code-reviewer`, `qa-tester`, `security-auditor`), end of Phase 7 (`seo-auditor`), and all four before launch |
 
 ## 1. Test pyramid and tools
 
@@ -31,7 +41,9 @@
 
 Every responsive test asserts: no horizontal overflow (`document.documentElement.scrollWidth <= innerWidth`), header/menu usable, product grid column count as designed, primary CTA visible without overlap. One extra check loads each page template at 320px wide and asserts no horizontal overflow, because the design promises support down to 320px.
 
-## 3. Required test cases by feature
+## 3. Test cases by feature
+
+These are the cases that can go wrong. Write the ones the change can break; you don't need every line for every change.
 
 ### Catalogue & product
 - Published products appear; drafts/archived/deleted never appear (list, search, sitemap, direct URL → 404).
@@ -155,13 +167,13 @@ For every URL in the sitemap plus representative noindex pages:
 
 ## 6. CI pipeline (`.github/workflows/ci.yml`)
 
-On every push and PR: install → lint → typecheck → migrate a fresh Postgres container → unit + integration (coverage) → build both apps → `pnpm audit --prod` → Playwright (all projects: E2E, responsive, SEO, a11y, security) against the built apps → Lighthouse CI on PRs to `main`. External services run in `INTEGRATIONS_MODE=mock`. Any failure means no merge to `main`. The Postgres and migrate stages join the workflow at step 2.1, and Lighthouse at step 9.2.
+On every push and PR (this is where the full 7-device, SEO, a11y and security runs happen): install → lint → typecheck → migrate a fresh Postgres container → unit + integration (coverage) → build both apps → `pnpm audit --prod` → Playwright (all projects: E2E, responsive, SEO, a11y, security) against the built apps → Lighthouse CI on PRs to `main`. External services run in `INTEGRATIONS_MODE=mock`. Any failure means no merge to `main`. The Postgres and migrate stages join the workflow at step 2.1, and Lighthouse at step 9.2.
 
 ## 7. Release QA checklist (before merging `develop` → `main`)
 
 - [ ] CI green on the merge commit
 - [ ] Check the Netlify credit balance: is there room for this merge? (`docs/deployment.md` §3)
-- [ ] `seo-auditor` and `security-auditor` agents report no blockers
+- [ ] The pre-launch review agents (`code-reviewer`, `qa-tester`, `security-auditor`, `seo-auditor`) report no blockers. For a merge before launch, CI green is enough; the agents already ran at the end of Phases 3 and 6
 - [ ] Manual pass on a real Android phone and an iPhone (Safari): home, collection, product with video, inquiry, WhatsApp button, login
 - [ ] Lighthouse mobile: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO = 100
 - [ ] Rich Results Test passes for a product page
