@@ -114,7 +114,7 @@ Rules:
 - Partial unique index: one `is_primary = true` per product.
 - Check: `is_primary = false OR kind = 'image'`. The main item is always a photo, because it feeds LCP, the share image and JSON-LD.
 - Check: `kind = 'image' OR (duration_seconds IS NOT NULL AND duration_seconds <= 60)`.
-- Publishing (`core.products.setStatus`) requires a price, a colour, a main image and alt text on all media, and refuses any product whose media or text fails §9.
+- Publishing (`core.products.setStatus`) requires a price, a colour, a main image and alt text on all media, and refuses any product whose media or text fails §9. Every problem comes back at once, by field (`price`, `colorFamily`, `media`, or the text field with the brand name). `published_at` is set on the first publish only. An archived suit must be restored to a draft before it can be published. `setStatus` is the only way the status changes (`core/products/publish.ts` holds the rules).
 
 **`slug_redirect`**: id, entity (enum `redirect_entity`: `product` \| `category`), old_slug (unique per entity), target_id (indexed; no foreign key, because it points at either table), created_at. Written automatically when a slug changes; used for 301s so canonicals never point at dead URLs. A slug that comes back into use, by a rename back or a new page, deletes its redirect, so a live page always wins. A collection redirect resolves only to a visible collection.
 

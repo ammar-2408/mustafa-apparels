@@ -23,6 +23,7 @@ import {
 } from '../errors';
 import { claimSlug, moveSlug, redirectTarget } from '../redirects';
 import { filterConditions } from './filters';
+import { publishErrors } from './publish';
 
 export const PAGE_SIZE = 24;
 
@@ -359,16 +360,42 @@ export async function duplicate(db: Database, id: string, actor: Actor) {
   });
 }
 
-async function moveTo(
+type Status = Product['status'];
+
+const ACTIONS: Record<Status, Partial<Record<Status, string>>> = {
+  draft: { published: 'product.publish', archived: 'product.archive' },
+  published: { draft: 'product.unpublish', archived: 'product.archive' },
+  archived: { draft: 'product.restore' },
+};
+
+// The only way a suit's status changes (docs/api.md §3 setProductStatus). Publishing checks
+// every rule in publish.ts; an archived suit is restored to a draft before it can be published.
+export async function setStatus(
   db: Database,
-  id: string,
-  status: 'archived' | 'draft',
-  action: string,
+  { id, status }: { id: string; status: Status },
   actor: Actor,
 ) {
   return db.transaction(async (tx) => {
     const before = await lockLive(tx, id);
-    const [row] = await tx.update(product).set({ status }).where(eq(product.id, id)).returning();
+    if (before.status === status) return before;
+    const action = ACTIONS[before.status][status];
+    if (!action) throw invalid({ status: ['Restore the suit, then publish it'] });
+
+    const changes: Partial<Product> = { status };
+    if (status === 'published') {
+      const media = await tx
+        .select({
+          kind: productMedia.kind,
+          alt: productMedia.alt,
+          isPrimary: productMedia.isPrimary,
+        })
+        .from(productMedia)
+        .where(eq(productMedia.productId, id));
+      const errors = publishErrors(before, media);
+      if (Object.keys(errors).length > 0) throw invalid(errors);
+      changes.publishedAt = before.publishedAt ?? new Date();
+    }
+    const [row] = await tx.update(product).set(changes).where(eq(product.id, id)).returning();
     await record(tx, actor, {
       action,
       entity: 'product',
@@ -380,8 +407,8 @@ async function moveTo(
 }
 
 export const archive = (db: Database, id: string, actor: Actor) =>
-  moveTo(db, id, 'archived', 'product.archive', actor);
+  setStatus(db, { id, status: 'archived' }, actor);
 
 // A restored suit comes back as a draft, to be checked and published again.
 export const restore = (db: Database, id: string, actor: Actor) =>
-  moveTo(db, id, 'draft', 'product.restore', actor);
+  setStatus(db, { id, status: 'draft' }, actor);
