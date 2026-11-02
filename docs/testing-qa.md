@@ -154,8 +154,8 @@ For every URL in the sitemap plus representative noindex pages:
 
 ## 4. Test data
 
-- Factories in `packages/core/test/factories.ts` (`makeProduct()`, `makeCategory()`, `makeUser({ role })`, `makeMedia({ kind })`).
-- Integration tests: each test file gets a fresh schema (PGlite) or transaction rolled back after each test.
+- Factories in `packages/core/test/factories.ts`, each taking the db first: `makeProduct(db, { published })`, `makeCategory(db)`, `makeUser(db, { role })`, `makeMedia(db, { productId, kind })`. Every call makes a unique, valid row; `published: true` also meets every publish rule, with a main photo and alt text.
+- Integration tests: each test file starts one PGlite with `createTestDb()` from `@mustafa/db/testing` (the real migrations, plus `pg_trgm`), and calls `resetTestDb(db)` in `afterEach` to empty every table. The `library` Vitest preset allows 30 s per test and hook, because PGlite can take seconds to start under load.
 - E2E: CI starts a throwaway Postgres container, runs migrations + `db:seed --e2e`, and discards it after. (Locally you can point E2E at a Neon `test` branch instead.)
 - External services mocked at the network boundary (MSW) in unit/integration; real test keys only in a nightly E2E job.
 
