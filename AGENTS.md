@@ -52,10 +52,11 @@ pnpm dev --filter web     # run one app
 pnpm lint                 # ESLint
 pnpm typecheck            # tsc --noEmit across workspace
 pnpm test                 # Vitest unit + integration
-pnpm test:e2e             # Playwright (all devices)
+pnpm test:e2e             # Playwright (all 7 devices): CI, and locally at the end of a phase
+pnpm exec playwright test <spec> --project=mobile-small --project=laptop   # local run for a change
 pnpm test:seo             # SEO/canonical suite (Playwright)
 pnpm test:a11y            # axe accessibility checks
-pnpm verify               # lint + typecheck + test + build  (run before every commit)
+pnpm verify               # lint + typecheck + test + build  (once per change, before the commit; not for docs-only changes)
 pnpm db:generate          # create a migration from schema changes
 pnpm db:migrate           # apply migrations
 pnpm db:seed              # seed collections, contact details, first admin
@@ -92,12 +93,16 @@ Public routes: `/`, `/shop`, `/shop/page/[n]`, `/collections/[slug]`, `/collecti
 For every change:
 
 1. **Understand**: read the relevant doc(s) in section 9. State the change in 1–3 lines before coding.
-2. **Test first**: write or update the test(s) that prove the change (unit, integration or E2E — see `docs/testing-qa.md`). Run them and watch them fail.
+2. **Test first**: write or update the test(s) that prove the change (unit, integration or E2E — see `docs/testing-qa.md`). Cover the real behaviour and the important edge cases, not every imaginable case. Run them and watch them fail. A docs-only change needs no test.
 3. **Implement** the smallest code that makes them pass.
-4. **Verify**: run `pnpm verify` plus any E2E suite the change touches. All green, zero warnings ignored.
+4. **Verify, once**: run `pnpm verify` one time. For a UI change, also run E2E for the pages it touches, on `mobile-small` and `laptop` only. CI runs all 7 devices and the SEO, a11y and security suites on every push; run those in full locally only at the end of a phase. **Docs-only changes** (`docs/`, `.claude/`, other Markdown no test reads) skip verify and E2E. All green, zero warnings ignored.
 5. **Docs**: if behaviour, schema, API or setup changed, update the matching doc in the same commit.
 6. **Commit** with Conventional Commits: `feat(web): add product image gallery`, `fix(admin): ...`, `test(seo): ...`, `docs: ...`, `chore: ...`.
-7. **Push** to the current branch (`develop` by default). Then report: what changed, which tests ran, the commit hash.
+7. **Push** to the current branch (`develop` by default). Then report briefly: change, tests run, commit, next step, and anything the owner must do.
+
+**Tool quirks:** don't spend more than about 10 minutes on one. Record it in `docs/debugging.md` and move on, unless it blocks the step.
+
+**Review agents** (`code-reviewer`, `qa-tester`, `security-auditor`) run only at the end of Phase 3, at the end of Phase 6 and before launch. `seo-auditor` runs at the end of the SEO phase (Phase 7) and before launch.
 
 If a test fails and you cannot fix it within the change, **stop and report** — never skip, delete or `.only`/`.skip` a test to get green, and never commit with failing tests.
 
@@ -108,8 +113,8 @@ Branches: work on `develop` (every push gets a preview deploy at no deploy cost)
 ## 6. Definition of Done (every change)
 
 - [ ] Tests written for the new behaviour, including edge and failure cases
-- [ ] `pnpm verify` passes; relevant E2E suites pass
-- [ ] Works at 360px, 768px, 1280px, 1920px and 2560px widths (if UI)
+- [ ] `pnpm verify` passes once (skipped for docs-only changes); E2E for the touched pages passes on `mobile-small` and `laptop`
+- [ ] Works at 360px, 768px, 1280px, 1920px and 2560px widths (if UI): checked at 360 and 1366 locally; the other widths are covered by CI and the end-of-phase run
 - [ ] Keyboard accessible, visible focus, `prefers-reduced-motion` respected (if UI/motion/video)
 - [ ] No secrets in code; inputs validated with Zod; auth checked on the server (if server code)
 - [ ] SEO rules in section 8 hold (if a public page)
@@ -179,7 +184,7 @@ Full details: `docs/design.md` §8, `docs/seo-geo.md` and `.claude/skills/seo-gu
 
 ## 10. Never
 
-- Never push code that fails `pnpm verify`.
+- Never push code that fails `pnpm verify` (docs-only changes have nothing to verify).
 - Never change the stack, add a paid service, or add a dependency over ~50 kB gzipped to the client without asking.
 - Never copy code, images, logos, fonts or text from reference websites. Use them for ideas only and build original work.
 - Never name another fashion brand in customer-facing text, or copy text from the stock posters.
