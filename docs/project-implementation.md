@@ -27,11 +27,11 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 **Design direction:** `docs/design.md` §9.1. Cream and ink, Montserrat, very large headings set against tiny spaced labels, and generous empty space.
 
-- [ ] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists
+- [ ] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists Phase 0 review: root `lint` and `typecheck` skip `scripts/` and `.claude/hooks/` (Husky caught a lint error that `pnpm verify` missed). Add them to the root lint and typecheck (or give them their own tsconfig) and fix what shows up, in a commit before the logo copy
 - [ ] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, spacing tokens (`docs/design.md` §1.4) and the custom breakpoints (`docs/design.md` §2), in the Tailwind preset and `globals.css` + contrast unit test
 - [ ] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()` and tight leading on large headings, spaced-capitals label style
 - [ ] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
-- [ ] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests
+- [ ] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests Phase 0 review: the app test setup never calls Testing Library's `cleanup()` between tests, so rendered pages pile up. Add it (an `afterEach(cleanup)` in the shared Vitest setup, or turn on globals) with a test that fails without it, before the first component test here
 - [ ] 1.6 `packages/ui` primitives in the brand style: Button, Input, Dialog, with focus rings + tests
 - [ ] 1.7 Default Open Graph image wired up in `apps/web` (`/brand/social/og-share-image-1200x630.png`) + test
 - [ ] 1.8 `SITE_URL` + `canonicalUrl()` + `buildMetadata()` helpers in `apps/web/lib/seo.ts` + unit tests, incl. title suffix dropped past 60 and description trimmed at a word boundary to 160. Built here so every later page can use them
@@ -64,7 +64,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 3.8 Admin 2FA (TOTP) mandatory on first login + E2E
 - [ ] 3.9 Security headers + two-tier CSP (`docs/auth-security.md` §3): fixed policy on cached pages, `proxy.ts` nonce on dynamic routes and admin. Try experimental SRI first on a real build, and record the result + header tests incl. "no nonce on cached pages". Add them to `e2e/security/headers.spec.ts`, which already checks noindex and no `X-Powered-By` on both apps
 - [ ] 3.10 Admin `proxy.ts` gate + "customer gets 403 on every admin action" test loop
-- [ ] 3.11 `security-auditor` agent pass; fix findings (one commit each)
+- [ ] 3.11 `security-auditor` agent pass; fix findings (one commit each) Also close these Phase 0 review items first: (a) `Bash(pnpm add *)` and `Bash(npx -y skills add *)` are allowed without asking in `.claude/settings.json`, so move them to ask (a new dependency or skill should be a decision); (b) `protect-files.mjs` covers Edit and Write only, so a file written through a shell command (`echo >`, `sed -i`, `tee`) bypasses it: add the same path checks for Bash writes to protected files, or note the limit in `docs/auth-security.md`. Run `code-reviewer`, `qa-tester` and `security-auditor` together here, as the end-of-Phase-3 review
 
 ## Phase 4 — Admin panel
 - [ ] 4.1 Admin layout (sidebar, responsive), dashboard counts. Server actions must live in files named `actions.ts` (or `route.ts` for handlers) so the 80% coverage floor applies, or extend the coverage pattern in `packages/config/vitest/app.mjs`
@@ -112,7 +112,7 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 6.11 Static pages: About, Contact (no map or address), How to Order, FAQ, Privacy (incl. GA4), Terms. Text in `TODO-OWNER` areas stays placeholder until the owner supplies it
 - [ ] 6.12 Branded 404 + error pages with correct status codes
 - [ ] 6.13 Home page layout sections, static (no motion yet)
-- [ ] 6.14 Responsive suite passes on all 6 device projects; a11y suite passes. Check real imports in a local storefront at 3:4: grid crop from the top, whole photo in the gallery
+- [ ] 6.14 Responsive suite passes on all 6 device projects; a11y suite passes. Check real imports in a local storefront at 3:4: grid crop from the top, whole photo in the gallery End of Phase 6: also run the `code-reviewer`, `qa-tester` and `security-auditor` agents on everything since the Phase 3 review, then fix blockers one change at a time
 
 ## Phase 7 — SEO, GEO and analytics
 - [ ] 7.2 Metadata on every page (title, description, canonical, robots), using the step 1.8 helpers: fill any gaps
@@ -150,7 +150,7 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 9.2 Lighthouse CI budgets enforced in CI: add `.lighthouserc.json` (perf ≥ 0.9, a11y ≥ 0.95, SEO = 1) and a `lighthouse` job on PRs to `main` (removed in step 0.9 until this exists). If `playwright install --with-deps` fails on CI, pin the runner to `ubuntu-24.04`
 - [ ] 9.3 Error tracking + structured logging
 - [ ] 9.4 Caching check: home, collection and product pages served from cache; measure a real page's Netlify bandwidth and requests, and update the estimate in `docs/deployment.md` §3
-- [ ] 9.5 Dependency audit, Renovate/Dependabot config, secret scanning on
+- [ ] 9.5 Dependency audit, Renovate/Dependabot config, secret scanning on Phase 0 review: (a) pin the MCP servers in `.mcp.json` to exact versions instead of `@latest`; (b) pin the GitHub Actions in `.github/workflows/ci.yml` to exact versions (or full commit SHAs) and let Renovate/Dependabot update them; (c) GitHub secret scanning isn't available on this plan, so don't turn it on here: use a local scanner (for example gitleaks in Husky or CI) and correct the "secret scanning" lines in `docs/auth-security.md` (two places) and `docs/launch-checklist.md` (§ with the "No secrets in git" item)
 - [ ] 9.6 `code-reviewer` + `security-auditor` + `seo-auditor` final pass
 - [ ] 9.7 Weekly DB backup workflow
 
