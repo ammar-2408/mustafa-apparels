@@ -59,7 +59,7 @@ Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `no
 | price | integer **nullable**, check ≥ 0 | **whole PKR** (no floats for money). Null only on drafts |
 | compare_at_price | integer nullable | shows "was" price; check > price |
 | currency | char(3) default `'PKR'` | |
-| category_id | text → category, not null | The collection |
+| category_id | text → category, not null | The collection. `on delete restrict`: a collection that still has suits can't be deleted |
 | pieces | enum `two_piece` \| `three_piece`, not null | Filterable |
 | piece_details | jsonb default `[]` | `[{ "piece": "shirt", "fabric": "Dhanak", "finish": "Embroidered", "length_m": 3 }, ...]`. Pieces: `shirt`, `dupatta`, `trouser`. `fabric`, `finish` and `length_m` are optional. `length_m` is the fabric length in metres |
 | collection_type | text nullable | Display tag, e.g. `Premium`. Not a filter |
@@ -172,7 +172,7 @@ searchVector: tsvector('search_vector').generatedAlwaysAs(
               immutable_array_to_string(${product.motifs}, ' ')), 'C')`
 ),
 ```
-- Use the `'simple'` text config (works for English and local fabric names like khaddar; no wrong stemming).
+- Use the `'simple'` text config (works for English and local fabric names like khaddar; no wrong stemming). It splits a design code such as `KDR-13` into `kdr` and `-13`, so exact codes are matched on `design_code`, not the vector.
 - Collection name is matched with a join, not stored in the vector (so renaming a collection needs no backfill).
 
 Query shape (in `packages/core/search`):
