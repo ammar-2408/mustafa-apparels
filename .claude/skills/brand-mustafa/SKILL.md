@@ -58,7 +58,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in whic
 
 | Place | Logo | Minimum height |
 |---|---|---|
-| Desktop header | Secondary, black | 40px (use 48px) |
+| Desktop header | Secondary, black | 40px (use 48px from `md`, 64px from `lg`) |
 | Mobile header | Submark, black | 24px (use 32px) |
 | Sticky header on scroll | Simplified, black | 28px |
 | Footer on ink | Primary, white | 120px (use 140px) |
