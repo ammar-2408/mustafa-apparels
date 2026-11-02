@@ -70,6 +70,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in whic
 | Text | Value |
 |---|---|
 | Public name, manifest `name` and `short_name` | `Mustafa Apparels` |
+| Admin manifest `name` / `short_name` | `Mustafa Apparels Admin` / `MA Admin` |
 | Primary and secondary `alt` | `MA Apparels by Mustafa Ahmed` |
 | Simplified and submark `alt` | `MA Apparels` |
 | Home link `aria-label` | `Mustafa Apparels home` |

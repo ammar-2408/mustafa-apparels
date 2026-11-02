@@ -1,4 +1,4 @@
-// The logo files each app serves from public/brand/ (docs/design.md §1.3), copied unchanged.
+// The logo files each app serves from public/ (docs/design.md §1.3), copied unchanged.
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -9,9 +9,9 @@ import { test } from 'vitest';
 const fromRoot = (file) => fileURLToPath(new URL(`../${file}`, import.meta.url));
 const PACK = 'mustafa-apparels-logos/mustafa-apparels-logos';
 
+// favicon.ico sits at public/favicon.ico instead, where browsers ask for it.
 const FAVICONS = [
   'favicon.svg',
-  'favicon.ico',
   'favicon-32.png',
   'apple-touch-icon-180.png',
   'icon-192.png',
@@ -44,6 +44,12 @@ const listFiles = (dir) =>
 
 for (const [app, folders] of Object.entries(BRAND)) {
   const brandDir = `apps/${app}/public/brand`;
+
+  test(`${app} serves favicon.ico from the site root, unchanged from the logo pack`, () => {
+    const copy = fromRoot(`apps/${app}/public/favicon.ico`);
+    assert.ok(existsSync(copy), `apps/${app}/public/favicon.ico is missing`);
+    assert.ok(readFileSync(copy).equals(readFileSync(fromRoot(`${PACK}/favicon/favicon.ico`))));
+  });
 
   test(`${app} has exactly the logo files docs/design.md lists`, () => {
     assert.ok(existsSync(fromRoot(brandDir)), `${brandDir} is missing`);

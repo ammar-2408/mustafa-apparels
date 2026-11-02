@@ -30,7 +30,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists Phase 0 review: root `lint` and `typecheck` skip `scripts/` and `.claude/hooks/` (Husky caught a lint error that `pnpm verify` missed). Add them to the root lint and typecheck (or give them their own tsconfig) and fix what shows up, in a commit before the logo copy
 - [x] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, spacing tokens (`docs/design.md` §1.4) and the custom breakpoints (`docs/design.md` §2), in the Tailwind preset and `globals.css` + contrast unit test
 - [x] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()` and tight leading on large headings, spaced-capitals label style
-- [ ] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
+- [x] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
 - [ ] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests Phase 0 review: the app test setup never calls Testing Library's `cleanup()` between tests, so rendered pages pile up. Add it (an `afterEach(cleanup)` in the shared Vitest setup, or turn on globals) with a test that fails without it, before the first component test here
 - [ ] 1.6 `packages/ui` primitives in the brand style: Button, Input, Dialog, with focus rings + tests
 - [ ] 1.7 Default Open Graph image wired up in `apps/web` (`/brand/social/og-share-image-1200x630.png`) + test
@@ -63,7 +63,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 3.7 Admin auth: sign-up disabled, admin-only sign-in hook, `requireAdmin`, host-only cookies + tests
 - [ ] 3.8 Admin 2FA (TOTP) mandatory on first login + E2E
 - [ ] 3.9 Security headers + two-tier CSP (`docs/auth-security.md` §3): fixed policy on cached pages, `proxy.ts` nonce on dynamic routes and admin. Try experimental SRI first on a real build, and record the result + header tests incl. "no nonce on cached pages". Add them to `e2e/security/headers.spec.ts`, which already checks noindex and no `X-Powered-By` on both apps
-- [ ] 3.10 Admin `proxy.ts` gate + "customer gets 403 on every admin action" test loop
+- [ ] 3.10 Admin `proxy.ts` gate + "customer gets 403 on every admin action" test loop. Let `/favicon.ico`, `/manifest.webmanifest` and `/brand/*` through without a session (from step 1.4), so the login page keeps its icons; `e2e/admin/icons.spec.ts` must stay green
 - [ ] 3.11 `security-auditor` agent pass; fix findings (one commit each) Also close these Phase 0 review items first: (a) `Bash(pnpm add *)` and `Bash(npx -y skills add *)` are allowed without asking in `.claude/settings.json`, so move them to ask (a new dependency or skill should be a decision); (b) `protect-files.mjs` covers Edit and Write only, so a file written through a shell command (`echo >`, `sed -i`, `tee`) bypasses it: add the same path checks for Bash writes to protected files, or note the limit in `docs/auth-security.md`. Run `code-reviewer`, `qa-tester` and `security-auditor` together here, as the end-of-Phase-3 review
 
 ## Phase 4 — Admin panel

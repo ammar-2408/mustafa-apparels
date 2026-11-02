@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./brand": "./brand.ts",
     "./env": "./env.ts",
     "./headers": "./headers.ts",
     "./eslint/base": "./eslint/base.mjs",

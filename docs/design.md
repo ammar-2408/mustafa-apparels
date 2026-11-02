@@ -62,10 +62,11 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Use the files as they 
 | Goes into | Files |
 |---|---|
 | `apps/web/public/brand/svg/` | All 8 SVGs: `mustafa-apparels-{primary,secondary,simplified,submark}-{black,white}.svg` |
-| `apps/web/public/brand/favicon/` | `favicon.svg`, `favicon.ico`, `favicon-32.png`, `apple-touch-icon-180.png`, `icon-192.png`, `icon-512.png` |
+| `apps/web/public/brand/favicon/` | `favicon.svg`, `favicon-32.png`, `apple-touch-icon-180.png`, `icon-192.png`, `icon-512.png` |
+| `apps/web/public/` and `apps/admin/public/` | `favicon.ico`, at the root where browsers ask for it |
 | `apps/web/public/brand/social/` | `og-share-image-1200x630.png` |
 | `apps/admin/public/brand/svg/` | `mustafa-apparels-submark-black.svg`, `mustafa-apparels-simplified-black.svg` |
-| `apps/admin/public/brand/favicon/` | The same favicon set |
+| `apps/admin/public/brand/favicon/` | The same favicon set, without `favicon.ico` |
 | Stay out of the apps | `pdf/` (print), `png/` (social), `social/profile-picture-1080.png` (profile pictures) |
 
 | Place | Logo | Minimum height |
@@ -82,8 +83,10 @@ Rules: keep clear space of at least a quarter of the monogram's height. Black on
 - Primary and secondary `alt`: `MA Apparels by Mustafa Ahmed`
 - Simplified and submark `alt`: `MA Apparels`
 - Home link `aria-label`: `Mustafa Apparels home`
-- Manifest `name` and `short_name`: `Mustafa Apparels`
+- Manifest `name` and `short_name`: `Mustafa Apparels`. The admin's are `Mustafa Apparels Admin` and `MA Admin`, so the owner can tell the two apart on a home screen
 - `theme_color` and `background_color`: `#FAF7EC`
+
+**Favicons and manifest:** `packages/config/brand.ts` holds them for both apps. Each root layout exports `metadata.icons` (`/favicon.ico` sized `32x32` so Chrome prefers the SVG, `favicon.svg`, and the 180px Apple touch icon) and `viewport.themeColor`. Each `app/manifest.ts` serves `/manifest.webmanifest` with the 192 and 512px icons as `purpose: any`. They aren't `maskable`, because the monogram's corners reach just past the safe circle; a maskable icon would need a new file from the logo designer. `favicon-32.png` stays available but isn't linked, since the `.ico` and SVG cover every browser.
 
 ### 1.4 Spacing
 
