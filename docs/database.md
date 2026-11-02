@@ -41,7 +41,7 @@ Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `no
 | slug | text unique not null | lowercase, kebab-case |
 | description | text | |
 | image_url / image_public_id | text | Cloudinary |
-| parent_id | text → category | nullable, for sub-collections |
+| parent_id | text → category | nullable, for sub-collections. Deleting the parent makes them top-level (`on delete set null`) |
 | sort_order | int default 0 | |
 | is_active | bool default true | hidden when false |
 | seo_title, seo_description | text | fall back to name/description |
