@@ -26,7 +26,6 @@ const schema = z.object({
   ADMIN_URL: httpUrl.optional(),
   DATABASE_URL: postgresUrl.optional(),
   DATABASE_URL_UNPOOLED: postgresUrl.optional(),
-  BETTER_AUTH_URL: httpUrl.optional(),
   BETTER_AUTH_SECRET: secret.optional(),
   REVALIDATE_SECRET: secret.optional(),
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().optional(),
@@ -59,7 +58,6 @@ const ALWAYS: Record<App, Name[]> = {
 const SERVICES: Name[] = [
   'DATABASE_URL',
   'DATABASE_URL_UNPOOLED',
-  'BETTER_AUTH_URL',
   'BETTER_AUTH_SECRET',
   'REVALIDATE_SECRET',
   'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME',
@@ -80,9 +78,13 @@ const PUBLIC_URLS: Name[] = [
   'NEXT_PUBLIC_SITE_URL',
   'WEB_URL',
   'ADMIN_URL',
-  'BETTER_AUTH_URL',
   'UPSTASH_REDIS_REST_URL',
 ];
+
+const SECRETS = ['BETTER_AUTH_SECRET', 'REVALIDATE_SECRET'] as const;
+
+// A secret from `openssl rand -base64 32` has around 30 distinct characters.
+const MIN_DISTINCT_CHARACTERS = 16;
 
 const isPublicHttps = (value: string) => {
   const { protocol, hostname } = new URL(value);
@@ -140,9 +142,26 @@ export function parseEnv(app: App, source: Record<string, string | undefined> = 
         problems.set(name, 'must be a public https URL in production');
       }
     }
-    if (app === 'admin' && present.BETTER_AUTH_URL !== present.ADMIN_URL) {
-      problems.set('BETTER_AUTH_URL', 'must equal ADMIN_URL on the admin in production');
+    for (const name of SECRETS) {
+      const value = present[name];
+      if (!value || problems.has(name)) continue;
+      if (/^ci-only/i.test(value)) {
+        problems.set(name, 'must not be the CI placeholder in production');
+      } else if (new Set(value).size < MIN_DISTINCT_CHARACTERS) {
+        problems.set(name, 'is too predictable for production: generate a random one');
+      }
     }
+    if (present.BETTER_AUTH_SECRET && present.BETTER_AUTH_SECRET === present.REVALIDATE_SECRET) {
+      problems.set('REVALIDATE_SECRET', 'must differ from BETTER_AUTH_SECRET');
+    }
+  }
+  // With a database, auth runs, and Better Auth quietly falls back to a default secret in development.
+  if (present.DATABASE_URL && !present.BETTER_AUTH_SECRET) {
+    problems.set('BETTER_AUTH_SECRET', 'is needed whenever DATABASE_URL is set');
+  }
+  // Mock mode with a real database stays allowed on preview, until every service account exists.
+  if (APP_ENV === 'preview' && present.DATABASE_URL && !present.REVALIDATE_SECRET) {
+    problems.set('REVALIDATE_SECRET', 'is needed on a preview with a database');
   }
   // Every guard here trusts APP_ENV, so on Netlify it must match the real deploy context.
   if (source.NETLIFY === 'true') {
@@ -161,6 +180,21 @@ export function parseEnv(app: App, source: Record<string, string | undefined> = 
 
   if (problems.size > 0 || !parsed.success) throw new EnvError(app, problems);
   return { ...parsed.data, SITE_INDEXABLE: parsed.data.SITE_INDEXABLE === 'true' };
+}
+
+export type Env = ReturnType<typeof parseEnv>;
+
+const checked = new Map<App, Env>();
+
+// The one way app code reads server env: checked once per server, then reused.
+// instrumentation.ts calls it at startup, because Netlify functions never run check-env.
+export function getEnv(app: App): Env {
+  let env = checked.get(app);
+  if (!env) {
+    env = parseEnv(app);
+    checked.set(app, env);
+  }
+  return env;
 }
 
 // Next only reads env files from the app folder, but docs/setup.md §4 keeps .env.local in the root.

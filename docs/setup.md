@@ -88,7 +88,7 @@ Every variable, and where it's set:
 | `SITE_INDEXABLE` | `false` | ✓ | ✓ | `false` until launch, then `true` on production only. The admin reads it for IndexNow |
 | `WEB_URL` | ✓ | — | ✓ | Admin calls this to refresh the storefront |
 | `ADMIN_URL` | ✓ | — | ✓ | `https://admin.mustafaapparels.com` in production |
-| `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET` | ✓ | ✓ | ✓ | URL differs per app |
+| `BETTER_AUTH_SECRET` | ✓ | ✓ | ✓ | Needed whenever `DATABASE_URL` is set. On Netlify, a different value per site and per context. Auth runs at `NEXT_PUBLIC_SITE_URL` on web and `ADMIN_URL` on admin, so there is no auth URL variable |
 | `REVALIDATE_SECRET` | ✓ | ✓ | ✓ | Same value in both apps |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | ✓ | ✓ | ✓ | |
 | `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | ✓ | — | ✓ | Secret stays out of the storefront |
@@ -103,12 +103,14 @@ Every variable, and where it's set:
 
 `pnpm dev`, `pnpm build` and `pnpm start` run `packages/config/check-env.mjs` first and stop if something is missing or invalid, listing variable names but never values. `pnpm env:check` runs the same check for both apps. `pnpm typecheck` and the commit hooks don't need env.
 
+**At runtime too:** Netlify functions never run `check-env`, so each app's `instrumentation.ts` runs the same check when its server starts, and a bad environment stops it there. App code reads server env only through `getEnv(app)` from `@mustafa/config/env`, which checks once and reuses the result. ESLint refuses any other `process.env` read in apps, except `NEXT_PUBLIC_*` (inlined into the browser bundle), `NEXT_RUNTIME`, `NODE_ENV` and `next.config.ts`.
+
 **How strict the check is:**
 - `live` requires everything the app needs from the table.
 - `mock` requires only `APP_ENV`, `NEXT_PUBLIC_SITE_URL` and `SITE_INDEXABLE`, plus `WEB_URL` and `ADMIN_URL` on the admin. Anything else you set must still be valid. Fresh copies of `.env.example` use `mock`, so the site runs before the accounts exist.
 
-**Other checks:** `SITE_INDEXABLE=true` only works in production. There, site, auth and Upstash URLs must be public https, and the admin's `BETTER_AUTH_URL` must equal `ADMIN_URL`. On Netlify, `APP_ENV` must match the deploy context: `production` on production, `preview` everywhere else. Seed variables are refused in production and preview, and so is `CLOUDINARY_API_SECRET` on the web site.
+**Other checks:** `SITE_INDEXABLE=true` only works in production. There, site and Upstash URLs must be public https, a secret may not be the CI placeholder or have fewer than 16 distinct characters, and `BETTER_AUTH_SECRET` and `REVALIDATE_SECRET` must differ. A set `DATABASE_URL` needs `BETTER_AUTH_SECRET` in every mode, because Better Auth would otherwise use a built-in default in development, and a preview with a database also needs `REVALIDATE_SECRET`. Mock mode with a real database is allowed on preview until every service account exists. On Netlify, `APP_ENV` must match the deploy context: `production` on production, `preview` everywhere else. Seed variables are refused in production and preview, and so is `CLOUDINARY_API_SECRET` on the web site.
 
-**Where the file goes:** `.env.local` in the repo root serves both apps, and `next.config.ts` loads it because Next only looks in the app folder. A value in `apps/<app>/.env.local` beats the root file, which is how the admin gets its own local `BETTER_AUTH_URL`. Real env vars beat both. A new variable also goes in `packages/config/env.ts`, `.env.example` and both `env` lists in `turbo.json`; tests fail if they disagree.
+**Where the file goes:** `.env.local` in the repo root serves both apps, and `next.config.ts` loads it because Next only looks in the app folder. A value in `apps/<app>/.env.local` beats the root file. Real env vars beat both. A new variable also goes in `packages/config/env.ts`, `.env.example` and both `env` lists in `turbo.json`; tests fail if they disagree.
 
 **Claude Code's access:** it can read and edit `.env.example`. It's denied reading `.env`, `.env.local`, `.env.*.local`, `.env.development`, `.env.production`, `.env.test`, `.env.preview` and `.env.staging`, in the root and in subfolders, and denied `git diff --no-index`, which could print any file. Other names aren't covered, so don't put real secrets in them. All `.env*` files except the example stay git-ignored and blocked from editing by the `protect-files` hook.

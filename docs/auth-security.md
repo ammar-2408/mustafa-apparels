@@ -137,7 +137,8 @@ The import script (`scripts/import-stock.ts`) runs only on the owner's machine w
 | `INDEXNOW_KEY` | server (admin) | Not a secret: the key file is public |
 | `SITE_INDEXABLE` | server (both apps) | `false` until launch. The web app uses it for `robots.txt` and `noindex`, and the admin for IndexNow |
 
-- Validate env with Zod (`packages/config/env.ts`): `dev`, `build` and `start` stop on missing or invalid vars. On Netlify that means the build, because `next start` never runs there. A runtime check in the deployed functions comes with step 3.2.
+- Validate env with Zod (`packages/config/env.ts`): `dev`, `build` and `start` stop on missing or invalid vars. On Netlify that means the build, because `next start` never runs there. `instrumentation.ts` runs the same check when each deployed server starts, and app code reads env only through `getEnv()` (`docs/setup.md` §6).
+- **How Better Auth treats a bad setup** (1.7.15, checked at step 3.2): with no secret it throws under `NODE_ENV=production`, which includes `next build`, but in development it quietly uses a built-in default. So the env check requires `BETTER_AUTH_SECRET` whenever `DATABASE_URL` is set, and each app builds its auth instance lazily, never at build time. An `http` base URL silently turns off the `Secure` flag and the `__Secure-` cookie prefix, so `useSecureCookies` is forced on whenever the base URL is https, and production already requires https URLs. Weak secrets only get a warning from Better Auth, so production refuses CI placeholders, secrets with fewer than 16 distinct characters, and the same value for both secrets.
 - Modules that use secrets start with `import 'server-only'`.
 - `.env*` git-ignored (except `.env.example`); Claude Code is denied read access to them (`.claude/settings.json`).
 - Rotate secrets if they ever appear in a log, screenshot or commit; use GitHub secret scanning.

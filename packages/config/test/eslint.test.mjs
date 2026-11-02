@@ -70,3 +70,23 @@ test('next config does not detect React, so linting from the root stays quiet', 
   const { settings } = await eslintWith(app).calculateConfigForFile('x.tsx');
   assert.notEqual(settings.react.version, 'detect');
 });
+
+test('next config bans server env reads outside getEnv()', async () => {
+  for (const code of [
+    'export const url = process.env.DATABASE_URL;\n',
+    'export const { DATABASE_URL } = process.env;\n',
+    "export const url = process.env['DATABASE_URL'];\n",
+    'export const all = process.env;\n',
+  ]) {
+    const ids = await ruleIds(app, code, 'lib/x.ts');
+    assert.ok(ids.includes('no-restricted-syntax'), code);
+  }
+});
+
+test('next config allows public, runtime and NODE_ENV reads, and next.config.ts', async () => {
+  const code =
+    'export const a = [process.env.NEXT_PUBLIC_SITE_URL, process.env.NEXT_RUNTIME, process.env.NODE_ENV];\n';
+  assert.deepEqual(await ruleIds(app, code, 'lib/x.ts'), []);
+  const config = 'export const url = process.env.DATABASE_URL;\n';
+  assert.deepEqual(await ruleIds(app, config, 'next.config.ts'), []);
+});

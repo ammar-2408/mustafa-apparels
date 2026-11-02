@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 import { afterEach, test } from 'vitest';
 
-import { ENV_NAMES, EnvError, loadEnvFiles, parseEnv } from '../env.ts';
+import { ENV_NAMES, EnvError, getEnv, loadEnvFiles, parseEnv } from '../env.ts';
 
 const SECRET = 'a-test-secret-that-is-long-enough-000000';
 
@@ -18,7 +18,6 @@ const shared = {
   SITE_INDEXABLE: 'false',
   DATABASE_URL: 'postgresql://user:password@localhost:5432/shop',
   DATABASE_URL_UNPOOLED: 'postgresql://user:password@localhost:5432/shop',
-  BETTER_AUTH_URL: 'http://localhost:3000',
   BETTER_AUTH_SECRET: SECRET,
   REVALIDATE_SECRET: SECRET,
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: 'cloud',
@@ -70,7 +69,6 @@ test('INTEGRATIONS_MODE defaults to live, so unset hosting env is checked in ful
 const serviceVars = [
   'DATABASE_URL',
   'DATABASE_URL_UNPOOLED',
-  'BETTER_AUTH_URL',
   'BETTER_AUTH_SECRET',
   'REVALIDATE_SECRET',
   'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME',
@@ -85,7 +83,9 @@ for (const name of serviceVars) {
   test(`${name}: missing or blank fails in live, missing passes in mock`, () => {
     assert.deepEqual(errorOf('web', without(web, name)).names, [name]);
     assert.deepEqual(errorOf('web', { ...web, [name]: '  ' }).names, [name]);
-    parseEnv('web', { ...without(web, name), INTEGRATIONS_MODE: 'mock' });
+    const mock = { ...without(web, name), INTEGRATIONS_MODE: 'mock' };
+    // With a database set, auth runs, so its secret stays required (tested below).
+    parseEnv('web', name === 'BETTER_AUTH_SECRET' ? without(mock, 'DATABASE_URL') : mock);
   });
 }
 
@@ -146,27 +146,22 @@ const production = {
   ...web,
   APP_ENV: 'production',
   NEXT_PUBLIC_SITE_URL: 'https://mustafaapparels.com',
-  BETTER_AUTH_URL: 'https://mustafaapparels.com',
+  // Shaped like openssl rand -base64 32 output, and different from each other.
+  BETTER_AUTH_SECRET: 'q3Vf8pZ0LxN2rT7wYb5KcD1mHs9JgE4uAo6iRe+Pk/Q=',
+  REVALIDATE_SECRET: 'Zt8nW2xQ5vB1yL7cF4kM0pH9sD3gJ6rA+eU/oiTNbVw=',
 };
 const adminProduction = {
   ...admin,
   ...production,
   WEB_URL: 'https://mustafaapparels.com',
   ADMIN_URL: 'https://admin.mustafaapparels.com',
-  BETTER_AUTH_URL: 'https://admin.mustafaapparels.com',
 };
 
 test('a correct production set passes on admin', () => {
   assert.equal(parseEnv('admin', adminProduction).APP_ENV, 'production');
 });
 
-for (const name of [
-  'NEXT_PUBLIC_SITE_URL',
-  'WEB_URL',
-  'ADMIN_URL',
-  'BETTER_AUTH_URL',
-  'UPSTASH_REDIS_REST_URL',
-]) {
+for (const name of ['NEXT_PUBLIC_SITE_URL', 'WEB_URL', 'ADMIN_URL', 'UPSTASH_REDIS_REST_URL']) {
   for (const url of ['http://example.com', 'https://localhost:3000', 'https://127.0.0.1']) {
     test(`production refuses ${url} for ${name}`, () => {
       const names = errorOf('admin', { ...adminProduction, [name]: url }).names;
@@ -175,9 +170,74 @@ for (const name of [
   }
 }
 
-test('admin in production must use its own URL for auth', () => {
-  const source = { ...adminProduction, BETTER_AUTH_URL: 'https://mustafaapparels.com' };
-  assert.deepEqual(errorOf('admin', source).names, ['BETTER_AUTH_URL']);
+test('BETTER_AUTH_URL is gone: auth uses the site URL on web and ADMIN_URL on admin', () => {
+  assert.ok(!ENV_NAMES.includes('BETTER_AUTH_URL'));
+});
+
+for (const APP_ENV of ['development', 'test', 'preview']) {
+  test(`a database needs BETTER_AUTH_SECRET in ${APP_ENV}, even in mock`, () => {
+    const source = { ...without(web, 'BETTER_AUTH_SECRET'), APP_ENV, INTEGRATIONS_MODE: 'mock' };
+    assert.ok(errorOf('web', source).names.includes('BETTER_AUTH_SECRET'));
+  });
+}
+
+test('a preview with a database needs REVALIDATE_SECRET, and may stay in mock', () => {
+  const preview = { ...web, APP_ENV: 'preview', INTEGRATIONS_MODE: 'mock' };
+  assert.deepEqual(errorOf('web', without(preview, 'REVALIDATE_SECRET')).names, [
+    'REVALIDATE_SECRET',
+  ]);
+  assert.equal(parseEnv('web', preview).INTEGRATIONS_MODE, 'mock');
+});
+
+test('development with a database still allows a missing REVALIDATE_SECRET in mock', () => {
+  parseEnv('web', { ...without(web, 'REVALIDATE_SECRET'), INTEGRATIONS_MODE: 'mock' });
+});
+
+for (const name of ['BETTER_AUTH_SECRET', 'REVALIDATE_SECRET']) {
+  test(`production refuses the CI placeholder for ${name}`, () => {
+    const source = { ...production, [name]: 'ci-only-secret-not-used-anywhere-else-000000' };
+    assert.deepEqual(errorOf('web', source).names, [name]);
+  });
+
+  test(`production refuses a low-variety ${name}`, () => {
+    for (const value of ['a'.repeat(44), 'abcabcabcabcabcabcabcabcabcabcabc', SECRET]) {
+      assert.deepEqual(errorOf('web', { ...production, [name]: value }).names, [name]);
+    }
+  });
+}
+
+test('production needs the two secrets to differ', () => {
+  const source = { ...production, REVALIDATE_SECRET: production.BETTER_AUTH_SECRET };
+  assert.deepEqual(errorOf('web', source).names, ['REVALIDATE_SECRET']);
+});
+
+test('the secret rules never print the secret', () => {
+  const { message } = errorOf('web', { ...production, BETTER_AUTH_SECRET: 'x'.repeat(40) });
+  assert.ok(!message.includes('x'.repeat(40)));
+});
+
+test('getEnv checks process.env once and reuses the result', () => {
+  const saved = { ...process.env };
+  try {
+    Object.assign(process.env, web);
+    const first = getEnv('web');
+    process.env.APP_ENV = 'not-a-valid-value';
+    assert.equal(getEnv('web'), first);
+  } finally {
+    for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key];
+    Object.assign(process.env, saved);
+  }
+});
+
+test('getEnv throws the same EnvError as parseEnv on a bad set', () => {
+  const saved = { ...process.env };
+  try {
+    Object.assign(process.env, { ...admin, ADMIN_URL: 'nope' });
+    assert.throws(() => getEnv('admin'), EnvError);
+  } finally {
+    for (const key of Object.keys(process.env)) if (!(key in saved)) delete process.env[key];
+    Object.assign(process.env, saved);
+  }
 });
 
 test('on Netlify, the production context needs APP_ENV=production', () => {

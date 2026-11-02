@@ -112,6 +112,12 @@ for (const app of /** @type {const} */ (['web', 'admin'])) {
     assert.match(read(`apps/${app}/next.config.ts`), /poweredByHeader: false/);
   });
 
+  test(`${app} checks env again when its server starts, since Netlify never runs check-env`, () => {
+    const source = read(`apps/${app}/instrumentation.ts`);
+    assert.match(source, /export async function register\(\)/);
+    assert.match(source, new RegExp(`getEnv\\('${app}'\\)`));
+  });
+
   test(`${app} sets its robots header from its Next config`, () => {
     assert.match(read(`apps/${app}/next.config.ts`), new RegExp(`robotsHeaders\\('${app}'\\)`));
   });

@@ -22,7 +22,6 @@ env:
   NEXT_PUBLIC_SITE_URL: http://localhost:3000
   WEB_URL: http://localhost:3000
   ADMIN_URL: http://localhost:3001
-  BETTER_AUTH_URL: http://localhost:3000
   BETTER_AUTH_SECRET: ci-only-secret-not-used-anywhere-else-000000
   REVALIDATE_SECRET: ci-only-revalidate-secret-0000000000000000
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ci-cloud
