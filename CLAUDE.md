@@ -19,9 +19,12 @@ Some stock has shown other brands' logos, and the owner has no permission to use
 
 - **Plan before big changes.** For anything touching more than ~3 files, a schema, auth, or a new page: use plan mode, show the plan, wait for approval.
 - **One change → test → verify → commit → push.** Use the `ship-change` skill to finish every change. Do not start the next change until the current one is pushed.
+- **Run checks once.** `pnpm verify` runs once per change, in `ship-change`. Docs-only changes skip verify and E2E. Locally, run E2E only for the pages the change touches, on `mobile-small` and `laptop`. CI runs all 7 devices plus the SEO, a11y and security suites on every push; run those in full locally only at the end of a phase.
+- **Right-size tests.** Cover the real behaviour and the important edge cases, not every imaginable case.
+- **Don't sink time into tool quirks.** After about 10 minutes, record the quirk in `docs/debugging.md` and move on, unless it blocks the step.
 - **Small context.** Don't @-import all docs. Read only the doc the task needs (AGENTS.md section 9). After a feature is done, suggest `/clear`.
-- **Report** after each change in this format:
-  `Change:` … `Tests:` (what ran, pass counts) … `Commit:` hash + message … `Next:` the next step.
+- **Report** after each change, short, in this format:
+  `Change:` … `Tests:` (what ran, pass counts) … `Commit:` hash + message … `Next:` the next step … `You:` anything the owner must do.
 - Ask the user only when a decision is genuinely theirs (brand, colours, paid services, deleting data). Otherwise pick the sensible default and say so.
 
 ## Skills — use them for everything
@@ -64,14 +67,16 @@ If a task needs one of these and it is not in `.claude/skills/`, install it your
 
 ## Subagents (`.claude/agents/`)
 
-Use them proactively; they keep the main context clean.
+They keep the main context clean, but each run is slow and costly, so use them only at the points below, not after every phase.
 
 | Agent | When |
 |---|---|
-| `code-reviewer` | After finishing a feature (before merging to `main`) |
-| `qa-tester` | To design test cases for a feature and find gaps in coverage |
-| `security-auditor` | After any auth, admin, upload, API or env change |
-| `seo-auditor` | After adding/changing any public page, and before every release |
+| `code-reviewer` | End of Phase 3, end of Phase 6, and before launch |
+| `qa-tester` | End of Phase 3, end of Phase 6, and before launch |
+| `security-auditor` | End of Phase 3, end of Phase 6, and before launch |
+| `seo-auditor` | End of the SEO phase (Phase 7), and before launch |
+
+Outside those points, use `security-check` and `seo-guard` while you write the code. Run an agent earlier only if the user asks.
 
 ## MCP servers (`.mcp.json`, details in `docs/mcp-connection.md`)
 
@@ -85,8 +90,8 @@ Use them proactively; they keep the main context clean.
 Hooks are Node scripts (`.claude/hooks/*.mjs`), so they work the same on Windows, macOS and Linux.
 - Before any edit: `.env*` files (except `.env.example`), anything in `Business data/`, `pnpm-lock.yaml` and already-committed migrations are blocked (`protect-files.mjs`).
 - After every file edit: Prettier + ESLint fix run on that file automatically (`format-file.mjs`).
-- Before any `git commit`: lint, typecheck and unit tests run; the commit is blocked if any fail (`pre-commit-gate.mjs`).
-- Git's own pre-commit (Husky + lint-staged) and CI on GitHub run the same checks again, so nothing slips through.
+- Before any `git commit`: `pre-commit-gate.mjs` refuses `--no-verify`. It runs no checks itself.
+- Checks run once at each level: `ship-change` runs `pnpm verify`; Git's pre-commit (Husky + lint-staged + typecheck) checks the staged files; CI on GitHub runs everything, including all 7 devices and the SEO, a11y and security suites.
 If a hook blocks you, fix the cause; don't work around it.
 
 ## Git
