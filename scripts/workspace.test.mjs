@@ -236,7 +236,14 @@ test('root verify script runs lint, typecheck, test and build, stopping at the f
   assert.equal(scripts.verify, 'pnpm lint && pnpm typecheck && pnpm test && pnpm build');
 });
 
-for (const pkg of ['apps/web', 'apps/admin', 'packages/config', 'packages/db', 'packages/core']) {
+for (const pkg of [
+  'apps/web',
+  'apps/admin',
+  'packages/config',
+  'packages/db',
+  'packages/core',
+  'packages/validators',
+]) {
   test(`${pkg} tests run through Vitest with coverage`, () => {
     assert.equal(readJson(`${pkg}/package.json`).scripts.test, 'vitest run --coverage');
   });
