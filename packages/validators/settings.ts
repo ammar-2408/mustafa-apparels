@@ -37,14 +37,15 @@ export type SettingValue<K extends SettingKey> = z.output<(typeof settingValue)[
 
 export const SETTING_KEYS = Object.keys(settingValue) as SettingKey[];
 
+export type SettingInput = { [K in SettingKey]: { key: K; value: SettingValue<K> } }[SettingKey];
+
+type KeyedSchema = z.ZodObject<{ key: z.ZodLiteral<SettingKey>; value: z.ZodType }>;
+
+// Built from settingValue, so TypeScript can't see the per-key pairing; the output type
+// restores it, and settings.test.ts checks each key's rules.
 export const settingInput = z.discriminatedUnion(
   'key',
   SETTING_KEYS.map((key) =>
     z.object({ key: z.literal(key), value: settingValue[key] }).strict(),
-  ) as unknown as [
-    z.ZodObject<{ key: z.ZodLiteral<SettingKey>; value: z.ZodType }>,
-    ...z.ZodObject<{ key: z.ZodLiteral<SettingKey>; value: z.ZodType }>[],
-  ],
-);
-
-export type SettingInput = { [K in SettingKey]: { key: K; value: SettingValue<K> } }[SettingKey];
+  ) as unknown as [KeyedSchema, ...KeyedSchema[]],
+) as unknown as z.ZodType<SettingInput, unknown>;

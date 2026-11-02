@@ -128,7 +128,9 @@ Rules:
 
 There is no address or opening-hours setting. The shop is online-only with no fixed hours.
 
-**`audit_log`**: id, actor_id → user, action (`product.create`, `product.update`, ...), entity, entity_id, changes jsonb (before/after, no secrets), created_at. Insert-only: a trigger (migration 0005) refuses updates and deletes. The one exception is the foreign key clearing `actor_id` when that user is deleted, so the history stays.
+`core.settings.get` returns every key, with `null` for one the owner hasn't filled in. A stored value that fails its key's schema is treated as unset, and only the key is logged, never the value. `core.settings.set` takes a value parsed by `settingInput` (phones as E.164, email lower case), writes `updated_by`, and records before and after in `audit_log`. Saving the same value again writes nothing.
+
+**`audit_log`**: id, actor_id → user, action (`product.create`, `product.update`, ...), entity, entity_id, changes jsonb (before/after, no secrets), created_at. Insert-only: a trigger (migration 0005) refuses updates and deletes. The one exception is the foreign key clearing `actor_id` when that user is deleted, so the history stays. `core.audit.list` shows 50 a page, newest first (by `created_at`, then the time-ordered id, because rows from one transaction share a timestamp), with the actor's name, and filters by entity, record and actor.
 
 ## 3. Indexes
 

@@ -8,7 +8,8 @@
     "./categories": "./categories/index.ts",
     "./errors": "./errors.ts",
     "./products": "./products/index.ts",
-    "./search": "./search/index.ts"
+    "./search": "./search/index.ts",
+    "./settings": "./settings/index.ts"
   },
   "scripts": {
     "lint": "eslint .",

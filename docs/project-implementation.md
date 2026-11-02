@@ -50,7 +50,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 2.11 `core.products` (list w/ filters+sort+pagination, getBySlug, create, update w/ redirect, duplicate, archive) + tests
 - [x] 2.12 `core.products.setStatus`: publish rules (price, colour, main image, alt text, no banned names) + tests
 - [x] 2.13 `core.search` (full-text + trigram + design code, filters, suggestions) + ranking tests, incl. "dhanak" finds Lajwanti
-- [ ] 2.14 `core.settings`, `core.audit` + tests
+- [x] 2.14 `core.settings`, `core.audit` + tests
 - [ ] 2.15 `pnpm db:seed` (idempotent, `docs/database.md` §6): the 3 collections (Dhanak, Khaddar, Lajwanti), site settings with the owner's real WhatsApp, phone and email, first admin from `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD`; `--e2e` demo data. Tests: running twice changes nothing, missing admin env vars fail clearly. The admin needs Better Auth's tables and hashing from step 3.2, so if this step runs first, build the admin part and its tests at 3.2 and don't tick this step until then
 
 ## Phase 3 — Authentication & security base
