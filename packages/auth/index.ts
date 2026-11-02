@@ -19,6 +19,7 @@ import { APIError, betterAuth, type BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { createAuthMiddleware, getIP, isAPIError } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
+import { twoFactor as twoFactorPlugin } from 'better-auth/plugins/two-factor';
 import { eq } from 'drizzle-orm';
 
 import { LOGIN_FAILURES, loginKey, rateLimitOptions, tooManyAttempts } from './limits';
@@ -137,6 +138,17 @@ export function createAuth({
     rateLimit: rateLimitOptions(limiter),
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
+        // 2FA is the admin's only (docs/auth-security.md §1).
+        if (!admin && ctx.path.startsWith('/two-factor')) {
+          throw new APIError('NOT_FOUND', { code: 'NOT_FOUND', message: 'Not found' });
+        }
+        // The owner chose a code on every admin login (2026-11-02): no browser is ever trusted.
+        if (admin && ctx.path.startsWith('/two-factor/') && ctx.body?.trustDevice) {
+          throw new APIError('BAD_REQUEST', {
+            code: 'TRUST_DEVICE_OFF',
+            message: 'Trusted devices are turned off',
+          });
+        }
         // The same strict schema as the form: an unexpected field, such as role, is refused.
         if (ctx.path === '/sign-up/email' && !signUpInput.safeParse(ctx.body).success) {
           throw new APIError('BAD_REQUEST', {
@@ -179,6 +191,8 @@ export function createAuth({
             // The admin signs in admins only. This runs after the password check, so a customer
             // gets the wrong-password answer at the same speed (docs/auth-security.md §1).
             if (admin && owner.role !== 'admin') throw invalidCredentials();
+            // And the storefront refuses admin accounts, which would skip 2FA there (ADR-020).
+            if (!admin && owner.role === 'admin') throw invalidCredentials();
             return {
               data: {
                 ...data,
@@ -190,8 +204,15 @@ export function createAuth({
         },
       },
     },
-    // Must stay last: it sets cookies from server actions.
-    plugins: [nextCookies()],
+    plugins: [
+      // Enabled on both instances so the types match, but the storefront answers 404 for it.
+      twoFactorPlugin({
+        issuer: 'Mustafa Apparels Admin',
+        backupCodeOptions: { amount: 10, length: 10, storeBackupCodes: 'encrypted' },
+      }),
+      // Must stay last: it sets cookies from server actions.
+      nextCookies(),
+    ],
   });
 }
 

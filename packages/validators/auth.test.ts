@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   AUTH_MESSAGES,
   authErrorMessage,
+  backupCodeInput,
   fieldErrorsOf,
   forgotPasswordInput,
   PASSWORD_MAX,
@@ -10,6 +11,8 @@ import {
   resetPasswordInput,
   signInInput,
   signUpInput,
+  totpCodeInput,
+  twoFactorSetupInput,
 } from './auth';
 
 const valid = {
@@ -121,6 +124,36 @@ describe('password reset forms', () => {
   it('explains an expired or used link', () => {
     expect(authErrorMessage({ code: 'INVALID_TOKEN', status: 400 })).toBe(
       AUTH_MESSAGES.linkExpired,
+    );
+  });
+});
+
+describe('admin 2FA forms', () => {
+  it('needs the password to start setup', () => {
+    expect(twoFactorSetupInput.safeParse({ password: 'x' }).success).toBe(true);
+    expect(twoFactorSetupInput.safeParse({ password: '' }).success).toBe(false);
+  });
+
+  it('takes a 6-digit code only', () => {
+    expect(totpCodeInput.parse({ code: ' 123456 ' }).code).toBe('123456');
+    for (const code of ['12345', '1234567', 'abcdef']) {
+      expect(totpCodeInput.safeParse({ code }).success).toBe(false);
+    }
+  });
+
+  it('takes a backup code with or without its dash', () => {
+    expect(backupCodeInput.safeParse({ code: 'aB3dE-9fG2h' }).success).toBe(true);
+    expect(backupCodeInput.safeParse({ code: 'aB3dE9fG2h' }).success).toBe(true);
+    expect(backupCodeInput.safeParse({ code: 'short' }).success).toBe(false);
+  });
+
+  it('explains wrong, expired and locked codes', () => {
+    expect(authErrorMessage({ code: 'INVALID_CODE', status: 401 })).toBe(AUTH_MESSAGES.wrongCode);
+    expect(authErrorMessage({ code: 'INVALID_TWO_FACTOR_COOKIE', status: 401 })).toBe(
+      AUTH_MESSAGES.loginExpired,
+    );
+    expect(authErrorMessage({ code: 'ACCOUNT_TEMPORARILY_LOCKED', status: 429 })).toBe(
+      AUTH_MESSAGES.twoFactorLocked,
     );
   });
 });

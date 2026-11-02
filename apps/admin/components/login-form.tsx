@@ -25,14 +25,15 @@ export function LoginForm() {
     }
     setFieldErrors({});
     setPending(true);
-    const { error } = await authClient.signIn.email(parsed.data);
+    const { data, error } = await authClient.signIn.email(parsed.data);
     setPending(false);
     if (error) {
       setFormError(authErrorMessage(error));
       return;
     }
-    // The dashboard sends an admin without 2FA on to set it up.
-    router.replace('/');
+    // With 2FA on, no session exists yet: the code comes next. Without it, setup comes first.
+    const next = data && 'twoFactorRedirect' in data && data.twoFactorRedirect;
+    router.replace(next ? '/login/verify' : '/setup-2fa');
     router.refresh();
   }
 

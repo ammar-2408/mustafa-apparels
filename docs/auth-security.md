@@ -36,7 +36,11 @@ On top of that, **5 failed logins per 15 minutes per IP and email**: only wrong 
 - **Admin cookies:** `ma-admin.session_token`, host-only, `HttpOnly`, `SameSite=Lax`, and `Secure` with an https URL. The storefront uses `ma.session_token`, and the admin never reads it.
 - **Session origin:** a storefront session replayed under the admin's cookie name is still refused, because `session.app` is `web` (ADR-020).
 - **Guards:** `adminAccess()` returns `ok`, `signed-out`, `forbidden` or `needs-2fa`. `requireAdmin()` throws `UNAUTHENTICATED` or `FORBIDDEN`. Pages use `requireAdminPage()`, which redirects to `/login`, or to `/setup-2fa` until 2FA is on.
-- **2FA (TOTP) mandatory**: first login forces setup; backup codes shown once.
+- **2FA (TOTP) mandatory**: first login forces setup; backup codes shown once. As built at step 3.8, with Better Auth's `twoFactor` plugin:
+  - **First login:** `/setup-2fa`. The admin confirms the password, then a server action draws the QR code as a PNG data URL with `qrcode` and shows the key as text. The 10 backup codes (`xxxxx-xxxxx`, encrypted at rest) appear once, and one code from the app turns 2FA on.
+  - **Every later login:** the password creates no session until `/login/verify` gets a code from the app or a backup code. No browser is ever trusted (owner's decision, 2026-11-02): `trustDevice` is refused.
+  - **Limits:** a login allows 5 wrong codes. After 10 wrong codes across logins, 2FA locks for 15 minutes. `/two-factor/*` is also rate-limited, and fails closed if Upstash is down.
+- **Admin accounts can't sign in on the storefront**: that would be a login without 2FA. The owner uses a separate customer account to shop. The storefront also answers 404 for `/two-factor/*`.
 - First admin is created only by `pnpm db:seed` from env vars; more admins only by an existing admin (audit-logged).
 - Admin sessions: 12-hour max, re-auth required for destructive actions (purge, role change).
 - `apps/admin/proxy.ts` redirects every unauthenticated request to `/login`, and every page/action **also** calls `requireAdmin()` (defence in depth — the proxy alone is not trusted).

@@ -54,6 +54,27 @@ const tokenFrom = (response: Response) =>
     .slice(1)
     .join('=');
 
+describe('storefront sign-in', () => {
+  it('refuses an admin account with the wrong-password answer, so 2FA is never skipped', async () => {
+    await account_('owner@example.com', 'admin');
+    const response = await signIn(webAuth(), 'owner@example.com');
+    const wrong = await signIn(webAuth(), 'owner@example.com', 'not the password');
+    expect(response.status).toBe(401);
+    expect(await response.json()).toEqual(await wrong.json());
+  });
+
+  it('has no 2FA endpoints', async () => {
+    const response = await webAuth().handler(
+      new Request('http://localhost:3000/api/auth/two-factor/enable', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', origin: 'http://localhost:3000' },
+        body: JSON.stringify({ password: PASSWORD }),
+      }),
+    );
+    expect(response.status).toBe(404);
+  });
+});
+
 describe('admin sign-in', () => {
   it('signs in an admin with an admin session', async () => {
     await account_('owner@example.com', 'admin');
@@ -76,9 +97,11 @@ describe('admin sign-in', () => {
   });
 
   it("refuses a storefront session replayed on the admin, even an admin's", async () => {
-    await account_('owner@example.com', 'admin');
+    // Signed in on the storefront while still a customer, then made an admin with 2FA.
+    await account_('owner@example.com', 'customer');
     const fromWeb = await signIn(webAuth(), 'owner@example.com');
     expect(fromWeb.status).toBe(200);
+    await db.update(user).set({ role: 'admin', twoFactorEnabled: true });
 
     const replayed = await adminAuth().api.getSession({
       headers: new Headers({ cookie: `ma-admin.session_token=${tokenFrom(fromWeb)}` }),
@@ -88,8 +111,9 @@ describe('admin sign-in', () => {
   });
 
   it("doesn't read the storefront's cookie at all", async () => {
-    await account_('owner@example.com', 'admin');
+    await account_('owner@example.com', 'customer');
     const fromWeb = await signIn(webAuth(), 'owner@example.com');
+    await db.update(user).set({ role: 'admin' });
     const seen = await adminAuth().api.getSession({
       headers: new Headers({ cookie: `ma.session_token=${tokenFrom(fromWeb)}` }),
     });
