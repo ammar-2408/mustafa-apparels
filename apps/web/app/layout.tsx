@@ -8,9 +8,11 @@ import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '../lib/seo';
 import { montserrat } from './fonts';
 
 // Defaults for every page. A page's own openGraph replaces this one whole, so buildMetadata()
-// (step 1.8) repeats the default image. Canonicals are set per page only, never here.
+// repeats the default image. Canonicals are set per page only, never here.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  // Until a page sets its own through buildMetadata(), it still has a title (WCAG 2.4.2).
+  title: SITE_NAME,
   icons: brandIcons,
   openGraph: {
     type: 'website',

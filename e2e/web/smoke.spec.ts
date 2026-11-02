@@ -2,9 +2,10 @@ import { expect, test } from '@playwright/test';
 
 import { montserratWeights } from '../support/fonts';
 
-test('home page loads with a main heading', async ({ page }) => {
+test('home page loads with a title and a main heading', async ({ page }) => {
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
+  await expect(page).toHaveTitle('Mustafa Apparels');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 

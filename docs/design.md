@@ -252,6 +252,8 @@ Built with the Next.js Metadata API (`generateMetadata`) through one helper `bui
 - `openGraph` (type, url = canonical, title, description, images 1200×630 absolute, siteName `Mustafa Apparels`, locale `en_PK`), `twitter` (`summary_large_image`)
 - `robots`: `index, follow` for shop pages; `noindex, follow` for search; `noindex, nofollow` for account/auth; previews and admin send `X-Robots-Tag: noindex` header too.
 
+Default titles: the storefront root layout sets `title: Mustafa Apparels` and the admin sets `Mustafa Apparels Admin` (template `%s | Mustafa Apparels Admin`), so no page is ever without a `<title>` (WCAG 2.4.2). Storefront pages still set their own through `buildMetadata()`.
+
 How the helpers behave (unit-tested in `apps/web/lib/seo.test.ts`):
 - `canonicalUrl(path)` lowercases the path, collapses repeated slashes, drops a trailing slash, query and hash, and joins it to `SITE_URL`. The home page is `https://mustafaapparels.com/`. It throws if given a full URL, so a canonical can't point off the site.
 - `buildMetadata({ title, description, path, image?, noindex?, nofollow? })` returns an absolute title. It adds ` | Mustafa Apparels` only when the whole title fits in 60 characters and the name isn't already in it. A title still over 60, or a description over 160, is cut at the last word that fits, with trailing punctuation dropped and "…" added. Spaces and line breaks are tidied. Open Graph and Twitter repeat the same title, description and image (`DEFAULT_OG_IMAGE` unless `image` is given), with `og:url` = canonical. `noindex` gives `noindex, follow`, and `noindex` + `nofollow` gives `noindex, nofollow`. It doesn't pad short descriptions: the 120-character minimum is checked per page by the SEO E2E suite.

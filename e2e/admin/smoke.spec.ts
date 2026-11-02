@@ -4,9 +4,10 @@ import { montserratWeights } from '../support/fonts';
 
 test.use({ baseURL: 'http://localhost:3001' });
 
-test('admin home page loads with a main heading', async ({ page }) => {
+test('admin home page loads with a title and a main heading', async ({ page }) => {
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
+  await expect(page).toHaveTitle('Mustafa Apparels Admin');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 

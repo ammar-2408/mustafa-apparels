@@ -6,7 +6,11 @@ import type { ReactNode } from 'react';
 
 import { montserrat } from './fonts';
 
-export const metadata: Metadata = { icons: brandIcons };
+// Every page has a title (WCAG 2.4.2); later pages name themselves with this template.
+export const metadata: Metadata = {
+  title: { default: 'Mustafa Apparels Admin', template: '%s | Mustafa Apparels Admin' },
+  icons: brandIcons,
+};
 export const viewport: Viewport = brandViewport;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
