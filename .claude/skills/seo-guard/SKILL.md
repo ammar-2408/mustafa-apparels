@@ -50,8 +50,8 @@ Never name another fashion brand in titles, descriptions, slugs, alt text or JSO
 Also: filter/sort params (`?pieces=`, `?sort=`) are read only in the browser, so the server sends the unfiltered page and its canonical; lowercase slugs; no trailing slash; one URL per suit (`/products/[slug]`, with no `/collections/x/products/y` duplicates).
 
 ## Helpers (implement once in `apps/web/lib/seo.ts`, unit-test thoroughly)
-- `canonicalUrl(path)` → absolute URL, normalizes slashes/case, drops all query params. Built at step 1.8.
-- `buildMetadata({ title, description, path, image?, noindex? })` → title template `%s | Mustafa Apparels`, dropping the suffix when the full title would pass 60; description 120–160, trimmed at a word boundary; canonical, OG (`og:url` = canonical, absolute 1200×630 image, `og:type`, `og:site_name`, `og:locale=en_PK`), Twitter `summary_large_image`, robots.
+- `canonicalUrl(path)` → absolute URL, normalizes slashes/case, drops all query params and the hash; throws on a full URL. Built at step 1.8.
+- `buildMetadata({ title, description, path, image?, noindex?, nofollow? })` → absolute title `<title> | Mustafa Apparels`, dropping the suffix when the full title would pass 60 or already names the shop; description 120–160, trimmed at a word boundary; canonical, OG (`og:url` = canonical, absolute 1200×630 image, `og:type`, `og:site_name`, `og:locale=en_PK`), Twitter `summary_large_image`, robots.
 - `serializeJsonLd(obj)` → `JSON.stringify(obj).replace(/</g, '\\u003c')`.
 
 ## robots / noindex
