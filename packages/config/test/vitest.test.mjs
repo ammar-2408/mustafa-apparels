@@ -12,6 +12,11 @@ test('library preset sets the 90% lines and 85% branches floor', () => {
   assert.equal(branches, 85);
 });
 
+test('library preset gives PGlite integration tests time to start', () => {
+  assert.equal(library.test.testTimeout, 30_000);
+  assert.equal(library.test.hookTimeout, 30_000);
+});
+
 test('app preset sets the 80% lines floor on server actions and route handlers', () => {
   const { thresholds } = app.test.coverage;
   assert.deepEqual(thresholds['app/**/actions.ts'], { lines: 80 });

@@ -23,7 +23,7 @@ Create each one when the build reaches it. `docs/claude-code-playbook.md` §4 sa
 | Service | Used for | What to copy into `.env.local` |
 |---|---|---|
 | **GitHub** | Code, CI, deploy trigger | — (repo `ammar-06/mustafa-apparels` already exists) |
-| **Neon** (neon.tech) | PostgreSQL | `DATABASE_URL` (pooled), `DATABASE_URL_UNPOOLED` (direct). Create branches `main`, `dev`, `preview` |
+| **Neon** (neon.tech) | PostgreSQL | `DATABASE_URL` (pooled), `DATABASE_URL_UNPOOLED` (direct). Branches: `production` (default, live site), `dev` (local), `preview` (Netlify branch deploys). Postgres 18 |
 | **Cloudinary** | Photos and videos | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` |
 | **Resend** | Emails | `RESEND_API_KEY`. `EMAIL_FROM` = `Mustafa Apparels <no-reply@updates.mustafaapparels.com>` once the domain is verified (`docs/deployment.md` §5) |
 | **Upstash** | Rate limiting (Redis) | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` |

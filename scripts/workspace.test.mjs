@@ -52,7 +52,9 @@ for (const [app, otherApp] of [
   ['admin', 'web'],
 ]) {
   test(`Netlify builds ${app} through its build script, so check-env always runs`, () => {
-    assert.equal(netlifyValue(app, 'command'), `pnpm turbo build --filter=${app}`);
+    // Only the storefront migrates, so a deploy migrates once (docs/deployment.md §2).
+    const migrate = app === 'web' ? 'pnpm db:migrate && ' : '';
+    assert.equal(netlifyValue(app, 'command'), `${migrate}pnpm turbo build --filter=${app}`);
     assert.match(
       readJson(`apps/${app}/package.json`).scripts.build,
       /check-env\.mjs .*&& next build/,
@@ -188,6 +190,41 @@ for (const task of ['dev', 'build', 'lint', 'typecheck', 'test']) {
   });
 }
 
+test('root db scripts run the @mustafa/db package scripts', () => {
+  const { scripts } = readJson('package.json');
+  assert.equal(scripts['db:generate'], 'pnpm --filter @mustafa/db generate');
+  assert.equal(scripts['db:migrate'], 'pnpm --filter @mustafa/db migrate');
+});
+
+const ciJob = (job) => {
+  const yml = read('.github/workflows/ci.yml');
+  const start = yml.indexOf(`\n  ${job}:\n`);
+  assert.ok(start >= 0, `CI has no "${job}" job`);
+  const next = yml.slice(start + 1).search(/\n {2}\w[\w-]*:\n/);
+  return next < 0 ? yml.slice(start) : yml.slice(start, start + 1 + next);
+};
+
+for (const [job, before] of [
+  ['quality', 'pnpm test'],
+  ['e2e', 'pnpm build'],
+]) {
+  test(`CI "${job}" job migrates a Postgres 18 container, like Neon, before "${before}"`, () => {
+    const block = ciJob(job);
+    assert.match(block, /services:\n\s+postgres:\n\s+image: postgres:18\n/);
+    assert.match(block, /--health-cmd "pg_isready/);
+    const migrateAt = block.indexOf('- run: pnpm db:migrate');
+    assert.ok(migrateAt >= 0, `"${job}" never runs pnpm db:migrate`);
+    assert.ok(migrateAt < block.indexOf(`- run: ${before}`), `"${job}" migrates after ${before}`);
+  });
+}
+
+test("CI's database URLs point at its own Postgres container", () => {
+  const env = ciEnv();
+  for (const name of ['DATABASE_URL', 'DATABASE_URL_UNPOOLED']) {
+    assert.equal(env[name], 'postgresql://postgres:postgres@localhost:5432/shop_test');
+  }
+});
+
 test('root test script runs the workspace project through Vitest', () => {
   const { scripts } = readJson('package.json');
   assert.doesNotMatch(scripts.test, /node --test/);
@@ -199,7 +236,7 @@ test('root verify script runs lint, typecheck, test and build, stopping at the f
   assert.equal(scripts.verify, 'pnpm lint && pnpm typecheck && pnpm test && pnpm build');
 });
 
-for (const pkg of ['apps/web', 'apps/admin', 'packages/config']) {
+for (const pkg of ['apps/web', 'apps/admin', 'packages/config', 'packages/db']) {
   test(`${pkg} tests run through Vitest with coverage`, () => {
     assert.equal(readJson(`${pkg}/package.json`).scripts.test, 'vitest run --coverage');
   });

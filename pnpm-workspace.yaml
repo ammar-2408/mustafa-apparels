@@ -3,5 +3,8 @@ packages:
   - 'packages/*'
 
 # Build scripts stay off unless reviewed. unrs-resolver only re-checks its prebuilt binding.
+# esbuild (from drizzle-kit and tsx) only checks its prebuilt binary, which the platform
+# package already provides.
 allowBuilds:
   unrs-resolver: false
+  esbuild: false

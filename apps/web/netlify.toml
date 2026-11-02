@@ -1,5 +1,5 @@
-# Setup, skip rule and credit costs: docs/deployment.md §2. Step 2.1 adds `pnpm db:migrate` to the command.
+# Setup, skip rule and credit costs: docs/deployment.md §2. Only this site migrates the database.
 [build]
-  command = "pnpm turbo build --filter=web"
+  command = "pnpm db:migrate && pnpm turbo build --filter=web"
   publish = "apps/web/.next"
   ignore  = "[ \"$CACHED_COMMIT_REF\" != \"$COMMIT_REF\" ] && git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- :/apps/web :/packages :/package.json :/pnpm-lock.yaml :/pnpm-workspace.yaml :/turbo.json :/.nvmrc"

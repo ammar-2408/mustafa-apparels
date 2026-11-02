@@ -42,12 +42,12 @@ If a name is taken, pick another and update §1, `docs/architecture.md` §7 and 
 `apps/web/netlify.toml`:
 ```toml
 [build]
-  command = "pnpm turbo build --filter=web"
+  command = "pnpm db:migrate && pnpm turbo build --filter=web"
   publish = "apps/web/.next"
   ignore  = "[ \"$CACHED_COMMIT_REF\" != \"$COMMIT_REF\" ] && git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- :/apps/web :/packages :/package.json :/pnpm-lock.yaml :/pnpm-workspace.yaml :/turbo.json :/.nvmrc"
 ```
 
-Step 2.1 changes the web command to `pnpm db:migrate && pnpm turbo build --filter=web`. That script doesn't exist before then.
+Only the web command migrates the database (step 2.1), so each deploy migrates once.
 
 `apps/admin/netlify.toml`:
 ```toml
@@ -69,7 +69,7 @@ Step 2.1 changes the web command to `pnpm db:migrate && pnpm turbo build --filte
 
 **First production builds, 2026-11-02:** the web log shows it failed at `Invalid environment for web` from `check-env.mjs`, because it ran before the variables were set. The admin's log wasn't read; it failed the same way as far as the API shows (exit code 2).
 
-**Migrations** run once per deploy, from the web site only. A preview build migrates the Neon `preview` branch, and production migrates `main`. A `packages/db` change rebuilds both sites, and they may build at once, so migrations must be backward compatible (`db-change` skill).
+**Migrations** run once per deploy, from the web site only, through `pnpm db:migrate` with `DATABASE_URL_UNPOOLED`. A preview build migrates the Neon `preview` branch, and production migrates the `production` branch. Until the `preview` branch exists and its two URLs are set on branch deploys, a preview in `INTEGRATIONS_MODE=mock` skips migrating with a note in the log; production, or any build in live mode, fails without the URL. **Owner, when convenient:** create the Neon `preview` branch (child of `production`) and set its `DATABASE_URL` (pooled) and `DATABASE_URL_UNPOOLED` (direct) on the web site's Branch deploys context, and the pooled one on the admin's. A `packages/db` change rebuilds both sites, and they may build at once, so migrations must be backward compatible (`db-change` skill).
 
 **Environment variables:** set them per site and per deploy context (Production, Branch deploys). Full table: `docs/setup.md` §6. Before launch, production uses `SITE_INDEXABLE=false`, its `.netlify.app` URL for `NEXT_PUBLIC_SITE_URL`, and the matching `BETTER_AUTH_URL`.
 

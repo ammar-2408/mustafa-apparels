@@ -1,0 +1,36 @@
+{
+  "name": "@mustafa/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./client": "./client.ts",
+    "./id": "./id.ts",
+    "./schema": "./schema/index.ts",
+    "./testing": "./testing.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "generate": "drizzle-kit generate",
+    "migrate": "tsx bin/migrate.ts"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.14",
+    "@mustafa/config": "workspace:*",
+    "@types/node": "^24",
+    "@types/pg": "^8.23.1",
+    "@vitest/coverage-v8": "^5.0.5",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^9.39.5",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.2.0",
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1"
+  }
+}

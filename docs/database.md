@@ -190,9 +190,9 @@ Always parameterized through Drizzle `sql` template — never string concatenati
 ## 5. Migrations workflow
 
 1. Edit schema in `packages/db/schema/*.ts`.
-2. `pnpm db:generate` → review the SQL in `packages/db/migrations/` (commit it).
-3. `pnpm db:migrate` against your dev branch; run `pnpm test`.
-4. CI applies all migrations to a fresh Postgres container before integration and E2E tests.
+2. `pnpm db:generate` → review the SQL in `packages/db/migrations/` (commit it). Hand-written SQL (extensions, functions, triggers): `pnpm db:generate --custom --name=<what>`.
+3. `pnpm db:migrate` against your dev branch; run `pnpm test`. It applies the migrations with `DATABASE_URL_UNPOOLED` through `packages/db/bin/migrate.ts` (drizzle-kit only generates). Integration tests apply the same files to PGlite (`@mustafa/db/testing`).
+4. CI applies all migrations to a fresh `postgres:18` container (Neon's version) in both jobs.
 5. Production migrations run in the storefront's production build (`docs/deployment.md` §2) **before** the new code goes live. Migrations must be backward compatible (add → backfill → switch → remove in a later release).
 
 Rules: never edit an applied migration; never use `drizzle-kit push` on production; destructive changes need owner approval. Use the `db-change` skill.
@@ -216,8 +216,11 @@ Rules: never edit an applied migration; never use `drizzle-kit push` on producti
 
 ## 8. Connection
 
-- `packages/db/client.ts` exports one Drizzle client using Neon's serverless driver (HTTP for single queries, WebSocket pool for transactions).
+- `packages/db/client.ts`: `getDb()` returns one shared Drizzle client for `DATABASE_URL`, created on first use; `createDb(url)` makes a new one. A `*.neon.tech` host uses Neon's serverless driver (WebSocket `Pool`, so transactions work). Any other host, such as CI's Postgres container, uses node-postgres, because only Neon speaks that driver's protocol. Errors name the variable, never its value.
+- `core` functions take the client as their first argument, typed `Database`, so tests pass a PGlite client instead.
+- IDs are UUID v7 from `uuidv7()` in `packages/db/id.ts` (time-ordered). Better Auth makes its own IDs for its tables.
 - Use the **pooled** connection string in apps; the direct string only for migrations.
+- Neon runs Postgres 18 (project `mustafa-apparels`, aws-us-east-2), with branches `production`, `dev` and `preview`.
 - Tests: unit tests mock nothing in `core` that touches SQL — they run against PGlite (in-memory Postgres) or a Neon test branch. See `docs/testing-qa.md`.
 
 ## 9. Banned brand names

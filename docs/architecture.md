@@ -224,7 +224,7 @@ Better Auth handles `/api/auth/*`: scrypt password hashing, DB sessions, httpOnl
 | Local | localhost:3000 | localhost:3001 | Neon `dev` branch (or local Postgres) | `.env.local` |
 | Test (CI) | built app on localhost | built app on localhost | Throwaway Postgres container per CI run (PGlite for fast local integration tests) | External services mocked (`INTEGRATIONS_MODE=mock`) |
 | Preview | `develop--mustafa-apparels.netlify.app` | `develop--mustafa-apparels-admin.netlify.app` | Neon `preview` branch | Every push to `develop`. Costs no deploy credits. `noindex` on all responses, GA4 off |
-| Production | https://mustafaapparels.com | https://admin.mustafaapparels.com | Neon `main` branch | Only from `main`. **15 credits per site per deploy** |
+| Production | https://mustafaapparels.com | https://admin.mustafaapparels.com | Neon `production` branch | Only from `main`. **15 credits per site per deploy** |
 
 `SITE_URL` (`NEXT_PUBLIC_SITE_URL`) drives canonicals, sitemap, OG and llms.txt. Production stays `noindex` through `SITE_INDEXABLE=false` until launch, when the domain is connected (`docs/deployment.md` §6).
 

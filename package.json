@@ -13,6 +13,8 @@
     "test:a11y": "playwright test e2e/a11y",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "env:check": "node packages/config/check-env.mjs web && node packages/config/check-env.mjs admin",
+    "db:generate": "pnpm --filter @mustafa/db generate",
+    "db:migrate": "pnpm --filter @mustafa/db migrate",
     "prepare": "husky || exit 0"
   },
   "devDependencies": {

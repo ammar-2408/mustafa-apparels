@@ -92,6 +92,8 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | Search misses obvious results | `pg_trgm` not enabled, wrong text config, product not `published` | Check migration 0000, query uses `'simple'`, status filter |
 | "generation expression is not immutable" | `array_to_string` used directly in `search_vector` | Use `immutable_array_to_string` (`docs/database.md` §4) |
 | Migration fails in CI | Edited an applied migration | Revert edit; create a new migration |
+| `pnpm db:migrate` prints a `sslmode=require` security warning | node-postgres announcing that `require` will follow libpq's weaker meaning in v9; today it already verifies the certificate | Harmless. Neon URLs need no change now; recheck when `pg` 9 lands |
+| Preview build log says "Skipping migrations" | No `DATABASE_URL_UNPOOLED` on Netlify branch deploys (mock mode) | Create the Neon `preview` branch and set its URLs (`docs/deployment.md` §2) |
 
 ### Auth (Better Auth)
 | Symptom | Cause | Fix |

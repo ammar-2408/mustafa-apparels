@@ -1,5 +1,5 @@
 # CI for the Mustafa Apparels monorepo.
-# The database and Lighthouse stages in docs/testing-qa.md §6 are added by steps 2.1 and 9.2.
+# The Lighthouse stage in docs/testing-qa.md §6 is added by step 9.2.
 name: CI
 
 on:
@@ -42,6 +42,19 @@ jobs:
   quality:
     name: Lint, typecheck, unit + integration, build
     runs-on: ubuntu-latest
+    # Same major version as Neon. Integration tests use PGlite; this proves the migrations
+    # apply to real Postgres too.
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: shop_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -50,6 +63,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm db:migrate
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test # every package's test script already measures coverage
@@ -68,6 +82,17 @@ jobs:
     name: E2E, responsive, SEO, a11y, security (Playwright)
     needs: quality
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: shop_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -77,6 +102,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm db:migrate
       - run: pnpm build
       - run: pnpm test:e2e # Playwright webServer starts web (3000) + admin (3001)
       - uses: actions/upload-artifact@v7
