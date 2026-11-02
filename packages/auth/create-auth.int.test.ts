@@ -70,11 +70,22 @@ describe('sign-up', () => {
       role: 'admin',
       banned: false,
     });
-    // Better Auth drops fields marked input: false; step 3.4's strict schema refuses them outright.
-    expect(response.status).toBe(200);
-    const [row] = await db.select().from(user);
-    expect(row?.role).toBe('customer');
-    expect(row?.banned).toBe(false);
+    // Refused outright by the strict schema; Better Auth alone would quietly drop the field.
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: 'VALIDATION' });
+    expect(await db.select().from(user)).toHaveLength(0);
+  });
+
+  it('refuses a password outside 10 to 128 characters', async () => {
+    for (const password of ['short-pw1', 'x'.repeat(129)]) {
+      const response = await post(webAuth(), '/sign-up/email', {
+        name: 'Ayesha',
+        email: 'ayesha@example.com',
+        password,
+      });
+      expect(response.status).toBe(400);
+    }
+    expect(await db.select().from(user)).toHaveLength(0);
   });
 
   it('gives every account a different time-ordered id', async () => {

@@ -12,6 +12,8 @@
 | Password reset | Single-use token, 1-hour expiry, emailed via Resend; all sessions revoked after reset (`revokeSessionsOnPasswordReset`). |
 | Sessions | Stored in DB; cookie `httpOnly`, `secure`, `sameSite=lax`; 7-day expiry with sliding refresh; "log out everywhere" in account settings. |
 | User enumeration | Sign-up, login and reset return the same generic message whether the email exists or not. |
+| Sign-up input | `signUpInput` (`packages/validators/auth.ts`, `.strict()`) runs in the form and again in a Better Auth `before` hook, so an extra field such as `role: "admin"` is refused with 400, not quietly dropped. `role`, `phone` and `banned` are also `input: false` |
+| Error text | Every auth error goes through `authErrorMessage()`: wrong password, unknown email and banned all read "Email or password is incorrect." Unknown server errors show a generic message |
 | Brute force | Better Auth built-in rate limit on `/api/auth/*` + Upstash limit: 5 failed logins / 15 min / (IP + email), then backoff. |
 
 ### Admins

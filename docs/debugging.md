@@ -101,6 +101,7 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | Logged out immediately on preview URL | Cookie domain / `baseURL` mismatch | Set auth `baseURL` from the deployment URL; trusted origins include preview domain |
 | Admin can't log in | Role not `admin`, or 2FA not set up | Check `user.role`; re-run seed for first admin |
 | Reset email never arrives | Resend key/sender, spam, DNS | Check Resend logs; `updates.mustafaapparels.com` shows verified; check SPF and DKIM at Spaceship |
+| Local E2E: right after logging in, the page bounces back to `/login`, but only on a freshly started `next dev` (2026-11-02, step 3.4) | Dev mode compiles `/account` on first visit, and the Fast Refresh rebuild during that client navigation lands back on `/login`. Sign-in itself returns 200 and sets the cookie. Against `next start`, all auth specs pass on both projects | Run auth specs against a build: `pnpm turbo build --filter=web --filter=admin`, then `CI=1 pnpm exec playwright test <spec> --project=mobile-small --project=laptop --retries=0`. CI always uses `next start`. Not chased further (tool quirk) |
 
 ### Cloudinary and media
 | Symptom | Cause | Fix |

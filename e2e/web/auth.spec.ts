@@ -1,0 +1,71 @@
+import { expect, test } from '../support/users';
+
+test.describe('sign-up, login and logout', () => {
+  test('register says to check email', async ({ page, users }) => {
+    await page.goto('/register');
+    await page.getByLabel('Name').fill('Ayesha');
+    await page.getByLabel('Email').fill(users.freshEmail());
+    await page.getByLabel('Password').fill('a long new passphrase');
+    await page.getByRole('button', { name: 'Create account' }).click();
+    await expect(page.getByRole('status')).toContainText('Check your email');
+  });
+
+  test('register checks the password length before sending', async ({ page }) => {
+    await page.goto('/register');
+    await page.getByLabel('Name').fill('Ayesha');
+    await page.getByLabel('Email').fill('ayesha@example.com');
+    await page.getByLabel('Password').fill('short');
+    await page.getByRole('button', { name: 'Create account' }).click();
+    await expect(page.getByText('Use at least 10 characters')).toBeVisible();
+  });
+
+  test('a customer logs in, sees the account page, and logs out', async ({ page, users }) => {
+    const customer = await users.create();
+    await page.goto('/login');
+    await page.getByLabel('Email').fill(customer.email);
+    await page.getByLabel('Password').fill(customer.password);
+    await page.getByRole('button', { name: 'Log in' }).click();
+
+    await expect(page).toHaveURL(/\/account$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Your account' })).toBeVisible();
+    await expect(page.getByText(customer.email)).toBeVisible();
+
+    await page.getByRole('button', { name: 'Log out' }).click();
+    await expect(page).toHaveURL(/\/login$/);
+    await page.goto('/account');
+    await expect(page).toHaveURL(/\/login$/);
+  });
+
+  test('a wrong password and an unknown email get the same message', async ({ page, users }) => {
+    const customer = await users.create();
+    const messageFor = async (email: string) => {
+      await page.goto('/login');
+      await page.getByLabel('Email').fill(email);
+      await page.getByLabel('Password').fill('not the right password');
+      await page.getByRole('button', { name: 'Log in' }).click();
+      const alert = page.getByRole('alert').filter({ hasText: /\S/ });
+      await expect(alert).toBeVisible();
+      return alert.textContent();
+    };
+    const wrongPassword = await messageFor(customer.email);
+    const unknownEmail = await messageFor(users.freshEmail());
+    expect(wrongPassword).toBe('Email or password is incorrect.');
+    expect(unknownEmail).toBe(wrongPassword);
+  });
+
+  test('the account page sends a signed-out visitor to log in', async ({ page }) => {
+    await page.goto('/account');
+    await expect(page).toHaveURL(/\/login$/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Log in' })).toBeVisible();
+  });
+
+  test('auth pages tell search engines to stay away', async ({ page }) => {
+    for (const path of ['/login', '/register']) {
+      await page.goto(path);
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        'content',
+        'noindex, nofollow',
+      );
+    }
+  });
+});

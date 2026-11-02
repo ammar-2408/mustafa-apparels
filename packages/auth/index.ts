@@ -5,8 +5,10 @@ import { createHmac } from 'node:crypto';
 import type { Database } from '@mustafa/db/client';
 import { uuidv7 } from '@mustafa/db/id';
 import { account, session, twoFactor, user, verification } from '@mustafa/db/schema';
+import { PASSWORD_MAX, PASSWORD_MIN, signUpInput } from '@mustafa/validators/auth';
 import { APIError, betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { createAuthMiddleware } from 'better-auth/api';
 import { nextCookies } from 'better-auth/next-js';
 import { eq } from 'drizzle-orm';
 
@@ -22,8 +24,7 @@ export type CreateAuthOptions = {
   background?: (task: Promise<unknown>) => void;
 };
 
-export const PASSWORD_MIN = 10;
-export const PASSWORD_MAX = 128;
+export { PASSWORD_MAX, PASSWORD_MIN };
 
 const DAY = 60 * 60 * 24;
 
@@ -82,6 +83,17 @@ export function createAuth({ app, db, baseURL, secret, background }: CreateAuthO
       // Netlify sets this header itself on every request.
       ipAddress: { ipAddressHeaders: ['x-nf-client-connection-ip'] },
       ...(background && { backgroundTasks: { handler: background } }),
+    },
+    hooks: {
+      // The same strict schema as the form: an unexpected field, such as role, is refused outright.
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path === '/sign-up/email' && !signUpInput.safeParse(ctx.body).success) {
+          throw new APIError('BAD_REQUEST', {
+            code: 'VALIDATION',
+            message: 'Check the highlighted fields',
+          });
+        }
+      }),
     },
     databaseHooks: {
       session: {
