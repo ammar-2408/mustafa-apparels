@@ -83,7 +83,7 @@
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-commit-gate.mjs"],
-            "timeout": 300
+            "timeout": 30
           }
         ]
       }
