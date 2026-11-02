@@ -1,13 +1,22 @@
 // `pnpm db:seed` (docs/database.md §6). Safe to run on every environment, any number of times:
 // - collections only when there are none, so the owner's renames and deletions stick;
 // - each known setting only when its key is missing, so the owner's edits stick;
+// - the first admin only when no account has that email, and never by promoting a customer;
 // - `--e2e` adds 12 demo suits for tests, never on preview or production.
 // Real stock comes from catalog/ through scripts/import-stock.ts, never from here.
-// The first admin is added at step 3.2, once Better Auth's tables exist.
-import { count, inArray } from 'drizzle-orm';
+import { hashPassword } from 'better-auth/crypto';
+import { count, eq, inArray } from 'drizzle-orm';
 
 import type { Database } from './client';
-import { category, product, productMedia, siteSetting, slugRedirect } from './schema';
+import {
+  account,
+  category,
+  product,
+  productMedia,
+  siteSetting,
+  slugRedirect,
+  user,
+} from './schema';
 
 const COLLECTIONS = [
   { name: 'Dhanak', slug: 'dhanak', sortOrder: 0 },
@@ -54,14 +63,48 @@ const DEMO_SUITS: Demo[] = [
 const VIDEO_SUIT = 'E2E-02';
 const REDIRECTED_SUIT = 'E2E-03';
 
+export type SeedAdmin = { email: string; password: string };
+
 export type SeedOptions = {
   appEnv: string | undefined;
   e2e?: boolean;
+  // Leave out only in tests that don't need it: `pnpm db:seed` always passes one.
+  admin?: SeedAdmin;
   // Cloudinary cloud for the demo media URLs.
   cloudName?: string;
 };
 
-export type SeedSummary = { categories: number; settings: number; demoSuits: number };
+export type SeedSummary = {
+  categories: number;
+  settings: number;
+  admins: number;
+  demoSuits: number;
+};
+
+// Same limits as sign-up (packages/auth). Errors name the variable, never its value.
+const PASSWORD_MIN = 10;
+const PASSWORD_MAX = 128;
+
+export function adminFromEnv(env: Record<string, string | undefined>): SeedAdmin {
+  const email = env.SEED_ADMIN_EMAIL?.trim();
+  const password = env.SEED_ADMIN_PASSWORD;
+  const missing = [
+    ...(email ? [] : ['SEED_ADMIN_EMAIL']),
+    ...(password?.trim() ? [] : ['SEED_ADMIN_PASSWORD']),
+  ];
+  if (missing.length > 0) {
+    throw new Error(
+      `${missing.join(', ')} ${missing.length > 1 ? 'are' : 'is'} missing from .env.local`,
+    );
+  }
+  if (!/^[^s@]+@[^s@]+.[^s@]+$/.test(email!)) {
+    throw new Error('SEED_ADMIN_EMAIL must be an email address');
+  }
+  if (password!.length < PASSWORD_MIN || password!.length > PASSWORD_MAX) {
+    throw new Error(`SEED_ADMIN_PASSWORD must be ${PASSWORD_MIN} to ${PASSWORD_MAX} characters`);
+  }
+  return { email: email!, password: password! };
+}
 
 export async function seed(db: Database, options: SeedOptions): Promise<SeedSummary> {
   const { appEnv, e2e = false, cloudName = 'demo' } = options;
@@ -69,7 +112,7 @@ export async function seed(db: Database, options: SeedOptions): Promise<SeedSumm
     throw new Error(`--e2e adds demo suits and never runs on ${appEnv}`);
   }
   return db.transaction(async (tx) => {
-    const summary: SeedSummary = { categories: 0, settings: 0, demoSuits: 0 };
+    const summary: SeedSummary = { categories: 0, settings: 0, admins: 0, demoSuits: 0 };
 
     const [{ existing } = { existing: 0 }] = await tx.select({ existing: count() }).from(category);
     if (existing === 0) {
@@ -83,9 +126,35 @@ export async function seed(db: Database, options: SeedOptions): Promise<SeedSumm
       .returning();
     summary.settings = inserted.length;
 
+    if (options.admin) summary.admins = await seedAdmin(tx, options.admin);
+
     if (e2e) summary.demoSuits = await seedDemoSuits(tx, cloudName);
     return summary;
   });
+}
+
+// Better Auth's scrypt hash, so the owner signs in like anyone else. 2FA is set up on first login.
+async function seedAdmin(db: Database, admin: SeedAdmin) {
+  const email = admin.email.trim().toLowerCase();
+  const [existing] = await db.select({ role: user.role }).from(user).where(eq(user.email, email));
+  if (existing?.role === 'admin') return 0;
+  if (existing) {
+    throw new Error(
+      'SEED_ADMIN_EMAIL already belongs to a customer account; the seed never promotes one',
+    );
+  }
+
+  const [owner] = await db
+    .insert(user)
+    .values({ name: 'Shop owner', email, emailVerified: true, role: 'admin' })
+    .returning();
+  await db.insert(account).values({
+    userId: owner!.id,
+    accountId: owner!.id,
+    providerId: 'credential',
+    password: await hashPassword(admin.password),
+  });
+  return 1;
 }
 
 async function seedDemoSuits(db: Database, cloudName: string) {

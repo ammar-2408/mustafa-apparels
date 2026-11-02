@@ -59,7 +59,7 @@ describe('seed', () => {
     const first = await snapshot();
     const summary = await seed(db, { appEnv: 'test', e2e: true });
     expect(await snapshot()).toEqual(first);
-    expect(summary).toEqual({ categories: 0, settings: 0, demoSuits: 0 });
+    expect(summary).toEqual({ categories: 0, settings: 0, admins: 0, demoSuits: 0 });
   });
 
   it('keeps the owner’s changes: edited settings, renamed or removed collections', async () => {
@@ -96,6 +96,7 @@ describe('seed --e2e', () => {
     expect(await seed(db, { appEnv: 'test', e2e: true })).toEqual({
       categories: 3,
       settings: 5,
+      admins: 0,
       demoSuits: 12,
     });
     const rows = await db.select().from(product);

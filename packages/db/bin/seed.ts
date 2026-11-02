@@ -2,7 +2,7 @@
 import { loadEnvFiles } from '@mustafa/config/env';
 
 import { createDb } from '../client';
-import { seed } from '../seed';
+import { adminFromEnv, seed } from '../seed';
 
 loadEnvFiles();
 
@@ -10,15 +10,17 @@ const url = (process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL)?.tri
 
 try {
   if (!url) throw new Error('DATABASE_URL_UNPOOLED or DATABASE_URL is missing');
+  const admin = adminFromEnv(process.env);
   const db = createDb(url);
   try {
     const summary = await seed(db, {
       appEnv: process.env.APP_ENV,
       e2e: process.argv.includes('--e2e'),
+      admin,
       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || undefined,
     });
     console.log(
-      `Seeded ${summary.categories} collections, ${summary.settings} settings, ${summary.demoSuits} demo suits.`,
+      `Seeded ${summary.categories} collections, ${summary.settings} settings, ${summary.admins} admin, ${summary.demoSuits} demo suits.`,
     );
   } finally {
     await db.$client.end();
