@@ -25,7 +25,7 @@
     "@mustafa/db": "workspace:*",
     "@mustafa/validators": "workspace:*",
     "@upstash/ratelimit": "2.2.0",
-    "@upstash/redis": "1.41.0",
+    "@upstash/redis": "1.40.0",
     "drizzle-orm": "^0.45.4"
   },
   "devDependencies": {
