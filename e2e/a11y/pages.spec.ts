@@ -5,7 +5,13 @@ import { expect, test } from '@playwright/test';
 // Add each new page template here.
 const PAGES = [
   { name: 'storefront home', url: 'http://localhost:3000/' },
+  { name: 'login', url: 'http://localhost:3000/login' },
+  { name: 'register', url: 'http://localhost:3000/register' },
+  { name: 'forgot password', url: 'http://localhost:3000/forgot-password' },
+  { name: 'reset password', url: 'http://localhost:3000/reset-password?token=x' },
+  { name: 'reset password, expired link', url: 'http://localhost:3000/reset-password' },
   { name: 'admin login', url: 'http://localhost:3001/login' },
+  { name: 'admin 2FA code', url: 'http://localhost:3001/login/verify' },
 ];
 
 for (const { name, url } of PAGES) {
