@@ -252,7 +252,7 @@ Built with the Next.js Metadata API (`generateMetadata`) through one helper `bui
 - `openGraph` (type, url = canonical, title, description, images 1200×630 absolute, siteName `Mustafa Apparels`, locale `en_PK`), `twitter` (`summary_large_image`)
 - `robots`: `index, follow` for shop pages; `noindex, follow` for search; `noindex, nofollow` for account/auth; previews and admin send `X-Robots-Tag: noindex` header too.
 
-Default share image: `/brand/social/og-share-image-1200x630.png`. Collection and product pages use a generated image (`opengraph-image.tsx`, 1200×630), cached because each generation costs compute credits.
+Default share image: `/brand/social/og-share-image-1200x630.png` (`DEFAULT_OG_IMAGE` in `apps/web/lib/seo.ts`, alt `MA Apparels by Mustafa Ahmed`). The root layout sets `metadataBase` from `SITE_URL`, plus the default `openGraph` (type `website`, site name, `en_PK`, this image) and `twitter` (`summary_large_image`), so every page shares it by absolute URL. A page's own `openGraph` replaces the layout's whole, so `buildMetadata()` repeats the image. `SITE_URL` is `NEXT_PUBLIC_SITE_URL` without a trailing slash, and the build fails rather than guess it. `e2e/seo/default-og-image.spec.ts` checks the tags in the raw server HTML. Collection and product pages use a generated image (`opengraph-image.tsx`, 1200×630), cached because each generation costs compute credits.
 
 ### 8.2 Canonical rules (each one tested in `e2e/seo/canonical.spec.ts`)
 

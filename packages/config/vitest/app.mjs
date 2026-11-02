@@ -9,6 +9,8 @@ export default defineConfig({
     // Testing Library registers afterEach(cleanup) only when afterEach is a global.
     // Tests still import describe, it and expect from 'vitest'.
     globals: true,
+    // Unit tests see the production URL, whatever the machine's .env.local or CI sets.
+    env: { NEXT_PUBLIC_SITE_URL: 'https://mustafaapparels.com' },
     coverage: {
       provider: 'v8',
       // Listed so a file with no tests still counts against the floor.

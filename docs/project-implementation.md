@@ -33,8 +33,8 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
 - [x] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests Phase 0 review: the app test setup never calls Testing Library's `cleanup()` between tests, so rendered pages pile up. Add it (an `afterEach(cleanup)` in the shared Vitest setup, or turn on globals) with a test that fails without it, before the first component test here
 - [x] 1.6 `packages/ui` primitives in the brand style: Button, Input, Dialog, with focus rings + tests
-- [ ] 1.7 Default Open Graph image wired up in `apps/web` (`/brand/social/og-share-image-1200x630.png`) + test
-- [ ] 1.8 `SITE_URL` + `canonicalUrl()` + `buildMetadata()` helpers in `apps/web/lib/seo.ts` + unit tests, incl. title suffix dropped past 60 and description trimmed at a word boundary to 160. Built here so every later page can use them
+- [x] 1.7 Default Open Graph image wired up in `apps/web` (`/brand/social/og-share-image-1200x630.png`) + test
+- [ ] 1.8 `SITE_URL` (already in `apps/web/lib/seo.ts` from step 1.7, with `SITE_NAME` and `DEFAULT_OG_IMAGE`) + `canonicalUrl()` + `buildMetadata()` helpers in `apps/web/lib/seo.ts` + unit tests, incl. title suffix dropped past 60 and description trimmed at a word boundary to 160. Built here so every later page can use them
 
 ## Phase 2 — Data layer
 - [ ] 2.1 `packages/db`: Drizzle + Neon client, drizzle-kit config, first migration enabling `pg_trgm` and creating `immutable_array_to_string`. Add a `postgres:17` service and `pnpm db:migrate` to both CI jobs (removed in step 0.9 until this exists). When `db:seed` exists, add `pnpm db:seed -- --e2e` to the `e2e` job. Change the build command in `apps/web/netlify.toml` to `pnpm db:migrate && pnpm turbo build --filter=web`, and update its test (left out at step 0.11 because the script didn't exist)
