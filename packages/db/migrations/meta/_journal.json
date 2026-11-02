@@ -43,6 +43,13 @@
       "when": 1793622052711,
       "tag": "0005_audit_log_insert_only",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793622251011,
+      "tag": "0006_inquiry_wishlist",
+      "breakpoints": true
     }
   ]
 }

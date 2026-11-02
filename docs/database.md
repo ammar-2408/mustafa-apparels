@@ -119,7 +119,7 @@ Rules:
 **`slug_redirect`**: id, entity (enum `redirect_entity`: `product` \| `category`), old_slug (unique per entity), target_id (indexed; no foreign key, because it points at either table), created_at. Written automatically when a slug changes; used for 301s so canonicals never point at dead URLs.
 
 ### Engagement
-**`inquiry`**: id, product_id → product (nullable for general questions), user_id → user (nullable for guests), name, email, phone, message (≤ 2000 chars), status enum `new` \| `contacted` \| `closed`, ip_hash (sha256 of IP + salt, for abuse checks — not the raw IP), created_at, updated_at.
+**`inquiry`**: id, product_id → product (nullable for general questions), user_id → user (nullable for guests), name, email (nullable), phone (nullable, E.164), message (≤ 2000 chars, also a check), status enum `inquiry_status`: `new` \| `contacted` \| `closed`, ip_hash (sha256 of IP + salt, for abuse checks — not the raw IP), created_at, updated_at. Every inquiry has a phone or an email or both (owner's decision, 2026-11-02), checked in `packages/validators`. Deleting the suit or the account keeps the inquiry and clears the link (`on delete set null`).
 
 **`wishlist_item`**: user_id → user (cascade), product_id → product (cascade), created_at. PK (user_id, product_id).
 

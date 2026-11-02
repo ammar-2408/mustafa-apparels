@@ -42,7 +42,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 2.3 `product` table: design code, import key, nullable price, pieces, piece details, collection type, dress categories, fabric, design, season, outfit style, main colour, colour family, accent colours, motifs, related design codes, care; publish-needs-price check; generated `search_vector`; indexes + tests
 - [x] 2.4 `product_media` table: `kind`, poster, duration, bytes; one-primary index; primary-must-be-image and video-duration checks + tests
 - [x] 2.5 `slug_redirect`, `site_setting`, `audit_log` tables + tests, and the `user` table in Better Auth's core shape (they point at it)
-- [ ] 2.6 `inquiry`, `wishlist_item` tables + tests
+- [x] 2.6 `inquiry`, `wishlist_item` tables + tests
 - [ ] 2.7 PGlite test harness + factories (`makeProduct`, `makeMedia`, `makeCategory`, `makeUser`)
 - [ ] 2.8 `packages/validators`: banned brand names helper + exhaustive unit tests (`docs/database.md` §9)
 - [ ] 2.9 `packages/validators`: filter taxonomy (`docs/catalog.md` §4), then product, media, category, inquiry, search, settings schemas + exhaustive unit tests
