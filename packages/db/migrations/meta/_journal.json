@@ -29,6 +29,20 @@
       "when": 1793621895334,
       "tag": "0003_product_media",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793622051959,
+      "tag": "0004_user_redirects_settings_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793622052711,
+      "tag": "0005_audit_log_insert_only",
+      "breakpoints": true
     }
   ]
 }

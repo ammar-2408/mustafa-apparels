@@ -24,6 +24,9 @@ erDiagram
 Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `now()`, snake_case columns, every FK indexed.
 
 ### Auth tables (owned by Better Auth — generate with its CLI, then extend)
+
+`user` already exists from step 2.5 (`packages/db/schema/user.ts`), because the admin tables point at it. Checks: email equals `lower(email)`, role is `customer` or `admin`. At step 3.2, compare the Better Auth CLI output with it and add only the other tables and any plugin columns, in a new migration.
+
 | Table | Key columns |
 |---|---|
 | `user` | id, name, email (unique, lowercased), email_verified, image, **role** (`customer` \| `admin`, default `customer`), phone (nullable), banned, created_at, updated_at |
@@ -113,7 +116,7 @@ Rules:
 - Check: `kind = 'image' OR (duration_seconds IS NOT NULL AND duration_seconds <= 60)`.
 - Publishing (`core.products.setStatus`) requires a price, a colour, a main image and alt text on all media, and refuses any product whose media or text fails §9.
 
-**`slug_redirect`**: id, entity (`product` \| `category`), old_slug (unique per entity), target_id, created_at. Written automatically when a slug changes; used for 301s so canonicals never point at dead URLs.
+**`slug_redirect`**: id, entity (enum `redirect_entity`: `product` \| `category`), old_slug (unique per entity), target_id (indexed; no foreign key, because it points at either table), created_at. Written automatically when a slug changes; used for 301s so canonicals never point at dead URLs.
 
 ### Engagement
 **`inquiry`**: id, product_id → product (nullable for general questions), user_id → user (nullable for guests), name, email, phone, message (≤ 2000 chars), status enum `new` \| `contacted` \| `closed`, ip_hash (sha256 of IP + salt, for abuse checks — not the raw IP), created_at, updated_at.
@@ -121,11 +124,11 @@ Rules:
 **`wishlist_item`**: user_id → user (cascade), product_id → product (cascade), created_at. PK (user_id, product_id).
 
 ### Admin
-**`site_setting`**: key text PK, value jsonb, updated_at, updated_by → user. Keys: `shop_name`, `phone`, `whatsapp`, `email`, `service_area`, `delivery_info`, `payment_info`, `return_policy`, `reply_note`, `socials`, `default_seo`.
+**`site_setting`**: key text PK, value jsonb (validated per key in `packages/validators`), updated_at, updated_by → user (`on delete set null`). Keys: `shop_name`, `phone`, `whatsapp`, `email`, `service_area`, `delivery_info`, `payment_info`, `return_policy`, `reply_note`, `socials`, `default_seo`.
 
 There is no address or opening-hours setting. The shop is online-only with no fixed hours.
 
-**`audit_log`**: id, actor_id → user, action (`product.create`, `product.update`, ...), entity, entity_id, changes jsonb (before/after, no secrets), created_at. Insert-only.
+**`audit_log`**: id, actor_id → user, action (`product.create`, `product.update`, ...), entity, entity_id, changes jsonb (before/after, no secrets), created_at. Insert-only: a trigger (migration 0005) refuses updates and deletes. The one exception is the foreign key clearing `actor_id` when that user is deleted, so the history stays.
 
 ## 3. Indexes
 
