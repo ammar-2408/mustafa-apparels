@@ -29,7 +29,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 - [x] 1.1 Copy logo files into `apps/web/public/brand/` and `apps/admin/public/brand/` (exact list: `docs/design.md` §1.3) + test that each referenced file exists Phase 0 review: root `lint` and `typecheck` skip `scripts/` and `.claude/hooks/` (Husky caught a lint error that `pnpm verify` missed). Add them to the root lint and typecheck (or give them their own tsconfig) and fix what shows up, in a commit before the logo copy
 - [x] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, spacing tokens (`docs/design.md` §1.4) and the custom breakpoints (`docs/design.md` §2), in the Tailwind preset and `globals.css` + contrast unit test
-- [ ] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()` and tight leading on large headings, spaced-capitals label style
+- [x] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()` and tight leading on large headings, spaced-capitals label style
 - [ ] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
 - [ ] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests Phase 0 review: the app test setup never calls Testing Library's `cleanup()` between tests, so rendered pages pile up. Add it (an `afterEach(cleanup)` in the shared Vitest setup, or turn on globals) with a test that fails without it, before the first component test here
 - [ ] 1.6 `packages/ui` primitives in the brand style: Button, Input, Dialog, with focus rings + tests

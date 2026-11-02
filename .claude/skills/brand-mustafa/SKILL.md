@@ -41,6 +41,8 @@ Self-hosted through `next/font`. Load only weights 300 and 400.
 
 Don't use Light 300 under about 20px: it gets hard to read on phones.
 
+Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `text-h1`, `text-h2` or `text-h3` with `font-light`; body is `text-body-lg`, `text-body` or `text-small`; spaced capitals are `caps` (0.4em) or `caps-tight` (0.2em), e.g. `caps-tight sm:caps`. Only `font-light` and `font-normal` exist: there is no bold.
+
 ## Spacing and shape
 
 - Use Tailwind's 4px scale, limited to 4, 8, 12, 16, 24, 32, 48, 64, 96 and 128px, with no one-off values (`docs/design.md` §1.4).

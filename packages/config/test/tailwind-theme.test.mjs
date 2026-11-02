@@ -151,4 +151,69 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
     assert.match(out, /body\s*\{[^}]*background-color: var\(--color-bg\)/);
     assert.match(out, /body\s*\{[^}]*color: var\(--color-fg\)/);
   });
+
+  test('sets Montserrat as the only font family', async () => {
+    const out = await build(['font-sans', 'font-serif', 'font-mono']);
+    assert.match(out, /--font-sans:\s*var\(--font-montserrat\)/);
+    assert.match(out, /\.font-sans\s*\{\s*font-family: var\(--font-sans\)/);
+    assert.doesNotMatch(out, /\.font-serif|\.font-mono/);
+  });
+
+  test('offers only the two loaded weights, so nothing is faux-bolded', async () => {
+    const out = await build(['font-light', 'font-normal', 'font-medium', 'font-bold']);
+    assert.match(out, /--font-weight-light:\s*300/);
+    assert.match(out, /--font-weight-normal:\s*400/);
+    assert.match(out, /\.font-light\s*\{/);
+    assert.match(out, /\.font-normal\s*\{/);
+    assert.doesNotMatch(out, /\.font-medium|\.font-bold/);
+  });
+
+  test('generates the type scale and drops the default sizes', async () => {
+    const out = await build(['text-display', 'text-h1', 'text-body', 'text-label', 'text-xl']);
+    assert.match(
+      out,
+      /\.text-display\s*\{\s*font-size: var\(--text-display\);\s*line-height: var\(--tw-leading, var\(--text-display--line-height\)\)/,
+    );
+    assert.match(out, /\.text-body\s*\{\s*font-size: var\(--text-body\)/);
+    assert.doesNotMatch(out, /\.text-xl/);
+  });
+
+  test('caps sets spaced capitals at 0.4em, and caps-tight at 0.2em for phones', async () => {
+    const out = await build(['caps', 'caps-tight']);
+    const rule = (name) => out.match(new RegExp(`\\.${name}\\s*\\{([^}]*)\\}`))?.[1] ?? '';
+    for (const name of ['caps', 'caps-tight']) {
+      assert.match(rule(name), /text-transform: uppercase/, name);
+      assert.match(rule(name), /font-weight: var\(--font-weight-normal\)/, name);
+      assert.match(rule(name), /font-size: var\(--text-label\)/, name);
+    }
+    assert.match(rule('caps'), /letter-spacing: 0\.4em/);
+    assert.match(rule('caps-tight'), /letter-spacing: 0\.2em/);
+  });
+});
+
+describe('type scale', () => {
+  const sizes = Object.fromEntries(
+    [...themeCss.matchAll(/--text-([a-z0-9-]+?):\s*([^;]+);/g)].map(([, name, value]) => [
+      name,
+      value.trim(),
+    ]),
+  );
+  const rem = (value) => Number(value.match(/^([\d.]+)rem$/)?.[1]);
+  const headings = ['display', 'h1', 'h2', 'h3'];
+
+  test.each(headings)('%s is fluid with clamp() and never below 20px', (name) => {
+    const [, min] = sizes[name]?.match(/^clamp\(([\d.]+rem),/) ?? [];
+    assert.ok(min, `${name} is not a clamp() with a rem minimum: ${sizes[name]}`);
+    // Light 300 gets hard to read under about 20px (docs/design.md §1.2).
+    assert.ok(rem(min) >= 1.25, `${name} starts at ${min}`);
+  });
+
+  test.each(['display', 'h1', 'h2'])('%s has tight leading', (name) => {
+    assert.ok(Number(sizes[`${name}--line-height`]) <= 1.15, sizes[`${name}--line-height`]);
+  });
+
+  test('labels are small and body text is at least 16px', () => {
+    assert.ok(rem(sizes.label) <= 0.8125);
+    assert.ok(rem(sizes.body) >= 1);
+  });
 });

@@ -40,6 +40,52 @@
 
   --shadow-*: initial;
   --shadow-soft: 0 1px 2px rgb(17 17 17 / 0.04), 0 12px 32px -12px rgb(17 17 17 / 0.12);
+
+  /* Montserrat only, from next/font on <html>. Only 300 and 400 are loaded, so no other weights. */
+  --font-*: initial;
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-weight-*: initial;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+
+  /* Headings are Light 300 and never below 20px; large ones get tight leading. */
+  --text-*: initial;
+  --text-display: clamp(2.5rem, 6vw + 1rem, 7rem);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: clamp(2.25rem, 4vw + 1rem, 5rem);
+  --text-h1--line-height: 1.05;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: clamp(1.75rem, 2.5vw + 1rem, 3.5rem);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: clamp(1.25rem, 1vw + 1rem, 1.75rem);
+  --text-h3--line-height: 1.25;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+}
+
+/* Spaced capitals for labels, nav and buttons; caps-tight where 0.4em would wrap on phones. */
+@utility caps {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+@utility caps-tight {
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 
 @layer base {
@@ -50,5 +96,15 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-fg);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 }

@@ -38,6 +38,21 @@ Error and success are muted, deep tones so they sit with the monochrome palette.
 
 Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300 and 400. The logo pack's readme suggests Light 300 for spaced capitals, but these labels are small, so Regular 400 is the deliberate choice here.
 
+Each app loads the font in `app/fonts.ts` (`next/font/google`, served from our own domain, `display: swap`) and puts its `--font-montserrat` variable on `<html>`. The theme clears Tailwind's other font families and weights, so only `font-sans`, `font-light` (300) and `font-normal` (400) exist and nothing is faux-bolded. The type scale replaces Tailwind's sizes:
+
+| Utility | Size | Leading | Use |
+|---|---|---|---|
+| `text-display` | `clamp(2.5rem, 6vw + 1rem, 7rem)` (40–112px) | 1, tracking −0.02em | Home hero, one per page at most |
+| `text-h1` | `clamp(2.25rem, 4vw + 1rem, 5rem)` (36–80px) | 1.05, −0.015em | Page headings |
+| `text-h2` | `clamp(1.75rem, 2.5vw + 1rem, 3.5rem)` (28–56px) | 1.1, −0.01em | Section headings |
+| `text-h3` | `clamp(1.25rem, 1vw + 1rem, 1.75rem)` (20–28px) | 1.25 | Sub-headings, the smallest Light 300 size |
+| `text-body-lg` | 1.125rem (18px) | 1.6 | Lead paragraphs |
+| `text-body` | 1rem (16px) | 1.6 | Body text (the default on `<body>`) |
+| `text-small` | 0.875rem (14px) | 1.5 | Notes, captions |
+| `text-label` | 0.75rem (12px) | 1.4 | Size used by `caps` |
+
+Headings pair a size with `font-light`, e.g. `text-h1 font-light`; `h1`–`h3` get `text-wrap: balance`. Spaced capitals use `caps` (12px Regular 400, uppercase, `0.4em`), or `caps-tight` (`0.2em`) where they would wrap on phones, e.g. `caps-tight sm:caps`.
+
 Radius: small or none (`--radius-sm: 2px`, the only radius token; `rounded-full` still works for round icons), to match the logo's angular shapes. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
 
 ### 1.3 Logo files
