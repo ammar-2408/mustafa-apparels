@@ -31,7 +31,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 1.2 Colour tokens (ink, cream, white, derived neutrals), error and success colours, spacing tokens (`docs/design.md` §1.4) and the custom breakpoints (`docs/design.md` §2), in the Tailwind preset and `globals.css` + contrast unit test
 - [x] 1.3 Montserrat 300/400 via `next/font`, type scale with `clamp()` and tight leading on large headings, spaced-capitals label style
 - [x] 1.4 Favicons, `theme-color`, web manifest (`name: Mustafa Apparels`) in both apps + test
-- [ ] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests Phase 0 review: the app test setup never calls Testing Library's `cleanup()` between tests, so rendered pages pile up. Add it (an `afterEach(cleanup)` in the shared Vitest setup, or turn on globals) with a test that fails without it, before the first component test here
+- [x] 1.5 `<Logo>` component (variant, colour, `alt` rules, responsive header swap, min sizes) + component tests Phase 0 review: the app test setup never calls Testing Library's `cleanup()` between tests, so rendered pages pile up. Add it (an `afterEach(cleanup)` in the shared Vitest setup, or turn on globals) with a test that fails without it, before the first component test here
 - [ ] 1.6 `packages/ui` primitives in the brand style: Button, Input, Dialog, with focus rings + tests
 - [ ] 1.7 Default Open Graph image wired up in `apps/web` (`/brand/social/og-share-image-1200x630.png`) + test
 - [ ] 1.8 `SITE_URL` + `canonicalUrl()` + `buildMetadata()` helpers in `apps/web/lib/seo.ts` + unit tests, incl. title suffix dropped past 60 and description trimmed at a word boundary to 160. Built here so every later page can use them
@@ -67,7 +67,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 3.11 `security-auditor` agent pass; fix findings (one commit each) Also close these Phase 0 review items first: (a) `Bash(pnpm add *)` and `Bash(npx -y skills add *)` are allowed without asking in `.claude/settings.json`, so move them to ask (a new dependency or skill should be a decision); (b) `protect-files.mjs` covers Edit and Write only, so a file written through a shell command (`echo >`, `sed -i`, `tee`) bypasses it: add the same path checks for Bash writes to protected files, or note the limit in `docs/auth-security.md`. Run `code-reviewer`, `qa-tester` and `security-auditor` together here, as the end-of-Phase-3 review
 
 ## Phase 4 — Admin panel
-- [ ] 4.1 Admin layout (sidebar, responsive), dashboard counts. Server actions must live in files named `actions.ts` (or `route.ts` for handlers) so the 80% coverage floor applies, or extend the coverage pattern in `packages/config/vitest/app.mjs`
+- [ ] 4.1 Admin layout (sidebar, responsive), dashboard counts. For the sidebar logo, move `<Logo>` from `apps/web/components/logo.tsx` into `packages/ui` (admin has only the submark and simplified black files) rather than copying it. Server actions must live in files named `actions.ts` (or `route.ts` for handlers) so the 80% coverage floor applies, or extend the coverage pattern in `packages/config/vitest/app.mjs`
 - [ ] 4.2 Collections list + create/edit + reorder + hide
 - [ ] 4.3 Cloudinary signed upload endpoint for images and videos + tests
 - [ ] 4.4 Media metadata check on save: folder, format, size, video length; delete rejected assets + tests
@@ -98,7 +98,7 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 
 **Design direction:** `docs/design.md` §9.1, applied to every page in `docs/design.md` §3. The reference guides look and motion only: the pages below stay as planned. Shopping patterns for the menu, grid, filters, suit cards and product page: `docs/design.md` §9.2.
 
-- [ ] 6.1 Root layout: header (`<Logo>`, side-panel menu, search, account, WhatsApp button; floating bar on scroll), footer (primary white logo on ink), skip link, `.js` class. Account state loads client-side after paint, so the layout never reads cookies
+- [ ] 6.1 Root layout: header (`<HeaderLogo>` from step 1.5, which replaces the placeholder header on the home page and keeps `e2e/web/logo.spec.ts` green; simplified logo on the floating bar; side-panel menu, search, account, WhatsApp button; floating bar on scroll), footer (primary white logo on ink), skip link, `.js` class. Account state loads client-side after paint, so the layout never reads cookies
 - [ ] 6.2 Product card (3:4 image, finish and fabric line, name, pieces, price, wishlist toggle), no video. Wishlist state loads client-side + component tests
 - [ ] 6.3 `/shop` grid + `/shop/page/[n]` (ADR-017: static, self-canonical, `/page/1` 301, invalid or out-of-range 404) + E2E
 - [ ] 6.4 `/collections/[slug]` + `/collections/[slug]/page/[n]` with the same rules, and real text for each collection (drafted here, fabric facts checked by the owner) + E2E

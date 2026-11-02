@@ -77,6 +77,8 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Use the files as they 
 | Footer on ink | Primary, white | 120 px (use 140 px) |
 | About page, hero | Primary | 120 px |
 
+**Component:** `apps/web/components/logo.tsx`. `<Logo variant colour height loading>` renders the file through `next/image` (unoptimized SVG) with the right `alt`. Its `width` and `height` attributes come from the file's own viewBox ratio, and CSS sets only the height. A height below the table's minimum is raised to it, and the default is the "use" size. `<HeaderLogo>` is the home link (`aria-label` below, at least 44px tall): the submark below `md`, the secondary logo from `md` (768px) up, both loaded eagerly. Clear space is left to the layout around it.
+
 Rules: keep clear space of at least a quarter of the monogram's height. Black on light backgrounds, white on dark. Never place the black logo on a dark or busy photo. Set one dimension in CSS, with `width` and `height` attributes to prevent layout shift.
 
 **Text:** the logo reads "MA Apparels by Mustafa Ahmed", and the shop's public name is Mustafa Apparels.
