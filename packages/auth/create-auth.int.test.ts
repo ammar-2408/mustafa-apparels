@@ -4,6 +4,7 @@ import { eq, sql } from 'drizzle-orm';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { COOKIE_PREFIX, createAuth, hashIp } from './index';
+import { sendEmail } from './test/outbox';
 
 const SECRET = 'test-secret-for-integration-tests-only-0123456789';
 const PASSWORD = 'correct horse battery staple';
@@ -16,10 +17,13 @@ afterEach(() => resetTestDb(db));
 afterAll(() => db.$client.close());
 
 const webAuth = (baseURL = 'http://localhost:3000') =>
-  createAuth({ app: 'web', db, baseURL, secret: SECRET });
+  createAuth({ app: 'web', db, baseURL, secret: SECRET, sendEmail });
 
-const signUp = (auth: ReturnType<typeof webAuth>, body: Record<string, unknown>) =>
-  auth.api.signUpEmail({ body: { name: 'Ayesha', password: PASSWORD, ...body } as never });
+// Signs up and confirms the email, as the link would (that flow: email-flows.int.test.ts).
+const signUp = async (auth: ReturnType<typeof webAuth>, body: Record<string, unknown>) => {
+  await auth.api.signUpEmail({ body: { name: 'Ayesha', password: PASSWORD, ...body } as never });
+  await db.update(user).set({ emailVerified: true });
+};
 
 // Raw HTTP, so the test sees the real status, body and cookies.
 const post = (auth: ReturnType<typeof webAuth>, path: string, body: unknown) =>
@@ -162,7 +166,7 @@ describe('sign-in', () => {
 
 describe('admin instance', () => {
   const adminAuth = () =>
-    createAuth({ app: 'admin', db, baseURL: 'http://localhost:3001', secret: SECRET });
+    createAuth({ app: 'admin', db, baseURL: 'http://localhost:3001', secret: SECRET, sendEmail });
 
   it('refuses sign-up', async () => {
     const response = await post(adminAuth(), '/sign-up/email', {
@@ -201,6 +205,7 @@ describe('options', () => {
       db,
       baseURL: 'http://localhost:3000',
       secret: SECRET,
+      sendEmail,
       background,
     });
     expect(auth.options.advanced?.backgroundTasks?.handler).toBe(background);

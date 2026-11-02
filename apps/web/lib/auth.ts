@@ -5,6 +5,7 @@ import 'server-only';
 import { createAuth } from '@mustafa/auth';
 import { requireUser as guardUser } from '@mustafa/auth/guards';
 import { getEnv } from '@mustafa/config/env';
+import { createMailer } from '@mustafa/core/integrations/email';
 import { getDb } from '@mustafa/db/client';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -25,6 +26,13 @@ export function getAuth() {
             db: getDb(),
             baseURL: env.NEXT_PUBLIC_SITE_URL,
             secret: env.BETTER_AUTH_SECRET,
+            sendEmail: createMailer({
+              mode: env.INTEGRATIONS_MODE,
+              appEnv: env.APP_ENV,
+              apiKey: env.RESEND_API_KEY,
+              from: env.EMAIL_FROM,
+              replyTo: env.SHOP_INBOX_EMAIL,
+            }),
             background: (task) => after(task),
           })
         : null;

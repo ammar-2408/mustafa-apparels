@@ -1,0 +1,32 @@
+import Link from 'next/link';
+
+import { ForgotPasswordForm } from '../../../components/auth/forgot-password-form';
+import { buildMetadata } from '../../../lib/seo';
+
+export const metadata = buildMetadata({
+  title: 'Forgot your password',
+  description:
+    'Forgot the password for your Mustafa Apparels account? Enter your email and we will send you a link to set a new one.',
+  path: '/forgot-password',
+  noindex: true,
+  nofollow: true,
+});
+
+export default function ForgotPasswordPage() {
+  return (
+    <>
+      <p className="caps-tight text-muted sm:caps">Account</p>
+      <h1 className="mt-4 mb-6 text-h1 font-light">Forgot your password</h1>
+      <p className="mb-12 text-body">
+        Enter the email you signed up with, and we’ll send you a link to set a new password.
+      </p>
+      <ForgotPasswordForm />
+      <p className="mt-12 text-body">
+        Remembered it?{' '}
+        <Link href="/login" className="underline underline-offset-4">
+          Log in
+        </Link>
+      </p>
+    </>
+  );
+}

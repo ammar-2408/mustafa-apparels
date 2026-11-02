@@ -21,6 +21,11 @@ export default async function LoginPage() {
       <p className="caps-tight text-muted sm:caps">Account</p>
       <h1 className="mt-4 mb-12 text-h1 font-light">Log in</h1>
       <LoginForm />
+      <p className="mt-6 text-body">
+        <Link href="/forgot-password" className="underline underline-offset-4">
+          Forgot your password?
+        </Link>
+      </p>
       <p className="mt-12 text-body">
         New here?{' '}
         <Link href="/register" className="underline underline-offset-4">

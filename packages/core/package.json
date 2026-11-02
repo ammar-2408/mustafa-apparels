@@ -10,7 +10,9 @@
     "./errors": "./errors.ts",
     "./products": "./products/index.ts",
     "./search": "./search/index.ts",
-    "./settings": "./settings/index.ts"
+    "./settings": "./settings/index.ts",
+    "./integrations/email": "./integrations/email.ts",
+    "./integrations/email-templates": "./integrations/email-templates.ts"
   },
   "scripts": {
     "lint": "eslint .",
@@ -27,6 +29,7 @@
     "@types/node": "^24",
     "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.5",
+    "msw": "^3.0.3",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
   }

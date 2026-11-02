@@ -6,7 +6,7 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 |---|---|---|---|---|
 | Neon PostgreSQL | `packages/db/client.ts` | All data | Yes | Pages show error boundary; health check alerts |
 | Cloudinary | `integrations/media.ts` | Upload signing, metadata check, delete, image and video URL builders | Yes | Admin shows retry; storefront falls back to placeholder |
-| Resend | `integrations/email.ts` | Verification, password reset, inquiry notifications | Yes | Inquiry still saved; error logged; reset/verify shows "try again" |
+| Resend | `integrations/email.ts` | Verification, password reset, inquiry notifications | Yes | Inquiry still saved; error logged. Sign-up, verify and reset answer the same either way, so the person simply asks again |
 | Upstash Redis | `integrations/rate-limit.ts` | Rate limits | Yes | Fail **open** for search, fail **closed** for login/reset/inquiry (in-memory fallback limiter) |
 | IndexNow | `integrations/indexnow.ts` | Tells Bing and others when a URL changes | Free | Logged; never blocks a save |
 | WhatsApp | `lib/contact-links.ts` | Click-to-chat links | Free | n/a |
@@ -48,8 +48,14 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 - Sends from a verified subdomain: `Mustafa Apparels <no-reply@updates.mustafaapparels.com>`. Resend requires a verified domain, so this is set up at step 3.1, ahead of the login features. DNS steps: `docs/deployment.md` §5.
 - Replies go to `ammarofficial321@gmail.com` (`Reply-To`). The inbox stays Gmail for now; Resend only sends.
 - Free plan: 3,000 emails a month, 100 a day, 3 domains. Plenty for this shop; check Resend's pricing page if volumes grow.
-- Templates in `packages/core/integrations/email-templates/` (React Email or plain HTML + text versions).
-- Emails: `verify-email`, `reset-password`, `new-inquiry` (to shop), `inquiry-received` (to customer, optional).
+- **How it's built (step 3.5):** `createMailer()` in `packages/core/integrations/email.ts` calls Resend's REST API with `fetch` and a 10-second timeout, so there's no SDK dependency. It returns `{ ok }` and never throws. A failure is logged as `[email] <kind> not sent: …`, with no address, token or link.
+- **Mock mode:** in development and test, each email is written as JSON to `.e2e-outbox/` in the repo root (git-ignored), and Playwright reads its links (`e2e/support/outbox.ts`). On a preview, mock mode only logs `not sent (mock mode)`, so sign-up there can't be confirmed until the preview runs live.
+- **Templates** live in `packages/core/integrations/email-templates.ts`, as plain HTML plus a text version, in the brand's colours, with no images and no tracking.
+- **Emails:**
+  - `verify-email`: the link lasts 24 hours and signs the person in.
+  - `reset-password`: the link lasts one hour and works once.
+  - `existing-account`: sent instead of a second account when someone signs up with a registered email.
+  - Still to come: `new-inquiry` (to the shop) and `inquiry-received` (to the customer, optional).
 
 ## WhatsApp, phone, email links
 

@@ -14,6 +14,9 @@ vi.mock('server-only', () => ({}));
 vi.mock('@mustafa/config/env', () => ({ getEnv: () => env.value }));
 vi.mock('@mustafa/db/client', () => ({ getDb: () => 'db' }));
 vi.mock('@mustafa/auth', () => ({ createAuth }));
+vi.mock('@mustafa/core/integrations/email', () => ({
+  createMailer: (options: unknown) => ({ options }),
+}));
 vi.mock('next/headers', () => ({
   headers: async () => new Headers({ cookie: 'ma.session_token=x' }),
 }));
@@ -21,6 +24,9 @@ vi.mock('next/navigation', () => ({ redirect }));
 vi.mock('next/server', () => ({ after: vi.fn() }));
 
 const withDatabase = {
+  INTEGRATIONS_MODE: 'mock',
+  APP_ENV: 'test',
+  EMAIL_FROM: 'Shop <a@example.com>',
   DATABASE_URL: 'postgresql://localhost/shop',
   BETTER_AUTH_SECRET: 's'.repeat(40),
   NEXT_PUBLIC_SITE_URL: 'https://mustafaapparels.com',
@@ -53,6 +59,7 @@ describe('getAuth', () => {
       db: 'db',
       baseURL: 'https://mustafaapparels.com',
       secret: 's'.repeat(40),
+      sendEmail: { options: { mode: 'mock', appEnv: 'test', from: 'Shop <a@example.com>' } },
     });
   });
 });

@@ -4,8 +4,10 @@ import {
   AUTH_MESSAGES,
   authErrorMessage,
   fieldErrorsOf,
+  forgotPasswordInput,
   PASSWORD_MAX,
   PASSWORD_MIN,
+  resetPasswordInput,
   signInInput,
   signUpInput,
 } from './auth';
@@ -95,5 +97,30 @@ describe('authErrorMessage', () => {
       authErrorMessage({ code: 'SOMETHING_ELSE', message: 'db at 10.0.0.1 down', status: 500 }),
     ).toBe(AUTH_MESSAGES.generic);
     expect(authErrorMessage(null)).toBe(AUTH_MESSAGES.generic);
+  });
+});
+
+describe('password reset forms', () => {
+  it('asks for an email only', () => {
+    expect(forgotPasswordInput.parse({ email: ' A@Example.com' }).email).toBe('a@example.com');
+    expect(forgotPasswordInput.safeParse({ email: 'a@example.com', role: 'admin' }).success).toBe(
+      false,
+    );
+  });
+
+  it('applies the password policy to the new password and needs the token', () => {
+    expect(
+      resetPasswordInput.safeParse({ token: 't', newPassword: 'correct horse battery' }).success,
+    ).toBe(true);
+    expect(resetPasswordInput.safeParse({ token: 't', newPassword: 'short' }).success).toBe(false);
+    expect(
+      resetPasswordInput.safeParse({ token: '', newPassword: 'correct horse battery' }).success,
+    ).toBe(false);
+  });
+
+  it('explains an expired or used link', () => {
+    expect(authErrorMessage({ code: 'INVALID_TOKEN', status: 400 })).toBe(
+      AUTH_MESSAGES.linkExpired,
+    );
   });
 });

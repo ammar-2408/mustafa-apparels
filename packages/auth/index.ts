@@ -2,6 +2,13 @@
 // its own lib/auth.ts, so `next build` never constructs one.
 import { createHmac } from 'node:crypto';
 
+import type { Mailer } from '@mustafa/core/integrations/email';
+import {
+  existingAccount,
+  resetPassword,
+  type Template,
+  verifyEmail,
+} from '@mustafa/core/integrations/email-templates';
 import type { Database } from '@mustafa/db/client';
 import { uuidv7 } from '@mustafa/db/id';
 import { account, session, twoFactor, user, verification } from '@mustafa/db/schema';
@@ -20,6 +27,7 @@ export type CreateAuthOptions = {
   // NEXT_PUBLIC_SITE_URL on web, ADMIN_URL on admin.
   baseURL: string;
   secret: string;
+  sendEmail: Mailer;
   // Runs slow work (emails) after the response, so timing never shows whether an account exists.
   background?: (task: Promise<unknown>) => void;
 };
@@ -41,8 +49,13 @@ export const invalidCredentials = () =>
 export const hashIp = (ip: string, secret: string) =>
   createHmac('sha256', secret).update(`ip:${ip}`).digest('hex');
 
-export function createAuth({ app, db, baseURL, secret, background }: CreateAuthOptions) {
+export function createAuth({ app, db, baseURL, secret, sendEmail, background }: CreateAuthOptions) {
   const admin = app === 'admin';
+  // A failed send is logged by the mailer. The visitor sees the same answer either way, and can
+  // ask again, so the request itself still succeeds.
+  const send = async (kind: string, to: string, template: Template) => {
+    await sendEmail({ kind, to, ...template });
+  };
   return betterAuth({
     appName: admin ? 'Mustafa Apparels Admin' : 'Mustafa Apparels',
     baseURL,
@@ -60,8 +73,28 @@ export function createAuth({ app, db, baseURL, secret, background }: CreateAuthO
       maxPasswordLength: PASSWORD_MAX,
       // Sign-up never signs in, so it answers the same whether or not the email has an account.
       autoSignIn: false,
+      // Customers confirm their email before the first login. The seeded admin is verified.
+      requireEmailVerification: !admin,
       resetPasswordTokenExpiresIn: 60 * 60,
       revokeSessionsOnPasswordReset: true,
+      sendResetPassword: ({ user, url }) =>
+        send('reset-password', user.email, resetPassword({ url })),
+      // A sign-up with a registered email gets the normal answer; the inbox gets this instead.
+      onExistingUserSignUp: ({ user }) =>
+        send(
+          'existing-account',
+          user.email,
+          existingAccount({ url: `${baseURL}/forgot-password` }),
+        ),
+    },
+    emailVerification: {
+      sendVerificationEmail: ({ user, url }) =>
+        send('verify-email', user.email, verifyEmail({ url })),
+      sendOnSignUp: !admin,
+      // A login before confirming sends a fresh link.
+      sendOnSignIn: true,
+      autoSignInAfterVerification: true,
+      expiresIn: DAY,
     },
     user: {
       additionalFields: {

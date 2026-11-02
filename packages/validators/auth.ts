@@ -36,6 +36,12 @@ export const signInInput = z
   })
   .strict();
 
+export const forgotPasswordInput = z.object({ email }).strict();
+
+export const resetPasswordInput = z
+  .object({ token: z.string().min(1).max(200), newPassword: password })
+  .strict();
+
 export type SignUpInput = z.infer<typeof signUpInput>;
 export type SignInInput = z.infer<typeof signInInput>;
 
@@ -48,6 +54,9 @@ export const AUTH_MESSAGES = {
   tooManyAttempts: 'Too many attempts. Please try again in a few minutes.',
   breached:
     'This password has appeared in a data breach, so it isn’t safe to use. Please choose a different one.',
+  linkExpired: 'This link has expired or was already used. Please ask for a new one.',
+  resetSent:
+    'If an account uses that email, we’ve sent a link to reset the password. It works for one hour.',
   passwordLength: `Use a password of ${PASSWORD_MIN} to ${PASSWORD_MAX} characters.`,
   generic: 'Something went wrong. Please try again.',
 } as const;
@@ -62,6 +71,7 @@ const BY_CODE: Record<string, string> = {
   PASSWORD_COMPROMISED: AUTH_MESSAGES.breached,
   PASSWORD_TOO_SHORT: AUTH_MESSAGES.passwordLength,
   PASSWORD_TOO_LONG: AUTH_MESSAGES.passwordLength,
+  INVALID_TOKEN: AUTH_MESSAGES.linkExpired,
 };
 
 // One place turns Better Auth's errors into text, so no message ever says whether an account

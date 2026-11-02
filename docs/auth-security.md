@@ -8,7 +8,7 @@
 | Method | Email + password (v1). Google sign-in can be added later with one plugin. |
 | Password hashing | **scrypt** (Better Auth default, memory-hard, OWASP-acceptable). |
 | Password policy | Min 10, max 128 chars; no composition rules; block known-breached passwords (Better Auth Have I Been Pwned plugin); show a strength meter. |
-| Email verification | Required before wishlist sync, and before an inquiry is linked to the account. Anyone can still send an inquiry, because leads come first. |
+| Email verification | Required before the first login (owner's decision, 2026-11-02). Sign-up never signs in and always says "check your email". The link lasts 24 hours and signs the person in. A login before confirming answers "verify first" and sends a fresh link. A sign-up with a registered email sends that inbox an "you already have an account" email instead. Anyone can still send an inquiry without an account, because leads come first. |
 | Password reset | Single-use token, 1-hour expiry, emailed via Resend; all sessions revoked after reset (`revokeSessionsOnPasswordReset`). |
 | Sessions | Stored in DB; cookie `httpOnly`, `secure`, `sameSite=lax`; 7-day expiry with sliding refresh; "log out everywhere" in account settings. |
 | User enumeration | Sign-up, login and reset return the same generic message whether the email exists or not. |
