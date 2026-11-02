@@ -9,11 +9,14 @@
     "typecheck": "tsc -p e2e && tsc -p scripts && turbo run typecheck",
     "test": "vitest run --project workspace && turbo run test",
     "test:e2e": "playwright test",
+    "test:seo": "playwright test e2e/seo",
+    "test:a11y": "playwright test e2e/a11y",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "env:check": "node packages/config/check-env.mjs web && node packages/config/check-env.mjs admin",
     "prepare": "husky || exit 0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@mustafa/config": "workspace:*",
