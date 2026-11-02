@@ -25,15 +25,17 @@ Conventions: `id` = `text` (cuid2/uuid v7), timestamps `timestamptz` default `no
 
 ### Auth tables (owned by Better Auth — generate with its CLI, then extend)
 
-`user` already exists from step 2.5 (`packages/db/schema/user.ts`), because the admin tables point at it. Checks: email equals `lower(email)`, role is `customer` or `admin`. At step 3.2, compare the Better Auth CLI output with it and add only the other tables and any plugin columns, in a new migration.
+`user` came first, at step 2.5 (`packages/db/schema/user.ts`), because the admin tables point at it. Checks: email equals `lower(email)`, role is `customer` or `admin`. The rest arrived at step 3.2 in migration `0007_auth` (`schema/auth.ts`), written by hand after comparing with `npx auth@1.7.15 generate`. Field names match Better Auth's, because its Drizzle adapter maps by them. IDs are UUID v7, through Better Auth's `generateId`. Every auth table cascades on user delete.
 
 | Table | Key columns |
 |---|---|
-| `user` | id, name, email (unique, lowercased), email_verified, image, **role** (`customer` \| `admin`, default `customer`), phone (nullable), banned, created_at, updated_at |
-| `session` | id, user_id → user, token (unique), expires_at, ip_address, user_agent |
-| `account` | id, user_id → user, provider_id (`credential`), **password** (scrypt hash — never plain text), created_at |
-| `verification` | id, identifier, value, expires_at (email verification + password reset tokens) |
-| `two_factor` | id, user_id, secret (encrypted), backup_codes (encrypted) — admins |
+| `user` | id, name, email (unique, lowercased), email_verified, image, **role** (`customer` \| `admin`, default `customer`), phone (nullable), banned, two_factor_enabled (default false), created_at, updated_at. `role`, `phone` and `banned` can't be set through sign-up or a profile update (`input: false`) |
+| `session` | id, user_id → user, token (unique), expires_at, ip_address (**an HMAC of the IP**, never the address), user_agent, **app** (`web` \| `admin`, checked: the admin accepts only its own sessions), created_at, updated_at |
+| `account` | id, user_id → user, account_id, provider_id (`credential`), **password** (scrypt hash, `salt:key` in hex, never plain text), unused OAuth token columns, created_at, updated_at |
+| `verification` | id, identifier (indexed), value, expires_at, created_at, updated_at (email verification + password reset tokens) |
+| `two_factor` | id, user_id, secret (encrypted), backup_codes (encrypted), verified, failed_verification_count, locked_until (admins only) |
+
+There's no Better Auth admin plugin (`docs/architecture.md` ADR-020), so there are no `ban_reason`, `ban_expires` or `impersonated_by` columns.
 
 ### Catalogue
 **`category`** (shown to customers as "collections")

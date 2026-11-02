@@ -1,5 +1,4 @@
-// Better Auth's core user columns, plus ours (docs/database.md §2). Step 3.2 adds
-// session, account, verification and two_factor, and any plugin columns, in a new migration.
+// Better Auth's core user columns, plus ours (docs/database.md §2). The other auth tables: ./auth.ts.
 import { sql } from 'drizzle-orm';
 import { boolean, check, pgTable, text } from 'drizzle-orm/pg-core';
 
@@ -18,6 +17,8 @@ export const user = pgTable(
     // E.164, e.g. +923482799707.
     phone: text('phone'),
     banned: boolean('banned').notNull().default(false),
+    // Set by the twoFactor plugin once an admin confirms their first code.
+    twoFactorEnabled: boolean('two_factor_enabled').notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },

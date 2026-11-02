@@ -1,0 +1,8 @@
+{
+  "extends": "@mustafa/config/tsconfig/base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["**/*.ts", "**/*.mjs"],
+  "exclude": ["node_modules", "coverage"]
+}

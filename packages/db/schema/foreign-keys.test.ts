@@ -19,13 +19,16 @@ const foreignKeys = tables.flatMap((table) =>
 describe('foreign keys', () => {
   it('match the delete rules in docs/database.md', () => {
     expect(foreignKeys.sort()).toEqual([
+      'account.user_id -> user.id (cascade)',
       'audit_log.actor_id -> user.id (set null)',
       'category.parent_id -> category.id (set null)',
       'inquiry.product_id -> product.id (set null)',
       'inquiry.user_id -> user.id (set null)',
       'product.category_id -> category.id (restrict)',
       'product_media.product_id -> product.id (cascade)',
+      'session.user_id -> user.id (cascade)',
       'site_setting.updated_by -> user.id (set null)',
+      'two_factor.user_id -> user.id (cascade)',
       'wishlist_item.product_id -> product.id (cascade)',
       'wishlist_item.user_id -> user.id (cascade)',
     ]);

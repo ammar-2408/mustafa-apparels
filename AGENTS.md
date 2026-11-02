@@ -34,7 +34,7 @@ Full requirements: `docs/prd.md`. Architecture: `docs/architecture.md`.
 | 3D | Three.js via React Three Fiber + Drei (shader hero, no downloaded model) |
 | Database | PostgreSQL on Neon (serverless) |
 | ORM | Drizzle ORM + drizzle-kit migrations |
-| Auth | Better Auth (email + password, scrypt hashing; admin plugin; 2FA for admins) |
+| Auth | Better Auth (email + password, scrypt hashing; roles as our own fields, no admin plugin (ADR-020); 2FA for admins) |
 | Validation | Zod at every boundary |
 | Media | Cloudinary (signed uploads from admin, auto WebP/AVIF, video with posters) |
 | Email | Resend (password reset, verification, inquiry notifications) |

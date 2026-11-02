@@ -258,6 +258,7 @@ for (const pkg of [
   'packages/db',
   'packages/core',
   'packages/validators',
+  'packages/auth',
 ]) {
   test(`${pkg} tests run through Vitest with coverage`, () => {
     assert.equal(readJson(`${pkg}/package.json`).scripts.test, 'vitest run --coverage');

@@ -1,0 +1,29 @@
+{
+  "name": "@mustafa/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./guards": "./guards.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@mustafa/db": "workspace:*",
+    "better-auth": "1.7.15",
+    "drizzle-orm": "^0.45.4"
+  },
+  "devDependencies": {
+    "@mustafa/config": "workspace:*",
+    "@types/node": "^24",
+    "@vitest/coverage-v8": "^5.0.5",
+    "eslint": "^9.39.5",
+    "next": "16.4.3",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  }
+}
