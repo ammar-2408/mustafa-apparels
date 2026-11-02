@@ -190,6 +190,13 @@ limit $2 offset $3;
 ```
 Always parameterized through Drizzle `sql` template — never string concatenation.
 
+**As built (step 2.13).** The shape above changed in three places, each pinned by a ranking test in `packages/core/search/search.int.test.ts`:
+- **Prefix full-text** instead of `websearch_to_tsquery`, so a partial word works (`khad` finds Khaddar). The query is split into `[a-z0-9]` words and sent as `to_tsquery('simple', 'khad:* & …')`, still a bound parameter, so no word can act as a tsquery operator. The collection name is matched the same way through the join.
+- **Typos use `word_similarity`, not `similarity` / `%`.** `similarity()` of a short query against a long suit name stays far below its 0.3 default, so "khadar" would miss. Each query word must have `word_similarity` above 0.4 (`TYPO_THRESHOLD`) against the suit or collection name, ANDed like the full-text words. Matching the whole query at once let "Sage Green … Khaddar 3-Piece Suit" find every Khaddar suit. Measured on Neon (Postgres 18): typos score 0.57–0.71, an unrelated word 0.20.
+- **Design codes ignore hyphens and case** (`kdr13`, `KDR-13`) and always rank first.
+
+Order: code match, `ts_rank`, name similarity, newest. Postgres rejects a constant in `ORDER BY`, so a matcher that can't apply (for example, an emoji-only query has no words) is left out of the order. `suggest` returns up to 2 matching collections, then suits, 6 in all, with only names, slugs and codes.
+
 ## 5. Migrations workflow
 
 1. Edit schema in `packages/db/schema/*.ts`.

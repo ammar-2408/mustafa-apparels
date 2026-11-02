@@ -214,7 +214,7 @@ Better Auth handles `/api/auth/*`: scrypt password hashing, DB sessions, httpOnl
 
 - Postgres generated `tsvector` column on products (name weight A; fabric, colours, design and design code weight B; description weight C) with a GIN index.
 - `pg_trgm` trigram index on product name for typo tolerance ("khadar" → "khaddar"). Product names include the fabric, so this covers spelling variants of fabric names.
-- Query: exact design code match first, then full-text rank, with trigram similarity as fallback; filters (`docs/catalog.md` §4) applied in SQL; paginated.
+- Query: exact design code match first, then full-text rank, with trigram similarity as fallback; filters (`docs/catalog.md` §4) applied in SQL; paginated. As built: prefix full-text, and `word_similarity` per word for typos (`docs/database.md` §4).
 - Lajwanti suits have fabric Dhanak, so a "dhanak" search finds them across collections.
 - Suggestions endpoint returns top 6 names + collections, debounced 250 ms on the client, rate-limited.
 - No external search service needed at this size; switch to Meilisearch/Typesense only if the catalogue passes ~50k items.

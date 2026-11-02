@@ -57,3 +57,6 @@ export const searchInput = z
   .strict();
 
 export const suggestInput = z.object({ q: query }).strict();
+
+export type SearchInput = z.output<typeof searchInput>;
+export type SuggestInput = z.output<typeof suggestInput>;

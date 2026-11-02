@@ -7,7 +7,8 @@
     "./audit": "./audit/index.ts",
     "./categories": "./categories/index.ts",
     "./errors": "./errors.ts",
-    "./products": "./products/index.ts"
+    "./products": "./products/index.ts",
+    "./search": "./search/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
