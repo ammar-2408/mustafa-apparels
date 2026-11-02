@@ -10,7 +10,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 ---
 
 ## Phase 0 — Foundation
-- [x] 0.1 Init monorepo: pnpm workspaces, Turborepo, `.gitignore`, `.nvmrc` (Node 26 LTS), root `package.json` scripts. Root `package.json` must include `"packageManager": "pnpm@12.16.1"` so CI matches this machine
+- [x] 0.1 Init monorepo: pnpm workspaces, Turborepo, `.gitignore`, `.nvmrc` (Node 24 LTS), root `package.json` scripts. Root `package.json` must include `"packageManager": "pnpm@12.16.1"` so CI matches this machine
 - [x] 0.2 `packages/config`: shared tsconfig (strict), ESLint (next, typescript, jsx-a11y, import order), Prettier. Add `*.yaml text eol=lf` to `.gitattributes` so Prettier doesn't flag CRLF in `pnpm-workspace.yaml` on Windows
 - [x] 0.3 Create `apps/web` (Next.js, App Router, TS, Tailwind) — home page "Hello" + one smoke test. Check the root ESLint Next link-rule setting (`settings.next.rootDir: ['apps/*/']` in `eslint.config.mjs`): linting an `apps/web` file from the repo root must print no "Pages directory cannot be found" warning, and `<a href="/">` must be flagged
 - [x] 0.4 Create `apps/admin` the same way on port 3001
@@ -160,11 +160,11 @@ Follow `docs/deployment.md` §8 and `docs/launch-checklist.md`.
 
 - [ ] 10.1 Owner sign-offs (`docs/launch-checklist.md` §8): `check:` items, video rights, the Lajwanti name, payment, courier, returns, prices
 - [ ] 10.2 Fill in How to Order, FAQ and Privacy with the owner's real information; add `shippingDetails` and `hasMerchantReturnPolicy` to JSON-LD if the information supports it
-- [ ] 10.3 Production env vars set; production database migrated and seeded; approved products published
+- [ ] 10.3 Production env vars set; production database migrated and seeded; approved products published. Phase 0 review: check that `SITE_INDEXABLE` is exactly `true` with no trailing space or newline in the Netlify value (an env value with a space may fail the `true` match and leave the site `noindex`, or pass in one place and not another). Decide whether `parseEnv` should trim values, and add a test if so
 - [ ] 10.4 Launch checklist §1–7 passes on the `develop` preview
 - [ ] 10.5 Add domains in Netlify; DNS at Spaceship for apex, `www`, `admin` (`docs/deployment.md` §4); HTTPS active
-- [ ] 10.6 `.netlify.app` redirect + `SITE_INDEXABLE=true` + final `NEXT_PUBLIC_SITE_URL`; merge `develop` → `main`; tag `v1.0.0`
-- [ ] 10.7 Launch checks on the live domain: DNS `curl` checks, links, SEO, real phone
+- [ ] 10.6 `.netlify.app` redirect + `SITE_INDEXABLE=true` + final `NEXT_PUBLIC_SITE_URL`; merge `develop` → `main`; tag `v1.0.0`. Phase 0 review: before the merge, check on both production sites that `NEXT_PUBLIC_SITE_URL` is exactly `https://mustafaapparels.com` (https, apex, no trailing slash or space) and `BETTER_AUTH_URL` / `ADMIN_URL` / `WEB_URL` match their real hosts, not a `.netlify.app` or `localhost` value left over from before launch
+- [ ] 10.7 Launch checks on the live domain: DNS `curl` checks, links, SEO, real phone. Include `curl -s https://mustafaapparels.com/robots.txt` (no `Disallow: /`) and `curl -sI` for no `X-Robots-Tag: noindex` on the storefront, which prove `SITE_INDEXABLE` and the site URL took effect
 - [ ] 10.8 Google Search Console: confirm property, submit sitemap, inspect key URLs (`docs/seo-geo.md` §1)
 - [ ] 10.9 Bing Webmaster Tools import + IndexNow check (`docs/seo-geo.md` §5)
 - [ ] 10.10 GA4: property, DebugView test, key events, link Search Console (`docs/analytics.md`)
