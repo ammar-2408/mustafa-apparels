@@ -1,4 +1,4 @@
-import { expect, test } from '../support/users';
+import { expect, randomIp, test } from '../support/users';
 
 const signIn = (
   request: import('@playwright/test').APIRequestContext,
@@ -37,7 +37,7 @@ test.describe('login rate limits', () => {
     const fine = await signIn(
       page.request,
       { email: other.email, password: other.password },
-      '192.0.2.77',
+      randomIp(),
     );
     expect(fine.status()).toBe(200);
   });

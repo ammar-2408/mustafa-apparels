@@ -25,7 +25,7 @@ export type Users = {
 
 export const uniqueEmail = () => `e2e+${randomUUID()}@example.com`;
 
-const randomIp = () => `198.51.${randomInt(0, 256)}.${randomInt(1, 255)}`;
+export const randomIp = () => `198.51.${randomInt(0, 256)}.${randomInt(1, 255)}`;
 
 export const test = base.extend<{ users: Users }, { db: Database }>({
   db: [
