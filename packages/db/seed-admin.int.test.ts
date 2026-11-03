@@ -94,6 +94,14 @@ describe('adminFromEnv', () => {
     }
   });
 
+  it('accepts any real address, including one with an "s" in it', () => {
+    for (const email of ['sales@mustafaapparels.com', 'shop.owner+admin@gmail.com']) {
+      expect(adminFromEnv({ SEED_ADMIN_EMAIL: email, SEED_ADMIN_PASSWORD: PASSWORD }).email).toBe(
+        email,
+      );
+    }
+  });
+
   it('refuses something that is not an email', () => {
     expect(() =>
       adminFromEnv({ SEED_ADMIN_EMAIL: 'owner', SEED_ADMIN_PASSWORD: PASSWORD }),

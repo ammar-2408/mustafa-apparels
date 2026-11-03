@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const PASSWORD_MIN = 10;
 export const PASSWORD_MAX = 128;
 
-const email = z
+export const emailInput = z
   .string()
   .trim()
   .toLowerCase()
@@ -22,7 +22,7 @@ export const password = z
 export const signUpInput = z
   .object({
     name: z.string().trim().min(2, 'Enter your name').max(80, 'Use at most 80 characters'),
-    email,
+    email: emailInput,
     password,
     // Better Auth's client sends where the verification link should land.
     callbackURL: z.string().max(200).optional(),
@@ -31,14 +31,14 @@ export const signUpInput = z
 
 export const signInInput = z
   .object({
-    email,
+    email: emailInput,
     password: z.string().min(1, 'Enter your password').max(PASSWORD_MAX),
     callbackURL: z.string().max(200).optional(),
     rememberMe: z.boolean().optional(),
   })
   .strict();
 
-export const forgotPasswordInput = z.object({ email }).strict();
+export const forgotPasswordInput = z.object({ email: emailInput }).strict();
 
 export const resetPasswordInput = z
   .object({ token: z.string().min(1).max(200), newPassword: password })

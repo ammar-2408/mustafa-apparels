@@ -20,7 +20,6 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.14",
     "@mustafa/config": "workspace:*",
-    "@mustafa/validators": "workspace:*",
     "@types/node": "^24",
     "@types/pg": "^8.23.1",
     "@vitest/coverage-v8": "^5.0.5",
@@ -31,6 +30,7 @@
     "vitest": "^5.0.5"
   },
   "dependencies": {
+    "@mustafa/validators": "workspace:*",
     "@neondatabase/serverless": "^1.2.0",
     "better-auth": "1.7.15",
     "drizzle-orm": "^0.45.4",

@@ -4,6 +4,7 @@
 // - the first admin only when no account has that email, and never by promoting a customer;
 // - `--e2e` adds 12 demo suits for tests, never on preview or production.
 // Real stock comes from catalog/ through scripts/import-stock.ts, never from here.
+import { emailInput, PASSWORD_MAX, PASSWORD_MIN } from '@mustafa/validators/auth';
 import { hashPassword } from 'better-auth/crypto';
 import { count, eq, inArray } from 'drizzle-orm';
 
@@ -81,9 +82,7 @@ export type SeedSummary = {
   demoSuits: number;
 };
 
-// Same limits as sign-up (packages/auth). Errors name the variable, never its value.
-const PASSWORD_MIN = 10;
-const PASSWORD_MAX = 128;
+// The same email rule and password limits as sign-up. Errors name the variable, never its value.
 
 export function adminFromEnv(env: Record<string, string | undefined>): SeedAdmin {
   const email = env.SEED_ADMIN_EMAIL?.trim();
@@ -97,7 +96,7 @@ export function adminFromEnv(env: Record<string, string | undefined>): SeedAdmin
       `${missing.join(', ')} ${missing.length > 1 ? 'are' : 'is'} missing from .env.local`,
     );
   }
-  if (!/^[^s@]+@[^s@]+.[^s@]+$/.test(email!)) {
+  if (!emailInput.safeParse(email).success) {
     throw new Error('SEED_ADMIN_EMAIL must be an email address');
   }
   if (password!.length < PASSWORD_MIN || password!.length > PASSWORD_MAX) {

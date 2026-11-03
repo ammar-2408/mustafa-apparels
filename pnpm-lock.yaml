@@ -504,6 +504,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@mustafa/validators':
+        specifier: workspace:*
+        version: link:../validators
       '@neondatabase/serverless':
         specifier: ^1.2.0
         version: 1.2.0
@@ -523,9 +526,6 @@ importers:
       '@mustafa/config':
         specifier: workspace:*
         version: link:../config
-      '@mustafa/validators':
-        specifier: workspace:*
-        version: link:../validators
       '@types/node':
         specifier: ^24
         version: 24.19.2
