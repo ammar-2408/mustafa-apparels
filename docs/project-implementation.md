@@ -64,10 +64,10 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 3.8 Admin 2FA (TOTP) mandatory on first login + E2E
 - [x] 3.9 Security headers + two-tier CSP (`docs/auth-security.md` §3): fixed policy on cached pages, `proxy.ts` nonce on dynamic routes and admin. Try experimental SRI first on a real build, and record the result + header tests incl. "no nonce on cached pages". Add them to `e2e/security/headers.spec.ts`, which already checks noindex and no `X-Powered-By` on both apps
 - [x] 3.10 Admin `proxy.ts` gate + "customer gets 403 on every admin action" test loop. Let `/favicon.ico`, `/manifest.webmanifest` and `/brand/*` through without a session (from step 1.4), so the login page keeps its icons; `e2e/admin/icons.spec.ts` must stay green
-- [ ] 3.11 `security-auditor` agent pass; fix findings (one commit each) Also close these Phase 0 review items first: (a) `Bash(pnpm add *)` and `Bash(npx -y skills add *)` are allowed without asking in `.claude/settings.json`, so move them to ask (a new dependency or skill should be a decision); (b) `protect-files.mjs` covers Edit and Write only, so a file written through a shell command (`echo >`, `sed -i`, `tee`) bypasses it: add the same path checks for Bash writes to protected files, or note the limit in `docs/auth-security.md`. Run `code-reviewer`, `qa-tester` and `security-auditor` together here, as the end-of-Phase-3 review
+- [x] 3.11 `security-auditor` agent pass; fix findings (one commit each) Also close these Phase 0 review items first: (a) `Bash(pnpm add *)` and `Bash(npx -y skills add *)` are allowed without asking in `.claude/settings.json`, so move them to ask (a new dependency or skill should be a decision); (b) `protect-files.mjs` covers Edit and Write only, so a file written through a shell command (`echo >`, `sed -i`, `tee`) bypasses it: add the same path checks for Bash writes to protected files, or note the limit in `docs/auth-security.md`. Run `code-reviewer`, `qa-tester` and `security-auditor` together here, as the end-of-Phase-3 review **Done 2026-11-03:** Phase 0 items closed (4672174); full local run on all 7 projects green; the three agents found 5 blockers, each fixed in its own commit (9477299, c00a2fa, 006f207, f19a619, 2744574); non-blockers carried into the steps below.
 
 ## Phase 4 — Admin panel
-- [ ] 4.1 Admin layout (sidebar, responsive), dashboard counts. For the sidebar logo, move `<Logo>` from `apps/web/components/logo.tsx` into `packages/ui` (admin has only the submark and simplified black files) rather than copying it. Server actions must live in files named `actions.ts` (or `route.ts` for handlers) so the 80% coverage floor applies, or extend the coverage pattern in `packages/config/vitest/app.mjs`
+- [ ] 4.1 Admin layout (sidebar, responsive), dashboard counts. For the sidebar logo, move `<Logo>` from `apps/web/components/logo.tsx` into `packages/ui` (admin has only the submark and simplified black files) rather than copying it. Server actions must live in files named `actions.ts` (or `route.ts` for handlers) so the 80% coverage floor applies, or extend the coverage pattern in `packages/config/vitest/app.mjs` Phase 3 review: (a) the web and admin `lib/auth.ts` repeat the env-to-`createAuth` wiring: move it into one factory in `packages/auth` and keep only the memo and page guards in each app; (b) move `FormError` and `LogoutButton` into `packages/ui` with the Logo; (c) extend `apps/admin/test/admin-actions-authz.test.ts` with an admin who has no 2FA yet (FORBIDDEN everywhere but `startTwoFactorSetup`) and a banned admin, and make it fail on a `'use server'` file that isn't `actions.ts`; (d) rate-limit `startTwoFactorSetup` (a password check Better Auth's limiter doesn't see); (e) narrow the admin proxy matcher's `brand/` exclusion to image files; (f) replace the `!` assertions in `guards.ts`, `apps/admin/lib/auth.ts` and `setup-2fa/actions.ts` with narrowed types and a null check that returns UNAVAILABLE.
 - [ ] 4.2 Collections list + create/edit + reorder + hide
 - [ ] 4.3 Cloudinary signed upload endpoint for images and videos + tests
 - [ ] 4.4 Media metadata check on save: folder, format, size, video length; delete rejected assets + tests
@@ -78,7 +78,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 4.9 Product edit, publish/unpublish with clear errors, duplicate, archive/restore + E2E
 - [ ] 4.10 Cross-app revalidation (`/api/revalidate` HMAC on web + caller in admin) + tests
 - [ ] 4.11 Inquiries inbox + status changes + reply links
-- [ ] 4.12 Customers list (read-only)
+- [ ] 4.12 Customers list (read-only) Phase 3 review: any later ban or role change must also delete the user's sessions; a new admin must be created already verified, because the admin has no email verification endpoints, and must set up 2FA at once.
 - [ ] 4.13 Site settings page (contact info, service area, delivery, payment, returns, socials, default SEO)
 - [ ] 4.14 Audit log page
 
@@ -106,13 +106,13 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 6.5 `/products/[slug]` product page: gallery (swipe/zoom), design code, "What's included" with one row per piece (fabric, finish, length when known), fabric, colour, design, care, "Also in this design", related + permanent slug redirect + 404
 - [ ] 6.6 Product video tile: poster first, loads in view, muted, pause control, reduced motion and Save-Data rules (`docs/design.md` §5.2) + tests
 - [ ] 6.7 Contact buttons (WhatsApp first, Call, Email) on product page + sticky mobile WhatsApp bar + short delivery, payment and reply line from settings + out-of-stock wording
-- [ ] 6.8 Inquiry form + server action + rate limit + email (see feature-development.md example)
+- [ ] 6.8 Inquiry form + server action + rate limit + email (see feature-development.md example) Phase 3 review: add a per-recipient cap (HMAC of the address, e.g. 3 an hour) and a daily total on every outgoing email, including the auth emails, so requests spread over many IPs can't use up Resend's 100 a day.
 - [ ] 6.9 Search page + suggestions dropdown (debounced, keyboard accessible)
-- [ ] 6.10 Account: profile, wishlist, my inquiries, delete account
+- [ ] 6.10 Account: profile, wishlist, my inquiries, delete account Phase 3 review: validate `/reset-password`'s `searchParams` with Zod (reuse the token rule in `resetPasswordInput`); "log out everywhere" lands here; add an int test that a signed-out session token no longer works.
 - [ ] 6.11 Static pages: About, Contact (no map or address), How to Order, FAQ, Privacy (incl. GA4), Terms. Text in `TODO-OWNER` areas stays placeholder until the owner supplies it
 - [ ] 6.12 Branded 404 + error pages with correct status codes
 - [ ] 6.13 Home page layout sections, static (no motion yet)
-- [ ] 6.14 Responsive suite passes on all 6 device projects; a11y suite passes. Check real imports in a local storefront at 3:4: grid crop from the top, whole photo in the gallery End of Phase 6: also run the `code-reviewer`, `qa-tester` and `security-auditor` agents on everything since the Phase 3 review, then fix blockers one change at a time
+- [ ] 6.14 Responsive suite passes on all 6 device projects; a11y suite passes. Check real imports in a local storefront at 3:4: grid crop from the top, whole photo in the gallery End of Phase 6: also run the `code-reviewer`, `qa-tester` and `security-auditor` agents on everything since the Phase 3 review, then fix blockers one change at a time Phase 3 review: add the session-only pages to the a11y list (web `/account`, admin `/setup-2fa` with its QR code and backup codes, admin dashboard), using the E2E user fixture.
 
 ## Phase 7 — SEO, GEO and analytics
 - [ ] 7.2 Metadata on every page (title, description, canonical, robots), using the step 1.8 helpers: fill any gaps
@@ -122,10 +122,10 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 7.6 `sitemap.ts` (dynamic, absolute, lastModified) + tests
 - [ ] 7.7 `robots.ts`: live allows all and disallows `/api` only; `SITE_INDEXABLE=false` disallows all + tests incl. "search and account not disallowed"
 - [ ] 7.8 `llms.txt` route + tests
-- [ ] 7.9 `noindex` rules (search, account, auth, admin header, previews) + tests
+- [ ] 7.9 `noindex` rules (search, account, auth, admin header, previews) + tests Phase 3 review: assert the noindex meta on `/forgot-password`, `/reset-password` and `/account` too (only `/login` and `/register` are checked so far).
 - [ ] 7.10 AEO/GEO content: plain-fact business statement on Home and About, FAQ written as questions (`docs/seo-geo.md` §7) + test that it's in raw HTML
 - [ ] 7.11 IndexNow: key file + `integrations/indexnow` + call on publish, unpublish and slug change; off when not indexable + tests
-- [ ] 7.12 GA4: `<GoogleAnalytics>` + `lib/analytics.ts` helper + CSP hosts; strips `q` from URLs (`docs/analytics.md`) + tests
+- [ ] 7.12 GA4: `<GoogleAnalytics>` + `lib/analytics.ts` helper + CSP hosts; strips `q` from URLs (`docs/analytics.md`) + tests Phase 3 review: `/reset-password?token=…` must never reach GA4 as `page_location`: strip the query or leave the page out of GA.
 - [ ] 7.13 GA4 events: lists and products, video, search, wishlist, sign-up + tests
 - [ ] 7.14 GA4 key events: `generate_lead`, `whatsapp_click`, `call_click`, `email_click` with placement + tests
 - [ ] 7.15 `seo-auditor` agent pass; Lighthouse SEO = 100
@@ -146,11 +146,11 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 8.10 Motion/3D tests: reduced motion, no-WebGL, no leaked triggers, CLS < 0.1; Lighthouse ≥ 90 mobile
 
 ## Phase 9 — Hardening
-- [ ] 9.1 Full E2E regression on all devices; fix flakiness
+- [ ] 9.1 Full E2E regression on all devices; fix flakiness Phase 3 review: CI retries once (`playwright.config.ts`); report tests marked flaky so they aren't hidden. Pin the remaining auth limits in tests: sign-in 10 a minute per IP, `/two-factor/*` 5 a minute, `AUTH_RULES` against the doc table, the 24-hour verify link, 7-day web sessions, the 3-second HIBP default.
 - [ ] 9.2 Lighthouse CI budgets enforced in CI: add `.lighthouserc.json` (perf ≥ 0.9, a11y ≥ 0.95, SEO = 1) and a `lighthouse` job on PRs to `main` (removed in step 0.9 until this exists). If `playwright install --with-deps` fails on CI, pin the runner to `ubuntu-24.04`
-- [ ] 9.3 Error tracking + structured logging
+- [ ] 9.3 Error tracking + structured logging Phase 3 review: add a looser per-email failed-login limit (today it's per IP and email), and clear the timer in `withTimeout` (`packages/core/integrations/rate-limit.ts`).
 - [ ] 9.4 Caching check: home, collection and product pages served from cache; measure a real page's Netlify bandwidth and requests, and update the estimate in `docs/deployment.md` §3
-- [ ] 9.5 Dependency audit, Renovate/Dependabot config, secret scanning on Phase 0 review: (a) pin the MCP servers in `.mcp.json` to exact versions instead of `@latest`; (b) pin the GitHub Actions in `.github/workflows/ci.yml` to exact versions (or full commit SHAs) and let Renovate/Dependabot update them; (c) GitHub secret scanning isn't available on this plan, so don't turn it on here: use a local scanner (for example gitleaks in Husky or CI) and correct the "secret scanning" lines in `docs/auth-security.md` (two places) and `docs/launch-checklist.md` (§ with the "No secrets in git" item)
+- [ ] 9.5 Dependency audit, Renovate/Dependabot config, secret scanning on Phase 0 review: (a) pin the MCP servers in `.mcp.json` to exact versions instead of `@latest`; (b) pin the GitHub Actions in `.github/workflows/ci.yml` to exact versions (or full commit SHAs) and let Renovate/Dependabot update them; (c) GitHub secret scanning isn't available on this plan, so don't turn it on here: use a local scanner (for example gitleaks in Husky or CI) and correct the "secret scanning" lines in `docs/auth-security.md` (two places) and `docs/launch-checklist.md` (§ with the "No secrets in git" item) Phase 3 review: `pnpm audit --prod` shows 2 moderate (minimatch via typescript-eslint tooling). For the owner to decide, since they change Claude Code's own guardrails: deny `git add -f`, widen the `.env` Read deny to every suffix, and teach `protect-files` about `cp -t`, `dd of=`, `perl -pi` and `git checkout`/`git restore` over committed migrations.
 - [ ] 9.6 `code-reviewer` + `security-auditor` + `seo-auditor` final pass
 - [ ] 9.7 Weekly DB backup workflow
 
