@@ -188,3 +188,40 @@ it('keeps an admin without 2FA out of everything but setup', async () => {
   await b.call('/sign-in/email', { email: EMAIL, password: PASSWORD });
   expect(adminAccess(await b.current())).toBe('needs-2fa');
 });
+
+describe('turning 2FA on', () => {
+  it('ends every password-only session but the one that turned it on', async () => {
+    await seedAdmin();
+    // Someone else with the password signs in before setup, and again during it.
+    const early = browser();
+    await early.call('/sign-in/email', { email: EMAIL, password: PASSWORD });
+    const owner = browser();
+    await owner.call('/sign-in/email', { email: EMAIL, password: PASSWORD });
+    const enabled = (await (
+      await owner.call('/two-factor/enable', { password: PASSWORD })
+    ).json()) as Enabled;
+    const during = browser();
+    await during.call('/sign-in/email', { email: EMAIL, password: PASSWORD });
+    expect(adminAccess(await early.current())).toBe('needs-2fa');
+
+    const code = totp(secretFrom(enabled.totpURI));
+    expect((await owner.call('/two-factor/verify-totp', { code })).status).toBe(200);
+
+    expect(adminAccess(await owner.current())).toBe('ok');
+    expect(await early.current()).toBeNull();
+    expect(await during.current()).toBeNull();
+    expect(await db.select().from(session)).toHaveLength(1);
+  });
+
+  it('leaves other 2FA sessions alone on a normal login', async () => {
+    const { secret } = await enrol();
+    const laptop = browser();
+    await laptop.call('/sign-in/email', { email: EMAIL, password: PASSWORD });
+    await laptop.call('/two-factor/verify-totp', { code: totp(secret) });
+    const phone = browser();
+    await phone.call('/sign-in/email', { email: EMAIL, password: PASSWORD });
+    await phone.call('/two-factor/verify-totp', { code: totp(secret) });
+    expect(adminAccess(await laptop.current())).toBe('ok');
+    expect(adminAccess(await phone.current())).toBe('ok');
+  });
+});

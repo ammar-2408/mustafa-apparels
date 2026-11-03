@@ -179,6 +179,18 @@ export function createAuth({
       }),
     },
     databaseHooks: {
+      user: {
+        update: {
+          // Turning 2FA on (the first code at /setup-2fa) ends every session the account had,
+          // so a password-only session from before setup can't become a full admin session.
+          // Better Auth creates the new session for this browser right after this update.
+          after: async (updated, ctx) => {
+            if (!admin || ctx?.path !== '/two-factor/verify-totp') return;
+            if (!(updated as { twoFactorEnabled?: boolean }).twoFactorEnabled) return;
+            await db.delete(session).where(eq(session.userId, updated.id));
+          },
+        },
+      },
       session: {
         create: {
           before: async (data, ctx) => {
