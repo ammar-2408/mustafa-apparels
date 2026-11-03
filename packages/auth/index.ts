@@ -22,9 +22,10 @@ import { nextCookies } from 'better-auth/next-js';
 import { twoFactor as twoFactorPlugin } from 'better-auth/plugins/two-factor';
 import { eq } from 'drizzle-orm';
 
+import { type AuthApp, COOKIE_PREFIX } from './cookies';
 import { LOGIN_FAILURES, loginKey, rateLimitOptions, tooManyAttempts } from './limits';
 
-export type AuthApp = 'web' | 'admin';
+export { type AuthApp, COOKIE_PREFIX };
 
 export type CreateAuthOptions = {
   app: AuthApp;
@@ -44,8 +45,6 @@ export type CreateAuthOptions = {
 export { PASSWORD_MAX, PASSWORD_MIN };
 
 const DAY = 60 * 60 * 24;
-
-export const COOKIE_PREFIX: Record<AuthApp, string> = { web: 'ma', admin: 'ma-admin' };
 
 // Same code and text as Better Auth's own wrong-password error, so callers can't tell them apart.
 export const invalidCredentials = () =>

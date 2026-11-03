@@ -88,9 +88,3 @@ describe('admin gate', () => {
     expect(get('/').headers.get('content-security-policy')).toContain("'strict-dynamic'");
   });
 });
-
-it('uses the same cookie prefix as the admin auth instance', async () => {
-  const { COOKIE_PREFIX } = await import('@mustafa/auth');
-  const { ADMIN_COOKIE_PREFIX } = await import('./proxy');
-  expect(ADMIN_COOKIE_PREFIX).toBe(COOKIE_PREFIX.admin);
-});

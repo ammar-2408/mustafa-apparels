@@ -3,13 +3,10 @@
 // - a first gate: no admin session cookie means the login page (or 401 for an API call).
 // The cookie is only checked for being there. Every page and action still calls requireAdmin(),
 // which checks the session itself, its role and 2FA: this gate is never trusted alone.
+import { COOKIE_PREFIX } from '@mustafa/auth/cookies';
 import { nonceCsp } from '@mustafa/config/headers';
 import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
-
-// COOKIE_PREFIX.admin in packages/auth (a test keeps them equal). Not imported, so this file
-// stays free of the auth server code.
-export const ADMIN_COOKIE_PREFIX = 'ma-admin';
 
 // Reachable without a session: the login steps and Better Auth's own endpoints.
 const PUBLIC = [/^\/login(\/|$)/, /^\/api\/auth(\/|$)/];
@@ -20,7 +17,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   let response: NextResponse;
-  const signedIn = getSessionCookie(request, { cookiePrefix: ADMIN_COOKIE_PREFIX }) !== null;
+  const signedIn = getSessionCookie(request, { cookiePrefix: COOKIE_PREFIX.admin }) !== null;
   if (signedIn || PUBLIC.some((path) => path.test(pathname))) {
     // Next reads the nonce from the request's CSP and adds it to its own scripts.
     const requestHeaders = new Headers(request.headers);
