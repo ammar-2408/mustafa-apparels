@@ -84,9 +84,10 @@ export const TIER_B_PATHS = [
   '/search',
 ];
 
-// Every path except the Tier B ones, so a page never gets two policies.
+// Every path except the Tier B ones, so a page never gets two policies. Each name ends at a
+// slash or the end, so /accounts-help or /search-tips still gets this policy.
 export const TIER_A_SOURCE =
-  '/((?!login|register|forgot-password|reset-password|account|search).*)';
+  '/((?!(?:login|register|forgot-password|reset-password|account|search)(?:/|$)).*)';
 
 export function webHeaders(options: Options) {
   return [

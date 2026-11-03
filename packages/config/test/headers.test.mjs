@@ -116,3 +116,16 @@ test('web headers: security headers everywhere, Tier A only off the Tier B paths
     { key: 'Content-Security-Policy', value: cspTierA({ dev: false }) },
   ]);
 });
+
+test('Tier A also covers pages whose names only start like a Tier B page', () => {
+  const tierA = pathToRegexp(TIER_A_SOURCE);
+  for (const path of [
+    '/accounts-help',
+    '/search-tips',
+    '/login-help',
+    '/registered',
+    '/resetting',
+  ]) {
+    assert.ok(tierA.test(path), path);
+  }
+});
