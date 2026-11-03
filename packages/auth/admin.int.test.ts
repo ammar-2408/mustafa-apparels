@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { requireAdmin } from './guards';
 import { createAuth } from './index';
-import { sendEmail } from './test/outbox';
+import { linkFor, sendEmail } from './test/outbox';
 
 const SECRET = 'test-secret-for-integration-tests-only-0123456789';
 const PASSWORD = 'correct horse battery staple';
@@ -118,5 +118,41 @@ describe('admin sign-in', () => {
       headers: new Headers({ cookie: `ma.session_token=${tokenFrom(fromWeb)}` }),
     });
     expect(seen).toBeNull();
+  });
+});
+
+describe('admin sessions come only from sign-in and 2FA', () => {
+  it('has no email verification endpoints, so a verify link opens no admin session', async () => {
+    await account_('newadmin@example.com', 'admin');
+    await db.update(user).set({ emailVerified: false });
+
+    // A real verification link, made by the storefront instance (same secret in tests).
+    const web = webAuth();
+    await web.api.sendVerificationEmail({
+      body: { email: 'newadmin@example.com', callbackURL: '/' },
+    });
+    const token = new URL(linkFor('newadmin@example.com')).searchParams.get('token')!;
+
+    const verify = await adminAuth().handler(
+      new Request(`${ADMIN_URL}/api/auth/verify-email?token=${token}&callbackURL=/`),
+    );
+    expect(verify.status).toBe(404);
+    const send = await adminAuth().handler(
+      new Request(`${ADMIN_URL}/api/auth/send-verification-email`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', origin: ADMIN_URL },
+        body: JSON.stringify({ email: 'newadmin@example.com' }),
+      }),
+    );
+    expect(send.status).toBe(404);
+    expect(await db.select().from(session)).toHaveLength(0);
+  });
+
+  it('refuses a session made any other way, even for an admin', async () => {
+    await account_('owner@example.com', 'admin');
+    const [owner] = await db.select().from(user);
+    const ctx = await adminAuth().$context;
+    await expect(ctx.internalAdapter.createSession(owner!.id, false)).rejects.toThrow();
+    expect(await db.select().from(session)).toHaveLength(0);
   });
 });

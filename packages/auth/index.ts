@@ -110,7 +110,8 @@ export function createAuth({
       sendOnSignUp: !admin,
       // A login before confirming sends a fresh link.
       sendOnSignIn: true,
-      autoSignInAfterVerification: true,
+      // A verify link signs a customer in. On the admin it never could: see ADMIN_SESSION_PATHS.
+      autoSignInAfterVerification: !admin,
       expiresIn: DAY,
     },
     user: {
@@ -137,10 +138,9 @@ export function createAuth({
     rateLimit: rateLimitOptions(limiter),
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
-        // 2FA is the admin's only (docs/auth-security.md §1).
-        if (!admin && ctx.path.startsWith('/two-factor')) {
-          throw new APIError('NOT_FOUND', { code: 'NOT_FOUND', message: 'Not found' });
-        }
+        // 2FA is the admin's only, and email verification the storefront's (docs/auth-security.md §1).
+        if (!admin && ctx.path.startsWith('/two-factor')) throw notFound();
+        if (admin && EMAIL_VERIFICATION_PATHS.has(ctx.path)) throw notFound();
         // The owner chose a code on every admin login (2026-11-02): no browser is ever trusted.
         if (admin && ctx.path.startsWith('/two-factor/') && ctx.body?.trustDevice) {
           throw new APIError('BAD_REQUEST', {
@@ -181,7 +181,11 @@ export function createAuth({
     databaseHooks: {
       session: {
         create: {
-          before: async (data) => {
+          before: async (data, ctx) => {
+            // On the admin, a session comes only from the password step or the 2FA code step.
+            // Anything else that creates one (a verify link, a future endpoint, a direct call)
+            // would skip 2FA, so it's refused.
+            if (admin && !ADMIN_SESSION_PATHS.has(ctx?.path ?? '')) throw invalidCredentials();
             const [owner] = await db
               .select({ banned: user.banned, role: user.role })
               .from(user)
@@ -220,6 +224,16 @@ const clientIp = (ctx: {
   request?: Request | undefined;
   context: { options: BetterAuthOptions };
 }) => (ctx.request ? getIP(ctx.request, ctx.context.options) : null);
+
+const notFound = () => new APIError('NOT_FOUND', { code: 'NOT_FOUND', message: 'Not found' });
+
+const ADMIN_SESSION_PATHS = new Set([
+  '/sign-in/email',
+  '/two-factor/verify-totp',
+  '/two-factor/verify-backup-code',
+]);
+
+const EMAIL_VERIFICATION_PATHS = new Set(['/send-verification-email', '/verify-email']);
 
 // Where each endpoint carries the new password.
 const PASSWORD_FIELD: Record<string, string> = {
