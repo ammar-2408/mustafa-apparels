@@ -123,7 +123,21 @@ describe('password reset', () => {
     expect(await again.json()).toMatchObject({ code: 'INVALID_TOKEN' });
   });
 
-  it('refuses a link older than one hour', async () => {
+  it('makes a link that lasts exactly one hour', async () => {
+    await verifiedUser();
+    const before = Date.now();
+    await requestReset();
+    const token = await tokenFromLink();
+    const [row] = await db
+      .select()
+      .from(verification)
+      .where(eq(verification.identifier, `reset-password:${token}`));
+    const minutes = (row!.expiresAt.getTime() - before) / 60_000;
+    expect(minutes).toBeGreaterThan(59);
+    expect(minutes).toBeLessThanOrEqual(60.1);
+  });
+
+  it('refuses a link once its hour is up', async () => {
     await verifiedUser();
     await requestReset();
     const token = await tokenFromLink();
