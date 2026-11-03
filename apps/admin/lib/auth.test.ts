@@ -19,7 +19,8 @@ vi.mock('@mustafa/core/integrations/rate-limit', () => ({ createLimiter: () => '
 vi.mock('@mustafa/core/integrations/breached-passwords', () => ({
   createBreachCheck: () => 'breach-check',
 }));
-vi.mock('next/headers', () => ({ headers: async () => new Headers() }));
+const readHeaders = vi.hoisted(() => vi.fn(async () => new Headers()));
+vi.mock('next/headers', () => ({ headers: readHeaders }));
 vi.mock('next/navigation', () => ({ redirect }));
 vi.mock('next/server', () => ({ after: vi.fn() }));
 
@@ -99,4 +100,12 @@ describe('requireAdminPage', () => {
     const current = session();
     expect(await (await load(current)).requireAdminPage()).toBe(current);
   });
+});
+
+it('reads the request even when auth is off, so the page stays per-request', async () => {
+  env.value = { INTEGRATIONS_MODE: 'mock' };
+  readHeaders.mockClear();
+  vi.resetModules();
+  expect(await (await import('./auth')).getSession()).toBeNull();
+  expect(readHeaders).toHaveBeenCalledTimes(1);
 });

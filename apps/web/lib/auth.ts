@@ -52,9 +52,12 @@ export function getAuth() {
 
 // One lookup per request, however many components ask.
 export const getSession = cache(async () => {
+  // The request comes first, even with auth off: it keeps the page per-request, so a page
+  // behind proxy.ts's nonce is never prerendered, and the instance is never built at build time.
+  const requestHeaders = await headers();
   const auth = getAuth();
   if (!auth) return null;
-  return auth.api.getSession({ headers: await headers() });
+  return auth.api.getSession({ headers: requestHeaders });
 });
 
 // For server actions and route handlers: throws UNAUTHENTICATED.
