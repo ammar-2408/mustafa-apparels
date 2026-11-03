@@ -105,6 +105,10 @@ describe('session helpers', () => {
     await expect((await load()).requireUserPage()).rejects.toThrow('redirect:/login');
 
     vi.resetModules();
+    getSession.mockResolvedValueOnce({ ...signedIn, session: { app: 'admin' } });
+    await expect((await load()).requireUserPage()).rejects.toThrow('redirect:/login');
+
+    vi.resetModules();
     getSession.mockResolvedValueOnce(signedIn);
     expect(await (await load()).requireUserPage()).toBe(signedIn);
   });

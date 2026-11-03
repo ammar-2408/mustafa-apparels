@@ -7,9 +7,11 @@ export type SessionData = {
   session: { app?: string | null };
 };
 
-// A session or UNAUTHENTICATED. A banned user counts as signed out.
+// A storefront session or UNAUTHENTICATED. A banned user counts as signed out, and so does an
+// admin session or an admin account: the storefront never signs those in (ADR-020).
 export function requireUser<S extends SessionData>(current: S | null | undefined): S {
   if (!current || current.user.banned) throw unauthenticated();
+  if (current.session.app !== 'web' || current.user.role === 'admin') throw unauthenticated();
   return current;
 }
 

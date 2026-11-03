@@ -68,6 +68,9 @@ export async function requireUser() {
 // For pages: sends a signed-out visitor to the login page instead.
 export async function requireUserPage() {
   const current = await getSession();
-  if (!current || current.user.banned) redirect('/login');
-  return current;
+  try {
+    return guardUser(current);
+  } catch {
+    redirect('/login');
+  }
 }

@@ -28,6 +28,12 @@ describe('requireUser', () => {
     expect(codeOf(() => requireUser(null))).toBe('UNAUTHENTICATED');
   });
 
+  it('accepts only storefront sessions of customer accounts', () => {
+    const adminSession = { ...session(), session: { app: 'admin' } };
+    expect(codeOf(() => requireUser(adminSession))).toBe('UNAUTHENTICATED');
+    expect(codeOf(() => requireUser(session({ role: 'admin' })))).toBe('UNAUTHENTICATED');
+  });
+
   it('treats a banned user as signed out', () => {
     expect(codeOf(() => requireUser(session({ banned: true })))).toBe('UNAUTHENTICATED');
   });
