@@ -47,7 +47,7 @@ describe('default share image', () => {
 
   it('is the 1200×630 logo image from the brand pack, described by the logo text', () => {
     expect(DEFAULT_OG_IMAGE).toMatchObject({
-      url: '/brand/social/og-share-image-1200x630.png',
+      url: '/og/og-default-1200x630.png',
       width: 1200,
       height: 630,
       alt: 'MA Apparels by Mustafa Ahmed',

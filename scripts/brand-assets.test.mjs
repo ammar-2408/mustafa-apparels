@@ -69,3 +69,13 @@ for (const [app, folders] of Object.entries(BRAND)) {
     }
   }
 }
+
+// Not a logo-pack file: the unchanged primary black logo on powder blue, made for the new palette
+// (docs/design.md §8). Kept outside public/brand/, which holds only logo-pack copies.
+test('the default share image is a 1200×630 PNG under 100 kB', () => {
+  const file = readFileSync(fromRoot('apps/web/public/og/og-default-1200x630.png'));
+  assert.equal(file.subarray(1, 4).toString('latin1'), 'PNG');
+  assert.equal(file.readUInt32BE(16), 1200);
+  assert.equal(file.readUInt32BE(20), 630);
+  assert.ok(file.length < 100_000, `${file.length} bytes`);
+});

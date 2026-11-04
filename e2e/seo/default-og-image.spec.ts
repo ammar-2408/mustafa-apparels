@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 // docs/design.md §8.1: pages without their own image share the brand image, by absolute URL,
 // in the server HTML <head> (no JavaScript), so link previews and crawlers see it.
-const IMAGE_PATH = '/brand/social/og-share-image-1200x630.png';
+const IMAGE_PATH = '/og/og-default-1200x630.png';
 
 const metaTag = (html: string, key: string) =>
   html.match(new RegExp(`<meta[^>]+(?:property|name)="${key}"[^>]*>`))?.[0];

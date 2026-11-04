@@ -19,7 +19,7 @@ export const SITE_URL = siteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
 /** The share image for pages without their own; metadataBase makes it absolute. */
 export const DEFAULT_OG_IMAGE = {
-  url: '/brand/social/og-share-image-1200x630.png',
+  url: '/og/og-default-1200x630.png',
   width: 1200,
   height: 630,
   alt: 'MA Apparels by Mustafa Ahmed',
