@@ -36,6 +36,7 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | `curl -sI <url>` | Status codes, redirects, headers (`X-Robots-Tag`, CSP, cache) |
 | `curl -s <url> \| grep -i canonical` | Confirm canonical is in raw server HTML |
 | `nslookup <host>` or https://dnschecker.org | DNS at Spaceship: has it changed yet? |
+| `pnpm turbo run lint typecheck test --filter='...{./packages/*}[HEAD]' --filter='...{./apps/*}[HEAD]'`, then `pnpm turbo run build` with the same filters | Per-step checks on what changed since `HEAD` (uncommitted included) and its dependents. Don't use plain `...[HEAD]`: when root files change it pulls in the root package, whose `test` script runs `turbo run test` again, and two Vitest runs then fight over one coverage folder ("already in use by another Vitest process"). `--filter='!//'` doesn't help from Git Bash, which rewrites `//` as a path. Run `build` in its own call: next to `typecheck` it races on `.next/types`. Pipe into `tail` only after `set -o pipefail` (2026-11-04, step 4.1) |
 
 ## 3. Common problems in this stack
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@mustafa/ui/button';
+import { FormError } from '@mustafa/ui/form-error';
 import { Input } from '@mustafa/ui/input';
 import {
   authErrorMessage,
@@ -13,7 +14,6 @@ import Link from 'next/link';
 import { type FormEvent, useState } from 'react';
 
 import { authClient } from '../../lib/auth-client';
-import { FormError } from './form-error';
 import { PasswordStrengthMeter } from './password-strength-meter';
 
 export const PASSWORD_CHANGED =

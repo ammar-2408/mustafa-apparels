@@ -2,7 +2,8 @@
   "extends": "@mustafa/config/tsconfig/base.json",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["node"]
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.mjs"],
   "exclude": ["node_modules", "coverage"]

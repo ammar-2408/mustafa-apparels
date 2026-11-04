@@ -1,25 +1,10 @@
 'use client';
 
-import { Button } from '@mustafa/ui/button';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { LogoutButton as SharedLogoutButton } from '@mustafa/ui/logout-button';
 
 import { authClient } from '../../lib/auth-client';
 
+// Binds this app's auth client, so server pages can render the shared button.
 export function LogoutButton() {
-  const router = useRouter();
-  const [pending, setPending] = useState(false);
-
-  async function logOut() {
-    setPending(true);
-    await authClient.signOut();
-    router.replace('/login');
-    router.refresh();
-  }
-
-  return (
-    <Button variant="secondary" onClick={logOut} disabled={pending}>
-      {pending ? 'Logging out…' : 'Log out'}
-    </Button>
-  );
+  return <SharedLogoutButton signOut={() => authClient.signOut()} />;
 }

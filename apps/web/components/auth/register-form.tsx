@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@mustafa/ui/button';
+import { FormError } from '@mustafa/ui/form-error';
 import { Input } from '@mustafa/ui/input';
 import {
   authErrorMessage,
@@ -12,7 +13,6 @@ import {
 import { type FormEvent, useState } from 'react';
 
 import { authClient } from '../../lib/auth-client';
-import { FormError } from './form-error';
 import { PasswordStrengthMeter } from './password-strength-meter';
 
 // The answer is the same whether or not the email already has an account.

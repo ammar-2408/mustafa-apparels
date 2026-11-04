@@ -64,6 +64,9 @@ Headings pair a size with `font-light`, e.g. `text-h1 font-light`; `h1`–`h3` g
 - `Button` (`@mustafa/ui/button`): `primary` (ink with white text) or `secondary` (ink outline). Hover swaps ink and white. Orange never fills a button. The label is in spaced capitals (`caps-tight`, `caps` from `sm`), the button is 48px tall, and `type="button"` unless set. `buttonClass(variant)` gives links the same look, for WhatsApp, Call and Email.
 - `Input` (`@mustafa/ui/input`): a visible `caps-tight` label, an optional hint, and an error tied to the field with `aria-describedby` and `aria-invalid`. The error sits in an `aria-live` region that is on the page from the start, so it is announced. The field is 48px tall with 16px text, so iOS doesn't zoom.
 - `Dialog` (`@mustafa/ui/dialog`): a native modal `<dialog>`. The browser traps focus, closes it on Esc and returns focus afterwards; the backdrop click and the 44px close button call `onClose`. It is named by its title, keeps the page gutter on phones and is 512px at most. While it is open, the page behind doesn't scroll. Pass `className` to make a side panel or bottom sheet.
+- `Logo` (`@mustafa/ui/logo`): see §1.3 below.
+- `FormError` (`@mustafa/ui/form-error`): the whole-form message, a `role="alert"` paragraph that is on the page from the start, hidden while empty.
+- `LogoutButton` (`@mustafa/ui/logout-button`): takes the app's `signOut` and a `redirectTo` (default `/login`). Each app has a one-line client wrapper (`components/…/logout-button.tsx`) that binds its own `authClient`, so server pages can render it.
 
 Radius: small or none (`--radius-sm: 2px`, the only radius token; `rounded-full` still works for round icons), to match the logo's angular shapes. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
 

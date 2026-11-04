@@ -6,7 +6,10 @@
   "exports": {
     "./button": "./src/button.tsx",
     "./dialog": "./src/dialog.tsx",
-    "./input": "./src/input.tsx"
+    "./form-error": "./src/form-error.tsx",
+    "./input": "./src/input.tsx",
+    "./logo": "./src/logo.tsx",
+    "./logout-button": "./src/logout-button.tsx"
   },
   "scripts": {
     "lint": "eslint .",
@@ -14,6 +17,7 @@
     "test": "vitest run --coverage"
   },
   "peerDependencies": {
+    "next": "16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
@@ -21,10 +25,12 @@
     "@mustafa/config": "workspace:*",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
+    "@types/node": "^24",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.5",
+    "next": "16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "typescript": "~6.0.3",

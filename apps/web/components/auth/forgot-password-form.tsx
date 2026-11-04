@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@mustafa/ui/button';
+import { FormError } from '@mustafa/ui/form-error';
 import { Input } from '@mustafa/ui/input';
 import {
   AUTH_MESSAGES,
@@ -11,7 +12,6 @@ import {
 import { type FormEvent, useState } from 'react';
 
 import { authClient } from '../../lib/auth-client';
-import { FormError } from './form-error';
 
 // The answer never says whether the email has an account.
 export function ForgotPasswordForm() {

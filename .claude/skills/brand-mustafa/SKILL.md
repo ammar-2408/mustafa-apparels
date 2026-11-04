@@ -50,7 +50,7 @@ Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `
 - Tokens: `--spacing-gutter` (`px-gutter`) for page side padding, `--spacing-grid` (`gap-grid`) between product cards, `--spacing-section` (`py-section`) between page sections.
 - Max content width: 1440px at `2xl` (`max-w-content`), 1760px at `4xl` (`max-w-content-wide`). Layout per breakpoint: `docs/design.md` §2.
 - Touch targets are at least 44×44px. Respect safe areas with `env(safe-area-inset-*)`.
-- Build with the shared primitives before writing new ones: `Button` / `buttonClass`, `Input` and `Dialog` from `packages/ui` (`docs/design.md` §1.2). Every focused element gets the theme's orange focus ring, which turns ink inside a `bg-primary` element on its own (orange is too faint on powder blue).
+- Build with the shared primitives before writing new ones: `Button` / `buttonClass`, `Input`, `Dialog`, `Logo`, `FormError` and `LogoutButton` from `packages/ui` (`docs/design.md` §1.2). Every focused element gets the theme's orange focus ring, which turns ink inside a `bg-primary` element on its own (orange is too faint on powder blue).
 - Radius is small or none (`--radius-sm: 2px`), to match the logo's angular shapes. Use `--shadow-soft` sparingly.
 
 ## Logo

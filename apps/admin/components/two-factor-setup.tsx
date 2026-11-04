@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@mustafa/ui/button';
+import { FormError } from '@mustafa/ui/form-error';
 import { Input } from '@mustafa/ui/input';
 import { authErrorMessage, fieldErrorsOf, totpCodeInput } from '@mustafa/validators/auth';
 import Image from 'next/image';
@@ -10,7 +11,6 @@ import { type FormEvent, useState } from 'react';
 import type { TwoFactorSetup as Setup } from '../app/(auth)/setup-2fa/actions';
 import { startTwoFactorSetup } from '../app/(auth)/setup-2fa/actions';
 import { authClient } from '../lib/auth-client';
-import { FormError } from './form-error';
 
 // Forced on the first admin login: password, then scan the code and save the backup codes,
 // then prove it works with one code. The backup codes are shown this once only.
