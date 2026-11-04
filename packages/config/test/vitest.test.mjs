@@ -13,8 +13,8 @@ test('library preset sets the 90% lines and 85% branches floor', () => {
 });
 
 test('library preset gives PGlite integration tests time to start', () => {
-  assert.equal(library.test.testTimeout, 30_000);
-  assert.equal(library.test.hookTimeout, 30_000);
+  assert.equal(library.test.testTimeout, 60_000);
+  assert.equal(library.test.hookTimeout, 60_000);
 });
 
 test('app preset sets the 80% lines floor on server actions and route handlers', () => {
