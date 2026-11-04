@@ -4,7 +4,7 @@ import { HeaderLogo } from '../components/logo';
 export default function Home() {
   return (
     <>
-      <header className="px-gutter py-4">
+      <header className="bg-primary px-gutter py-4">
         <HeaderLogo />
       </header>
       <main>

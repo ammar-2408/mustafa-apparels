@@ -26,7 +26,7 @@ export default async function ForgotPasswordPage() {
       <ForgotPasswordForm />
       <p className="mt-12 text-body">
         Remembered it?{' '}
-        <Link href="/login" className="underline underline-offset-4">
+        <Link href="/login" className="link">
           Log in
         </Link>
       </p>

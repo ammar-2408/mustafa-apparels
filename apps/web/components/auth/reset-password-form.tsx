@@ -50,7 +50,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     return (
       <div role="status" className="flex flex-col gap-6 text-body-lg">
         <p>{PASSWORD_CHANGED}</p>
-        <Link href="/login" className="underline underline-offset-4">
+        <Link href="/login" className="link">
           Log in
         </Link>
       </div>

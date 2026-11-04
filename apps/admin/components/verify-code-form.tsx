@@ -63,7 +63,7 @@ export function VerifyCodeForm() {
       </Button>
       <button
         type="button"
-        className="self-start text-body underline underline-offset-4"
+        className="link self-start text-body"
         onClick={() => {
           setBackup(!backup);
           setFieldError('');
@@ -72,7 +72,7 @@ export function VerifyCodeForm() {
       >
         {backup ? 'Use the code from your app' : 'Use a backup code instead'}
       </button>
-      <Link href="/login" className="self-start text-body underline underline-offset-4">
+      <Link href="/login" className="link self-start text-body">
         Start again
       </Link>
     </form>

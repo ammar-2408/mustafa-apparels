@@ -7,7 +7,7 @@ import { HeaderLogo } from '../../components/logo';
 export default function AccountLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <header className="px-gutter py-4">
+      <header className="bg-primary px-gutter py-4">
         <HeaderLogo />
       </header>
       <main className="mx-auto w-full max-w-md px-gutter pt-12 pb-section">{children}</main>

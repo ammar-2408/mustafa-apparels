@@ -30,7 +30,7 @@ export default async function ResetPasswordPage({
       ) : (
         <div className="flex flex-col gap-6 text-body-lg">
           <p role="alert">{AUTH_MESSAGES.linkExpired}</p>
-          <Link href="/forgot-password" className="underline underline-offset-4">
+          <Link href="/forgot-password" className="link">
             Ask for a new link
           </Link>
         </div>

@@ -23,7 +23,7 @@ export default async function RegisterPage() {
       <RegisterForm />
       <p className="mt-12 text-body">
         Already have one?{' '}
-        <Link href="/login" className="underline underline-offset-4">
+        <Link href="/login" className="link">
           Log in
         </Link>
       </p>
