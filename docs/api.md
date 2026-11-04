@@ -117,7 +117,10 @@ X-Signature: hex(hmac_sha256(REVALIDATE_SECRET, timestamp + "." + body))
 { "tags": ["products", "product:abc123", "category:dhanak"] }
 ```
 - Reject if signature invalid (constant-time compare), timestamp older than 5 minutes, body > 2 KB, or tags not matching `^(products|categories|settings|product:[\w-]+|category:[\w-]+)$`.
-- Responses: `200 { revalidated: [...] }`, `401`, `400`.
+- Responses: `200 { revalidated: [...] }`, `401` (signature or time), `400` (body over 2 KB, not JSON, or a tag outside the list; 1–20 tags), `503` when the storefront has no `REVALIDATE_SECRET` (it never runs unsigned). All `Cache-Control: no-store`. POST only.
+- Code: `signRevalidate`, `verifyRevalidate` and `createRevalidator` in `packages/core/integrations/revalidate.ts`; tag schema `revalidateBody` in `packages/validators/revalidate.ts`; route `apps/web/app/api/revalidate/route.ts`; admin caller `revalidateStorefront(tags)` in `apps/admin/lib/revalidate.ts`, the last step of every mutation.
+- The storefront calls `revalidateTag(tag, { expire: 0 })`, so the next visitor after a save gets the change (not one more stale view, as `'max'` would give).
+- The caller never throws: a network failure, timeout (5 s) or error answer is logged (no secret) and the save still succeeds. In `INTEGRATIONS_MODE=mock`, or without `WEB_URL` / `REVALIDATE_SECRET`, it logs and skips.
 
 ## 5. Validation schemas (examples)
 

@@ -115,3 +115,15 @@ test('a Tier B page still works under its nonce: the login form reacts', async (
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByText('Enter a valid email')).toBeVisible();
 });
+
+test('the revalidate endpoint refuses an unsigned call, is never cached and has no nonce', async ({
+  request,
+}) => {
+  const response = await request.post(`${WEB}/api/revalidate`, {
+    data: { tags: ['products'] },
+  });
+  expect(response.status()).toBe(401);
+  expect(response.headers()['cache-control']).toBe('no-store');
+  expect(response.headers()['content-security-policy'] ?? '').not.toContain('nonce-');
+  expect((await request.get(`${WEB}/api/revalidate`)).status()).toBe(405);
+});

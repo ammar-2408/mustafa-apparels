@@ -76,7 +76,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [ ] 4.7 Product list (search, filter by status/collection, "needs price" filter, pagination)
 - [ ] 4.8 Product create form (field config driven): every field in `docs/database.md`, with taxonomy values as choices + E2E
 - [ ] 4.9 Product edit, publish/unpublish with clear errors, duplicate, archive/restore + E2E
-- [ ] 4.10 Cross-app revalidation (`/api/revalidate` HMAC on web + caller in admin) + tests
+- [x] 4.10 Cross-app revalidation (`/api/revalidate` HMAC on web + caller in admin) + tests
 - [ ] 4.11 Inquiries inbox + status changes + reply links
 - [ ] 4.12 Customers list (read-only) Phase 3 review: any later ban or role change must also delete the user's sessions; a new admin must be created already verified, because the admin has no email verification endpoints, and must set up 2FA at once.
 - [ ] 4.13 Site settings page (contact info, service area, delivery, payment, returns, socials, default SEO)

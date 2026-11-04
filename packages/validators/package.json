@@ -14,7 +14,8 @@
     "./search": "./search.ts",
     "./settings": "./settings.ts",
     "./taxonomy": "./taxonomy.ts",
-    "./password-strength": "./password-strength.ts"
+    "./password-strength": "./password-strength.ts",
+    "./revalidate": "./revalidate.ts"
   },
   "scripts": {
     "lint": "eslint .",
