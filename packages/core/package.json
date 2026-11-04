@@ -7,6 +7,7 @@
     "./action-result": "./action-result.ts",
     "./audit": "./audit/index.ts",
     "./categories": "./categories/index.ts",
+    "./dashboard": "./dashboard/index.ts",
     "./errors": "./errors.ts",
     "./products": "./products/index.ts",
     "./search": "./search/index.ts",

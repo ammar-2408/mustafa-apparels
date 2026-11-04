@@ -1,3 +1,4 @@
+import { openAdminMenu } from '../support/admin';
 import { expect, test } from '../support/users';
 
 test.use({ baseURL: 'http://localhost:3001' });
@@ -54,6 +55,7 @@ test.describe('admin gate', () => {
     await page.getByRole('button', { name: 'Turn on 2FA' }).click();
 
     await expect(page.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeVisible();
+    await openAdminMenu(page);
     await page.getByRole('button', { name: 'Log out' }).click();
     await expect(page).toHaveURL(/\/login$/);
     await page.goto('/');

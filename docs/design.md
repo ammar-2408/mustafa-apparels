@@ -165,6 +165,8 @@ Rules:
 
 Admin design: clean, fast, no 3D; dense tables on desktop, card lists on mobile; same tokens.
 
+**Admin shell** (`apps/admin/app/(panel)/layout.tsx`, every signed-in page): a powder blue (`bg-primary`, ink text) sidebar 15rem wide from `md`, sticky and full height, with the simplified black logo, the section links (Dashboard, Suits, Collections, Inquiries, Customers, Settings, Audit log; `aria-current="page"` on the current section and the pages under it, shown as a white pill), and the signed-in email with Log out at the foot. Below `md` it is a top bar with the submark and a Menu button (`aria-expanded`, `aria-controls`) that opens the same list; moving to another page closes it. The working area is white. The **dashboard** shows count tiles, each linked to its filtered list: Suits (published, drafts, needs price, archived) and Shop (new inquiries, customers, collections, with the hidden ones noted), from `core.dashboard.counts`.
+
 **Wording:** the site calls products "suits" or "unstitched suits", never "dresses". It never mentions other brands (`docs/prd.md` §2).
 
 **Filters:** volume style, dress category, fabric, design, season, outfit style, colour and price, from the fixed list in `docs/catalog.md` §4. Customers see the dress category filter labelled "Category". A filter value shows only when a published suit has it, and a filter with one value or none is hidden. With 30 suits, that keeps the bar short; on mobile, it's a bottom sheet. Colour swatches use `color_family`; the product page shows the fuller `main_color` name.

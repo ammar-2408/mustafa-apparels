@@ -24,7 +24,7 @@ Root `pnpm lint` and `pnpm typecheck` also cover `e2e/`, `scripts/` and `.claude
 | E2E | Playwright | `e2e/web`, `e2e/admin` | Real user journeys in real browsers | seconds |
 | Responsive | Playwright projects | `e2e/responsive` | Layout at 5+ viewports, no horizontal scroll, menu/filters usable | seconds |
 | SEO | Playwright (raw HTML fetch + DOM) | `e2e/seo` | Canonical rules, meta, OG, JSON-LD, sitemap, robots, llms.txt, status codes | seconds |
-| Accessibility | `@axe-core/playwright` | `e2e/a11y` | Every page template, zero serious/critical violations of WCAG 2.2 A/AA. Add each new template to the `PAGES` list in `e2e/a11y/pages.spec.ts`. Run with `pnpm test:a11y` (SEO: `pnpm test:seo`) | seconds |
+| Accessibility | `@axe-core/playwright` | `e2e/a11y` | Every page template, zero serious/critical violations of WCAG 2.2 A/AA. Add each new template to the `PAGES` list in `e2e/a11y/pages.spec.ts`, or, for a signed-in admin page, to `ADMIN_PAGES` in `e2e/a11y/admin-pages.spec.ts`. Run with `pnpm test:a11y` (SEO: `pnpm test:seo`) | seconds |
 | Security | Playwright + Vitest | `e2e/security` | Headers, CSP tiers, authz, rate limits, upload signing, revalidate HMAC | seconds |
 | Performance | Lighthouse CI | `.lighthouserc.json` | Budgets on home, collection, product (mobile) | minutes (CI) |
 | Visual (optional) | Playwright screenshots | `e2e/visual` | Key templates at 3 widths; review diffs on motion/theme changes | seconds |
@@ -157,7 +157,7 @@ For every URL in the sitemap plus representative noindex pages:
 - Factories in `packages/core/test/factories.ts`, each taking the db first: `makeProduct(db, { published })`, `makeCategory(db)`, `makeUser(db, { role })`, `makeMedia(db, { productId, kind })`. Every call makes a unique, valid row; `published: true` also meets every publish rule, with a main photo and alt text.
 - Integration tests: each test file starts one PGlite with `createTestDb()` from `@mustafa/db/testing` (the real migrations, plus `pg_trgm`), and calls `resetTestDb(db)` in `afterEach` to empty every table. The `library` Vitest preset allows 60 s per test and hook, because PGlite can take seconds to start under load.
 - E2E: CI starts a throwaway Postgres container, runs migrations + `db:seed --e2e`, and discards it after. (Locally you can point E2E at a Neon `test` branch instead.)
-- E2E accounts: import `test` and `expect` from `e2e/support/users.ts`.
+- E2E accounts: import `test` and `expect` from `e2e/support/users.ts`. A signed-in admin: `loginAsAdmin(page, users)` from `e2e/support/admin.ts` runs the real login and 2FA setup and lands on the dashboard; `openAdminMenu(page)` opens the phone menu (no-op on wider screens).
   - `users.create({ role, verified })` writes a unique `e2e+<uuid>@example.com` account straight to the database, with Better Auth's hash, and deletes it after the test.
   - `users.freshEmail()` gives an unused address that is cleaned up the same way.
   - Each test also sends its own `x-nf-client-connection-ip`, so parallel projects never share a rate-limit bucket.
