@@ -81,7 +81,7 @@ All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). B
 | Limit | Max | Fail mode | Used by |
 |---|---|---|---|
 | `admin-2fa-setup` | 5 / min | closed (a password check Better Auth doesn't see) | `startTwoFactorSetup` |
-| `admin-write` | 60 / min | open | every admin mutation |
+| `admin-write` | 60 / min | open | every admin mutation (built into `adminAction`, after validation, so a bad form never counts) |
 | `upload-sign` | 30 / min | open | `/api/upload/sign` |
 
 ### Server actions
@@ -96,7 +96,7 @@ All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). B
 | `setPrimaryProductImage` | `{ productId, mediaId }` (must be `kind = image`) | `product:<id>`, `products` |
 | `setVideoPoster` | `{ mediaId, posterPublicId }` | `product:<id>` |
 | `deleteProductMedia` | `{ mediaId }` — also deletes from Cloudinary | `product:<id>` |
-| `createCategory` / `updateCategory` / `reorderCategories` / `setCategoryActive` | collection fields | `categories`, `products` |
+| `createCategory` / `updateCategory` / `reorderCategories` / `setCategoryActive` (`app/(panel)/collections/actions.ts`) | `categoryInput` / `categoryUpdateInput` / `categoryReorderInput` (every id) / `categoryVisibilityInput` `{ id, isActive }` | `categories`, `products`, `category:<slug>` (old and new slug on a rename); reorder: `categories` only |
 | `setInquiryStatus` | `{ id, status }` | — |
 | `updateSiteSettings` | `{ key, value }` (validated per key) | `settings` |
 

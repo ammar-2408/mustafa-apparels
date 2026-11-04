@@ -12,8 +12,8 @@ export default async function PanelLayout({ children }: { children: ReactNode })
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
       <header className="bg-primary text-primary-fg md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:py-8">
-        <div className="hidden px-gutter pb-10 md:block">
-          <Logo variant="simplified" loading="eager" />
+        <div className="hidden px-6 pb-10 md:block">
+          <Logo variant="simplified" height={34} loading="eager" />
         </div>
         <AdminNav
           mobileLogo={<Logo variant="submark" loading="eager" />}
@@ -22,7 +22,7 @@ export default async function PanelLayout({ children }: { children: ReactNode })
               <p className="mb-3 truncate px-3 text-small" title={user.email}>
                 {user.email}
               </p>
-              <LogoutButton />
+              <LogoutButton className="w-full whitespace-nowrap" />
             </>
           }
         />

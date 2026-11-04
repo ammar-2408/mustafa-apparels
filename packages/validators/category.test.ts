@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { categoryInput, categoryReorderInput, categoryUpdateInput } from './category';
+import {
+  categoryInput,
+  categoryReorderInput,
+  categoryUpdateInput,
+  categoryVisibilityInput,
+} from './category';
 
 const dhanak = { name: 'Dhanak', slug: 'dhanak' };
 
@@ -59,5 +64,16 @@ describe('categoryReorderInput', () => {
   it('rejects an empty list and repeated ids', () => {
     expect(categoryReorderInput.safeParse({ ids: [] }).success).toBe(false);
     expect(categoryReorderInput.safeParse({ ids: ['c1', 'c1'] }).success).toBe(false);
+  });
+});
+
+describe('categoryVisibilityInput', () => {
+  it('takes an id and a true or false, and nothing else', () => {
+    expect(categoryVisibilityInput.safeParse({ id: 'c1', isActive: false }).success).toBe(true);
+    expect(categoryVisibilityInput.safeParse({ id: 'c1', isActive: 'no' }).success).toBe(false);
+    expect(categoryVisibilityInput.safeParse({ id: 'c1' }).success).toBe(false);
+    expect(categoryVisibilityInput.safeParse({ id: 'c1', isActive: true, name: 'x' }).success).toBe(
+      false,
+    );
   });
 });

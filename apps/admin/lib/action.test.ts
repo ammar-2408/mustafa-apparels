@@ -1,11 +1,16 @@
 // @vitest-environment node
-import { forbidden, notFound, unauthenticated } from '@mustafa/core/errors';
+import { forbidden, notFound, rateLimited, unauthenticated } from '@mustafa/core/errors';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
 const requireAdmin = vi.hoisted(() => vi.fn());
 vi.mock('server-only', () => ({}));
 vi.mock('./auth', () => ({ requireAdmin }));
+const enforceLimit = vi.hoisted(() => vi.fn());
+vi.mock('./limits', () => ({
+  ADMIN_LIMITS: { adminWrite: { name: 'admin-write' } },
+  enforceLimit,
+}));
 
 import { adminAction } from './action';
 
@@ -17,6 +22,7 @@ const rename = adminAction(z.object({ name: z.string().min(2) }).strict(), async
 
 beforeEach(() => {
   requireAdmin.mockReset();
+  enforceLimit.mockReset().mockResolvedValue(undefined);
 });
 
 describe('adminAction', () => {
@@ -59,6 +65,25 @@ describe('adminAction', () => {
       ok: false,
       error: { code: 'VALIDATION' },
     });
+  });
+
+  it('counts each valid call against the admin write limit, and stops when over', async () => {
+    requireAdmin.mockResolvedValue(ADMIN);
+    await rename({ name: 'Dhanak' });
+    expect(enforceLimit).toHaveBeenCalledWith({ name: 'admin-write' }, 'a1');
+    enforceLimit.mockRejectedValue(rateLimited());
+    const handler = vi.fn();
+    expect(await adminAction(z.object({}), handler)({})).toMatchObject({
+      ok: false,
+      error: { code: 'RATE_LIMITED' },
+    });
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('does not count invalid input against the limit', async () => {
+    requireAdmin.mockResolvedValue(ADMIN);
+    await rename({ name: 'D' });
+    expect(enforceLimit).not.toHaveBeenCalled();
   });
 
   it('passes on our own errors and hides unexpected ones', async () => {

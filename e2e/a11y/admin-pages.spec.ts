@@ -5,7 +5,11 @@ import { expect, test } from '../support/users';
 
 // Signed-in admin page templates, checked like the public ones in pages.spec.ts: zero serious or
 // critical WCAG 2.2 AA violations. One login covers them all. Add each new admin page here.
-const ADMIN_PAGES = [{ name: 'admin dashboard', path: '/' }];
+const ADMIN_PAGES = [
+  { name: 'admin dashboard', path: '/' },
+  { name: 'admin collections', path: '/collections' },
+  { name: 'admin new collection', path: '/collections/new' },
+];
 
 test('signed-in admin pages have no serious or critical accessibility violations', async ({
   page,

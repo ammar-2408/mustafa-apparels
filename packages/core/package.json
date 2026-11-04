@@ -16,7 +16,8 @@
     "./integrations/email-templates": "./integrations/email-templates.ts",
     "./integrations/breached-passwords": "./integrations/breached-passwords.ts",
     "./integrations/rate-limit": "./integrations/rate-limit.ts",
-    "./integrations/revalidate": "./integrations/revalidate.ts"
+    "./integrations/revalidate": "./integrations/revalidate.ts",
+    "./test/factories": "./test/factories.ts"
   },
   "scripts": {
     "lint": "eslint .",

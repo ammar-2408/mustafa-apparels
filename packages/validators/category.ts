@@ -54,3 +54,6 @@ export const categoryReorderInput = z
     ids: z.array(id).min(1).max(200).refine(unique, { message: 'List each collection once' }),
   })
   .strict();
+
+// Hide or show a collection on the storefront.
+export const categoryVisibilityInput = z.object({ id, isActive: z.boolean() }).strict();

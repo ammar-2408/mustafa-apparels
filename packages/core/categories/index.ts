@@ -1,8 +1,8 @@
 // Collections (the `category` table). Inputs are already parsed by packages/validators.
 import type { Database } from '@mustafa/db/client';
-import { category } from '@mustafa/db/schema';
+import { category, product } from '@mustafa/db/schema';
 import type { CategoryInput, CategoryUpdateInput } from '@mustafa/validators/category';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, getTableColumns, isNull, sql } from 'drizzle-orm';
 
 import { type Actor, diff, record, snapshot } from '../audit';
 import { CoreError, invalid, isForeignKeyViolation, isUniqueViolation, notFound } from '../errors';
@@ -20,6 +20,21 @@ export async function list(db: Database, options: Visibility = {}) {
     .select()
     .from(category)
     .where(visible(options))
+    .orderBy(asc(category.sortOrder), asc(category.name));
+}
+
+export type AdminCategory = Category & { productCount: number };
+
+// Every collection, hidden ones too, with how many suits (any status, not deleted) it holds.
+export async function adminList(db: Database): Promise<AdminCategory[]> {
+  return db
+    .select({
+      ...getTableColumns(category),
+      productCount: sql<number>`count(${product.id})`.mapWith(Number),
+    })
+    .from(category)
+    .leftJoin(product, and(eq(product.categoryId, category.id), isNull(product.deletedAt)))
+    .groupBy(category.id)
     .orderBy(asc(category.sortOrder), asc(category.name));
 }
 

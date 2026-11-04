@@ -58,7 +58,7 @@ export default async function Dashboard() {
               <li key={label}>
                 <Link
                   href={href}
-                  className="flex h-full min-h-28 flex-col justify-between rounded-sm border border-border p-4 hover:border-border-strong"
+                  className="flex h-full min-h-28 flex-col gap-3 rounded-sm border border-border p-4 hover:border-border-strong"
                 >
                   <span className="caps-tight">{label}</span>
                   <span>

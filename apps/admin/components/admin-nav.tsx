@@ -50,7 +50,7 @@ export function AdminNav({ mobileLogo, footer }: AdminNavProps) {
       </div>
       <div
         id="admin-menu"
-        className={`${open ? 'flex' : 'hidden'} flex-col gap-8 px-gutter pb-6 md:flex md:flex-1 md:pb-8`}
+        className={`${open ? 'flex' : 'hidden'} flex-col gap-8 px-gutter pb-6 md:flex md:flex-1 md:px-6 md:pb-8`}
       >
         <nav aria-label="Admin">
           <ul className="flex flex-col gap-1">

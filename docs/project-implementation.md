@@ -68,7 +68,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 
 ## Phase 4 — Admin panel
 - [x] 4.1 Admin layout (sidebar, responsive), dashboard counts. For the sidebar logo, move `<Logo>` from `apps/web/components/logo.tsx` into `packages/ui` (admin has only the submark and simplified black files) rather than copying it. Server actions must live in files named `actions.ts` (or `route.ts` for handlers) so the 80% coverage floor applies, or extend the coverage pattern in `packages/config/vitest/app.mjs` Phase 3 review: (a) the web and admin `lib/auth.ts` repeat the env-to-`createAuth` wiring: move it into one factory in `packages/auth` and keep only the memo and page guards in each app; (b) move `FormError` and `LogoutButton` into `packages/ui` with the Logo; (c) extend `apps/admin/test/admin-actions-authz.test.ts` with an admin who has no 2FA yet (FORBIDDEN everywhere but `startTwoFactorSetup`) and a banned admin, and make it fail on a `'use server'` file that isn't `actions.ts`; (d) rate-limit `startTwoFactorSetup` (a password check Better Auth's limiter doesn't see); (e) narrow the admin proxy matcher's `brand/` exclusion to image files; (f) replace the `!` assertions in `guards.ts`, `apps/admin/lib/auth.ts` and `setup-2fa/actions.ts` with narrowed types and a null check that returns UNAVAILABLE.
-- [ ] 4.2 Collections list + create/edit + reorder + hide
+- [x] 4.2 Collections list + create/edit + reorder + hide
 - [ ] 4.3 Cloudinary signed upload endpoint for images and videos + tests
 - [ ] 4.4 Media metadata check on save: folder, format, size, video length; delete rejected assets + tests
 - [ ] 4.5 Photo uploader component (drag-drop, progress, reorder, main image, alt required)

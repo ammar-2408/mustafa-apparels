@@ -1,7 +1,7 @@
-import { auditLog, slugRedirect } from '@mustafa/db/schema';
+import { auditLog, product, slugRedirect } from '@mustafa/db/schema';
 import { createTestDb, resetTestDb, type TestDb } from '@mustafa/db/testing';
 import { categoryInput } from '@mustafa/validators/category';
-import { asc } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { CoreError } from '../errors';
@@ -218,5 +218,28 @@ describe('categories with suits', () => {
       { actorId },
     );
     expect(renamed.name).toBe('Dhanak Winter');
+  });
+});
+
+describe('categories.adminList', () => {
+  it('lists every collection, hidden ones too, in order, with its suit count', async () => {
+    const second = await makeCategory(db, { name: 'Khaddar', sortOrder: 1 });
+    const first = await makeCategory(db, { name: 'Dhanak', sortOrder: 0, isActive: false });
+    await makeProduct(db, { categoryId: first.id });
+    await makeProduct(db, { categoryId: first.id, status: 'archived' });
+
+    const rows = await categories.adminList(db);
+    expect(rows.map((row) => [row.name, row.isActive, row.productCount])).toEqual([
+      ['Dhanak', false, 2],
+      ['Khaddar', true, 0],
+    ]);
+    expect(rows[1]!.id).toBe(second.id);
+  });
+
+  it('leaves deleted suits out of the count', async () => {
+    const collection = await makeCategory(db);
+    const suit = await makeProduct(db, { categoryId: collection.id });
+    await db.update(product).set({ deletedAt: new Date() }).where(eq(product.id, suit.id));
+    expect((await categories.adminList(db))[0]!.productCount).toBe(0);
   });
 });
