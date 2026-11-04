@@ -122,4 +122,13 @@ describe('templates', () => {
     expect(html).toContain('https://mustafaapparels.com/x?a=1&amp;b=&quot;2&quot;');
     expect(html).not.toContain('"2"');
   });
+
+  it('uses the brand palette: white page, powder blue band, ink button with white text', () => {
+    const { html } = verifyEmail({ url: 'https://mustafaapparels.com/x' });
+    expect(html).toContain('background:#FFFFFF');
+    expect(html).toContain('background:#A8C9C8');
+    expect(html).toContain('background:#111111;color:#FFFFFF');
+    expect(html).toContain('color:#4B5757');
+    expect(html).not.toMatch(/FAF7EC|5C584E/i);
+  });
 });
