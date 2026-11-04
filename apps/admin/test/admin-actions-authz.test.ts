@@ -40,6 +40,17 @@ const customer = {
   user: { id: 'c1', role: 'customer', banned: false, twoFactorEnabled: false },
   session: { app: 'admin' },
 };
+const bannedAdmin = {
+  user: { id: 'a2', role: 'admin', banned: true, twoFactorEnabled: true },
+  session: { app: 'admin' },
+};
+const adminWithout2fa = {
+  user: { id: 'a3', role: 'admin', banned: false, twoFactorEnabled: false },
+  session: { app: 'admin' },
+};
+// The only action an admin may call before turning 2FA on: the one that turns it on.
+const BEFORE_2FA = new Set(['startTwoFactorSetup']);
+
 const storefrontAdmin = {
   user: { id: 'a1', role: 'admin', banned: false, twoFactorEnabled: true },
   session: { app: 'web' },
@@ -53,7 +64,24 @@ it('finds the admin actions', () => {
   expect(actions.length).toBeGreaterThan(0);
 });
 
-describe.each(actions)('%s', (_name, action) => {
+// The loop above only sees files named actions.ts, and so does the 80% coverage floor
+// (packages/config/vitest/app.mjs). A server action anywhere else would slip past both.
+const sources = import.meta.glob(['../{app,components,lib}/**/*.{ts,tsx}', '!**/*.test.*'], {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+
+it('keeps every server action in a file named actions.ts', () => {
+  expect(Object.keys(sources).length).toBeGreaterThan(0);
+  const strays = Object.entries(sources)
+    .filter(([, source]) => /^\s*['"]use server['"]/m.test(source))
+    .map(([file]) => file)
+    .filter((file) => !file.endsWith('/actions.ts'));
+  expect(strays).toEqual([]);
+});
+
+describe.each(actions)('%s', (name, action) => {
   const call = (current: unknown) => {
     session.current = current;
     return (action as (input: unknown) => Promise<unknown>)({
@@ -70,6 +98,22 @@ describe.each(actions)('%s', (_name, action) => {
 
   it('answers FORBIDDEN to a customer', async () => {
     expect(await call(customer)).toMatchObject({ ok: false, error: { code: 'FORBIDDEN' } });
+    expect(reached).not.toHaveBeenCalled();
+  });
+
+  it('answers FORBIDDEN to a banned admin', async () => {
+    expect(await call(bannedAdmin)).toMatchObject({ ok: false, error: { code: 'FORBIDDEN' } });
+    expect(reached).not.toHaveBeenCalled();
+  });
+
+  it('answers FORBIDDEN to an admin who has not set up 2FA, except to set it up', async () => {
+    const result = await call(adminWithout2fa);
+    if (BEFORE_2FA.has(name.split(' → ').at(-1) ?? '')) {
+      // Allowed past the guard; the junk input then fails validation before Better Auth.
+      expect(result).toMatchObject({ ok: false, error: { code: 'VALIDATION' } });
+    } else {
+      expect(result).toMatchObject({ ok: false, error: { code: 'FORBIDDEN' } });
+    }
     expect(reached).not.toHaveBeenCalled();
   });
 
