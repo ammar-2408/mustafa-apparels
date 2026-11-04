@@ -6,28 +6,31 @@ The brand comes from the logo pack in `mustafa-apparels-logos/mustafa-apparels-l
 
 ### 1.1 Style
 
-Monochrome, minimal and editorial: an angular, high-contrast MA monogram over widely spaced thin capitals. The site stays quiet so the suits' colours and embroidery carry the page. **There is no accent colour; product photos supply the colour.** Overall look and motion direction: §9.1.
+Minimal and editorial: an angular, high-contrast MA monogram over widely spaced thin capitals, on a white page with powder blue surfaces. The site stays calm so the suits' colours and embroidery carry the page. **Racing orange is a small accent only** (badges, hover underlines, the focus ring, small icons), never a large area or body text. The palette is the owner's (2026-11-04); it replaced the first cream-and-ink one. Overall look and motion direction: §9.1.
 
 ### 1.2 Tokens
 
-Tokens live in `packages/config/tailwind/theme.css`, a Tailwind v4 `@theme static` block that each app's `apps/*/app/globals.css` imports right after Tailwind. It clears Tailwind's default colours, breakpoints, radii and shadows, so `bg-red-500` or `rounded-xl` produce nothing and only brand values exist. Every token is also a CSS variable on `:root`. Utilities follow the token names: `bg-bg`, `bg-surface`, `text-fg`, `text-muted`, `bg-accent`, `text-accent-fg`, `border-border-strong`, `text-error`. `packages/config/test/tailwind-theme.test.mjs` checks every contrast pair below and compiles both apps' CSS.
+Tokens live in `packages/config/tailwind/theme.css`, a Tailwind v4 `@theme static` block that each app's `apps/*/app/globals.css` imports right after Tailwind. It clears Tailwind's default colours, breakpoints, radii and shadows, so `bg-red-500` or `rounded-xl` produce nothing and only brand values exist. Every token is also a CSS variable on `:root`. Utilities follow the token names: `bg-bg`, `bg-primary`, `text-fg`, `text-muted`, `bg-action`, `text-action-fg`, `bg-accent`, `text-accent-text`, `decoration-accent`, `border-border-strong`, `text-error`.
 
-| Token | Value | Use | Contrast |
-|---|---|---|---|
-| `--color-bg` | `#FAF7EC` cream | Main background | — |
-| `--color-surface` | `#FFFFFF` white | Cards, forms | — |
-| `--color-fg` | `#111111` ink | Headings, main text | 17.61:1 on cream |
-| `--color-muted` | `#5C584E` | Secondary text | 6.61:1 on cream |
-| `--color-accent` | `#111111` ink | Primary buttons, links | 17.61:1 on cream |
-| `--color-accent-fg` | `#FAF7EC` cream | Text on ink | 17.61:1 |
-| `--color-border-strong` | `#8A8578` | Form fields, UI borders | 3.43:1 on cream (AA for UI) |
-| `--color-border` | `#D9D3C3` | Decorative lines only | 1.39:1 (not for anything that must be seen) |
-| `--color-inverse-bg` | `#111111` ink | Footer, dark sections | — |
-| `--color-inverse-muted` | `#BDB7A6` | Secondary text on ink | 9.43:1 on ink |
-| `--color-error` | `#A3271B` deep brick | Error text, invalid field borders | 6.84:1 on cream, 7.33:1 on white |
-| `--color-success` | `#2E6B3F` deep green | Success text | 5.95:1 on cream, 6.38:1 on white |
+| Token | Value | Use |
+|---|---|---|
+| `--color-bg`, `--color-surface` | `#FFFFFF` white | Page background, form fields, white cards |
+| `--color-primary` / `--color-primary-fg` | `#A8C9C8` powder blue / `#111111` | **Large surfaces only**: header band, section backgrounds, cards, footer, admin sidebar / text on them (10.66:1). Never a text colour (1.77:1 on white) |
+| `--color-fg` | `#111111` ink (the logo colour) | All text: 18.88:1 on white |
+| `--color-muted` | `#4B5757` | Secondary text, **on white only** (7.50:1; 4.23:1 on powder blue fails) |
+| `--color-action` / `--color-action-fg` | `#111111` / `#FFFFFF` | Main buttons: ink with white text |
+| `--color-accent` / `--color-accent-fg` | `#F45B0B` racing orange / `#111111` | Badges ("New", sale) with **ink** text (5.71:1; white is only 3.31), hover underlines, the focus ring, small icons. 3.31:1 on white, so UI parts only, never body text |
+| `--color-accent-text` | `#C34909` | Small orange text such as links, **on white only** (4.91:1) |
+| `--color-border-strong` | `#5F6F6E` | Form field and control borders on white (5.27:1) |
+| `--color-border` | `#D4E3E2` | Decorative lines only |
+| `--color-error` / `--color-success` | `#A3271B` / `#2E6B3F` | Error and success text and borders, **on white only** (7.33:1 and 6.38:1) |
 
-Error and success are muted, deep tones so they sit with the monochrome palette. They are for text and borders on cream or white, never on ink, and never the only signal: pair them with words or an icon. `--color-border-strong` and `--color-muted` are derived from the logo's ink and cream; only `#111111`, `#FAF7EC` and `#FFFFFF` are official.
+**Allowed pairs are enforced.** `packages/config/colour-pairs.ts` lists every allowed foreground/background pair, each one text (4.5:1), large text or UI (3:1).
+- `tailwind-theme.test.mjs` checks each pair against WCAG 2.2 AA, makes sure every token has a role, and checks that the known-bad pairs stay out: powder blue, orange or accent text as text; muted, error or success on powder blue.
+- `colour-usage.test.mjs` scans component class names, and fails on any `text-X` over a `bg-Y` (or the white page) that isn't in the list. It can't see a background set on a parent element, so keep a text colour and its background together where possible.
+- To use a new pair, add it to `colour-pairs.ts` first.
+
+Error and success are deep tones for text and borders on white, and never the only signal: pair them with words or an icon.
 
 **Typography:** Montserrat only, via `next/font` (self-hosted).
 | Use | Weight | Style |
@@ -53,10 +56,12 @@ Each app loads the font in `app/fonts.ts` (`next/font/google`, served from our o
 
 Headings pair a size with `font-light`, e.g. `text-h1 font-light`; `h1`–`h3` get `text-wrap: balance`. Spaced capitals use `caps` (12px Regular 400, uppercase, `0.4em`), or `caps-tight` (`0.2em`) where they would wrap on phones, e.g. `caps-tight sm:caps`.
 
-**Focus ring:** the theme gives every `:focus-visible` element a 2px ink outline, 2px outside it (17.61:1 on cream). On ink sections add `focus-visible:outline-bg`.
+**Focus ring:** the theme gives every `:focus-visible` element a 2px racing orange outline, 2px outside it (3.31:1 on white, 5.71:1 on ink). Orange is only 1.87:1 on powder blue, so inside any `bg-primary` element the ring turns ink (10.66:1) automatically.
+
+**Links:** the `link` utility gives ink text with an underline that turns orange on hover. Use `text-accent-text` only where a link must be orange, and only on white.
 
 **Shared primitives (`packages/ui`, both apps):**
-- `Button` (`@mustafa/ui/button`): `primary` (ink with cream text) or `secondary` (ink outline). Hover swaps ink and cream. The label is in spaced capitals (`caps-tight`, `caps` from `sm`), the button is 48px tall, and `type="button"` unless set. `buttonClass(variant)` gives links the same look, for WhatsApp, Call and Email.
+- `Button` (`@mustafa/ui/button`): `primary` (ink with white text) or `secondary` (ink outline). Hover swaps ink and white. Orange never fills a button. The label is in spaced capitals (`caps-tight`, `caps` from `sm`), the button is 48px tall, and `type="button"` unless set. `buttonClass(variant)` gives links the same look, for WhatsApp, Call and Email.
 - `Input` (`@mustafa/ui/input`): a visible `caps-tight` label, an optional hint, and an error tied to the field with `aria-describedby` and `aria-invalid`. The error sits in an `aria-live` region that is on the page from the start, so it is announced. The field is 48px tall with 16px text, so iOS doesn't zoom.
 - `Dialog` (`@mustafa/ui/dialog`): a native modal `<dialog>`. The browser traps focus, closes it on Esc and returns focus afterwards; the backdrop click and the 44px close button call `onClose`. It is named by its title, keeps the page gutter on phones and is 512px at most. While it is open, the page behind doesn't scroll. Pass `className` to make a side panel or bottom sheet.
 
@@ -81,7 +86,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Use the files as they 
 | Desktop header | Secondary, black | 40 px (use 48 px from `md`, 64 px from `lg`, so its small "by Mustafa Ahmed" line stays readable) |
 | Mobile header | Submark, black | 24 px (use 32 px) |
 | Sticky header on scroll | Simplified, black | 28 px |
-| Footer on ink | Primary, white | 120 px (use 140 px) |
+| Footer on powder blue | Primary, black | 120 px (use 140 px) |
 | About page, hero | Primary | 120 px |
 
 **Component:** `apps/web/components/logo.tsx`. `<Logo variant colour height loading>` renders the file through `next/image` (unoptimized SVG) with the right `alt`. Its `width` and `height` attributes come from the file's own viewBox ratio, and CSS sets only the height. A height below the table's minimum is raised to it, and the default is the "use" size. `<HeaderLogo>` is the home link (`aria-label` below, at least 44px tall): the submark (32px) below `md`, the secondary logo at 48px from `md` (768px) and at 64px from `lg` (1024px), all loaded eagerly. The two secondary copies share one file, so it downloads once. Clear space is left to the layout around it.
@@ -93,7 +98,7 @@ Rules: keep clear space of at least a quarter of the monogram's height. Black on
 - Simplified and submark `alt`: `MA Apparels`
 - Home link `aria-label`: `Mustafa Apparels home`
 - Manifest `name` and `short_name`: `Mustafa Apparels`. The admin's are `Mustafa Apparels Admin` and `MA Admin`, so the owner can tell the two apart on a home screen
-- `theme_color` and `background_color`: `#FAF7EC`
+- `theme_color`: `#A8C9C8` (the browser bar matches the header band); `background_color`: `#FFFFFF` (the splash matches the page). The favicons and app icons from the logo pack still have a cream square; replace them when the owner supplies new files
 
 **Favicons and manifest:** `packages/config/brand.ts` holds them for both apps. Each root layout exports `metadata.icons` (`/favicon.ico` sized `32x32` so Chrome prefers the SVG, `favicon.svg`, and the 180px Apple touch icon) and `viewport.themeColor`. Each `app/manifest.ts` serves `/manifest.webmanifest` with the 192 and 512px icons as `purpose: any`. They aren't `maskable`, because the monogram's corners reach just past the safe circle; a maskable icon would need a new file from the logo designer. `favicon-32.png` stays available but isn't linked, since the `.ico` and SVG cover every browser.
 
@@ -176,7 +181,7 @@ Motion for each section follows §9.1.
 5. **Featured suit** — sticky image + scrolling details, including a muted video when in view.
 6. **How to order** — WhatsApp, courier across Pakistan, payment in chat, as cards that stack on scroll (desktop) with a text reveal.
 7. **Contact strip** — WhatsApp first, then call and email. No address or map.
-8. Footer — primary white logo on ink, links, socials (hidden when empty).
+8. Footer — powder blue band with the primary black logo, links, socials (hidden when empty).
 
 ## 5. Motion and video
 
@@ -190,7 +195,7 @@ Principles: motion should feel **soft, fabric-like and premium** — never slow 
 | Eases | `power3.out` (enter), `power2.inOut` (move), `expo.out` (hero), `none` (scrubbed scroll) |
 | Stagger | 0.06–0.1s for grids, 0.02s for split characters |
 
-Patterns: text line/char reveals (SplitText), word-by-word text fill on scroll, image clip-path reveals, scroll-scrubbed parallax (small: ≤ 15% movement), pinned horizontal galleries, stacking cards, Flip transitions for grid ↔ product image, magnetic buttons (desktop only), page transitions (a short cream cover with the MA submark, using the View Transitions API or a GSAP overlay). Where and how much: §9.1.
+Patterns: text line/char reveals (SplitText), word-by-word text fill on scroll, image clip-path reveals, scroll-scrubbed parallax (small: ≤ 15% movement), pinned horizontal galleries, stacking cards, Flip transitions for grid ↔ product image, magnetic buttons (desktop only), page transitions (a short powder blue cover with the MA submark, using the View Transitions API or a GSAP overlay). Where and how much: §9.1.
 
 Rules (enforced by the `motion-gsap` skill):
 - Use `useGSAP()` with a scope ref → automatic cleanup on unmount/route change.
@@ -218,7 +223,7 @@ Video appears **on product pages only**, plus at most one featured suit on the h
 
 Admins upload **photos and videos**, not 3D models — so 3D is used for **brand moments and effects**, not for every product.
 
-**Chosen concept: flowing fabric.** A cloth-like plane with a vertex-shader wave, reacting to cursor and scroll, in ink on cream with the MA monogram nearby. It suits a fabric business and fits the monochrome brand. It should read as real draped cloth, with large soft folds and light across them, rather than a flat wave (§9.1). It downloads **no model**, only shader code, because at Netlify's 20 credits per GB a 1.5 MB model would cost about 30 credits per 1,000 home visits.
+**Chosen concept: flowing fabric.** A cloth-like plane with a vertex-shader wave, reacting to cursor and scroll, in ink folds on white with soft powder blue light, with the MA monogram nearby. It suits a fabric business and fits the calm palette. It should read as real draped cloth, with large soft folds and light across them, rather than a flat wave (§9.1). It downloads **no model**, only shader code, because at Netlify's 20 credits per GB a 1.5 MB model would cost about 30 credits per 1,000 home visits.
 
 **Also planned:** WebGL distortion on collection tiles and product photos on hover (works with uploaded photos).
 
@@ -336,16 +341,16 @@ References collected so far (add more as you find them):
 
 | Aspect | What it does | How we adapt it |
 |---|---|---|
-| Layout rhythm | Calm, full-screen moments alternating with large areas of empty cream. Full-bleed media, then generous white space, then type | Same rhythm with `--spacing-section`. One idea per screen on Home; tighter on Shop and other working pages |
+| Layout rhythm | Calm, full-screen moments alternating with large areas of white and powder blue. Full-bleed media, then generous white space, then type | Same rhythm with `--spacing-section`. One idea per screen on Home; tighter on Shop and other working pages |
 | Typography feel | Very large, tight headings, set against tiny labels. A wide sans at medium weight | Montserrat Light 300 at large `clamp()` sizes with tight leading (about 1), against our spaced-capital labels. No second font |
 | Fabric photos | Cloth fills the frame: folds, texture and close-ups, with almost nothing on top | Let suits fill the frame, with text beside them rather than over them. **Don't blow photos up to full-bleed:** Lajwanti's are only 384–626 px wide. Full-bleed moments use the shader or ink, until better photos arrive (`docs/claude-code-playbook.md` §6) |
-| Colour | Warm cream and dark brown, with an orange accent | Cream and ink only. No accent: hover states use ink and cream, and photos supply the colour |
+| Colour | Warm cream and dark brown, with an orange accent | White and powder blue with ink text; racing orange only as a small accent (badges, hover underlines, focus ring), and photos supply the colour |
 | Menu | A floating side panel over the blurred page: large links, expandable groups, contact details at the bottom | Same idea with our links, WhatsApp first and small corners (`--radius-sm`). Solid backdrop on phones, because blur is slow. Focus trap, Esc closes |
 | Header | Transparent over the hero, then a floating frosted bar on scroll, with the wordmark swapping to a small mark | Same behaviour with our logo rules: secondary, then simplified; submark on phones. Keep the header area light so the black logo never sits on dark cloth. A WhatsApp button stands where its call to action is |
 | Hero | Full-screen draped cloth with a huge headline at the bottom left, rising line by line. The cloth is a **pre-rendered video**, and the page loads 1920×1080 video even on phones | Real-time shader cloth with no video or model: lighter, and it reacts to the cursor and scroll |
 | Section transitions | The hero insets from the page edges on scroll. A small fabric card grows to fill the screen while pinned. Statement text fills word by word. Info cards stack | All four, with photos and shader instead of video, because video stays on product pages (§5.2). Filling words start at `--color-muted`, so they stay readable |
-| Hover | Collection columns: the name changes colour and a short line and link appear in place of the plus. About 0.75 s, easing out | Same reveal for our three collection panels, with ink and cream inversion plus the image distortion in §6 |
-| Page change | A full-screen cream cover with a small mark in the centre, then a full page load and reveal | A short cream cover with the MA submark, faded and never stretched. Client-side navigation keeps it faster, on cached pages |
+| Hover | Collection columns: the name changes colour and a short line and link appear in place of the plus. About 0.75 s, easing out | Same reveal for our three collection panels, with ink and white inversion plus the image distortion in §6 |
+| Page change | A full-screen cream cover with a small mark in the centre, then a full page load and reveal | A short powder blue cover with the MA submark, faded and never stretched. Client-side navigation keeps it faster, on cached pages |
 
 **More motion than the reference.** It relies on video and scroll effects. We add:
 - **Smooth scrolling** with Lenis on every page.

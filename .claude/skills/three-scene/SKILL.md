@@ -7,7 +7,7 @@ description: Project rules for 3D and WebGL with Three.js and React Three Fiber 
 
 Design direction and budgets: `docs/design.md` §6. Docs: `context7` MCP (three, @react-three/fiber, @react-three/drei).
 
-**Chosen concept: flowing fabric.** A cloth-like plane with a vertex-shader wave, reacting to cursor and scroll, in ink on cream with the MA monogram nearby. It should read as real draped cloth, with large soft folds and light across them, filling the hero behind a large headline (`docs/design.md` §9.1). Keep the header area light, so the black logo never sits on dark cloth.
+**Chosen concept: flowing fabric.** A cloth-like plane with a vertex-shader wave, reacting to cursor and scroll, in ink folds on white with soft powder blue light, and the MA monogram nearby. It should read as real draped cloth, with large soft folds and light across them, filling the hero behind a large headline (`docs/design.md` §9.1). Keep the header area light, so the black logo never sits on dark cloth.
 
 **No downloaded model (ADR-015).** The scene is shader code only: no `.glb`, no HDRI or environment map, no model loaders or decoders. At Netlify's 20 credits per GB, a 1.5 MB model would cost about 30 credits per 1,000 home visits. If a model is ever wanted, stop and ask: it needs a new ADR, must be served from Cloudinary and must stay ≤ 1.5 MB.
 
@@ -45,7 +45,7 @@ export const HeroCanvasLazy = dynamic(() => import('./HeroCanvas'), { ssr: false
 6. **Cleanup**: R3F disposes JSX-created objects; manually dispose anything created with `new` (geometries, materials, textures, render targets). Handle `webglcontextlost` → show poster.
 7. **Interaction**: scroll-linked movement via GSAP ScrollTrigger driving refs and uniforms (not React state per frame); pointer effects only on `pointer: fine`.
 8. **Accessibility**: canvas is decorative (`aria-hidden`), with a text equivalent nearby; all meaning is in HTML text. No flashing; respect reduced motion.
-9. **Colours** are ink and cream, read from design tokens once on mount (`brand-mustafa` skill). No accent colour and no dark mode.
+9. **Colours** are ink, white and powder blue, read from design tokens once on mount (`brand-mustafa` skill). No orange in the shader, and no dark mode.
 10. **Logo**: the MA monogram is the official SVG in HTML next to the canvas. Never redraw, distort or recreate it in a shader.
 11. **CSP** (`docs/auth-security.md` §3.2): `blob:` stays in `worker-src` and `img-src` only. Load Cloudinary textures with `TextureLoader`, which uses `img-src`: `connect-src` doesn't allow Cloudinary, so a `fetch`-based loader would be blocked.
 12. **Stay cached.** An island adds no per-request work: the page around it stays static, with no nonce.

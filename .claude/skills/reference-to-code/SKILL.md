@@ -20,7 +20,7 @@ The shop's references are already studied: `docs/design.md` §9.1 for look and m
 |---|---|
 | Layout | grid/columns per breakpoint, spacing rhythm, aspect ratios |
 | Typography | scale, weight contrast, letter-spacing, case — map to Montserrat 300/400 only |
-| Colour/mood | how contrast is used — map to *our* tokens: ink and cream, with no accent colour; photos supply the colour |
+| Colour/mood | how contrast is used — map to *our* tokens: white and powder blue with ink text, racing orange only as a small accent (`docs/design.md` §1.2); photos supply the colour |
 | Motion | trigger → property → duration → easing → stagger; scroll-scrubbed or time-based; pinning |
 | Interaction | hover/tap states, cursor effects, transitions between pages |
 | 3D/WebGL | what is real 3D vs. shader vs. video vs. CSS |

@@ -7,27 +7,28 @@ description: Mustafa Apparels brand rules — logo files and usage, colour token
 
 Source of truth: `docs/design.md` §1. If this skill and that doc disagree, the doc wins, so fix the skill.
 
-**Style:** monochrome, minimal, editorial. The site stays quiet so the suits' colours and embroidery carry the page. **There is no accent colour; product photos supply the colour.** No dark mode in v1. Admin uses the same tokens.
+**Style:** minimal and editorial, on a white page with powder blue surfaces and ink text. The site stays calm so the suits' colours and embroidery carry the page. **Racing orange is a small accent only**: badges, hover underlines, the focus ring, small icons. No dark mode in v1. Admin uses the same tokens. (Owner's palette, 2026-11-04; it replaced cream and ink.)
 
 **Direction for the storefront: `docs/design.md` §9.1.** Very large headings set against tiny spaced labels, cloth and suits filling the frame, and generous empty space, on every page. It's a reference for look and motion only: keep our colours, font, logo and pages.
 
 ## Colour tokens
 
-Components use tokens, never hard-coded colours. Tokens live in `packages/config/tailwind/theme.css` (Tailwind v4 `@theme static`), imported by `apps/*/app/globals.css`. Tailwind's default colours, radii and shadows are cleared: use `bg-bg`, `text-fg`, `text-muted`, `border-border-strong`, `text-error` and so on.
+Components use tokens, never hard-coded colours. Tokens live in `packages/config/tailwind/theme.css` (Tailwind v4 `@theme static`), imported by `apps/*/app/globals.css`. Tailwind's default colours, radii and shadows are cleared: use `bg-bg`, `bg-primary`, `text-fg`, `text-muted`, `bg-action`, `text-accent-text`, `border-border-strong`, `text-error` and so on.
 
 | Token | Value | Use |
 |---|---|---|
-| `--color-bg` | `#FAF7EC` cream | Main background |
-| `--color-surface` | `#FFFFFF` | Cards, forms |
-| `--color-fg` | `#111111` ink | Headings, main text |
-| `--color-muted` | `#5C584E` | Secondary text |
-| `--color-accent` / `--color-accent-fg` | `#111111` / `#FAF7EC` | Primary buttons and links / text on them |
-| `--color-border-strong` | `#8A8578` | Form fields, UI borders |
-| `--color-border` | `#D9D3C3` | Decorative lines only: too faint (1.39:1) for anything that must be seen |
-| `--color-inverse-bg` / `--color-inverse-muted` | `#111111` / `#BDB7A6` | Footer and dark sections / secondary text on them |
-| `--color-error` / `--color-success` | `#A3271B` / `#2E6B3F` | Error and success text and borders on cream or white; never the only signal |
+| `--color-bg`, `--color-surface` | `#FFFFFF` | Page, form fields, white cards |
+| `--color-primary` / `--color-primary-fg` | `#A8C9C8` powder blue / `#111111` | Large surfaces only (header band, sections, cards, footer, admin sidebar) / text on them. Never text (1.77:1 on white) |
+| `--color-fg` | `#111111` ink | All text |
+| `--color-muted` | `#4B5757` | Secondary text, on white only |
+| `--color-action` / `--color-action-fg` | `#111111` / `#FFFFFF` | Main buttons: ink with white text |
+| `--color-accent` / `--color-accent-fg` | `#F45B0B` racing orange / `#111111` | Badges with **ink** text, hover underlines, focus ring, small icons. Never body text (3.31:1) |
+| `--color-accent-text` | `#C34909` | Small orange text such as links, on white only (4.91:1) |
+| `--color-border-strong` | `#5F6F6E` | Form fields and UI borders on white |
+| `--color-border` | `#D4E3E2` | Decorative lines only |
+| `--color-error` / `--color-success` | `#A3271B` / `#2E6B3F` | Error and success, on white only; never the only signal |
 
-Only ink, cream and white are official; the rest are derived. Contrast must reach 4.5:1 for text and 3:1 for large text and UI.
+**Only allowed pairs.** `packages/config/colour-pairs.ts` lists every allowed text/background and UI pair, and tests fail on any pair that misses WCAG AA, or on a component class pair not in the list. On powder blue, text is always ink. To use a new pair, add it there first. Links use the `link` utility: ink text, and the underline turns orange on hover.
 
 ## Type: Montserrat only
 
@@ -49,7 +50,7 @@ Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `
 - Tokens: `--spacing-gutter` (`px-gutter`) for page side padding, `--spacing-grid` (`gap-grid`) between product cards, `--spacing-section` (`py-section`) between page sections.
 - Max content width: 1440px at `2xl` (`max-w-content`), 1760px at `4xl` (`max-w-content-wide`). Layout per breakpoint: `docs/design.md` §2.
 - Touch targets are at least 44×44px. Respect safe areas with `env(safe-area-inset-*)`.
-- Build with the shared primitives before writing new ones: `Button` / `buttonClass`, `Input` and `Dialog` from `packages/ui` (`docs/design.md` §1.2). Every focused element gets the theme's ink focus ring; on ink sections add `focus-visible:outline-bg`.
+- Build with the shared primitives before writing new ones: `Button` / `buttonClass`, `Input` and `Dialog` from `packages/ui` (`docs/design.md` §1.2). Every focused element gets the theme's orange focus ring, which turns ink inside a `bg-primary` element on its own (orange is too faint on powder blue).
 - Radius is small or none (`--radius-sm: 2px`), to match the logo's angular shapes. Use `--shadow-soft` sparingly.
 
 ## Logo
@@ -61,7 +62,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in whic
 | Desktop header | Secondary, black | 40px (use 48px from `md`, 64px from `lg`) |
 | Mobile header | Submark, black | 24px (use 32px) |
 | Sticky header on scroll | Simplified, black | 28px |
-| Footer on ink | Primary, white | 120px (use 140px) |
+| Footer on powder blue | Primary, black | 120px (use 140px) |
 | About page, hero | Primary | 120px |
 
 - Black on light backgrounds, white on dark. Never put the black logo on a dark or busy photo.
@@ -75,7 +76,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in whic
 | Primary and secondary `alt` | `MA Apparels by Mustafa Ahmed` |
 | Simplified and submark `alt` | `MA Apparels` |
 | Home link `aria-label` | `Mustafa Apparels home` |
-| `theme_color`, `background_color` | `#FAF7EC` |
+| `theme_color` / `background_color` | `#A8C9C8` / `#FFFFFF` |
 
 ## Tone for product descriptions (`docs/design.md` §1.5)
 
