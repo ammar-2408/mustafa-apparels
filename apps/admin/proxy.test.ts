@@ -28,9 +28,19 @@ describe('admin proxy', () => {
       '/_next/static/chunks/a.js',
       '/favicon.ico',
       '/manifest.webmanifest',
-      '/brand/svg/x.svg',
+      '/brand/svg/mustafa-apparels-submark-black.svg',
+      '/brand/favicon/favicon.svg',
+      '/brand/favicon/icon-192.png',
+      '/brand/favicon/apple-touch-icon-180.png',
     ]) {
       expect(matches(path), path).toBe(false);
+    }
+  });
+
+  // Only image files skip the session check: anything else under /brand/ is gated like a page.
+  it('still gates /brand/ paths that are not image files', () => {
+    for (const path of ['/brand', '/brand/', '/brand/secret', '/brand/notes.txt', '/brandx']) {
+      expect(matches(path), path).toBe(true);
     }
   });
 

@@ -37,5 +37,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|brand/).*)'],
+  // Brand image files skip the session check, so the login page keeps its icons. Any other
+  // /brand/ path is gated like a page.
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|brand/[\\w/-]+\\.(?:svg|png|ico|webp)$).*)',
+  ],
 };
