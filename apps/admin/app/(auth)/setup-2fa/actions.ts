@@ -10,6 +10,7 @@ import { headers } from 'next/headers';
 import QRCode from 'qrcode';
 
 import { getAuth, getSession } from '../../../lib/auth';
+import { ADMIN_LIMITS, enforceLimit } from '../../../lib/limits';
 
 export type TwoFactorSetup = { qr: string; secret: string; backupCodes: string[] };
 
@@ -17,8 +18,9 @@ export type TwoFactorSetup = { qr: string; secret: string; backupCodes: string[]
 // secret, and draw its QR code here on the server, as a PNG data URL.
 // Only an admin who hasn't set up 2FA yet may call it.
 export async function startTwoFactorSetup(raw: unknown): Promise<ActionResult<TwoFactorSetup>> {
-  const access = adminAccess(await getSession());
-  if (access === 'signed-out') return toActionError(unauthenticated());
+  const current = await getSession();
+  const access = adminAccess(current);
+  if (!current || access === 'signed-out') return toActionError(unauthenticated());
   if (access === 'forbidden') return toActionError(forbidden());
   if (access === 'ok') return fail('CONFLICT', '2FA is already on for this account.');
 
@@ -31,6 +33,7 @@ export async function startTwoFactorSetup(raw: unknown): Promise<ActionResult<Tw
   if (!auth) return fail('UNAVAILABLE', "Sign-in isn't available here yet.");
 
   try {
+    await enforceLimit(ADMIN_LIMITS.twoFactorSetup, current.user.id);
     const result = await auth.api.enableTwoFactor({
       body: { password: parsed.data.password },
       headers: await headers(),

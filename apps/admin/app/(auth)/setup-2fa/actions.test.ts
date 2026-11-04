@@ -13,6 +13,14 @@ vi.mock('../../../lib/auth', () => ({
   getAuth: () => (auth.on ? { api: { enableTwoFactor } } : null),
 }));
 
+const enforceLimit = vi.hoisted(() => vi.fn());
+vi.mock('../../../lib/limits', () => ({
+  ADMIN_LIMITS: { twoFactorSetup: { name: 'admin-2fa-setup' } },
+  enforceLimit,
+}));
+
+import { CoreError } from '@mustafa/core/errors';
+
 import { startTwoFactorSetup } from './actions';
 
 const session = (user: Record<string, unknown> = {}, app = 'admin') => ({
@@ -24,6 +32,7 @@ const URI = 'otpauth://totp/Mustafa%20Apparels%20Admin:owner?secret=JBSWY3DPEHPK
 
 beforeEach(() => {
   auth.on = true;
+  enforceLimit.mockReset().mockResolvedValue(undefined);
   getSession.mockReset();
   enableTwoFactor.mockReset();
 });
@@ -81,6 +90,17 @@ describe('startTwoFactorSetup', () => {
       ok: false,
       error: { code: 'INTERNAL', message: 'Something went wrong. Please try again.' },
     });
+  });
+
+  it('counts each attempt against the admin and stops before the password check when over', async () => {
+    getSession.mockResolvedValue(session());
+    enforceLimit.mockRejectedValue(new CoreError('RATE_LIMITED', 'Too many attempts.'));
+    expect(await startTwoFactorSetup({ password: 'x' })).toMatchObject({
+      ok: false,
+      error: { code: 'RATE_LIMITED' },
+    });
+    expect(enforceLimit).toHaveBeenCalledWith({ name: 'admin-2fa-setup' }, 'a1');
+    expect(enableTwoFactor).not.toHaveBeenCalled();
   });
 
   it('answers UNAVAILABLE when sign-in is not configured', async () => {
