@@ -7,17 +7,17 @@ import { describe, test } from 'vitest';
 import { brandIcons, brandManifest, brandViewport } from '../brand.ts';
 
 const fromRoot = (file) => fileURLToPath(new URL(`../../../${file}`, import.meta.url));
-const cream = readFileSync(fromRoot('packages/config/tailwind/theme.css'), 'utf8').match(
-  /--color-bg:\s*(#[0-9a-f]{6})/i,
-)[1];
+const themeCss = readFileSync(fromRoot('packages/config/tailwind/theme.css'), 'utf8');
+const token = (name) =>
+  themeCss.match(new RegExp(`--color-${name}:\\s*(#[0-9a-f]{6})`, 'i'))[1].toLowerCase();
 
 const iconUrls = [
   ...brandIcons.icon.map((icon) => icon.url),
   ...brandIcons.apple.map((icon) => icon.url),
 ];
 
-test('the theme colour is the cream background token', () => {
-  assert.equal(brandViewport.themeColor.toLowerCase(), cream.toLowerCase());
+test('the browser bar is powder blue, like the header band', () => {
+  assert.equal(brandViewport.themeColor.toLowerCase(), token('primary'));
 });
 
 test('the favicon links put the SVG next to an .ico that Chrome will not prefer', () => {
@@ -32,8 +32,8 @@ describe.each(['web', 'admin'])('%s', (app) => {
   const manifest = brandManifest(app);
 
   test('manifest uses the brand colours and opens at the home page', () => {
-    assert.equal(manifest.theme_color.toLowerCase(), cream.toLowerCase());
-    assert.equal(manifest.background_color.toLowerCase(), cream.toLowerCase());
+    assert.equal(manifest.theme_color.toLowerCase(), token('primary'));
+    assert.equal(manifest.background_color.toLowerCase(), token('bg'));
     assert.equal(manifest.start_url, '/');
     assert.equal(manifest.display, 'standalone');
   });

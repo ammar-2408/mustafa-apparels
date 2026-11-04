@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { compile } from '@tailwindcss/node';
 import { describe, test } from 'vitest';
 
+import { ALLOWED_PAIRS, FORBIDDEN_TEXT, MINIMUM, SURFACE_ONLY } from '../colour-pairs.ts';
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const themeCss = readFileSync(resolve(root, 'packages/config/tailwind/theme.css'), 'utf8');
 
@@ -34,37 +36,49 @@ describe('colour tokens', () => {
   test('the contrast helper matches known WCAG values', () => {
     assert.equal(contrast('#000000', '#ffffff'), 21);
     assert.equal(contrast('#ffffff', '#ffffff'), 1);
-    assert.equal(contrast('#111111', '#faf7ec').toFixed(2), '17.61');
+    assert.equal(contrast('#111111', '#ffffff').toFixed(2), '18.88');
+    assert.equal(contrast('#f45b0b', '#ffffff').toFixed(2), '3.31');
   });
 
-  test('keeps the three official logo colours exact', () => {
-    assert.equal(tokens.bg, '#faf7ec');
+  test("keeps the owner's palette exact", () => {
+    assert.equal(tokens.bg, '#ffffff');
     assert.equal(tokens.surface, '#ffffff');
     assert.equal(tokens.fg, '#111111');
+    assert.equal(tokens.primary, '#a8c9c8');
+    assert.equal(tokens.accent, '#f45b0b');
+    assert.equal(tokens['accent-text'], '#c34909');
+    assert.equal(tokens.action, '#111111');
+    assert.equal(tokens['action-fg'], '#ffffff');
   });
 
-  // [foreground, background, minimum]: 4.5 for text, 3 for UI borders.
-  const pairs = [
-    ['fg', 'bg', 4.5],
-    ['fg', 'surface', 4.5],
-    ['muted', 'bg', 4.5],
-    ['muted', 'surface', 4.5],
-    ['accent', 'bg', 4.5],
-    ['accent-fg', 'accent', 4.5],
-    ['inverse-muted', 'inverse-bg', 4.5],
-    ['bg', 'inverse-bg', 4.5],
-    ['error', 'bg', 4.5],
-    ['error', 'surface', 4.5],
-    ['success', 'bg', 4.5],
-    ['success', 'surface', 4.5],
-    ['border-strong', 'bg', 3],
-    ['border-strong', 'surface', 3],
-  ];
-
-  test.each(pairs)('%s on %s reaches %s:1', (fg, bg, min) => {
+  // The allowed list lives in colour-pairs.ts; a pair that fails its minimum fails the build.
+  test.each(ALLOWED_PAIRS)('%s on %s (%s) meets WCAG AA', (fg, bg, role) => {
     assert.ok(tokens[fg] && tokens[bg], `missing token ${fg} or ${bg}`);
     const value = ratio(fg, bg);
-    assert.ok(value >= min, `${fg} on ${bg} is ${value.toFixed(2)}:1`);
+    assert.ok(
+      value >= MINIMUM[role],
+      `${fg} on ${bg} is ${value.toFixed(2)}:1, needs ${MINIMUM[role]}`,
+    );
+  });
+
+  test('every colour token has a role, so a new one needs a decision', () => {
+    const roles = new Set([...ALLOWED_PAIRS.flatMap(([fg, bg]) => [fg, bg]), ...SURFACE_ONLY]);
+    for (const name of Object.keys(tokens)) {
+      assert.ok(roles.has(name), `--color-${name} has no entry in colour-pairs.ts`);
+    }
+  });
+
+  test('surface-only colours are never allowed as text', () => {
+    for (const name of SURFACE_ONLY) {
+      const asText = ALLOWED_PAIRS.filter(([fg, , role]) => fg === name && role !== 'ui');
+      assert.deepEqual(asText, [], `${name} is surface-only`);
+    }
+  });
+
+  test.each(FORBIDDEN_TEXT)('%s text on %s is never allowed, and really fails', (fg, bg) => {
+    assert.ok(ratio(fg, bg) < MINIMUM.text, `${fg} on ${bg} passes now; drop it from the list`);
+    const allowed = ALLOWED_PAIRS.some(([f, b, role]) => f === fg && b === bg && role !== 'ui');
+    assert.equal(allowed, false, `${fg} on ${bg} must not be allowed as text`);
   });
 
   test('error and success are told apart from the muted text colour', () => {
@@ -80,11 +94,15 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
     compile(readFileSync(resolve(base, 'globals.css'), 'utf8'), { base, onDependency: () => {} });
   const build = async (candidates) => (await compileApp()).build(candidates);
 
-  test('gives every focused control the same ink focus ring', async () => {
+  test('gives every focused control an orange ring, and an ink one on powder blue', async () => {
     const out = await build([]);
     assert.match(
       out,
-      /:focus-visible\s*\{\s*outline: 2px solid var\(--color-fg\);\s*outline-offset: 2px;/,
+      /:focus-visible\s*\{\s*outline: 2px solid var\(--color-accent\);\s*outline-offset: 2px;/,
+    );
+    assert.match(
+      out,
+      /\.bg-primary:focus-visible,\s*\.bg-primary :focus-visible\s*\{\s*outline-color: var\(--color-fg\);/,
     );
   });
 
@@ -108,12 +126,20 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
   test('generates brand utilities and drops the default palette', async () => {
     const out = await build([
       'bg-bg',
+      'bg-primary',
+      'bg-action',
+      'text-accent-text',
+      'decoration-accent',
       'text-fg',
       'border-border-strong',
       'bg-red-500',
       'text-white',
     ]);
     assert.match(out, /\.bg-bg\s*\{\s*background-color: var\(--color-bg\)/);
+    assert.match(out, /\.bg-primary\s*\{\s*background-color: var\(--color-primary\)/);
+    assert.match(out, /\.bg-action\s*\{/);
+    assert.match(out, /\.text-accent-text\s*\{\s*color: var\(--color-accent-text\)/);
+    assert.match(out, /\.decoration-accent\s*\{/);
     assert.match(out, /\.text-fg\s*\{\s*color: var\(--color-fg\)/);
     assert.match(out, /\.border-border-strong\s*\{/);
     assert.doesNotMatch(out, /\.bg-red-500/);
@@ -158,7 +184,7 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
     assert.doesNotMatch(out, /width >= 40rem/);
   });
 
-  test('paints the page cream with ink text', async () => {
+  test('paints the page white with ink text', async () => {
     const out = await build([]);
     assert.match(out, /body\s*\{[^}]*background-color: var\(--color-bg\)/);
     assert.match(out, /body\s*\{[^}]*color: var\(--color-fg\)/);

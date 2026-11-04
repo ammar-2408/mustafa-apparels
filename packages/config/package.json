@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./brand": "./brand.ts",
+    "./colour-pairs": "./colour-pairs.ts",
     "./env": "./env.ts",
     "./headers": "./headers.ts",
     "./eslint/base": "./eslint/base.mjs",

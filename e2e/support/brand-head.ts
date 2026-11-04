@@ -5,7 +5,7 @@ import { expect, type Page } from '@playwright/test';
 export async function expectBrandHead(page: Page, manifestName: string, path = '/') {
   await page.goto(path);
   const head = page.locator('head');
-  await expect(head.locator('meta[name="theme-color"]')).toHaveAttribute('content', /^#faf7ec$/i);
+  await expect(head.locator('meta[name="theme-color"]')).toHaveAttribute('content', /^#a8c9c8$/i);
   await expect(head.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveCount(1);
   await expect(head.locator('link[rel="apple-touch-icon"]')).toHaveCount(1);
 

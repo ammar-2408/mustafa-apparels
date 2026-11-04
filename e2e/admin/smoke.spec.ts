@@ -12,9 +12,9 @@ test('admin login page loads with a title and a main heading', async ({ page }) 
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
-test('admin login page uses the brand cream and ink', async ({ page }) => {
+test('admin login page uses the white page and ink text', async ({ page }) => {
   await page.goto('/login');
-  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(250, 247, 236)');
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(page.locator('body')).toHaveCSS('color', 'rgb(17, 17, 17)');
 });
 

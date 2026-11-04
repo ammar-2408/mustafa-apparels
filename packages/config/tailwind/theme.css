@@ -10,16 +10,20 @@
 
 @theme static {
   --color-*: initial;
-  --color-bg: #faf7ec;
+  /* Allowed pairings and their uses: colour-pairs.ts. */
+  --color-bg: #ffffff;
   --color-surface: #ffffff;
   --color-fg: #111111;
-  --color-muted: #5c584e;
-  --color-accent: #111111;
-  --color-accent-fg: #faf7ec;
-  --color-border-strong: #8a8578;
-  --color-border: #d9d3c3;
-  --color-inverse-bg: #111111;
-  --color-inverse-muted: #bdb7a6;
+  --color-muted: #4b5757;
+  --color-primary: #a8c9c8;
+  --color-primary-fg: #111111;
+  --color-action: #111111;
+  --color-action-fg: #ffffff;
+  --color-accent: #f45b0b;
+  --color-accent-fg: #111111;
+  --color-accent-text: #c34909;
+  --color-border-strong: #5f6f6e;
+  --color-border: #d4e3e2;
   --color-error: #a3271b;
   --color-success: #2e6b3f;
 
@@ -112,10 +116,16 @@
     text-wrap: balance;
   }
 
-  /* One visible ring for every control. On ink sections add focus-visible:outline-bg. */
+  /* One visible ring for every control: orange on white and on ink. Orange is only 1.87:1 on
+     powder blue, so inside a powder blue surface the ring turns ink (10.66:1). */
   :focus-visible {
-    outline: 2px solid var(--color-fg);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+
+  .bg-primary:focus-visible,
+  .bg-primary :focus-visible {
+    outline-color: var(--color-fg);
   }
 
   /* The page behind an open modal dialog doesn't scroll. */
