@@ -106,6 +106,16 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
     );
   });
 
+  test('link is ink with an underline that turns orange on hover', async () => {
+    const out = await build(['link']);
+    const start = out.indexOf('.link {');
+    assert.ok(start >= 0, 'no .link rule');
+    const rule = out.slice(start, out.indexOf('@media (prefers-reduced-motion', start));
+    assert.match(rule, /color: var\(--color-fg\)/);
+    assert.match(rule, /text-decoration-line: underline/);
+    assert.match(rule, /:hover\s*\{[^}]*text-decoration-color: var\(--color-accent\)/);
+  });
+
   test('scans packages/ui for class names', async () => {
     const { sources } = await compileApp();
     const dirs = sources.map((source) => resolve(source.base, source.pattern));

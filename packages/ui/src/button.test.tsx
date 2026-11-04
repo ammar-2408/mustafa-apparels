@@ -63,6 +63,13 @@ describe('Button', () => {
     expect(buttonClass()).toBe(buttonClass('primary'));
   });
 
+  it('is ink with white text, and inverts on hover; orange stays out of buttons', () => {
+    expect(buttonClass('primary')).toContain('bg-action text-action-fg');
+    expect(buttonClass('primary')).toContain('hover:bg-transparent hover:text-fg');
+    expect(buttonClass('secondary')).toContain('hover:bg-action hover:text-action-fg');
+    expect(buttonClass('primary') + buttonClass('secondary')).not.toMatch(/accent/);
+  });
+
   it('keeps extra classes after its own', () => {
     expect(buttonClass('primary', 'w-full').endsWith(' w-full')).toBe(true);
   });
