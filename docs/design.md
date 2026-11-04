@@ -63,6 +63,8 @@ Headings pair a size with `font-light`, e.g. `text-h1 font-light`; `h1`–`h3` g
 **Shared primitives (`packages/ui`, both apps):**
 - `Button` (`@mustafa/ui/button`): `primary` (ink with white text) or `secondary` (ink outline). Hover swaps ink and white. Orange never fills a button. The label is in spaced capitals (`caps-tight`, `caps` from `sm`), the button is 48px tall, and `type="button"` unless set. `buttonClass(variant)` gives links the same look, for WhatsApp, Call and Email.
 - `Input` (`@mustafa/ui/input`): a visible `caps-tight` label, an optional hint, and an error tied to the field with `aria-describedby` and `aria-invalid`. The error sits in an `aria-live` region that is on the page from the start, so it is announced. The field is 48px tall with 16px text, so iOS doesn't zoom.
+- `Textarea` (`@mustafa/ui/textarea`) and `Select` (`@mustafa/ui/select`, native, `options` + optional empty `placeholder` choice): the same label, hint and error wiring as `Input` (shared `FieldShell` / `useField` in `field.tsx`). `Textarea showCount` shows "12 / 200" against `maxLength`.
+- `Checkbox` (`@mustafa/ui/checkbox`): box and label in one 44px row, optional hint.
 - `Dialog` (`@mustafa/ui/dialog`): a native modal `<dialog>`. The browser traps focus, closes it on Esc and returns focus afterwards; the backdrop click and the 44px close button call `onClose`. It is named by its title, keeps the page gutter on phones and is 512px at most. While it is open, the page behind doesn't scroll. Pass `className` to make a side panel or bottom sheet.
 - `Logo` (`@mustafa/ui/logo`): see §1.3 below.
 - `FormError` (`@mustafa/ui/form-error`): the whole-form message, a `role="alert"` paragraph that is on the page from the start, hidden while empty.

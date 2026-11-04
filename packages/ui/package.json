@@ -5,11 +5,14 @@
   "type": "module",
   "exports": {
     "./button": "./src/button.tsx",
+    "./checkbox": "./src/checkbox.tsx",
     "./dialog": "./src/dialog.tsx",
     "./form-error": "./src/form-error.tsx",
     "./input": "./src/input.tsx",
     "./logo": "./src/logo.tsx",
-    "./logout-button": "./src/logout-button.tsx"
+    "./logout-button": "./src/logout-button.tsx",
+    "./select": "./src/select.tsx",
+    "./textarea": "./src/textarea.tsx"
   },
   "scripts": {
     "lint": "eslint .",
