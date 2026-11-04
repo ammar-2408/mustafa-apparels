@@ -14,7 +14,7 @@ The apps talk to the server in two ways:
 5. Revalidate caches / write audit log.
 6. Return a typed result.
 
-Guards and core throw `CoreError` (`packages/core/errors.ts`), with codes `NOT_FOUND`, `CONFLICT`, `VALIDATION`, `UNAUTHENTICATED`, `FORBIDDEN` and `RATE_LIMITED`. `toActionError()` in `packages/core/action-result.ts` turns one into an `ActionResult` with its safe message, and anything else into `INTERNAL` with a generic message, so SQL or stack details never reach the browser.
+Guards and core throw `CoreError` (`packages/core/errors.ts`), with codes `NOT_FOUND`, `CONFLICT`, `VALIDATION`, `UNAUTHENTICATED`, `FORBIDDEN` and `RATE_LIMITED`. `toActionError()` in `packages/core/action-result.ts` turns one into an `ActionResult` with its safe message, and anything else into `INTERNAL` with a generic message, so SQL or stack details never reach the browser. `UNAVAILABLE` means a service the action needs isn't configured here (auth on a mock preview with no database).
 
 **Result type for server actions**
 ```ts
@@ -23,7 +23,7 @@ type ActionResult<T> =
   | { ok: false; error: { code: ErrorCode; message: string; fieldErrors?: Record<string, string[]> } };
 
 type ErrorCode = 'VALIDATION' | 'UNAUTHENTICATED' | 'FORBIDDEN' | 'NOT_FOUND'
-               | 'CONFLICT' | 'RATE_LIMITED' | 'INTERNAL';
+               | 'CONFLICT' | 'RATE_LIMITED' | 'INTERNAL' | 'UNAVAILABLE';
 ```
 Messages are safe to show users; never include stack traces, SQL or whether an email exists.
 

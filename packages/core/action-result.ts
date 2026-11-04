@@ -1,7 +1,8 @@
 // The shape every server action returns (docs/api.md §1).
 import { CoreError, type CoreErrorCode, type FieldErrors } from './errors';
 
-export type ErrorCode = CoreErrorCode | 'INTERNAL';
+// UNAVAILABLE: a service the action needs isn't configured here (auth on a mock preview).
+export type ErrorCode = CoreErrorCode | 'INTERNAL' | 'UNAVAILABLE';
 
 export type ActionFailure = {
   ok: false;

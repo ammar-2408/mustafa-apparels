@@ -2,50 +2,25 @@
 // Only dynamic pages and route handlers call these: cached pages never read cookies.
 import 'server-only';
 
-import { createAuth } from '@mustafa/auth';
+import { type AppAuth, authFromEnv } from '@mustafa/auth/factory';
 import { requireUser as guardUser } from '@mustafa/auth/guards';
 import { getEnv } from '@mustafa/config/env';
-import { createBreachCheck } from '@mustafa/core/integrations/breached-passwords';
-import { createMailer } from '@mustafa/core/integrations/email';
-import { createLimiter } from '@mustafa/core/integrations/rate-limit';
 import { getDb } from '@mustafa/db/client';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { after } from 'next/server';
 import { cache } from 'react';
 
-let instance: ReturnType<typeof createAuth> | null | undefined;
+let instance: AppAuth | null | undefined;
 
 // Built on first use, never at build time. Null in mock mode with no database (a fresh
 // preview), where sign-in can't work yet.
 export function getAuth() {
   if (instance === undefined) {
-    const env = getEnv('web');
-    instance =
-      env.DATABASE_URL && env.BETTER_AUTH_SECRET && env.NEXT_PUBLIC_SITE_URL
-        ? createAuth({
-            app: 'web',
-            db: getDb(),
-            baseURL: env.NEXT_PUBLIC_SITE_URL,
-            secret: env.BETTER_AUTH_SECRET,
-            sendEmail: createMailer({
-              mode: env.INTEGRATIONS_MODE,
-              appEnv: env.APP_ENV,
-              apiKey: env.RESEND_API_KEY,
-              from: env.EMAIL_FROM,
-              replyTo: env.SHOP_INBOX_EMAIL,
-            }),
-            limiter: createLimiter({
-              mode: env.INTEGRATIONS_MODE,
-              appEnv: env.APP_ENV,
-              secret: env.BETTER_AUTH_SECRET,
-              url: env.UPSTASH_REDIS_REST_URL,
-              token: env.UPSTASH_REDIS_REST_TOKEN,
-            }),
-            isBreached: createBreachCheck({ mode: env.INTEGRATIONS_MODE }),
-            background: (task) => after(task),
-          })
-        : null;
+    instance = authFromEnv('web', getEnv('web'), {
+      db: getDb,
+      background: (task) => after(task),
+    });
   }
   return instance;
 }

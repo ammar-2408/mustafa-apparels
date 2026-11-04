@@ -117,7 +117,7 @@ flowchart LR
 ├── packages/
 │   ├── db/          schema/*.ts, client.ts, migrations/, seed.ts
 │   ├── core/        products/, categories/, search/, inquiries/, wishlist/, settings/, audit/, integrations/
-│   ├── auth/        createAuth(options), requireUser(), requireAdmin()
+│   ├── auth/        createAuth(options), authFromEnv(), requireUser(), requireAdmin()
 │   ├── validators/  product.ts, media.ts, banned-terms.ts, inquiry.ts, auth.ts, search.ts ...
 │   ├── ui/          primitives shared by both apps
 │   └── config/      @mustafa/config: eslint, tsconfig, tailwind preset, prettier

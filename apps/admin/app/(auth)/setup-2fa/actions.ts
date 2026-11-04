@@ -27,8 +27,11 @@ export async function startTwoFactorSetup(raw: unknown): Promise<ActionResult<Tw
     return fail('VALIDATION', 'Check the highlighted fields', fieldErrorsOf(parsed.error));
   }
 
+  const auth = getAuth();
+  if (!auth) return fail('UNAVAILABLE', "Sign-in isn't available here yet.");
+
   try {
-    const result = await getAuth()!.api.enableTwoFactor({
+    const result = await auth.api.enableTwoFactor({
       body: { password: parsed.data.password },
       headers: await headers(),
     });

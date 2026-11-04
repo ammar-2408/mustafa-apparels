@@ -55,7 +55,7 @@ On top of that, **5 failed logins per 15 minutes per IP and email**: only wrong 
   - **The loop test:** `apps/admin/test/admin-actions-authz.test.ts` finds every `app/**/actions.ts` export and checks it answers `UNAUTHENTICATED` when signed out, and `FORBIDDEN` to a customer or to a storefront session. It also checks that the action never reached Better Auth or the database.
 
 ### Authorization helpers (`packages/auth/guards.ts`)
-The guards take the session the app already read, so they stay pure. Each app's `lib/auth.ts` reads it once per request (`getSession()`, wrapped in React `cache`) and offers `requireUser()` for actions and route handlers (throws `UNAUTHENTICATED`) and `requireUserPage()` for pages (redirects to `/login`). A banned user counts as signed out. The auth instance is built on first use, never at build time, and is `null` in mock mode with no database.
+The guards take the session the app already read, so they stay pure. Each app's `lib/auth.ts` reads it once per request (`getSession()`, wrapped in React `cache`) and offers `requireUser()` for actions and route handlers (throws `UNAUTHENTICATED`) and `requireUserPage()` for pages (redirects to `/login`). A banned user counts as signed out. The auth instance is built on first use by `authFromEnv(app, env, deps)` (`packages/auth/factory.ts`, shared by both apps), never at build time, and is `null` in mock mode with no database; callers then answer `UNAVAILABLE`.
 ```ts
 export async function requireUser()  { /* session or throw UNAUTHENTICATED */ }
 export async function requireAdmin() { /* session + role admin + 2FA verified, or throw FORBIDDEN */ }

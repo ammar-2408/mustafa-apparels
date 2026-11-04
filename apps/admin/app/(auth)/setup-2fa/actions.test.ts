@@ -7,9 +7,10 @@ const enableTwoFactor = vi.hoisted(() => vi.fn());
 
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ headers: async () => new Headers() }));
+const auth = vi.hoisted(() => ({ on: true }));
 vi.mock('../../../lib/auth', () => ({
   getSession,
-  getAuth: () => ({ api: { enableTwoFactor } }),
+  getAuth: () => (auth.on ? { api: { enableTwoFactor } } : null),
 }));
 
 import { startTwoFactorSetup } from './actions';
@@ -22,6 +23,7 @@ const session = (user: Record<string, unknown> = {}, app = 'admin') => ({
 const URI = 'otpauth://totp/Mustafa%20Apparels%20Admin:owner?secret=JBSWY3DPEHPK3PXP&issuer=x';
 
 beforeEach(() => {
+  auth.on = true;
   getSession.mockReset();
   enableTwoFactor.mockReset();
 });
@@ -78,6 +80,15 @@ describe('startTwoFactorSetup', () => {
     expect(await startTwoFactorSetup({ password: 'x' })).toEqual({
       ok: false,
       error: { code: 'INTERNAL', message: 'Something went wrong. Please try again.' },
+    });
+  });
+
+  it('answers UNAVAILABLE when sign-in is not configured', async () => {
+    getSession.mockResolvedValue(session());
+    auth.on = false;
+    expect(await startTwoFactorSetup({ password: 'x' })).toMatchObject({
+      ok: false,
+      error: { code: 'UNAVAILABLE' },
     });
   });
 

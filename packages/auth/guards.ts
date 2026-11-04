@@ -41,7 +41,7 @@ export function adminAccess(
 // First line of every admin action and route handler: an admin with 2FA, or it throws.
 export function requireAdmin<S extends AdminSessionData>(current: S | null | undefined): S {
   const access = adminAccess(current);
-  if (access === 'signed-out') throw unauthenticated();
+  if (!current || access === 'signed-out') throw unauthenticated();
   if (access !== 'ok') throw forbidden();
-  return current!;
+  return current;
 }
