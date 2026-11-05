@@ -163,7 +163,7 @@ Most fields keep their name in the database (`docs/database.md` §2). These chan
 | `photos[]`, `videos[]` | `product_media` rows; the first photo is the main image |
 | Not in the file | `availability` uses its default, `in_stock`. `care_instructions` stays empty and is hidden on the page |
 
-**Then the owner:** clears each `check:` → sets the price in admin → publishes. The publish rules (`docs/database.md`) refuse a suit with no price, colour, main image or alt text.
+**Then the owner:** clears each `check:` → sets the price in admin → publishes. The publish rules (`docs/database.md`) refuse a suit with no price, colour, main image or alt text. Open `check:` items travel with the import as `attributes.checks` (a list of text); the admin shows them on the suit's page with a **Cleared** button each, and publishing is refused while any remain.
 
 ## 7. Add a new collection
 

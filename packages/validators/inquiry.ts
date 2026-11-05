@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { blankToUndefined, id } from './common';
 import { pkMobile } from './phone';
+import { page } from './search';
 
 const optional = <T extends z.ZodType>(schema: T) =>
   z.preprocess(blankToUndefined, schema.optional());
@@ -24,3 +25,15 @@ export const inquiryInput = z
   });
 
 export type InquiryInput = z.infer<typeof inquiryInput>;
+
+export const INQUIRY_STATUSES = ['new', 'contacted', 'closed'] as const;
+
+// The admin moves an inquiry along: new → contacted → closed (or back).
+export const inquiryStatusInput = z.object({ id, status: z.enum(INQUIRY_STATUSES) }).strict();
+
+// The inbox's tabs and pages, read from the URL.
+export const inquiryListInput = z
+  .object({ status: z.enum(INQUIRY_STATUSES).default('new'), page: page.default(1) })
+  .strict();
+
+export type InquiryListInput = z.infer<typeof inquiryListInput>;

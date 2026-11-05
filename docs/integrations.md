@@ -69,7 +69,7 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 ## WhatsApp, phone, email links
 
 ```ts
-// lib/contact-links.ts
+// packages/core/contact-links.ts (admin reply buttons now; storefront contact buttons at step 6.7)
 whatsappLink(number, text) // https://wa.me/<digits only, with country code 92...>?text=<encodeURIComponent(text)>
 telLink(number)            // tel:+92...
 mailtoLink(email, subject, body)

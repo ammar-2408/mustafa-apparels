@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { inquiryInput } from './inquiry';
+import { inquiryInput, inquiryListInput, inquiryStatusInput } from './inquiry';
 
 const guest = { name: 'Ayesha', phone: '0300 1234567', message: 'Is DHN-01 in stock?' };
 
@@ -49,5 +49,24 @@ describe('inquiryInput', () => {
 
   it('rejects fields the form never sends, such as a user id', () => {
     expect(inquiryInput.safeParse({ ...guest, userId: 'u1' }).success).toBe(false);
+  });
+});
+
+describe('inquiry admin inputs', () => {
+  it('moves an inquiry to a known status only', () => {
+    expect(inquiryStatusInput.safeParse({ id: 'i1', status: 'contacted' }).success).toBe(true);
+    expect(inquiryStatusInput.safeParse({ id: 'i1', status: 'spam' }).success).toBe(false);
+    expect(inquiryStatusInput.safeParse({ id: 'i1', status: 'closed', message: 'x' }).success).toBe(
+      false,
+    );
+  });
+
+  it('opens the inbox on new inquiries, page 1', () => {
+    expect(inquiryListInput.parse({})).toEqual({ status: 'new', page: 1 });
+    expect(inquiryListInput.parse({ status: 'closed', page: '3' })).toEqual({
+      status: 'closed',
+      page: 3,
+    });
+    expect(inquiryListInput.safeParse({ status: 'all' }).success).toBe(false);
   });
 });
