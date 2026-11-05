@@ -92,6 +92,7 @@ A black unstitched 3-piece Dhanak suit for winter. The embroidered shirt has a b
 - **`design`:** the collection's allowed values, plus the print type you can see. A Lajwanti suit is `[All-Over Print, Floral Print]`.
 - **`piece_details`:** from the collection file. `finish` is free text, so "Printed" is fine here. Leave out any key the file doesn't give. `length_m` is fabric length in metres: only the owner can supply it, so never estimate it.
 - **`outfit_style`:** leave empty unless the collection file gives one. The customer's tailor decides the cut.
+- **`check` vs `notes`:** a `check:` blocks publishing until the owner clears it in admin. Something that doesn't stop the suit going live, such as "video left out until re-exported", goes in `notes:` instead.
 - **`photos`:** `file`, `alt`, optional `crop`. **`videos`:** `file` and `alt` only, or `[]`. **`file`:** relative to `Business data/Stock/`. **`crop`:** pixels, applied in memory before upload.
 - **`alt`, photos and videos:** written by looking at that file, 3–200 characters. Describe the suit: colour, pieces, print, work. Never the person's identity, and never a brand.
 - **Body:** 1–2 short sentences in your own words that name the fabric and season, using only what's visible or in the collection file. No claims about softness, warmth, quality or stock unless the owner confirmed them. Tone: `brand-mustafa` skill.

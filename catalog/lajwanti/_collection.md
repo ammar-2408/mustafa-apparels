@@ -32,6 +32,15 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 | LAJ-04 | Laj4.jpeg | Laj4vid.mp4 | Brick red |
 | LAJ-05 | Laj5.jpeg | laj5vid.mp4 | Dark brown |
 
+## Owner decisions, 2026-11-05
+
+- **Corner flower (LAJ-02 to LAJ-05):** accepted as it is.
+- **LAJ-01 photo:** accepted as it is, though small.
+- **LAJ-02:** the video shows the same suit as the photo.
+- **LAJ-04 video:** the burned-in captions are accepted.
+- **LAJ-01 and LAJ-03:** the left-out videos are notes, not checks, so both can be published with photos only.
+- **LAJ-02 to LAJ-05:** sharpness is checked after import.
+
 ## Left out
 
 - `Lajwanti/Laj1vid.mp4`: ends on a card with another brand's logo and name. It can return as LAJ-01's video if re-exported without that card.

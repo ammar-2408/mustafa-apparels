@@ -40,6 +40,11 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 | DHN-11 | dhnk11.jpeg | dhnk11-VID.mp4 | Aubergine |
 | DHN-12 | dhnk12.jpeg | dhnk12-VID.mp4 | Crimson |
 
+## Owner decisions, 2026-11-05
+
+- **DHN-04 and DHN-08 videos:** accepted as they are (beige bars; landscape with blurred sides).
+- **DHN-01:** the left-out video is a note, not a check, so the suit can be published with its photo only. The crop still gets checked after import.
+
 ## Left out
 
 - `Dhanak/dhnk1-VID.mp4`: ends on a card with another brand's logo and an old design code. It can return as DHN-01's video if re-exported without that card.

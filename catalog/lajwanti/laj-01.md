@@ -24,8 +24,8 @@ photos:
     alt: "Model wearing a blue 2-piece Dhanak suit with pale grey flower sprigs, a buttoned neckline, patterned cuffs and matching printed trousers"
 videos: []
 also_in_this_design: []
-check:
-  - "Very small photo (384 x 691 pixels), and it looks like a frame from the video. It will look blurry on a product page. Replace it with a larger one"
+notes:
   - "Video left out: Laj1vid.mp4 ends on a card showing another brand's logo and name. It can return if re-exported without that card"
+check: []
 ---
 A blue unstitched 2-piece Dhanak suit for winter. Pale flower sprigs run all over the shirt and matching trousers, with a buttoned neckline and patterned cuffs.

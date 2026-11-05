@@ -27,8 +27,6 @@ videos:
     alt: "Short video of the brick red printed dhanak 2-piece suit, muted"
 also_in_this_design: []
 check:
-  - "A small printed flower from the poster remains in the bottom-left corner. A crop would cut the sleeve or feet, so retouch it or accept"
-  - "Video has captions burned in (\"INTRO / FULL LOOK\", \"SLEEVE DETAIL\", \"SITTING POSE\", \"FINAL LOOK\"). Re-export without them, or accept"
   - "Lower resolution than most photos. Check sharpness once imported"
 ---
 A brick red unstitched 2-piece Dhanak suit for winter. A square tile pattern with small red flowers runs all over the shirt and matching trousers.

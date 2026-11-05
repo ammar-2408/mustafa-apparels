@@ -85,7 +85,8 @@ Short description in plain English.
 | `photos[].alt`, `videos[].alt` | Photo | Written by looking at it. Describes the suit, never the person's identity, and names no brand |
 | `photos[].crop` | Optional | Pixels. Applied locally before upload |
 | `also_in_this_design` | Photo | Other design IDs: same design in another colour. Each is still a separate suit with its own price |
-| `check` | You | Anything unsure, or anything the owner must decide |
+| `check` | You | Anything unsure, or anything the owner must decide. Each one blocks publishing until cleared in admin |
+| `notes` | You | Optional. Facts the owner should know that don't block publishing, such as a video left out until it's re-exported. Shown in the import report, not on the site |
 | Body | Photo + collection file | 1–2 short sentences in simple, warm English, in your own words, naming the fabric and season (`docs/design.md` §1.5). Only what's visible or in the collection file. No claims about softness, warmth, quality or stock unless the owner confirmed them |
 
 ## 4. Filter taxonomy

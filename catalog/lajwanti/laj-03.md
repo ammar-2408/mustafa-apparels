@@ -24,9 +24,9 @@ photos:
     alt: "Model wearing a wine 2-piece Dhanak suit with salmon pink flowers and leaf sprigs, wide sleeves and matching printed trousers"
 videos: []
 also_in_this_design: []
-check:
-  - "A small printed flower from the poster remains in the bottom-left corner. A crop would cut the sleeve or feet, so retouch it or accept"
+notes:
   - "Video left out: laj3vid.mp4 ends on a card showing another brand's logo and name. It can return if re-exported without that card"
+check:
   - "Lower resolution than most photos. Check sharpness once imported"
 ---
 A wine unstitched 2-piece Dhanak suit for winter. Salmon pink flowers and leaf sprigs run all over the shirt and matching trousers.

@@ -26,8 +26,9 @@ photos:
     crop: { x: 84, y: 58, width: 1256, height: 2300 }
 videos: []
 also_in_this_design: []
+notes:
+  - "Video left out: dhnk1-VID.mp4 ends on a card showing another brand's logo and an old design code. It can return if re-exported without that card"
 check:
   - "Black poster border and a sliver of an old inset photo remain. Crop box set; confirm it after import"
-  - "Video left out: dhnk1-VID.mp4 ends on a card showing another brand's logo and an old design code. It can return if re-exported without that card"
 ---
 A black unstitched 3-piece Dhanak suit for winter. The embroidered shirt has a beige diamond panel down the front and small flower sprigs below it, with a floral printed dupatta and plain dyed trousers.

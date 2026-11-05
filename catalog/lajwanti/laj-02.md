@@ -27,8 +27,6 @@ videos:
     alt: "Short video of the purple printed dhanak 2-piece suit, muted"
 also_in_this_design: []
 check:
-  - "A small printed flower from the poster remains in the bottom-left corner. A crop would cut the sleeve or feet, so retouch it or accept"
-  - "The print in the video looks different from the photo. Confirm they show the same suit"
   - "Lower resolution than most photos. Check sharpness once imported"
 ---
 A purple unstitched 2-piece Dhanak suit for winter. Pale round medallions and small triangles run all over the shirt and matching trousers.

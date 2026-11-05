@@ -27,7 +27,6 @@ videos:
   - file: Khaddar/KDR-5-VID.mp4
     alt: "Short video of the dusty mauve brown embroidered khaddar 3-piece suit, muted"
 also_in_this_design: []
-check:
-  - "Video opens with a black film-strip border for the first second or so. Trim or accept"
+check: []
 ---
 A dusty mauve brown unstitched 3-piece Khaddar suit for winter. Cream embroidery shapes the neckline above a silver-grey floral print, with tiered sleeves, a matching printed dupatta and taupe dyed trousers.

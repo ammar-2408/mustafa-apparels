@@ -41,6 +41,12 @@ Shared details for every suit in this volume. How this works: `docs/catalog.md`.
 | KDR-12 | KDR-12.jpeg | — | Plum |
 | KDR-13 | KDR-13.jpeg | — | Beige |
 
+## Owner decisions, 2026-11-05
+
+- **KDR-01:** the video shows the same suit as the photo.
+- **KDR-05 video:** the black film-strip opening is accepted.
+- **KDR-07 and KDR-08:** sharpness is checked after import.
+
 ## Left out
 
 Nothing.
