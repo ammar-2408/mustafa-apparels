@@ -144,7 +144,7 @@ These are the product-media rules. The `product-media` skill is built from this 
 
 Script: `scripts/import-stock.ts`. Built in Phase 5 of `docs/project-implementation.md`.
 
-1. Reads every `catalog/<collection>/*.md` and validates it with Zod, including the taxonomy and banned names. The taxonomy check covers suit files only: `_collection.md` keeps the source file's wording, such as "Printed", and each suit file names the allowed value.
+1. Reads every `catalog/<collection>/*.md` and validates it with Zod (`packages/validators/catalog.ts`; reader and cross-file rules in `scripts/import-stock/catalog.ts`), including the taxonomy and banned names. Across files: unique design IDs, names and slugs, the collection's prefix, and `also_in_this_design` listed both ways. Alt text is 3–200 characters, the same limit as in admin. `scripts/import-stock/catalog.test.ts` runs every rule over the real `catalog/`. The taxonomy check covers suit files only: `_collection.md` keeps the source file's wording, such as "Printed", and each suit file names the allowed value.
 2. Checks that every listed file exists in `Business data/Stock/`, and reports files in the folder that no suit lists and `_collection.md` doesn't explain.
 3. Crops photos in memory if `crop` is set, and uploads to `products/imported/<design-id>/`. Files on disk never change.
 4. Creates or updates a **draft** with `import_key` = `design_id`. Re-running creates no duplicates and never overwrites a price or a change made in admin.

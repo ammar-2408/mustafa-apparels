@@ -22,7 +22,7 @@ accent_colors: [Silver grey, Cream, Taupe]
 motifs: [cream neckline embroidery, silver-grey floral print, paisley stem, tiered sleeves]
 photos:
   - file: Khaddar/KDR-5.jpeg
-    alt: "Model wearing a dusty mauve brown 3-piece Khaddar suit with cream embroidery at the neckline, a paisley stem, a silver-grey floral print, tiered sleeves, a matching printed dupatta and plain taupe trousers"
+    alt: "Model wearing a dusty mauve brown 3-piece Khaddar suit with cream neckline embroidery, a paisley stem, a silver-grey floral print, tiered sleeves, a matching dupatta and plain taupe trousers"
 videos:
   - file: Khaddar/KDR-5-VID.mp4
     alt: "Short video of the dusty mauve brown embroidered khaddar 3-piece suit, muted"

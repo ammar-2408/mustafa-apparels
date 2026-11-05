@@ -17,7 +17,7 @@ import {
 export const PRODUCT_STATUSES = ['draft', 'published', 'archived'] as const;
 export const AVAILABILITY = ['in_stock', 'low_stock', 'out_of_stock'] as const;
 
-const pieceDetail = z
+export const pieceDetail = z
   .object({
     piece: z.enum(['shirt', 'dupatta', 'trouser']),
     // Shown on the product page, so no other brand's name.
@@ -95,7 +95,7 @@ const addRuleIssues = (p: RuleFields, ctx: z.RefinementCtx) => {
   }
 };
 
-const piecesFit = (p: { pieces: (typeof PIECES)[number]; pieceDetails: unknown[] }) =>
+export const piecesFit = (p: { pieces: (typeof PIECES)[number]; pieceDetails: unknown[] }) =>
   p.pieceDetails.length <= (p.pieces === 'two_piece' ? 2 : 3);
 
 export const productInput = z
