@@ -94,8 +94,10 @@ describe('getAsset and deleteAsset against Cloudinary', () => {
     );
     const asset = await getAsset(live, 'products/p1/v', 'video', { fetchImpl: fetchImpl as never });
     const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
+    // Without media_metadata the Admin API leaves out a video's duration (found on the first
+    // live import, 2026-11-05), and every video would fail the 60-second check.
     expect(url).toBe(
-      'https://api.cloudinary.com/v1_1/mustafa/resources/video/upload/products/p1/v',
+      'https://api.cloudinary.com/v1_1/mustafa/resources/video/upload/products/p1/v?media_metadata=true',
     );
     expect((init.headers as Record<string, string>).Authorization).toBe(
       `Basic ${Buffer.from('123456:s3cret').toString('base64')}`,

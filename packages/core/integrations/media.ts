@@ -233,7 +233,8 @@ export async function getAsset(
   const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/${kind}/upload/${publicId
     .split('/')
     .map(encodeURIComponent)
-    .join('/')}`;
+    .join('/')}${kind === 'video' ? '?media_metadata=true' : ''}`;
+  // media_metadata: without it the Admin API leaves out a video's duration.
   const response = await fetchImpl(url, {
     headers: { Authorization: `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')}` },
     signal: AbortSignal.timeout(timeoutMs),
