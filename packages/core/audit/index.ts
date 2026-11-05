@@ -80,3 +80,12 @@ export async function list(db: Database, { entity, entityId, actorId, page = 1 }
     pageCount: Math.max(1, Math.ceil(total / AUDIT_PAGE_SIZE)),
   };
 }
+
+// Everyone who appears in the log, for the audit page's "who" filter.
+export async function actors(db: Database) {
+  return db
+    .selectDistinct({ id: user.id, name: user.name })
+    .from(auditLog)
+    .innerJoin(user, eq(auditLog.actorId, user.id))
+    .orderBy(user.name);
+}

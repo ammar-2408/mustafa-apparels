@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./audit": "./audit.ts",
     "./auth": "./auth.ts",
     "./banned-terms": "./banned-terms.ts",
     "./category": "./category.ts",

@@ -67,3 +67,18 @@ describe('audit.list', () => {
     expect((await audit.list(db, {})).items[0]!.actor).toBeNull();
   });
 });
+
+describe('audit.actors', () => {
+  it('lists each person who appears in the log once, by name', async () => {
+    const zara = await makeUser(db, { name: 'Zara', role: 'admin' });
+    const amna = await makeUser(db, { name: 'Amna', role: 'admin' });
+    await makeUser(db, { name: 'Nobody', role: 'admin' });
+    await write(zara.id, 'product.update', 'product', 'p1');
+    await write(zara.id, 'product.update', 'product', 'p2');
+    await write(amna.id, 'setting.update', 'setting', 'whatsapp');
+    expect(await audit.actors(db)).toEqual([
+      { id: amna.id, name: 'Amna' },
+      { id: zara.id, name: 'Zara' },
+    ]);
+  });
+});

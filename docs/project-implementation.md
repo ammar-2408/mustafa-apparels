@@ -80,7 +80,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 4.11 Inquiries inbox + status changes + reply links
 - [x] 4.12 Customers list (read-only)
 - [x] 4.13 Site settings page (contact info, service area, delivery, payment, returns, socials, default SEO)
-- [ ] 4.14 Audit log page
+- [x] 4.14 Audit log page
 
 ## Phase 5 — Stock import (`catalog/` → draft products)
 
