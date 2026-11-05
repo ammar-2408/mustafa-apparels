@@ -192,3 +192,19 @@ For example, a new "Lawn" volume:
 **New photos for an existing collection:** the same steps from 3, with the next free numbers. **Replacing a photo:** update the file name in the suit's file, remove its `check:`, re-import.
 
 Playbook prompt: "Add new stock later" in `docs/claude-code-playbook.md` §5.
+
+## 8. Import review, 2026-11-05 (step 5.6)
+
+The first import put 30 drafts on Neon `dev`. I checked each main photo as Cloudinary delivers it: all 30 on one sheet, plus the flagged ones in full at 1080 px. Every photo matches its suit file (colour, pieces, print), and none shows another brand's logo or name. The admin itself wasn't opened: signing in needs the owner's account. The storefront 3:4 check is at step 6.14.
+
+| Suit | Photo (px) | Sharpness | Framing | Verdict | Open checks |
+|---|---|---|---|---|---|
+| DHN-01 | 1256 × 2300 (cropped) | Good | Crop is clean: no border or inset sliver left | Ready | Confirm the crop |
+| DHN-02 to DHN-12 | about 1300 × 2450 | Good | Full figure, room above the head | Ready | — |
+| KDR-01 to KDR-06, KDR-09 to KDR-13 | about 1350 × 2560 | Good | Full figure | Ready | — |
+| KDR-07 | 856 × 1600 | Good at its size; the gallery shows it at up to 856 px, never enlarged | Full figure | Ready | Sharpness |
+| KDR-08 | 794 × 1600 | Good at its size | Full figure. A car stands behind; its grille shows no badge (the centre is hidden by the model), and the side has none | Ready | Sharpness |
+| LAJ-01 | 384 × 691 | Soft (accepted by the owner) | Full figure, small | Accepted | — |
+| LAJ-02 to LAJ-05 | about 600 × 1370 | A little soft, but the print reads clearly | Full figure; the small corner flower is accepted | Usable | Sharpness |
+
+Open checks the owner clears in admin: DHN-01 (crop) and sharpness on KDR-07, KDR-08, LAJ-02, LAJ-03, LAJ-04 and LAJ-05. My view: all seven can be cleared as they are. A bigger photo would still help LAJ-01 to LAJ-05 on wide screens.
