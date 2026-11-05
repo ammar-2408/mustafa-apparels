@@ -87,8 +87,8 @@ All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). B
 ### Server actions
 | Action | Input | Revalidates |
 |---|---|---|
-| `createProduct` | product fields + `media[]` (§5.2) | `products`, `category:<slug>` |
-| `updateProduct` | `{ id, ...fields }` — slug change writes `slug_redirect` | `products`, `product:<id>`, old+new category |
+| `createProduct` (`app/(panel)/suits/actions.ts`) | `productCreateInput`: every form field, never `status` or `attributes`; always saved as a draft | `products`, `product:<id>`, `category:<slug>` |
+| `updateProduct` | `productEditInput` `{ id, ...changed fields }`: no `status` or `attributes`; a slug change keeps a redirect | `products`, `product:<id>`, old and new `category:<slug>` |
 | `setProductStatus` | `{ id, status }`. Publishing requires a price, a main image, alt text on all media, and no banned brand names | same as update. On publish or unpublish, also sends the URL to IndexNow (non-blocking) |
 | `duplicateProduct` | `{ id }` (copy saved as draft; `design_code` and `import_key` cleared) | — |
 | `archiveProduct` / `restoreProduct` | `{ id }` | `products` |

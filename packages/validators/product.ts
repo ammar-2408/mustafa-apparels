@@ -152,3 +152,28 @@ export const adminProductListInput = z
   .strict();
 
 export type AdminProductListInput = z.infer<typeof adminProductListInput>;
+
+// The admin form (docs/api.md §3). Never status or attributes: a new suit is always a draft,
+// publishing has its own action with the publish checks, and check: items are cleared one by one.
+const formFields = z.object(fields).omit({ status: true, attributes: true }).shape;
+
+export const productCreateInput = z
+  .object({
+    ...formFields,
+    description: formFields.description.default(''),
+    careInstructions: formFields.careInstructions.default(''),
+    seoTitle: formFields.seoTitle.optional(),
+    seoDescription: formFields.seoDescription.optional(),
+  })
+  .strict()
+  .refine(piecesFit, { path: ['pieceDetails'], message: 'Too many pieces for this suit' })
+  .superRefine((p, ctx) => addRuleIssues({ ...p, status: 'draft' }, ctx));
+
+export type ProductCreateInput = z.infer<typeof productCreateInput>;
+
+export const productEditInput = z.object(formFields).partial().extend({ id }).strict();
+
+export type ProductEditInput = z.infer<typeof productEditInput>;
+
+// The form's field names, for the field config's drift test.
+export const PRODUCT_FORM_FIELDS = Object.keys(formFields) as (keyof typeof formFields)[];

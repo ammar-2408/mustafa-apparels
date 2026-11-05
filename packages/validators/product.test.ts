@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   adminProductListInput,
+  PRODUCT_FORM_FIELDS,
+  productCreateInput,
+  productEditInput,
   productInput,
   productListInput,
   productRuleErrors,
@@ -215,5 +218,59 @@ describe('adminProductListInput', () => {
     ['an unknown filter', { sort: 'price' }],
   ])('refuses %s', (_name, input) => {
     expect(adminProductListInput.safeParse(input).success).toBe(false);
+  });
+});
+
+describe('productCreateInput and productEditInput', () => {
+  const draft = {
+    name: 'Black Embroidered Dhanak 3-Piece Suit',
+    slug: 'black-embroidered-dhanak-3-piece-suit-dhn-01',
+    designCode: 'DHN-01',
+    price: null,
+    compareAtPrice: null,
+    categoryId: 'c1',
+    pieces: 'three_piece',
+    pieceDetails: [{ piece: 'shirt', fabric: 'Dhanak', finish: 'Embroidered' }],
+    collectionType: null,
+    dressCategories: ['Unstitched Suits'],
+    fabric: 'Dhanak',
+    design: ['Embroidered'],
+    season: 'winter',
+    outfitStyle: null,
+    mainColor: null,
+    colorFamily: null,
+    accentColors: [],
+    motifs: [],
+    relatedDesignCodes: [],
+    availability: 'in_stock',
+    featured: false,
+  };
+
+  it('accepts a draft with no price or colour', () => {
+    expect(productCreateInput.safeParse(draft).success).toBe(true);
+  });
+
+  it('refuses status and attributes from the form', () => {
+    expect(productCreateInput.safeParse({ ...draft, status: 'published' }).success).toBe(false);
+    expect(productCreateInput.safeParse({ ...draft, attributes: { checks: [] } }).success).toBe(
+      false,
+    );
+    expect(productEditInput.safeParse({ id: 'p1', status: 'published' }).success).toBe(false);
+    expect(productEditInput.safeParse({ id: 'p1', attributes: {} }).success).toBe(false);
+  });
+
+  it('still checks compare-at price against price', () => {
+    const result = productCreateInput.safeParse({ ...draft, price: 5000, compareAtPrice: 4000 });
+    expect(result.success).toBe(false);
+  });
+
+  it('edits only the fields sent', () => {
+    expect(productEditInput.parse({ id: 'p1', price: 4500 })).toEqual({ id: 'p1', price: 4500 });
+  });
+
+  it('lists the form fields without status or attributes', () => {
+    expect(PRODUCT_FORM_FIELDS).not.toContain('status');
+    expect(PRODUCT_FORM_FIELDS).not.toContain('attributes');
+    expect(PRODUCT_FORM_FIELDS).toContain('pieceDetails');
   });
 });
