@@ -118,10 +118,10 @@ export function loadCatalog(root: string): Catalog {
 // Rules that need every file: unique IDs, names and slugs, the right prefix, two-way links.
 export function crossChecks(
   collections: Pick<CatalogCollection, 'collection' | 'prefix'>[],
-  suits: Pick<
+  suits: (Pick<
     CatalogSuit,
     'path' | 'design_id' | 'name' | 'slug' | 'collection' | 'also_in_this_design'
-  >[],
+  > & { photos?: { file: string }[]; videos?: { file: string }[] })[],
 ): string[] {
   const problems: string[] = [];
   const prefixes = new Map(collections.map((c) => [c.collection, c.prefix]));
@@ -133,6 +133,14 @@ export function crossChecks(
       const first = seen.get(value);
       if (first) problems.push(`${suit.path}: ${key} "${suit[key]}" is also used by ${first}`);
       else seen.set(value, suit.path);
+    }
+  }
+
+  // One file once per suit: the import gives each file one id, so a repeat would clash.
+  for (const suit of suits) {
+    const files = [...(suit.photos ?? []), ...(suit.videos ?? [])].map((m) => m.file);
+    for (const file of new Set(files.filter((f, i) => files.indexOf(f) !== i))) {
+      problems.push(`${suit.path}: ${file} is listed twice`);
     }
   }
 

@@ -150,7 +150,7 @@ Script: `scripts/import-stock.ts`. Built in Phase 5 of `docs/project-implementat
 4. Creates or updates a **draft** with `import_key` = `design_id`. A new suit gets no price, `in_stock`, the first photo as main image, and its `check:` items. Re-running creates no duplicates.
    - **Your admin edits win.** Each suit keeps what the last import wrote in `attributes.import`. A field, an alt text or a media item changes only if it still holds that value. A photo or video you removed in admin stays removed, even if `catalog/` has a new version of it. Price, status and availability are never written.
    - A check you cleared never comes back; a new `check:` in the file is added.
-   - A re-cropped or replaced photo takes the old one's place, and stays main if it was. The old file stays in Cloudinary, because the other database may use it; the report lists it.
+   - Media is matched by its place in the file (first photo, second photo, first video), so a re-cropped photo, or one replaced under a new file name, takes the old one's place, and stays main if it was. The old file stays in Cloudinary, because the other database may use it; the report lists it.
    - A suit deleted in admin is never imported again.
    - It writes a `product.import` row in the audit log for each suit it creates or changes, as the owner (`SEED_ADMIN_EMAIL`, else the first admin).
 

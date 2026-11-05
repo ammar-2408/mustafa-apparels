@@ -211,6 +211,49 @@ describe('importStock', () => {
     expect(createMockStore(storeDir).get(oldPhoto!.publicId)).not.toBeNull();
   });
 
+  it('puts a photo replaced under a new file name in the old one’s place, as main', async () => {
+    await run();
+    const suit = await suitRow('DHN-01');
+    const [oldPhoto, video] = await mediaOf(suit.id);
+    const newer = await sharp({
+      create: { width: 90, height: 120, channels: 3, background: '#a07' },
+    })
+      .jpeg()
+      .toBuffer();
+    writeFileSync(join(stockDir, 'Dhanak', 'dhn-01-new.jpeg'), newer);
+    writeFileSync(
+      join(catalogDir, 'dhanak', 'dhn-01.md'),
+      suitText('DHN-01').replace('file: Dhanak/dhn-01.jpeg', 'file: Dhanak/dhn-01-new.jpeg'),
+    );
+    const report = await run();
+    const items = await mediaOf(suit.id);
+    expect(items.map((m) => [m.kind, m.isPrimary, m.width])).toEqual([
+      ['image', true, 90],
+      ['video', false, video!.width],
+    ]);
+    expect(report.unused).toEqual([oldPhoto!.publicId]);
+    expect(report.suits[0]!.notes).toEqual([]);
+  });
+
+  it('reads suits imported before media was matched by position, and changes nothing', async () => {
+    await run();
+    const suit = await suitRow('DHN-01');
+    const attributes = suit.attributes as { import: { media: Record<string, unknown> } };
+    const [photo, video] = await mediaOf(suit.id);
+    // The first import on Neon dev keyed media by file name, with no file field.
+    attributes.import.media = {
+      'image:Dhanak/dhn-01.jpeg': { publicId: photo!.publicId, alt: photo!.alt },
+      'video:Dhanak/dhn-01.mp4': { publicId: video!.publicId, alt: video!.alt },
+    };
+    await db.update(product).set({ attributes }).where(eq(product.id, suit.id));
+    const audits = async () =>
+      (await db.select().from(auditLog).where(eq(auditLog.entityId, suit.id))).length;
+    const before = await audits();
+    const report = await run();
+    expect(report.suits[0]).toMatchObject({ outcome: 'unchanged', changed: [], keptEdits: [] });
+    expect(await audits()).toBe(before);
+  });
+
   it('never brings back a photo or video the owner removed in admin', async () => {
     await run();
     const suit = await suitRow('DHN-01');

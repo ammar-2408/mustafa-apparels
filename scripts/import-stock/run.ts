@@ -54,7 +54,10 @@ const FIELDS = [
 ] as const;
 type Field = (typeof FIELDS)[number];
 
-type ImportedMedia = { publicId: string; alt: string };
+// Media is matched by its place in the suit file (`image:0` is the first photo, `video:0` the first
+// video), so a photo replaced under a new file name takes the old one's place.
+type ImportedMedia = { publicId: string; alt: string; file?: string };
+const SLOT = /^(image|video):\d+$/;
 // What the last import wrote, kept on the suit as attributes.import.
 type Snapshot = {
   fields: Partial<Record<Field, unknown>>;
@@ -91,7 +94,33 @@ export type ImportReport = {
   unused: string[];
 };
 
-const same = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+// Equal as JSON, whatever order the object keys were written in (jsonb doesn't keep it).
+const canonical = (value: unknown) =>
+  JSON.stringify(value ?? null, (_key, v: unknown) =>
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)))
+      : v,
+  );
+const same = (a: unknown, b: unknown) => canonical(a) === canonical(b);
+
+// The first import (2026-11-05) keyed media by "kind:file". Read those as places in the file.
+export function slotSnapshot(
+  media: Record<string, ImportedMedia>,
+  planned: Pick<PlannedMedia, 'key' | 'kind' | 'file'>[],
+): Record<string, ImportedMedia> {
+  const out: Record<string, ImportedMedia> = {};
+  for (const [key, entry] of Object.entries(media)) {
+    if (SLOT.test(key)) {
+      out[key] = entry;
+      continue;
+    }
+    const [kind, ...rest] = key.split(':');
+    const file = rest.join(':');
+    const match = planned.find((p) => p.kind === kind && p.file === file);
+    out[match ? match.key : `${kind}:gone:${file}`] = { ...entry, file };
+  }
+  return out;
+}
 
 const hash8 = (...parts: (Buffer | string)[]) => {
   const hash = createHash('sha256');
@@ -126,7 +155,7 @@ export async function planMedia(suit: CatalogSuit, stockDir: string): Promise<Pl
       fileName = `${stem}${isPng ? '.png' : '.jpg'}`;
     }
     planned.push({
-      key: `${kind}:${file}`,
+      key: `${kind}:${planned.filter((p) => p.kind === kind).length}`,
       kind,
       file,
       alt,
@@ -308,7 +337,7 @@ async function importSuit({
   const fieldsOf = (input: typeof desired) =>
     Object.fromEntries(FIELDS.map((field) => [field, input[field]])) as Snapshot['fields'];
   const mediaSnapshot = Object.fromEntries(
-    planned.map((m) => [m.key, { publicId: m.publicId, alt: m.alt }]),
+    planned.map((m) => [m.key, { publicId: m.publicId, alt: m.alt, file: m.file }]),
   );
 
   if (!current) {
@@ -360,7 +389,8 @@ async function importSuit({
 
   // An existing suit: change a field only if the owner hasn't changed it since the last import.
   const attributes = (current.attributes ?? {}) as Record<string, unknown>;
-  const last = (attributes.import ?? { fields: {}, media: {}, checks: [] }) as Snapshot;
+  const saved = (attributes.import ?? { fields: {}, media: {}, checks: [] }) as Snapshot;
+  const last: Snapshot = { ...saved, media: slotSnapshot(saved.media, planned) };
   const changes: Record<string, unknown> = {};
   for (const field of FIELDS) {
     const now = current[field];
@@ -379,7 +409,7 @@ async function importSuit({
     media: mediaSnapshot,
     checks: suit.check,
   };
-  if (!same(attributes.import, snapshot) || newChecks.length > 0) {
+  if (!same(last, snapshot) || newChecks.length > 0) {
     changes.attributes = { ...attributes, checks, import: snapshot };
   }
   result.changed = Object.keys(changes).filter((k) => k !== 'attributes');
@@ -444,7 +474,7 @@ async function importSuit({
     if (!(key in mediaSnapshot) && rows.some((r) => r.publicId === was.publicId)) {
       result.notes = [
         ...result.notes,
-        `${key.split(':')[1]} is no longer in catalog/; remove it in admin if it should go`,
+        `${was.file ?? key} is no longer in catalog/; remove it in admin if it should go`,
       ];
     }
   }

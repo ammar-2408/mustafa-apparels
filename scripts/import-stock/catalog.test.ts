@@ -85,6 +85,17 @@ describe('crossChecks', () => {
     ]);
   });
 
+  it('finds a file listed twice in one suit', () => {
+    const twice = {
+      ...suit('DHN-01'),
+      photos: [{ file: 'Dhanak/a.jpeg' }, { file: 'Dhanak/a.jpeg' }],
+      videos: [],
+    };
+    expect(crossChecks(collections, [twice])).toEqual([
+      'catalog/dhanak/dhn-01.md: Dhanak/a.jpeg is listed twice',
+    ]);
+  });
+
   it('finds a reused ID, name or slug, and a wrong prefix or collection', () => {
     const problems = crossChecks(collections, [
       suit('DHN-01'),
