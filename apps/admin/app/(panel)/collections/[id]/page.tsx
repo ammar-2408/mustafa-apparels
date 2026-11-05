@@ -4,7 +4,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { CollectionForm } from '../../../../components/collection-form';
+import { CollectionImage } from '../../../../components/collection-image';
 import { requireAdminPage } from '../../../../lib/auth';
+import { cloudNameForPreviews } from '../../../../lib/media';
 
 export const metadata: Metadata = { title: 'Edit collection' };
 
@@ -16,6 +18,14 @@ export default async function EditCollectionPage({ params }: { params: Promise<{
   return (
     <>
       <h1 className="mb-8 text-h2 font-light">{row.name}</h1>
+      <div className="mb-12">
+        <CollectionImage
+          collectionId={row.id}
+          name={row.name}
+          cloudName={cloudNameForPreviews()}
+          publicId={row.imagePublicId}
+        />
+      </div>
       <CollectionForm
         collection={{
           id: row.id,

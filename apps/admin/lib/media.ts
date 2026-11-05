@@ -20,3 +20,9 @@ export function mediaConfig(): MediaConfig {
 export function mockUploadsAllowed(config = mediaConfig()) {
   return config.mode === 'mock' && (config.appEnv === 'development' || config.appEnv === 'test');
 }
+
+// The cloud name previews are built with: the real one, or Cloudinary's public demo cloud in mock
+// mode (mock uploads don't exist there, so previews show their alt text instead).
+export function cloudNameForPreviews(config = mediaConfig()) {
+  return config.mode === 'mock' ? 'demo' : (config.cloudName ?? 'demo');
+}

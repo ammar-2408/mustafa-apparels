@@ -22,8 +22,31 @@ vi.mock('../../../lib/limits', () => ({
   enforceLimit: async () => {},
 }));
 vi.mock('../../../lib/revalidate', () => ({ revalidateStorefront }));
+const cloud = vi.hoisted(() => ({ verifyAsset: vi.fn(), deleteAsset: vi.fn() }));
+vi.mock('../../../lib/media', () => ({
+  mediaConfig: () => ({
+    mode: 'live',
+    appEnv: 'test',
+    cloudName: 'mustafa',
+    apiKey: 'k',
+    apiSecret: 's',
+  }),
+}));
+vi.mock('@mustafa/core/integrations/media', async (original) => ({
+  ...(await original<typeof import('@mustafa/core/integrations/media')>()),
+  verifyAsset: cloud.verifyAsset,
+  deleteAsset: cloud.deleteAsset,
+}));
 
-import { createCategory, reorderCategories, setCategoryActive, updateCategory } from './actions';
+import { AssetRejected } from '@mustafa/core/integrations/media';
+
+import {
+  createCategory,
+  reorderCategories,
+  setCategoryActive,
+  setCategoryImage,
+  updateCategory,
+} from './actions';
 
 let db: TestDb;
 
@@ -36,6 +59,17 @@ beforeAll(async () => {
 beforeEach(async () => {
   state.adminId = (await makeUser(db, { role: 'admin' })).id;
   revalidateStorefront.mockClear();
+  cloud.deleteAsset.mockReset().mockResolvedValue(true);
+  cloud.verifyAsset.mockReset().mockImplementation(async (_config, publicId: string) => ({
+    publicId,
+    kind: 'image',
+    format: 'jpg',
+    bytes: 1000,
+    width: 1200,
+    height: 1600,
+    durationSeconds: null,
+    createdAt: Math.floor(Date.now() / 1000),
+  }));
 });
 
 afterEach(async () => {
@@ -137,5 +171,51 @@ describe('collection actions', () => {
       'products',
       'category:lajwanti',
     ]);
+  });
+});
+
+describe('setCategoryImage', () => {
+  it('checks the upload against this collection, saves it, and deletes the photo it replaces', async () => {
+    const id = await created('Dhanak', 'dhanak');
+    expect(await setCategoryImage({ id, publicId: `categories/${id}/one` })).toMatchObject({
+      ok: true,
+    });
+    expect(cloud.verifyAsset).toHaveBeenCalledWith(expect.anything(), `categories/${id}/one`, {
+      kind: 'image',
+      prefix: `categories/${id}/`,
+    });
+    await setCategoryImage({ id, publicId: `categories/${id}/two` });
+    const [row] = await db.select().from(category).where(eq(category.id, id));
+    expect(row).toMatchObject({
+      imagePublicId: `categories/${id}/two`,
+      imageUrl: `https://res.cloudinary.com/mustafa/image/upload/categories/${id}/two.jpg`,
+    });
+    expect(cloud.deleteAsset).toHaveBeenCalledWith(
+      expect.anything(),
+      `categories/${id}/one`,
+      'image',
+    );
+  });
+
+  it('removes the photo with null', async () => {
+    const id = await created('Dhanak', 'dhanak');
+    await setCategoryImage({ id, publicId: `categories/${id}/one` });
+    expect(await setCategoryImage({ id, publicId: null })).toEqual({
+      ok: true,
+      data: { id, imagePublicId: null },
+    });
+    expect(cloud.deleteAsset).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuses an upload Cloudinary says breaks a limit, and a suit photo', async () => {
+    const id = await created('Dhanak', 'dhanak');
+    cloud.verifyAsset.mockRejectedValue(new AssetRejected(['The file is over 10 MB.']));
+    expect(await setCategoryImage({ id, publicId: `categories/${id}/big` })).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION', fieldErrors: { file: ['The file is over 10 MB.'] } },
+    });
+    expect(await setCategoryImage({ id, publicId: 'products/p1/x' })).toMatchObject({
+      error: { code: 'VALIDATION' },
+    });
   });
 });

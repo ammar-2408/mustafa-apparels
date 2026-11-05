@@ -5,6 +5,26 @@ import { z } from 'zod';
 import { noBannedTerms } from './banned-terms';
 import { cloudinaryUrl, id, unique } from './common';
 
+export type MediaKind = 'image' | 'video';
+
+const MB = 1024 * 1024;
+
+// docs/api.md §5.2, shared by the browser's check before upload and the server's on save.
+// Cloudinary's free plan caps images at 10 MB and videos at 100 MB.
+export const MEDIA_LIMITS = {
+  image: {
+    formats: ['jpg', 'png', 'webp'],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    maxBytes: 10 * MB,
+  },
+  video: {
+    formats: ['mp4', 'mov', 'webm'],
+    mimeTypes: ['video/mp4', 'video/quicktime', 'video/webm'],
+    maxBytes: 50 * MB,
+    maxSeconds: 60,
+  },
+} as const;
+
 const publicId = z.string().startsWith('products/', 'Must be in the products folder').max(200);
 
 export const mediaInput = z

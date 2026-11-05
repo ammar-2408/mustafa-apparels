@@ -92,10 +92,15 @@ All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). B
 | `setProductStatus` | `{ id, status }`. Publishing requires a price, a main image, alt text on all media, and no banned brand names | same as update. On publish or unpublish, also sends the URL to IndexNow (non-blocking) |
 | `duplicateProduct` | `{ id }` (copy saved as draft; `design_code` and `import_key` cleared) | — |
 | `archiveProduct` / `restoreProduct` | `{ id }` | `products` |
-| `reorderProductMedia` | `{ productId, mediaIds[] }` | `product:<id>` |
-| `setPrimaryProductImage` | `{ productId, mediaId }` (must be `kind = image`) | `product:<id>`, `products` |
+| `addProductMedia` (`app/(panel)/suits/[id]/actions.ts`, as are the next five) | `mediaAddInput` `{ productId, kind, publicId, alt }`; runs `verifyAsset` first | `products`, `product:<id>` |
+| `updateMediaAlt` | `mediaAltInput` `{ mediaId, alt }` | `products`, `product:<id>` |
+| `reorderProductMedia` | `{ productId, mediaIds[] }` (every item; the first photo becomes main) | `products`, `product:<id>` |
+| `setPrimaryProductImage` | `{ productId, mediaId }` (must be `kind = image`; moves it to the front) | `product:<id>`, `products` |
 | `setVideoPoster` | `{ mediaId, posterPublicId }` | `product:<id>` |
-| `deleteProductMedia` | `{ mediaId }` — also deletes from Cloudinary | `product:<id>` |
+| `deleteProductMedia` | `{ mediaId }` — also deletes the file and any poster from Cloudinary (a failed delete is logged, the save still succeeds) | `products`, `product:<id>` |
+| `setCategoryImage` (`app/(panel)/collections/actions.ts`) | `categoryImageInput` `{ id, publicId | null }`; runs `verifyAsset` with `categories/<id>/`, deletes the photo it replaces | `categories`, `products`, `category:<slug>` |
+
+The suit media actions also call `revalidatePath('/suits/<id>')`, so the admin page's fresh data comes back with the action's answer, with no separate `router.refresh()`.
 
 Media saves (`addProductMedia`, `setVideoPoster`) call `verifyAsset` (`packages/core/integrations/media.ts`) before writing: it reads the asset back from Cloudinary and refuses, with every reason at once, anything outside this suit's `products/<id>/` prefix, the format list, 10 MB / 50 MB, 60 s or over 1 hour old. A refused upload made for this suit is deleted from Cloudinary; an id pointing at another suit's file is refused but never deleted. The row stores Cloudinary's width, height, bytes, format and duration (`core.media.add`). Schemas: `mediaAddInput`, `mediaReorderInput`, `mediaPrimaryInput`, `mediaPosterInput`, `mediaAltInput`, `mediaDeleteInput` in `packages/validators/media.ts`.
 | `createCategory` / `updateCategory` / `reorderCategories` / `setCategoryActive` (`app/(panel)/collections/actions.ts`) | `categoryInput` / `categoryUpdateInput` / `categoryReorderInput` (every id) / `categoryVisibilityInput` `{ id, isActive }` | `categories`, `products`, `category:<slug>` (old and new slug on a rename); reorder: `categories` only |

@@ -71,7 +71,7 @@ Order matters: the logo is ready, so brand comes right after the foundation, and
 - [x] 4.2 Collections list + create/edit + reorder + hide
 - [x] 4.3 Cloudinary signed upload endpoint for images and videos + tests
 - [x] 4.4 Media metadata check on save: folder, format, size, video length; delete rejected assets + tests
-- [ ] 4.5 Photo uploader component (drag-drop, progress, reorder, main image, alt required)
+- [x] 4.5 Photo uploader component (drag-drop, progress, reorder, main image, alt required)
 - [ ] 4.6 Video upload in the same component: 50 MB and 60 s checks, eager delivery version, poster preview and change
 - [ ] 4.7 Product list (search, filter by status/collection, "needs price" filter, pagination)
 - [ ] 4.8 Product create form (field config driven): every field in `docs/database.md`, with taxonomy values as choices + E2E

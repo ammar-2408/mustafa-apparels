@@ -57,3 +57,15 @@ export const categoryReorderInput = z
 
 // Hide or show a collection on the storefront.
 export const categoryVisibilityInput = z.object({ id, isActive: z.boolean() }).strict();
+
+// The collection's photo: an upload the server signed for this collection, or null to remove it.
+export const categoryImageInput = z
+  .object({
+    id,
+    publicId: z
+      .string()
+      .max(200)
+      .regex(/^categories\/[\w-]+\/[\w-]+$/, 'Not one of our uploads')
+      .nullable(),
+  })
+  .strict();

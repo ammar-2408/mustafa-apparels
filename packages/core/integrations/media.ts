@@ -10,16 +10,10 @@ import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-export type MediaKind = 'image' | 'video';
+import { MEDIA_LIMITS, type MediaKind } from '@mustafa/validators/media';
+
+export { MEDIA_LIMITS, type MediaKind };
 export type UploadTarget = 'product' | 'category';
-
-const MB = 1024 * 1024;
-
-// docs/api.md §5.2. Cloudinary's free plan caps images at 10 MB and videos at 100 MB.
-export const MEDIA_LIMITS = {
-  image: { formats: ['jpg', 'png', 'webp'], maxBytes: 10 * MB },
-  video: { formats: ['mp4', 'mov', 'webm'], maxBytes: 50 * MB, maxSeconds: 60 },
-} as const;
 
 // A signed upload may be saved within this long (Cloudinary itself accepts a signature for 1 h).
 export const UPLOAD_MAX_AGE_SECONDS = 60 * 60;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  categoryImageInput,
   categoryInput,
   categoryReorderInput,
   categoryUpdateInput,
@@ -75,5 +76,15 @@ describe('categoryVisibilityInput', () => {
     expect(categoryVisibilityInput.safeParse({ id: 'c1', isActive: true, name: 'x' }).success).toBe(
       false,
     );
+  });
+});
+
+describe('categoryImageInput', () => {
+  it('takes a collection upload or null, nothing else', () => {
+    const ok = (publicId: unknown) => categoryImageInput.safeParse({ id: 'c1', publicId }).success;
+    expect(ok('categories/c1/abc')).toBe(true);
+    expect(ok(null)).toBe(true);
+    expect(ok('products/p1/abc')).toBe(false);
+    expect(ok('categories/c1/../x')).toBe(false);
   });
 });
