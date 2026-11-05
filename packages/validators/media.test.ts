@@ -138,3 +138,13 @@ describe('media action inputs', () => {
     expect(mediaPrimaryInput.safeParse({ productId: 'p1', mediaId: 'm1' }).success).toBe(true);
   });
 });
+
+describe('gallery uploads and posters', () => {
+  it('refuses a poster upload as a gallery photo', () => {
+    const add = (publicId: string) =>
+      mediaAddInput.safeParse({ productId: 'p1', kind: 'image', publicId, alt: 'Front view' })
+        .success;
+    expect(add('products/p1/poster-0193')).toBe(false);
+    expect(add('products/p1/0193')).toBe(true);
+  });
+});

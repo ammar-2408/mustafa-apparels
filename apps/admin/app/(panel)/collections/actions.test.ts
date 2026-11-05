@@ -198,10 +198,11 @@ describe('setCategoryImage', () => {
     expect(await setCategoryImage({ id, publicId: `categories/${id}/one` })).toMatchObject({
       ok: true,
     });
-    expect(cloud.verifyAsset).toHaveBeenCalledWith(expect.anything(), `categories/${id}/one`, {
-      kind: 'image',
-      prefix: `categories/${id}/`,
-    });
+    expect(cloud.verifyAsset).toHaveBeenCalledWith(
+      expect.anything(),
+      `categories/${id}/one`,
+      expect.objectContaining({ kind: 'image', prefix: `categories/${id}/` }),
+    );
     await setCategoryImage({ id, publicId: `categories/${id}/two` });
     const [row] = await db.select().from(category).where(eq(category.id, id));
     expect(row).toMatchObject({
@@ -213,6 +214,27 @@ describe('setCategoryImage', () => {
       `categories/${id}/one`,
       'image',
     );
+  });
+
+  it('keeps the current image when its own id is sent again', async () => {
+    const id = await created('Dhanak', 'dhanak');
+    await setCategoryImage({ id, publicId: `categories/${id}/one` });
+    cloud.verifyAsset.mockClear();
+    await setCategoryImage({ id, publicId: `categories/${id}/one` });
+    const [row] = await db.select().from(category).where(eq(category.id, id));
+    expect(row?.imagePublicId).toBe(`categories/${id}/one`);
+    expect(cloud.verifyAsset).not.toHaveBeenCalled();
+    expect(cloud.deleteAsset).not.toHaveBeenCalled();
+  });
+
+  it('refuses another collection’s image, without deleting it', async () => {
+    const a = await created('Dhanak', 'dhanak');
+    const b = await created('Khaddar', 'khaddar');
+    await setCategoryImage({ id: a, publicId: `categories/${a}/one` });
+    expect(await setCategoryImage({ id: b, publicId: `categories/${a}/one` })).toMatchObject({
+      error: { code: 'VALIDATION' },
+    });
+    expect(cloud.deleteAsset).not.toHaveBeenCalled();
   });
 
   it('removes the photo with null', async () => {

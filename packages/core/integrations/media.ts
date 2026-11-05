@@ -87,6 +87,8 @@ export function signUpload(config: MediaConfig, options: SignOptions): SignedUpl
     public_id: publicId,
     // Shown as the folder in Cloudinary's media library, whichever folder mode the account uses.
     asset_folder: prefix.slice(0, -1),
+    // A signature lives an hour: never let it replace a file that was already uploaded and saved.
+    overwrite: 'false',
     allowed_formats: MEDIA_LIMITS[kind].formats.join(','),
     timestamp: now,
     ...(kind === 'video' && { eager: VIDEO_EAGER, eager_async: 'true' }),
@@ -292,16 +294,23 @@ export class AssetRejected extends Error {
 export async function verifyAsset(
   config: MediaConfig,
   publicId: string,
-  expected: { kind: MediaKind; prefix: string; now?: number },
+  expected: {
+    kind: MediaKind;
+    prefix: string;
+    now?: number;
+    // True when a suit or collection already uses this id: refuse it, but never delete it.
+    inUse?: (publicId: string) => Promise<boolean>;
+  },
   options: ApiOptions = {},
 ): Promise<AssetInfo> {
   const asset = await getAsset(config, publicId, expected.kind, options);
   if (!asset) throw new AssetRejected(['The upload could not be found. Upload it again.']);
   const problems = assetProblems(asset, expected);
   if (problems.length > 0) {
-    // Only an upload made for this suit or collection is deleted: an id that points elsewhere
-    // (another suit's photo) is refused but never removed.
-    if (asset.publicId.startsWith(expected.prefix) && !asset.publicId.includes('..')) {
+    // Only a fresh upload made for this suit or collection is deleted: an id that points elsewhere
+    // (another suit's photo), or one already in use, is refused but never removed.
+    const ours = asset.publicId.startsWith(expected.prefix) && !asset.publicId.includes('..');
+    if (ours && !(await expected.inUse?.(publicId))) {
       await deleteAsset(config, publicId, expected.kind, options);
     }
     throw new AssetRejected(problems);

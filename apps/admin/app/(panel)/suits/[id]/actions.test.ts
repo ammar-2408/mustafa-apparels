@@ -107,10 +107,7 @@ describe('addProductMedia', () => {
     expect(cloud.verifyAsset).toHaveBeenCalledWith(
       expect.anything(),
       `products/${productId}/u${n}`,
-      {
-        kind: 'image',
-        prefix: `products/${productId}/`,
-      },
+      expect.objectContaining({ kind: 'image', prefix: `products/${productId}/` }),
     );
     const [row] = await rows();
     expect(row).toMatchObject({
@@ -226,10 +223,11 @@ describe('setVideoPoster', () => {
       ok: true,
       data: { id: v, posterPublicId: first },
     });
-    expect(cloud.verifyAsset).toHaveBeenLastCalledWith(expect.anything(), first, {
-      kind: 'image',
-      prefix: `products/${productId}/poster-`,
-    });
+    expect(cloud.verifyAsset).toHaveBeenLastCalledWith(
+      expect.anything(),
+      first,
+      expect.objectContaining({ kind: 'image', prefix: `products/${productId}/poster-` }),
+    );
     await setVideoPoster({ mediaId: v, posterPublicId: `products/${productId}/poster-two` });
     expect(cloud.deleteAsset).toHaveBeenCalledWith(expect.anything(), first, 'image');
     expect((await rows())[0]!.posterPublicId).toBe(`products/${productId}/poster-two`);
@@ -263,6 +261,41 @@ describe('setVideoPoster', () => {
     });
     expect(await setVideoPoster({ mediaId: 'missing', posterPublicId: null })).toMatchObject({
       error: { code: 'NOT_FOUND' },
+    });
+  });
+});
+
+describe('files already in use', () => {
+  it('refuses to attach a saved photo again, without asking Cloudinary', async () => {
+    await upload();
+    const savedId = `products/${productId}/u${n}`;
+    cloud.verifyAsset.mockClear();
+    expect(
+      await addProductMedia({
+        productId,
+        kind: 'image',
+        publicId: savedId,
+        alt: 'Front view again',
+      }),
+    ).toMatchObject({
+      ok: false,
+      error: { code: 'CONFLICT', fieldErrors: { file: expect.any(Array) } },
+    });
+    expect(cloud.verifyAsset).not.toHaveBeenCalled();
+    expect(cloud.deleteAsset).not.toHaveBeenCalled();
+  });
+
+  it('refuses a poster another video already uses', async () => {
+    const first = await upload('video');
+    const second = await upload('video');
+    const poster = `products/${productId}/poster-shared`;
+    await setVideoPoster({ mediaId: first, posterPublicId: poster });
+    expect(await setVideoPoster({ mediaId: second, posterPublicId: poster })).toMatchObject({
+      error: { code: 'CONFLICT' },
+    });
+    // The same video keeping its own poster is fine.
+    expect(await setVideoPoster({ mediaId: first, posterPublicId: poster })).toMatchObject({
+      ok: true,
     });
   });
 });

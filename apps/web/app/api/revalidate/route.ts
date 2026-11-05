@@ -1,7 +1,7 @@
 // Called by the admin after every save (docs/api.md §4): refreshes the cached pages that show
 // the changed data. Signed with REVALIDATE_SECRET, at most 5 minutes old, allow-listed tags only.
 import { getEnv } from '@mustafa/config/env';
-import { verifyRevalidate } from '@mustafa/core/integrations/revalidate';
+import { MAX_BODY_BYTES, verifyRevalidate } from '@mustafa/core/integrations/revalidate';
 import { revalidateTag } from 'next/cache';
 
 const error = (status: number, code: string, message: string) =>
@@ -10,6 +10,10 @@ const error = (status: number, code: string, message: string) =>
 export async function POST(request: Request) {
   const secret = getEnv('web').REVALIDATE_SECRET;
   if (!secret) return error(503, 'UNAVAILABLE', 'Revalidation is not set up here.');
+
+  // Refuse a declared oversized body before reading it (verifyRevalidate checks the real size).
+  const declared = Number(request.headers.get('content-length') ?? 0);
+  if (declared > MAX_BODY_BYTES) return error(400, 'VALIDATION', 'Bad request.');
 
   const check = verifyRevalidate({
     secret,

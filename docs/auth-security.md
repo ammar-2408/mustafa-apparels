@@ -165,6 +165,8 @@ GA4 hosts come from Google's CSP guide for GA4 without Ads features (`docs/analy
 3. On save, the server re-fetches metadata from Cloudinary by `public_id` and rejects anything outside this suit's or collection's prefix, more than 1 hour old, format list, size limit or duration limit. Rejected assets are deleted from Cloudinary.
 4. Cloudinary strips EXIF/GPS metadata on delivery (`fl_strip_profile` or the account default). Videos are delivered with no audio track.
 5. Deleting media removes it from Cloudinary too.
+6. **Files are never lost by mistake** (Phase 4 review): uploads are signed with `overwrite=false`, so a still-valid signature can't replace a saved file; an id any suit photo, poster or collection image already uses is refused before Cloudinary is read and is never deleted by a refusal (`core.media.isReferenced`, passed to `verifyAsset` as `inUse`); a `poster-` upload can't be added as a gallery photo; a collection's old image is deleted only when it was uploaded for that collection; a published suit keeps at least one photo.
+7. `/api/revalidate` refuses a declared `Content-Length` over 2 KB before reading the body.
 
 The import script (`scripts/import-stock.ts`) runs only on the owner's machine with the owner's keys, never on the server. It uploads only the media listed in `catalog/`. Media showing another brand is left out of the catalog, because anything uploaded could be reached at a public URL, and any crop is applied **before** upload for the same reason (`docs/catalog.md` §5).
 

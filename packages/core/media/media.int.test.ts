@@ -209,3 +209,21 @@ describe('media.remove on a published suit', () => {
     expect(await rows()).toHaveLength(0);
   });
 });
+
+describe('media.isReferenced', () => {
+  it('finds an id used as a photo, a poster or a collection image, and nothing else', async () => {
+    const photo = await add('image');
+    const video = await add('video');
+    await media.setPoster(
+      db,
+      { mediaId: video.id, posterPublicId: `products/${productId}/poster-1` },
+      actor,
+    );
+    const { makeCategory } = await import('../test/factories');
+    await makeCategory(db, { imagePublicId: 'categories/c1/img' });
+    expect(await media.isReferenced(db, photo.publicId)).toBe(true);
+    expect(await media.isReferenced(db, `products/${productId}/poster-1`)).toBe(true);
+    expect(await media.isReferenced(db, 'categories/c1/img')).toBe(true);
+    expect(await media.isReferenced(db, `products/${productId}/unused`)).toBe(false);
+  });
+});

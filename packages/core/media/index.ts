@@ -3,8 +3,8 @@
 // keeps the rows in order. The main image is always the first photo in the order: reordering
 // makes the first photo main, and making a photo main moves it to the front.
 import type { Database } from '@mustafa/db/client';
-import { product, productMedia } from '@mustafa/db/schema';
-import { and, asc, eq, isNull, max, ne } from 'drizzle-orm';
+import { category, product, productMedia } from '@mustafa/db/schema';
+import { and, asc, eq, isNull, max, ne, or } from 'drizzle-orm';
 
 import { type Actor, record } from '../audit';
 import { CoreError, invalid, isUniqueViolation, notFound } from '../errors';
@@ -238,4 +238,21 @@ export async function remove(db: Database, { mediaId }: { mediaId: string }, act
 export async function getById(db: Database, mediaId: string) {
   const [row] = await db.select().from(productMedia).where(eq(productMedia.id, mediaId));
   return row ?? null;
+}
+
+// Whether any suit photo, video poster or collection image uses this Cloudinary id. A file in use
+// is never deleted, and never attached a second time.
+export async function isReferenced(db: Database, publicId: string) {
+  const [media] = await db
+    .select({ id: productMedia.id })
+    .from(productMedia)
+    .where(or(eq(productMedia.publicId, publicId), eq(productMedia.posterPublicId, publicId)))
+    .limit(1);
+  if (media) return true;
+  const [collection] = await db
+    .select({ id: category.id })
+    .from(category)
+    .where(eq(category.imagePublicId, publicId))
+    .limit(1);
+  return Boolean(collection);
 }

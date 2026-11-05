@@ -1,7 +1,7 @@
 'use server';
 import 'server-only';
 
-import { invalid, notFound } from '@mustafa/core/errors';
+import { CoreError, invalid, notFound } from '@mustafa/core/errors';
 import {
   assetPrefix,
   AssetRejected,
@@ -38,13 +38,22 @@ async function removeFromCloudinary(publicId: string, kind: 'image' | 'video') {
   if (!deleted) console.error('[media] Cloudinary delete failed; the file is left over');
 }
 
+// A file already on a suit or collection is never attached twice, and never deleted by a refusal.
+const inUse = (publicId: string) => media.isReferenced(getDb(), publicId);
+const alreadyUsed = () =>
+  new CoreError('CONFLICT', 'That file is already saved', {
+    file: ['This upload is already in use. Upload the file again.'],
+  });
+
 const add = adminAction(mediaAddInput, async (input, { session }) => {
   const config = mediaConfig();
+  if (await inUse(input.publicId)) throw alreadyUsed();
   let asset;
   try {
     asset = await verifyAsset(config, input.publicId, {
       kind: input.kind,
       prefix: assetPrefix('product', input.productId),
+      inUse,
     });
   } catch (error) {
     if (error instanceof AssetRejected) throw invalid({ file: error.problems });
@@ -96,11 +105,13 @@ const setPoster = adminAction(mediaPosterInput, async (input, { session }) => {
   const db = getDb();
   const video = await media.getById(db, input.mediaId);
   if (!video) throw notFound('Video');
-  if (input.posterPublicId) {
+  if (input.posterPublicId && input.posterPublicId !== video.posterPublicId) {
+    if (await inUse(input.posterPublicId)) throw alreadyUsed();
     try {
       await verifyAsset(mediaConfig(), input.posterPublicId, {
         kind: 'image',
         prefix: `${assetPrefix('product', video.productId)}poster-`,
+        inUse,
       });
     } catch (error) {
       if (error instanceof AssetRejected) throw invalid({ file: error.problems });

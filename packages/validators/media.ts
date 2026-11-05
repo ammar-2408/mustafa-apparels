@@ -88,7 +88,13 @@ export const assetId = z
 const alt = noBannedTerms(z.string().trim().min(3, 'Describe the photo in a few words').max(200));
 
 export const mediaAddInput = z
-  .object({ productId: id, kind: z.enum(['image', 'video']), publicId: assetId, alt })
+  .object({
+    productId: id,
+    kind: z.enum(['image', 'video']),
+    // Poster uploads are for setVideoPoster only, so a poster is never also a gallery photo.
+    publicId: assetId.refine((value) => !value.includes('/poster-'), 'Not a gallery upload'),
+    alt,
+  })
   .strict();
 
 export const mediaReorderInput = z

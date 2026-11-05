@@ -173,6 +173,19 @@ describe('verifyAsset (mock store)', () => {
     expect(createMockStore(storeDir).get('products/p1/abc')).toBeNull();
   });
 
+  it('refuses an old upload that a suit already uses, but never deletes it', async () => {
+    createMockStore(storeDir).save(photo({ createdAt: NOW - 7200 }));
+    await expect(
+      verifyAsset(
+        mockConfig,
+        'products/p1/abc',
+        { ...expectPhoto, inUse: async () => true },
+        { storeDir },
+      ),
+    ).rejects.toBeInstanceOf(AssetRejected);
+    expect(createMockStore(storeDir).get('products/p1/abc')).not.toBeNull();
+  });
+
   it('refuses another suit’s file but never deletes it', async () => {
     createMockStore(storeDir).save(photo({ publicId: 'products/p2/abc' }));
     await expect(

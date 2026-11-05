@@ -10,6 +10,7 @@ import {
   deleteAsset,
   verifyAsset,
 } from '@mustafa/core/integrations/media';
+import * as media from '@mustafa/core/media';
 import { getDb } from '@mustafa/db/client';
 import {
   categoryImageInput,
@@ -64,12 +65,21 @@ const setImage = adminAction(categoryImageInput, async (input, { session }) => {
   const config = mediaConfig();
   const before = await categories.getById(db, input.id);
   if (!before) throw notFound('Collection');
-  let image = { imageUrl: null as string | null, imagePublicId: null as string | null };
-  if (input.publicId) {
+  // The same id again keeps the current image as it is.
+  let image =
+    input.publicId && input.publicId === before.imagePublicId
+      ? { imageUrl: before.imageUrl, imagePublicId: before.imagePublicId }
+      : { imageUrl: null as string | null, imagePublicId: null as string | null };
+  if (input.publicId && input.publicId !== before.imagePublicId) {
+    const inUse = (publicId: string) => media.isReferenced(db, publicId);
+    if (await inUse(input.publicId)) {
+      throw invalid({ file: ['This upload is already in use. Upload the file again.'] });
+    }
     try {
       const asset = await verifyAsset(config, input.publicId, {
         kind: 'image',
         prefix: assetPrefix('category', input.id),
+        inUse,
       });
       image = { imageUrl: assetUrl(config, asset), imagePublicId: asset.publicId };
     } catch (error) {

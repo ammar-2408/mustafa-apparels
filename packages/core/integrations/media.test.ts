@@ -57,6 +57,7 @@ describe('signUpload', () => {
       public_id: signed.publicId,
       asset_folder: 'products/p1',
       allowed_formats: 'jpg,png,webp',
+      overwrite: 'false',
       timestamp: String(NOW),
       api_key: '123456',
     });

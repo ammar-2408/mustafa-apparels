@@ -60,6 +60,17 @@ describe('POST /api/revalidate', () => {
     expect(revalidateTag).not.toHaveBeenCalled();
   });
 
+  it('refuses a declared body over 2 KB before reading it', async () => {
+    const request = new Request('https://mustafaapparels.com/api/revalidate', {
+      method: 'POST',
+      body: '{}',
+      headers: { 'content-length': '5000000' },
+    });
+    const text = vi.spyOn(request, 'text');
+    expect((await route.POST(request)).status).toBe(400);
+    expect(text).not.toHaveBeenCalled();
+  });
+
   it('accepts POST only', () => {
     expect(Object.keys(route)).toEqual(['POST']);
   });
