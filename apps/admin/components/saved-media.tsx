@@ -76,7 +76,7 @@ export function SavedMedia({ productId, cloudName, items }: SavedMediaProps) {
       <SortableList
         items={order}
         disabled={pending}
-        className="grid gap-3 sm:grid-cols-2"
+        className="grid gap-3 xl:grid-cols-2"
         labelOf={(item) => labelOf(item, order)}
         onReorder={(ids) => {
           const byId = new Map(order.map((item) => [item.id, item]));
