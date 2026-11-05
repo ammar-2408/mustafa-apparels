@@ -172,3 +172,21 @@ describe('MediaManager', () => {
     expect(screen.getByText(/needs at least one photo/)).toBeTruthy();
   });
 });
+
+describe('MediaManager refusals', () => {
+  it('says why a delete was refused, e.g. the last photo of a published suit', async () => {
+    actions.deleteProductMedia.mockResolvedValue({
+      ok: false,
+      error: {
+        code: 'VALIDATION',
+        message: 'Check the highlighted fields',
+        fieldErrors: { mediaId: ['This is the only photo of a published suit.'] },
+      },
+    });
+    render(<MediaManager productId="p1" cloudName="demo" media={saved.slice(0, 1)} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Delete this photo?' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }));
+    expect(await screen.findByText('This is the only photo of a published suit.')).toBeTruthy();
+  });
+});

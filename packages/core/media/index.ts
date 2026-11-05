@@ -206,12 +206,27 @@ export async function updateAlt(
 export async function remove(db: Database, { mediaId }: { mediaId: string }, actor: Actor) {
   return db.transaction(async (tx) => {
     const row = await findMedia(tx, mediaId);
+    // A published suit always keeps a main photo (it feeds the card, the share image and the
+    // structured data), so its last photo can't go while it is live.
+    const [suit] = await tx
+      .select({ status: product.status })
+      .from(product)
+      .where(eq(product.id, row.productId))
+      .for('update');
     await tx.delete(productMedia).where(eq(productMedia.id, mediaId));
     const rest = await tx
       .select()
       .from(productMedia)
       .where(and(eq(productMedia.productId, row.productId), ne(productMedia.id, mediaId)))
       .orderBy(asc(productMedia.sortOrder), asc(productMedia.id));
+    if (suit?.status === 'published' && !rest.some((item) => item.kind === 'image')) {
+      // Thrown inside the transaction, so the delete above is rolled back.
+      throw invalid({
+        mediaId: [
+          'This is the only photo of a published suit. Add another photo or unpublish it first.',
+        ],
+      });
+    }
     await applyOrder(tx, row.productId, rest);
     await audit(tx, actor, row.productId, 'remove', {
       before: { mediaId, kind: row.kind, publicId: row.publicId, alt: row.alt },

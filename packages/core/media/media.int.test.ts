@@ -180,3 +180,32 @@ describe('media.setPoster, updateAlt and remove', () => {
     expect(await codeOf(media.remove(db, { mediaId: a.id }, actor))).toBe('NOT_FOUND');
   });
 });
+
+describe('media.remove on a published suit', () => {
+  const publishedWith = async () => {
+    const suit = await makeProduct(db, { published: true });
+    productId = suit.id;
+    return suit;
+  };
+
+  it('refuses to remove the last photo while the suit is live, keeping the row', async () => {
+    await publishedWith();
+    const [only] = await rows();
+    expect(await codeOf(media.remove(db, { mediaId: only!.id }, actor))).toBe('VALIDATION');
+    expect(await rows()).toHaveLength(1);
+  });
+
+  it('allows it when another photo takes over as main', async () => {
+    await publishedWith();
+    const [first] = await rows();
+    const second = await add('image');
+    await media.remove(db, { mediaId: first!.id }, actor);
+    expect((await rows()).map((r) => [r.id, r.isPrimary])).toEqual([[second.id, true]]);
+  });
+
+  it('allows removing a draft suit’s last photo', async () => {
+    const photo = await add('image');
+    await media.remove(db, { mediaId: photo.id }, actor);
+    expect(await rows()).toHaveLength(0);
+  });
+});

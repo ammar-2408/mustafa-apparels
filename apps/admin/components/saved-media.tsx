@@ -55,7 +55,13 @@ export function SavedMedia({ productId, cloudName, items }: SavedMediaProps) {
     const result = await action();
     setPending(false);
     if (!result.ok) {
-      setError(result.error?.message ?? 'Something went wrong. Please try again.');
+      // The specific reason when there is one (e.g. the last photo of a published suit).
+      const reasons = Object.values(result.error?.fieldErrors ?? {}).flat();
+      setError(
+        reasons.length > 0
+          ? reasons.join(' ')
+          : (result.error?.message ?? 'Something went wrong. Please try again.'),
+      );
       setOrder(items);
       return false;
     }
