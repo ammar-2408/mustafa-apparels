@@ -29,10 +29,10 @@ test('fill every section, save as a draft, and find the values on the edit page'
   await expect(page.getByRole('heading', { level: 1, name: 'New suit' })).toBeVisible();
 
   // Basics
-  await page.getByLabel('Name').fill(`Sage Green Printed Khaddar 3-Piece Suit ${tag}`);
+  await page.getByLabel('Name').fill(`E2E Sage Green Printed Khaddar 3-Piece Suit ${tag}`);
   await page.getByLabel('Design code').fill(code);
   await expect(page.getByLabel('Web address')).toHaveValue(
-    `sage-green-printed-khaddar-3-piece-suit-${tag.toLowerCase()}-e2e-${tag.toLowerCase()}`,
+    `e2e-sage-green-printed-khaddar-3-piece-suit-${tag.toLowerCase()}-e2e-${tag.toLowerCase()}`,
   );
   await page.getByLabel('Collection').selectOption({ index: 1 });
   await page.getByLabel('Display tag').fill('Premium');
@@ -81,7 +81,7 @@ test('fill every section, save as a draft, and find the values on the edit page'
 
   // The edit page shows the saved values.
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    `Sage Green Printed Khaddar 3-Piece Suit ${tag}`,
+    `E2E Sage Green Printed Khaddar 3-Piece Suit ${tag}`,
   );
   await expect(page.getByLabel('Main colour')).toHaveValue('Sage Green');
   await expect(page.getByLabel('Accent colours')).toHaveValue('cream, rust');

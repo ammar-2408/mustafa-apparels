@@ -1,6 +1,7 @@
 import * as audit from '@mustafa/core/audit';
 import { getDb } from '@mustafa/db/client';
 import { buttonClass } from '@mustafa/ui/button';
+import { Checkbox } from '@mustafa/ui/checkbox';
 import { Select } from '@mustafa/ui/select';
 import { auditListInput } from '@mustafa/validators/audit';
 import type { Metadata } from 'next';
@@ -44,13 +45,19 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
   const input = readInput(await searchParams);
   const db = getDb();
   const [result, actors] = await Promise.all([
-    audit.list(db, { entity: input.entity, actorId: input.actor, page: input.page }),
+    audit.list(db, {
+      entity: input.entity,
+      actorId: input.actor,
+      hideRemoved: !input.removed,
+      page: input.page,
+    }),
     audit.actors(db),
   ]);
   const href = (page: number) => {
     const query = new URLSearchParams();
     if (input.entity) query.set('entity', input.entity);
     if (input.actor) query.set('actor', input.actor);
+    if (input.removed) query.set('removed', '1');
     if (page > 1) query.set('page', String(page));
     const text = query.toString();
     return text ? `/audit?${text}` : '/audit';
@@ -88,11 +95,19 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
         <button type="submit" className={buttonClass('primary')}>
           Show
         </button>
+        <Checkbox
+          label="Show removed accounts"
+          name="removed"
+          value="1"
+          defaultChecked={input.removed}
+          className="sm:col-span-3"
+        />
       </form>
 
       {result.items.length === 0 ? (
         <p className="text-body text-muted">
-          No changes recorded{input.entity || input.actor ? ' for this filter' : ' yet'}.
+          No changes recorded
+          {input.entity || input.actor || input.removed ? ' for this filter' : ' yet'}.
         </p>
       ) : (
         <ol className="flex flex-col gap-3">

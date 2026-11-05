@@ -2,7 +2,7 @@
 // one row inside its own transaction, so a failed change leaves no audit row.
 import type { Database } from '@mustafa/db/client';
 import { auditLog, user } from '@mustafa/db/schema';
-import { and, count, desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq, isNotNull } from 'drizzle-orm';
 
 export type Actor = { actorId: string };
 
@@ -40,14 +40,25 @@ export async function record(db: Database, { actorId }: Actor, entry: Entry) {
 
 export const AUDIT_PAGE_SIZE = 50;
 
-type ListInput = { entity?: string; entityId?: string; actorId?: string; page?: number };
+type ListInput = {
+  entity?: string;
+  entityId?: string;
+  actorId?: string;
+  // Leave out rows whose actor account is gone (actor_id set to null on delete).
+  hideRemoved?: boolean;
+  page?: number;
+};
 
 // For the admin audit page: newest first, with the actor's name (null once their account goes).
-export async function list(db: Database, { entity, entityId, actorId, page = 1 }: ListInput) {
+export async function list(
+  db: Database,
+  { entity, entityId, actorId, hideRemoved = false, page = 1 }: ListInput,
+) {
   const where = and(
     entity === undefined ? undefined : eq(auditLog.entity, entity),
     entityId === undefined ? undefined : eq(auditLog.entityId, entityId),
     actorId === undefined ? undefined : eq(auditLog.actorId, actorId),
+    hideRemoved ? isNotNull(auditLog.actorId) : undefined,
   );
   const [rows, [{ total } = { total: 0 }]] = await Promise.all([
     db

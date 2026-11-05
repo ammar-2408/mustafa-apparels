@@ -1,3 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
+import { auditLog, user } from '@mustafa/db/schema';
+import { eq } from 'drizzle-orm';
+
 import { ADMIN_URL, loginAsAdmin } from '../support/admin';
 import { createDraftSuit, deleteSuits, type DraftSuit } from '../support/suits';
 import { expect, test } from '../support/users';
@@ -39,4 +44,31 @@ test('a suit edit shows in the log with who made it and the before and after', a
   );
   await entry.getByText('Before and after').click();
   await expect(entry.locator('pre')).toContainText('"price": 4999');
+});
+
+test('rows from removed accounts are hidden unless asked for', async ({ page, users, db }) => {
+  await loginAsAdmin(page, users);
+  const marker = `removed-${randomUUID().slice(0, 8)}`;
+  const [gone] = await db
+    .insert(user)
+    .values({ name: 'E2E Gone', email: users.freshEmail(), role: 'admin' })
+    .returning();
+  await db.insert(auditLog).values({
+    actorId: gone!.id,
+    action: 'product.update',
+    entity: 'product',
+    entityId: suit.id,
+    changes: { marker },
+  });
+  await db.delete(user).where(eq(user.id, gone!.id));
+
+  await page.goto('/audit?entity=product');
+  await expect(page.getByLabel('Show removed accounts')).not.toBeChecked();
+  await expect(page.getByText(marker)).toHaveCount(0);
+
+  await page.getByLabel('Show removed accounts').check();
+  await page.getByRole('button', { name: 'Show', exact: true }).click();
+  await expect(page).toHaveURL(/removed=1/);
+  const entry = page.getByRole('listitem').filter({ hasText: marker });
+  await expect(entry).toContainText('A removed account');
 });

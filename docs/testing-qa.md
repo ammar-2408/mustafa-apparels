@@ -156,12 +156,16 @@ For every URL in the sitemap plus representative noindex pages:
 
 - Factories in `packages/core/test/factories.ts`, each taking the db first: `makeProduct(db, { published })`, `makeCategory(db)`, `makeUser(db, { role })`, `makeMedia(db, { productId, kind })`. Every call makes a unique, valid row; `published: true` also meets every publish rule, with a main photo and alt text.
 - Integration tests: each test file starts one PGlite with `createTestDb()` from `@mustafa/db/testing` (the real migrations, plus `pg_trgm`), and calls `resetTestDb(db)` in `afterEach` to empty every table. The `library` Vitest preset allows 60 s per test and hook, because PGlite can take seconds to start under load.
-- E2E: CI starts a throwaway Postgres container, runs migrations + `db:seed --e2e`, and discards it after. (Locally you can point E2E at a Neon `test` branch instead.)
+- E2E: CI starts a throwaway Postgres container, runs migrations + `db:seed --e2e`, and discards it after. **Locally, E2E runs on the Neon `e2e` branch, never `dev`:**
+  - `E2E_DATABASE_URL` in `.env.local` holds its direct (unpooled) URL. `playwright.config.ts` passes it to both servers as `DATABASE_URL`, and the fixtures use it too (`scripts/e2e/database-url.ts`). A local run refuses to start without it, or when it points at the same database as `DATABASE_URL`.
+  - `pnpm e2e:db` migrates the branch and adds the demo suits; run it after a new migration.
+  - A local run won't reuse a server already on 3000 or 3001, because that may be `pnpm dev` on the dev database. `pnpm e2e:stop` stops servers left from an earlier run (Windows keeps them alive), or set `E2E_REUSE=1` when you know they're E2E servers.
 - E2E accounts: import `test` and `expect` from `e2e/support/users.ts`. A signed-in admin: `loginAsAdmin(page, users)` from `e2e/support/admin.ts` runs the real login and 2FA setup and lands on the dashboard; `openAdminMenu(page)` opens the phone menu (no-op on wider screens).
   - `users.create({ role, verified })` writes a unique `e2e+<uuid>@example.com` account straight to the database, with Better Auth's hash, and deletes it after the test.
   - `users.freshEmail()` gives an unused address that is cleaned up the same way.
   - Each test also sends its own `x-nf-client-connection-ip`, so parallel projects never share a rate-limit bucket.
-  - The fixture reads `DATABASE_URL`: CI's container, or locally the Neon `dev` branch, never production.
+  - The fixture reads CI's `DATABASE_URL`, or locally `E2E_DATABASE_URL`: never `dev` or production.
+  - The audit log can't be cleaned (rows are append-only), so the admin audit page hides rows from removed accounts unless **Show removed accounts** is ticked.
 - External services mocked at the network boundary (MSW) in unit/integration; real test keys only in a nightly E2E job.
 
 ## 5. Coverage

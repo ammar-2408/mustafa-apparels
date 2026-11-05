@@ -66,6 +66,18 @@ describe('audit.list', () => {
     await db.delete(user).where(eq(user.id, gone.id));
     expect((await audit.list(db, {})).items[0]!.actor).toBeNull();
   });
+
+  it('can hide rows from removed accounts, and counts only what it shows', async () => {
+    const gone = await makeUser(db, { role: 'admin' });
+    const owner = await makeUser(db, { role: 'admin' });
+    await write(gone.id, 'product.update', 'product', 'p1');
+    await write(owner.id, 'product.update', 'product', 'p2');
+    await db.delete(user).where(eq(user.id, gone.id));
+    const shown = await audit.list(db, { hideRemoved: true });
+    expect(shown.items.map((i) => i.entityId)).toEqual(['p2']);
+    expect(shown.total).toBe(1);
+    expect((await audit.list(db, {})).total).toBe(2);
+  });
 });
 
 describe('audit.actors', () => {

@@ -1,6 +1,6 @@
 // Test accounts written straight to the test database, one set per test, and removed after it.
-// CI uses its throwaway Postgres; locally this is the Neon `dev` branch from .env.local, never
-// production. Each test also gets its own client IP, so parallel projects never share a
+// CI uses its throwaway Postgres; locally the Neon `e2e` branch (E2E_DATABASE_URL), never `dev`
+// or production. Each test also gets its own client IP, so parallel projects never share a
 // rate-limit bucket (Better Auth reads x-nf-client-connection-ip, as on Netlify).
 import { randomInt, randomUUID } from 'node:crypto';
 
@@ -10,6 +10,8 @@ import { account, user } from '@mustafa/db/schema';
 import { test as base } from '@playwright/test';
 import { hashPassword } from 'better-auth/crypto';
 import { inArray } from 'drizzle-orm';
+
+import { e2eDatabaseUrl } from '../../scripts/e2e/database-url';
 
 export const PASSWORD = 'e2e correct horse battery';
 
@@ -33,9 +35,7 @@ export const test = base.extend<{ users: Users }, { db: Database }>({
     // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {
       loadEnvFiles();
-      const url = process.env.DATABASE_URL?.trim();
-      if (!url) throw new Error('E2E auth tests need DATABASE_URL (see docs/testing-qa.md §4)');
-      const db = createDb(url);
+      const db = createDb(e2eDatabaseUrl());
       await use(db);
       await db.$client.end();
     },

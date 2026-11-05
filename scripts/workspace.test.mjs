@@ -417,15 +417,19 @@ test('mobile-small behaves like an Android phone', async () => {
   assert.equal(use?.hasTouch, true);
 });
 
-test('Playwright reuses running servers on both ports, except on CI', async () => {
+test('Playwright starts its own servers locally and reuses one only with E2E_REUSE=1', async () => {
   const webServer = [(await playwrightConfig()).webServer ?? []].flat();
   assert.deepEqual(
     webServer.map(({ url }) => url),
     ['http://localhost:3000', 'http://localhost:3001'],
   );
   for (const server of webServer) {
-    assert.equal(server.reuseExistingServer, !process.env.CI);
+    assert.equal(server.reuseExistingServer, !process.env.CI && process.env.E2E_REUSE === '1');
   }
+  const config = read('playwright.config.ts');
+  assert.match(config, /env: databaseEnv/);
+  assert.ok(config.includes('e2eServerEnv()'));
+  assert.ok(config.includes('portsInUse([3000, 3001])'));
 });
 
 test('root scripts run E2E and check the e2e folder, the scripts and the Claude Code hooks', () => {

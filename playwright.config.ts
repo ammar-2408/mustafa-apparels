@@ -1,12 +1,33 @@
+import { loadEnvFiles } from '@mustafa/config/env';
 import { defineConfig, devices } from '@playwright/test';
 
-const isCI = Boolean(process.env.CI);
+import { e2eServerEnv } from './scripts/e2e/database-url';
+import { busyPortsMessage, portsInUse } from './scripts/e2e/ports';
 
-// Local runs reuse a dev server that is already up, because on Windows they can survive stopping.
+const isCI = Boolean(process.env.CI);
+// scripts/workspace.test.mjs imports this file to check its shape: no database or port checks then.
+const inUnitTest = Boolean(process.env.VITEST);
+
+// Local E2E runs on the Neon `e2e` branch, never `dev` (docs/testing-qa.md §4). Both servers get
+// its URL, which wins over .env.local because Next never overwrites a variable that is already set.
+loadEnvFiles();
+const databaseEnv = inUnitTest ? {} : e2eServerEnv();
+
+// A server already on 3000/3001 may be `pnpm dev` on the dev database, so a local run reuses it
+// only with E2E_REUSE=1. On Windows, servers can outlive a run: `pnpm e2e:stop` clears them.
+// Only the runner checks: each worker loads this file again once the servers are already up.
+const reuse = !isCI && process.env.E2E_REUSE === '1';
+const inWorker = process.env.TEST_WORKER_INDEX !== undefined;
+if (!isCI && !reuse && !inUnitTest && !inWorker) {
+  const busy = portsInUse([3000, 3001]);
+  if (busy.length > 0) throw new Error(busyPortsMessage(busy));
+}
+
 const server = (app: string, port: number) => ({
   command: `pnpm --filter ${app} ${isCI ? 'start' : 'dev'}`,
   url: `http://localhost:${port}`,
-  reuseExistingServer: !isCI,
+  reuseExistingServer: reuse,
+  env: databaseEnv,
   timeout: 120_000,
 });
 

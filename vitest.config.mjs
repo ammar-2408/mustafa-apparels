@@ -8,7 +8,7 @@ export default defineConfig({
       {
         test: {
           name: 'workspace',
-          include: ['scripts/**/*.test.mjs'],
+          include: ['scripts/**/*.test.mjs', 'scripts/**/*.test.ts'],
           environment: 'node',
           testTimeout: 60_000,
         },
