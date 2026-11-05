@@ -299,3 +299,38 @@ describe('files already in use', () => {
     });
   });
 });
+
+describe('when Cloudinary is down at save time', () => {
+  it('answers with the general error, saves nothing, deletes nothing and logs no details', async () => {
+    cloud.verifyAsset.mockRejectedValue(new Error('Cloudinary answered 503 at api.cloudinary.com'));
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(
+      await addProductMedia({
+        productId,
+        kind: 'image',
+        publicId: `products/${productId}/down`,
+        alt: 'Front view',
+      }),
+    ).toEqual({
+      ok: false,
+      error: { code: 'INTERNAL', message: 'Something went wrong. Please try again.' },
+    });
+    expect(await rows()).toHaveLength(0);
+    expect(cloud.deleteAsset).not.toHaveBeenCalled();
+    expect(JSON.stringify(log.mock.calls)).not.toContain('cloudinary.com');
+    log.mockRestore();
+  });
+
+  it('leaves a video poster unchanged', async () => {
+    const v = await upload('video');
+    cloud.verifyAsset.mockRejectedValue(new Error('timeout'));
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(
+      await setVideoPoster({ mediaId: v, posterPublicId: `products/${productId}/poster-x` }),
+    ).toMatchObject({
+      error: { code: 'INTERNAL' },
+    });
+    expect((await rows())[0]!.posterPublicId).toBeNull();
+    log.mockRestore();
+  });
+});

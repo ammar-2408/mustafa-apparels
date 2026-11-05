@@ -259,3 +259,19 @@ describe('setCategoryImage', () => {
     });
   });
 });
+
+describe('setCategoryImage when Cloudinary is down', () => {
+  it('answers with the general error and keeps the current image', async () => {
+    const id = await created('Dhanak', 'dhanak');
+    await setCategoryImage({ id, publicId: `categories/${id}/one` });
+    cloud.verifyAsset.mockRejectedValue(new Error('Cloudinary answered 503'));
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(await setCategoryImage({ id, publicId: `categories/${id}/two` })).toMatchObject({
+      error: { code: 'INTERNAL' },
+    });
+    const [row] = await db.select().from(category).where(eq(category.id, id));
+    expect(row?.imagePublicId).toBe(`categories/${id}/one`);
+    expect(cloud.deleteAsset).not.toHaveBeenCalled();
+    log.mockRestore();
+  });
+});
