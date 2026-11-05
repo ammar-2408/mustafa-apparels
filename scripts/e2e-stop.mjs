@@ -6,13 +6,15 @@ const PORTS = [3000, 3001];
 
 function listeningPids() {
   if (process.platform === 'win32') {
-    const lines = execFileSync('netstat', ['-ano', '-p', 'tcp'], { encoding: 'utf8' }).split(
-      /\r?\n/,
-    );
+    const lines = execFileSync('netstat', ['-ano'], { encoding: 'utf8' }).split(/\r?\n/);
     const pids = new Set();
     for (const line of lines) {
       const cols = line.trim().split(/\s+/);
-      if (cols.length < 5 || cols[3] !== 'LISTENING') continue;
+      // All protocols: Next listens on [::]:3000, which -p tcp (IPv4 only) misses. A listener is
+      // the row with no remote end (0.0.0.0:0 or [::]:0); its state label varies by Windows build.
+      if (cols.length < 5 || cols[0] !== 'TCP' || !/^(0\.0\.0\.0|\[::\]):0$/.test(cols[2])) {
+        continue;
+      }
       const port = Number(cols[1].split(':').pop());
       if (PORTS.includes(port)) pids.add(cols[4]);
     }

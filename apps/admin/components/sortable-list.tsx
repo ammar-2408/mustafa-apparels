@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { ReactNode } from 'react';
+import { type ReactNode, useId } from 'react';
 
 type Item = { id: string };
 
@@ -49,6 +49,9 @@ export function SortableList<T extends Item>({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
   const ids = items.map((item) => item.id);
+  // dnd-kit numbers its aria-describedby ids from a module counter that differs between server
+  // and browser (a hydration mismatch, the dev overlay's "Issue"). useId is the same on both.
+  const contextId = useId();
 
   const move = (from: number, to: number) => {
     if (to < 0 || to >= items.length || from === to) return;
@@ -60,7 +63,12 @@ export function SortableList<T extends Item>({
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+    <DndContext
+      id={contextId}
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+    >
       <SortableContext items={ids} strategy={verticalListSortingStrategy} disabled={disabled}>
         <ul className={className}>
           {items.map((item, index) => (

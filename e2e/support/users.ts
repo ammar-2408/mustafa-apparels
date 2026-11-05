@@ -42,6 +42,19 @@ export const test = base.extend<{ users: Users }, { db: Database }>({
     { scope: 'worker' },
   ],
 
+  // A hydration mismatch is the Next dev overlay's "Issue" badge; in a build React stays silent
+  // about attribute mismatches, so this bites on local dev-mode runs. Any one fails the test.
+  page: async ({ page }, use) => {
+    const problems: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error' && /hydrat|didn.t match/i.test(message.text())) {
+        problems.push(message.text().slice(0, 500));
+      }
+    });
+    await use(page);
+    base.expect(problems, 'hydration warnings in the console').toEqual([]);
+  },
+
   context: async ({ context }, use) => {
     await context.setExtraHTTPHeaders({ 'x-nf-client-connection-ip': randomIp() });
     await use(context);

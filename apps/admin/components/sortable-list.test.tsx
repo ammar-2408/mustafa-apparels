@@ -1,4 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
 import { SortableList } from './sortable-list';
@@ -56,5 +58,33 @@ describe('SortableList', () => {
     fireEvent.click(button('Move Khaddar up'));
     expect(onReorder).not.toHaveBeenCalled();
     expect(button('Drag to reorder Khaddar').disabled).toBe(true);
+  });
+});
+
+describe('SortableList hydration', () => {
+  it('hydrates the server HTML with no mismatch (the dev overlay "Issue")', async () => {
+    const list = (
+      <SortableList
+        items={items}
+        onReorder={() => {}}
+        labelOf={(item) => item.name}
+        renderItem={(item) => <span>{item.name}</span>}
+      />
+    );
+    // An earlier render moves dnd-kit's own id counter on, as other requests do on a server.
+    renderToString(list);
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(list);
+    document.body.append(container);
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let root: ReturnType<typeof hydrateRoot> | undefined;
+    await act(async () => {
+      root = hydrateRoot(container, list);
+    });
+    const messages = errors.mock.calls.map((call) => String(call[0]));
+    errors.mockRestore();
+    act(() => root?.unmount());
+    container.remove();
+    expect(messages.filter((m) => /hydrat|didn.t match/i.test(m))).toEqual([]);
   });
 });
