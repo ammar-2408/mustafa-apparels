@@ -34,3 +34,25 @@ export const mediaListInput = z
   .refine((list) => unique(list.map((m) => m.publicId)), {
     message: 'Each photo or video can be added once',
   });
+
+// POST /api/upload/sign: what is being uploaded, and to which suit or collection. The server
+// picks the public id and folder from these, never from the browser.
+export const uploadSignInput = z
+  .object({
+    kind: z.enum(['image', 'video']),
+    target: z.enum(['product', 'category']),
+    targetId: z
+      .string()
+      .min(1)
+      .max(64)
+      .regex(/^[\w-]+$/),
+    // A video's poster image; images only.
+    purpose: z.literal('poster').optional(),
+  })
+  .strict()
+  .refine((input) => input.purpose !== 'poster' || input.kind === 'image', {
+    path: ['purpose'],
+    message: 'A poster is a photo',
+  });
+
+export type UploadSignInput = z.infer<typeof uploadSignInput>;

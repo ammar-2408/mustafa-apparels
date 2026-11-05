@@ -158,11 +158,11 @@ GA4 hosts come from Google's CSP guide for GA4 without Ads features (`docs/analy
 
 ## 5. File uploads (admin only)
 
-1. Client requests a signature from `/api/upload/sign` with `{ kind }` (admin session required).
-2. Signature restricts: folder `products/`, `resource_type`, `allowed_formats` for that kind, expiry 5 min.
+1. Client requests a signature from `/api/upload/sign` with `{ kind, target: 'product' | 'category', targetId, purpose?: 'poster' }` (admin with 2FA, 30 a minute; the target must exist).
+2. The server picks and signs the `public_id` (`products/{id}/{uuid}` or `categories/{id}/{uuid}`), `asset_folder`, `allowed_formats` for that kind and the timestamp; videos also sign the eager delivery version. Cloudinary accepts a signature for up to 1 hour, so the 1-hour age limit is checked on save (step 3), not by Cloudinary.
    - **Images:** `jpg,png,webp`, 10 MB.
    - **Videos:** `mp4,mov,webm`, 50 MB, 60 seconds.
-3. On save, the server re-fetches metadata from Cloudinary by `public_id` and rejects anything outside our folder, format list, size limit or duration limit. Rejected assets are deleted from Cloudinary.
+3. On save, the server re-fetches metadata from Cloudinary by `public_id` and rejects anything outside this suit's or collection's prefix, more than 1 hour old, format list, size limit or duration limit. Rejected assets are deleted from Cloudinary.
 4. Cloudinary strips EXIF/GPS metadata on delivery (`fl_strip_profile` or the account default). Videos are delivered with no audio track.
 5. Deleting media removes it from Cloudinary too.
 

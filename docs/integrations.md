@@ -16,7 +16,7 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 ## Cloudinary
 
 ### Folders and delivery
-- Folder structure: `products/{publicId}`, `categories/{categoryId}`, `brand/`. Admin uploads can't use a product ID in the path, because a new product has no ID until it's saved. Imported stock uses `products/imported/{import_key}/`, where `import_key` is the suit's design ID (`docs/catalog.md` §6).
+- Folder structure: `products/{productId}/{uuid}` (a video poster: `products/{productId}/poster-{uuid}`), `categories/{categoryId}/{uuid}`, `brand/`. A new suit is saved as a draft first and photos are added on its edit page, so the admin always knows the product id. The server picks the full public id and signs it with an `asset_folder` of the same path, so the layout is the same in Cloudinary's fixed and dynamic folder modes. Imported stock uses `products/imported/{import_key}/`, where `import_key` is the suit's design ID (`docs/catalog.md` §6).
 - Image URLs, via a custom `next/image` loader (`apps/web/lib/cloudinary-loader.ts`), so neither Next.js nor Netlify re-optimizes images:
   - **Grid cards:** `f_auto,q_auto,c_fill,g_north,ar_3:4,w_{width}`. `g_north` crops from the top: the default crops from the centre, which would cut the model's head off these tall photos.
   - **Product gallery:** `f_auto,q_auto,c_limit,w_{width}`, so the whole photo shows (`docs/design.md` §2).
@@ -30,6 +30,15 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
   `https://res.cloudinary.com/<cloud>/video/upload/ac_none,c_limit,w_720,q_auto,vc_h264/<public_id>.mp4`
 - **Poster:** `https://res.cloudinary.com/<cloud>/video/upload/so_0,f_auto,q_auto,c_limit,w_720/<public_id>.jpg`, or the admin's chosen `poster_public_id`.
 - **Playback rules:** `docs/design.md` §5.2.
+
+### Account settings (checked by the owner, 2026-11-05)
+- The only upload preset, `ml_default`, is **Signed**; the three "Unsigned actions allowed" boxes under **Settings → Security** are unticked. Our uploads use no preset: each is signed by `/api/upload/sign`.
+- Plan limits: images 10 MB, videos 100 MB per file (ours: 10 MB and 50 MB). Free plan, 25 credits a month; 0.15 used.
+- Strict transformations are off. Turning them on is a Phase 9 hardening item: every transformation the sites use would then need allow-listing.
+
+### Code and mock mode
+- `packages/core/integrations/media.ts`: `MEDIA_LIMITS`, `VIDEO_EAGER`, `cloudinarySignature` (SHA-1 of the sorted params plus the secret), `signUpload`, `verifyUploadSignature`, the mock store. No SDK.
+- In `INTEGRATIONS_MODE=mock` (CI, local E2E) signing uses fixed mock credentials and the browser posts to the admin's `/api/upload/mock`, which only exists when `APP_ENV` is `development` or `test`. It checks the signature and formats as Cloudinary does and records the real file size in `.e2e-media/` (git-ignored). A mock video's length is read from its file name (`walk-61s.mp4` is 61 s).
 
 ### Free plan budget
 

@@ -42,3 +42,4 @@ CLAUDE.local.md
 
 # Mock-mode emails for E2E (packages/core/integrations/email.ts)
 .e2e-outbox/
+.e2e-media/

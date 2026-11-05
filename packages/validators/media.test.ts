@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { mediaInput, mediaListInput } from './media';
+import { mediaInput, mediaListInput, uploadSignInput } from './media';
 
 const photo = {
   kind: 'image',
@@ -61,5 +61,30 @@ describe('mediaListInput', () => {
 
   it('rejects the same asset twice', () => {
     expect(mediaListInput.safeParse([photo, { ...photo, isPrimary: false }]).success).toBe(false);
+  });
+});
+
+describe('uploadSignInput', () => {
+  const ok = (input: unknown) => uploadSignInput.safeParse(input).success;
+
+  it('takes a kind, a target and its id', () => {
+    expect(ok({ kind: 'image', target: 'product', targetId: 'p1' })).toBe(true);
+    expect(ok({ kind: 'video', target: 'product', targetId: 'p1' })).toBe(true);
+    expect(ok({ kind: 'image', target: 'category', targetId: 'c-1' })).toBe(true);
+    expect(ok({ kind: 'image', target: 'product', targetId: 'p1', purpose: 'poster' })).toBe(true);
+  });
+
+  it.each([
+    ['an unknown kind', { kind: 'raw', target: 'product', targetId: 'p1' }],
+    ['an unknown target', { kind: 'image', target: 'user', targetId: 'p1' }],
+    ['a path in the id', { kind: 'image', target: 'product', targetId: '../x' }],
+    [
+      'a folder from the browser',
+      { kind: 'image', target: 'product', targetId: 'p1', folder: 'x' },
+    ],
+    ['a video poster', { kind: 'video', target: 'product', targetId: 'p1', purpose: 'poster' }],
+    ['no id', { kind: 'image', target: 'product' }],
+  ])('refuses %s', (_name, input) => {
+    expect(ok(input)).toBe(false);
   });
 });

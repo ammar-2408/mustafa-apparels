@@ -122,3 +122,41 @@ describe.each(actions)('%s', (name, action) => {
     expect(reached).not.toHaveBeenCalled();
   });
 });
+
+// The same loop for route handlers: every app/api/**/route.ts except Better Auth's own.
+vi.mock('../lib/media', () => ({ mockUploadsAllowed: () => true, mediaConfig: () => ({}) }));
+
+const routeModules = import.meta.glob(['../app/api/**/route.ts', '!../app/api/auth/**'], {
+  eager: true,
+}) as Record<string, Record<string, unknown>>;
+const handlers = Object.entries(routeModules).flatMap(([file, exports]) =>
+  ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+    .filter((method) => typeof exports[method] === 'function')
+    .map((method) => [`${file.replace('../app/', '')} ${method}`, exports[method]] as const),
+);
+
+it('finds the admin route handlers', () => {
+  expect(handlers.length).toBeGreaterThan(0);
+});
+
+describe.each(handlers)('%s', (_name, handler) => {
+  const call = async (current: unknown) => {
+    session.current = current;
+    const response = await (handler as (request: Request) => Promise<Response>)(
+      new Request('http://localhost:3001/api/x', { method: 'POST', body: '{}' }),
+    );
+    return response.status;
+  };
+
+  it('answers 401 when signed out', async () => {
+    expect(await call(null)).toBe(401);
+    expect(reached).not.toHaveBeenCalled();
+  });
+
+  it('answers 403 to a customer, a banned admin, a pre-2FA admin and a storefront session', async () => {
+    for (const current of [customer, bannedAdmin, adminWithout2fa, storefrontAdmin]) {
+      expect(await call(current)).toBe(403);
+    }
+    expect(reached).not.toHaveBeenCalled();
+  });
+});
