@@ -20,8 +20,9 @@ export const AVAILABILITY = ['in_stock', 'low_stock', 'out_of_stock'] as const;
 const pieceDetail = z
   .object({
     piece: z.enum(['shirt', 'dupatta', 'trouser']),
-    fabric: z.string().trim().min(1).max(40).optional(),
-    finish: z.string().trim().max(40).optional(),
+    // Shown on the product page, so no other brand's name.
+    fabric: noBannedTerms(z.string().trim().min(1).max(40)).optional(),
+    finish: noBannedTerms(z.string().trim().max(40)).optional(),
     // Fabric length in metres.
     length_m: z.number().positive().max(10).optional(),
   })

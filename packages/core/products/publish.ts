@@ -47,6 +47,13 @@ export function publishErrors(suit: Product, media: Media[]): FieldErrors {
     if (term) errors[field] = [brandMessage(term)];
   }
 
+  // "What's included" rows show each piece's fabric and finish (the import writes them too).
+  const pieceText = (suit.pieceDetails as { fabric?: string; finish?: string }[]).flatMap((row) =>
+    [row.fabric, row.finish].filter((text): text is string => typeof text === 'string'),
+  );
+  const pieceTerm = brandIn(pieceText);
+  if (pieceTerm) errors.pieceDetails = [brandMessage(pieceTerm)];
+
   const checks = openChecks(suit.attributes);
   if (checks.length > 0) {
     errors.checks = [

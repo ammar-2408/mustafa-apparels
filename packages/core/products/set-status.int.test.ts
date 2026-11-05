@@ -233,3 +233,19 @@ describe('check: items', () => {
     expect(products.openChecks({})).toEqual([]);
   });
 });
+
+describe('brand names in piece details', () => {
+  it('blocks publishing when an imported piece row names another brand', async () => {
+    const suit = await makeProduct(db, {
+      published: true,
+      status: 'draft',
+      publishedAt: null,
+      pieceDetails: [{ piece: 'shirt', fabric: 'Khaddar', finish: 'Sobia Waseem embroidery' }],
+    });
+    await expect(
+      products.setStatus(db, { id: suit.id, status: 'published' }, actor),
+    ).rejects.toMatchObject({
+      fieldErrors: { pieceDetails: ['Remove the brand name “Sobia Waseem”'] },
+    });
+  });
+});

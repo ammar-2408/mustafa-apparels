@@ -291,3 +291,22 @@ describe('status and check inputs', () => {
     expect(productCheckInput.safeParse({ id: 'p1', check: '' }).success).toBe(false);
   });
 });
+
+describe('piece details and brand names', () => {
+  it.each(['fabric', 'finish'])('refuses another brand in a piece %s', (key) => {
+    const result = productEditInput.safeParse({
+      id: 'p1',
+      pieceDetails: [{ piece: 'shirt', [key]: 'Khaadi style embroidery' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts ordinary piece text', () => {
+    expect(
+      productEditInput.safeParse({
+        id: 'p1',
+        pieceDetails: [{ piece: 'shirt', fabric: 'Khaddar', finish: 'Embroidered' }],
+      }).success,
+    ).toBe(true);
+  });
+});
