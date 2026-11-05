@@ -40,6 +40,9 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 - `packages/core/integrations/media.ts`: `MEDIA_LIMITS`, `VIDEO_EAGER`, `cloudinarySignature` (SHA-1 of the sorted params plus the secret), `signUpload`, `verifyUploadSignature`, the mock store. No SDK.
 - In `INTEGRATIONS_MODE=mock` (CI, local E2E) signing uses fixed mock credentials and the browser posts to the admin's `/api/upload/mock`, which only exists when `APP_ENV` is `development` or `test`. It checks the signature and formats as Cloudinary does and records the real file size in `.e2e-media/` (git-ignored). A mock video's length is read from its file name (`walk-61s.mp4` is 61 s).
 
+### Live check
+`pnpm smoke:cloudinary` (`scripts/cloudinary-smoke.ts`, run by hand, never in CI) uploads a 1×1 test photo to `products/e2e-live-<random>/` with your keys, reads it back through the Admin API, checks that a second upload with the same signature doesn't overwrite, that a file for another suit is refused but not deleted, and that a GIF is refused by the signed formats, then deletes it. It prints PASS/FAIL lines, never a key. It needs `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET`. Video uploads (the eager delivery version) are first checked live on the `develop` preview.
+
 ### Free plan budget
 
 25 credits a month, shared across storage, delivery and processing. One credit is 1,000 transformations, or 1 GB of storage, or 1 GB of bandwidth. Video processing is metered by seconds: Cloudinary's credit page gives 500 SD or 250 HD seconds per credit, though its pages describe the video rates differently, so check the dashboard.

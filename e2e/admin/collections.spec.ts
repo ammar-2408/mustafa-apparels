@@ -86,3 +86,30 @@ test('a brand name or a taken address is refused on its field', async ({ page, u
   await page.getByRole('button', { name: 'Create collection' }).click();
   await expect(page.getByText('Another collection already uses this slug')).toBeVisible();
 });
+
+test('add a collection photo, then remove it', async ({ page, users, db }) => {
+  const tag = newTag();
+  const [row] = await db
+    .insert(category)
+    .values({ name: `E2E Col ${tag}`, slug: `${PREFIX}${tag}` })
+    .returning();
+  await loginAsAdmin(page, users);
+  await page.goto(`/collections/${row!.id}`);
+  await expect(page.getByText(/No photo yet/)).toBeVisible();
+
+  await page.getByLabel('Add photo').setInputFiles({
+    name: 'cover.jpg',
+    mimeType: 'image/jpeg',
+    buffer: Buffer.alloc(4096, 1),
+  });
+  await expect(page.getByLabel('Replace photo')).toBeAttached({ timeout: 15_000 });
+  await expect
+    .poll(
+      async () =>
+        (await db.select().from(category).where(eq(category.id, row!.id)))[0]?.imagePublicId,
+    )
+    .toMatch(new RegExp(`^categories/${row!.id}/`));
+
+  await page.getByRole('button', { name: 'Remove photo' }).click();
+  await expect(page.getByText(/No photo yet/)).toBeVisible({ timeout: 15_000 });
+});

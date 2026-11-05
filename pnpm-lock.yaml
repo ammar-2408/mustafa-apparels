@@ -178,6 +178,9 @@ importers:
       '@mustafa/config':
         specifier: workspace:*
         version: link:packages/config
+      '@mustafa/core':
+        specifier: workspace:*
+        version: link:packages/core
       '@mustafa/db':
         specifier: workspace:*
         version: link:packages/db
