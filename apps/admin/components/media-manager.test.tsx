@@ -156,6 +156,24 @@ describe('MediaManager', () => {
     await waitFor(() => expect(actions.deleteProductMedia).toHaveBeenCalledWith({ mediaId: 'm2' }));
   });
 
+  it('says an imported stock file stays in Cloudinary when it is deleted from the suit', async () => {
+    renderManager([
+      {
+        id: 'm9',
+        kind: 'image' as const,
+        publicId: 'products/imported/DHN-01/dhnk1-0a1b2c3d',
+        alt: 'A black suit',
+        isPrimary: true,
+        posterPublicId: null,
+        durationSeconds: null,
+      },
+    ]);
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Delete this photo?' });
+    expect(dialog.textContent).toMatch(/stock import.*stays in Cloudinary/);
+    expect(dialog.textContent).not.toMatch(/from Cloudinary/);
+  });
+
   it('reorders with the arrow buttons', async () => {
     renderManager();
     fireEvent.click(screen.getByRole('button', { name: 'Move Photo 2 up' }));

@@ -7,6 +7,7 @@ import {
   AssetRejected,
   assetUrl,
   deleteAsset,
+  IMPORTED_PREFIX,
   verifyAsset,
 } from '@mustafa/core/integrations/media';
 import * as media from '@mustafa/core/media';
@@ -34,6 +35,12 @@ const refresh = (productId: string) => {
 
 // A failed Cloudinary delete leaves an orphan file, not a broken page: log and carry on.
 async function removeFromCloudinary(publicId: string, kind: 'image' | 'video') {
+  // deleteAsset keeps imported stock (shared by the dev and production databases): log the id, so
+  // a file that must not stay online can be found and deleted by hand.
+  if (publicId.startsWith(IMPORTED_PREFIX)) {
+    console.info(`[media] Imported stock file kept in Cloudinary: ${publicId}`);
+    return;
+  }
   const deleted = await deleteAsset(mediaConfig(), publicId, kind).catch(() => false);
   if (!deleted) console.error('[media] Cloudinary delete failed; the file is left over');
 }

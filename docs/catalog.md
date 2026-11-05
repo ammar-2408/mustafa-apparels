@@ -152,6 +152,7 @@ Script: `scripts/import-stock.ts`. Built in Phase 5 of `docs/project-implementat
    - A check you cleared never comes back; a new `check:` in the file is added.
    - Media is matched by its place in the file (first photo, second photo, first video), so a re-cropped photo, or one replaced under a new file name, takes the old one's place, and stays main if it was. The old file stays in Cloudinary, because the other database may use it; the report lists it.
    - A suit deleted in admin is never imported again.
+   - Deleting an imported photo or video in admin removes it from that suit only. The file stays in Cloudinary because the other database may use it; the delete dialog says so, and the admin logs the file id. If a file must not stay online (for example, another brand turned up in it), delete it in the Cloudinary console too.
    - It writes a `product.import` row in the audit log for each suit it creates or changes, as the owner (`SEED_ADMIN_EMAIL`, else the first admin).
 
 **Guards:** it runs the dry-run checks first and stops on any problem. It refuses to start if the uploads would pass `--max-credits` (default 3). It imports into your local database (`DATABASE_URL`, the Neon `dev` branch) unless `IMPORT_DATABASE_URL` and `--production` are both given.

@@ -205,6 +205,32 @@ describe('deleteProductMedia', () => {
     );
   });
 
+  it('keeps an imported stock file in Cloudinary and logs its id, so it can be found', async () => {
+    const imported = 'products/imported/DHN-01/dhnk1-0a1b2c3d';
+    const [row] = await db
+      .insert(productMedia)
+      .values({
+        productId,
+        kind: 'image',
+        alt: 'Black suit, front view',
+        url: `https://res.cloudinary.com/demo/image/upload/${imported}.jpg`,
+        publicId: imported,
+        format: 'jpg',
+        bytes: 2048,
+        width: 1200,
+        height: 1600,
+        sortOrder: 0,
+        isPrimary: true,
+      })
+      .returning();
+    const log = vi.spyOn(console, 'info').mockImplementation(() => {});
+    expect(await deleteProductMedia({ mediaId: row!.id })).toMatchObject({ ok: true });
+    expect(await rows()).toHaveLength(0);
+    expect(cloud.deleteAsset).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledWith(`[media] Imported stock file kept in Cloudinary: ${imported}`);
+    log.mockRestore();
+  });
+
   it('still succeeds when Cloudinary fails, and logs without details', async () => {
     const a = await upload();
     cloud.deleteAsset.mockRejectedValue(new Error('network down at api.cloudinary.com'));

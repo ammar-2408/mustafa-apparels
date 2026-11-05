@@ -17,6 +17,10 @@ import { imageThumbUrl, videoPosterUrl } from '../lib/cloudinary-url';
 import { SortableList } from './sortable-list';
 import { VideoControls } from './video-controls';
 
+// Stock from scripts/import-stock.ts. Its files are shared with the other database, so deleting
+// one here keeps the file (the same prefix as IMPORTED_PREFIX in core, which can't load here).
+const IMPORTED_PREFIX = 'products/imported/';
+
 export type MediaItem = {
   id: string;
   kind: 'image' | 'video';
@@ -120,7 +124,9 @@ export function SavedMedia({ productId, cloudName, items }: SavedMediaProps) {
         title={confirming?.kind === 'video' ? 'Delete this video?' : 'Delete this photo?'}
       >
         <p className="mb-6 text-body">
-          It is removed from the suit and from Cloudinary. This can&apos;t be undone.
+          {confirming?.publicId.startsWith(IMPORTED_PREFIX)
+            ? 'It is removed from this suit. It came from the stock import, so the file itself stays in Cloudinary, where the other database may use it. If it must not be online at all, delete it in the Cloudinary console too.'
+            : 'It is removed from the suit and from Cloudinary. This can’t be undone.'}
         </p>
         <div className="flex flex-wrap gap-4">
           <Button
