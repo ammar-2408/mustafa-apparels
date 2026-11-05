@@ -17,7 +17,7 @@ import { loadCatalog } from './catalog';
 import { COLLECTION, suitText } from './fixtures';
 import { fakeMp4 } from './mp4';
 import { importActor, importStock } from './run';
-import { mockUploader } from './uploader';
+import { mockUploader, type Uploader } from './uploader';
 
 let db: TestDb;
 let root: string;
@@ -65,12 +65,12 @@ afterEach(async () => {
   rmSync(root, { recursive: true, force: true });
 });
 
-const run = (options: { maxCredits?: number } = {}) =>
+const run = (options: { maxCredits?: number; uploader?: Uploader } = {}) =>
   importStock({
     db,
     suits: loadCatalog(catalogDir).suits,
     stockDir,
-    uploader: mockUploader(storeDir),
+    uploader: options.uploader ?? mockUploader(storeDir),
     mediaConfig,
     actor,
     maxCredits: options.maxCredits ?? 3,
@@ -252,6 +252,32 @@ describe('importStock', () => {
     const report = await run();
     expect(report.suits[0]).toMatchObject({ outcome: 'unchanged', changed: [], keptEdits: [] });
     expect(await audits()).toBe(before);
+  });
+
+  it('recovers from an upload that fails halfway through a swap', async () => {
+    await run();
+    const suit = await suitRow('DHN-01');
+    const [oldPhoto] = await mediaOf(suit.id);
+    writeFileSync(
+      join(catalogDir, 'dhanak', 'dhn-01.md'),
+      suitText('DHN-01').replace(
+        'alt: "Model wearing a teal 3-piece Dhanak suit"',
+        'alt: "Model wearing a teal 3-piece Dhanak suit"\n    crop: { x: 0, y: 0, width: 60, height: 70 }',
+      ),
+    );
+    const flaky: Uploader = {
+      ...mockUploader(storeDir),
+      upload: () => Promise.reject(new Error('Cloudinary timed out')),
+    };
+    await expect(run({ uploader: flaky })).rejects.toThrow('Cloudinary timed out');
+
+    await run();
+    const items = await mediaOf(suit.id);
+    expect(items.map((m) => [m.kind, m.isPrimary, m.height])).toEqual([
+      ['image', true, 70],
+      ['video', false, 1280],
+    ]);
+    expect(items.some((m) => m.publicId === oldPhoto!.publicId)).toBe(false);
   });
 
   it('never brings back a photo or video the owner removed in admin', async () => {

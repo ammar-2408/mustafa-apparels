@@ -404,9 +404,11 @@ async function importSuit({
     (c) => !last.checks.includes(c) && !currentChecks.includes(c),
   );
   const checks = [...currentChecks, ...newChecks];
+  // The media part of the snapshot is written only once the media below is in place: if an upload
+  // fails halfway, the next run must still see the old file as the one to replace.
   const snapshot: Snapshot = {
     fields: fieldsOf(desired),
-    media: mediaSnapshot,
+    media: last.media,
     checks: suit.check,
   };
   if (!same(last, snapshot) || newChecks.length > 0) {
@@ -477,6 +479,21 @@ async function importSuit({
         `${was.file ?? key} is no longer in catalog/; remove it in admin if it should go`,
       ];
     }
+  }
+  if (!same(last.media, mediaSnapshot)) {
+    const [fresh] = await db
+      .select({ attributes: product.attributes })
+      .from(product)
+      .where(eq(product.id, current.id));
+    const now = (fresh?.attributes ?? {}) as Record<string, unknown>;
+    await products.update(
+      db,
+      {
+        id: current.id,
+        attributes: { ...now, import: { ...(now.import as Snapshot), media: mediaSnapshot } },
+      },
+      actor,
+    );
   }
   if (mediaChanged) result.changed.push('media');
   if (result.changed.length > 0) {
