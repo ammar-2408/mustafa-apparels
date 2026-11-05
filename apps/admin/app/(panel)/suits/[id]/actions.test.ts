@@ -47,6 +47,7 @@ import {
   deleteProductMedia,
   reorderProductMedia,
   setPrimaryProductImage,
+  setVideoPoster,
   updateMediaAlt,
 } from './actions';
 
@@ -214,5 +215,54 @@ describe('deleteProductMedia', () => {
     expect(await deleteProductMedia({ mediaId: a })).toMatchObject({ ok: true });
     expect(JSON.stringify(log.mock.calls)).not.toContain('api.cloudinary.com');
     log.mockRestore();
+  });
+});
+
+describe('setVideoPoster', () => {
+  it('saves a poster photo uploaded for this suit, and deletes the one it replaces', async () => {
+    const v = await upload('video');
+    const first = `products/${productId}/poster-one`;
+    expect(await setVideoPoster({ mediaId: v, posterPublicId: first })).toEqual({
+      ok: true,
+      data: { id: v, posterPublicId: first },
+    });
+    expect(cloud.verifyAsset).toHaveBeenLastCalledWith(expect.anything(), first, {
+      kind: 'image',
+      prefix: `products/${productId}/poster-`,
+    });
+    await setVideoPoster({ mediaId: v, posterPublicId: `products/${productId}/poster-two` });
+    expect(cloud.deleteAsset).toHaveBeenCalledWith(expect.anything(), first, 'image');
+    expect((await rows())[0]!.posterPublicId).toBe(`products/${productId}/poster-two`);
+  });
+
+  it('goes back to the first frame with null, deleting the old poster', async () => {
+    const v = await upload('video');
+    await setVideoPoster({ mediaId: v, posterPublicId: `products/${productId}/poster-one` });
+    expect(await setVideoPoster({ mediaId: v, posterPublicId: null })).toMatchObject({ ok: true });
+    expect((await rows())[0]!.posterPublicId).toBeNull();
+    expect(cloud.deleteAsset).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuses a poster Cloudinary rejects, a photo row, and a missing video', async () => {
+    const v = await upload('video');
+    cloud.verifyAsset.mockRejectedValueOnce(
+      new AssetRejected(['This file was uploaded for something else.']),
+    );
+    expect(
+      await setVideoPoster({ mediaId: v, posterPublicId: `products/${productId}/poster-x` }),
+    ).toMatchObject({
+      ok: false,
+      error: {
+        code: 'VALIDATION',
+        fieldErrors: { file: ['This file was uploaded for something else.'] },
+      },
+    });
+    const photo = await upload('image');
+    expect(await setVideoPoster({ mediaId: photo, posterPublicId: null })).toMatchObject({
+      error: { code: 'VALIDATION' },
+    });
+    expect(await setVideoPoster({ mediaId: 'missing', posterPublicId: null })).toMatchObject({
+      error: { code: 'NOT_FOUND' },
+    });
   });
 });

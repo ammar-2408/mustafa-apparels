@@ -111,3 +111,48 @@ test('a wrong type or an oversize photo is refused before upload', async ({ page
   await input.setInputFiles(photo('huge.jpg', 10 * 1024 * 1024 + 1));
   await expect(page.getByText(/huge\.jpg is 10\.0 MB/)).toBeVisible();
 });
+
+const video = (name: string) => ({ name, mimeType: 'video/mp4', buffer: Buffer.alloc(8192, 1) });
+
+test('upload a video, give it a poster photo, then go back to the first frame', async ({
+  page,
+  users,
+  db,
+}) => {
+  await loginAsAdmin(page, users);
+  await page.goto(`/suits/${suit.id}`);
+
+  // The mock route reads a video's length from its name: 20 s here.
+  await page.getByLabel(/add photos or videos/i).setInputFiles(video('walk-20s.mp4'));
+  const card = page.getByRole('list', { name: 'New uploads' }).getByRole('listitem');
+  await card.getByLabel('Alt text').fill('Model walking in a black embroidered suit');
+  await card.getByRole('button', { name: 'Save video' }).click();
+  await expect(page.getByText('Video 20s')).toBeVisible();
+  await expect.poll(async () => (await savedRows(db))[0]?.durationSeconds).toBe('20');
+
+  await expect(page.getByText('Poster: the first frame of the video.')).toBeVisible();
+  await page.getByLabel('Change poster').setInputFiles(photo('poster.jpg'));
+  await expect(page.getByText('Poster: your photo.')).toBeVisible();
+  const [row] = await savedRows(db);
+  expect(row?.posterPublicId).toMatch(new RegExp(`^products/${suit.id}/poster-`));
+
+  await page.getByRole('button', { name: 'Use first frame' }).click();
+  await expect(page.getByText('Poster: the first frame of the video.')).toBeVisible();
+  await expect.poll(async () => (await savedRows(db))[0]?.posterPublicId).toBeNull();
+});
+
+test('a video over 60 seconds is refused when saved, with the reason', async ({
+  page,
+  users,
+  db,
+}) => {
+  await loginAsAdmin(page, users);
+  await page.goto(`/suits/${suit.id}`);
+  await page.getByLabel(/add photos or videos/i).setInputFiles(video('long-61s.mp4'));
+  const card = page.getByRole('list', { name: 'New uploads' }).getByRole('listitem');
+  await card.getByLabel('Alt text').fill('Model walking in a black embroidered suit');
+  await card.getByRole('button', { name: 'Save video' }).click();
+  await expect(card.getByRole('alert')).toContainText('longer than 60 seconds');
+  await expect(card.getByRole('button', { name: 'Remove' })).toBeVisible();
+  expect(await savedRows(db)).toHaveLength(0);
+});

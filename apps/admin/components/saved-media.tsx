@@ -15,6 +15,7 @@ import {
 } from '../app/(panel)/suits/[id]/actions';
 import { imageThumbUrl, videoPosterUrl } from '../lib/cloudinary-url';
 import { SortableList } from './sortable-list';
+import { VideoControls } from './video-controls';
 
 export type MediaItem = {
   id: string;
@@ -38,13 +39,11 @@ type SavedMediaProps = {
   productId: string;
   cloudName: string;
   items: MediaItem[];
-  /** The video controls (step 4.6), shown under a video's card. */
-  videoExtra?: (item: MediaItem) => ReactNode;
 };
 
 // The saved photos and videos, in storefront order. The first photo is the main image. The
 // actions revalidate this page, so fresh props arrive with each answer and remount the list.
-export function SavedMedia({ productId, cloudName, items, videoExtra }: SavedMediaProps) {
+export function SavedMedia({ productId, cloudName, items }: SavedMediaProps) {
   const [order, setOrder] = useState(items);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
@@ -95,7 +94,17 @@ export function SavedMedia({ productId, cloudName, items, videoExtra }: SavedMed
             }}
             onSaveAlt={(alt) => run(() => updateMediaAlt({ mediaId: item.id, alt }))}
             onDelete={() => setConfirming(item)}
-            extra={item.kind === 'video' ? videoExtra?.(item) : null}
+            extra={
+              item.kind === 'video' ? (
+                <VideoControls
+                  productId={productId}
+                  mediaId={item.id}
+                  publicId={item.publicId}
+                  posterPublicId={item.posterPublicId}
+                  cloudName={cloudName}
+                />
+              ) : null
+            }
           />
         )}
       />

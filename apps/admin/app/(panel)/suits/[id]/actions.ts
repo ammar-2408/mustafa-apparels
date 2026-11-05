@@ -1,7 +1,7 @@
 'use server';
 import 'server-only';
 
-import { invalid } from '@mustafa/core/errors';
+import { invalid, notFound } from '@mustafa/core/errors';
 import {
   assetPrefix,
   AssetRejected,
@@ -15,6 +15,7 @@ import {
   mediaAddInput,
   mediaAltInput,
   mediaDeleteInput,
+  mediaPosterInput,
   mediaPrimaryInput,
   mediaReorderInput,
 } from '@mustafa/validators/media';
@@ -89,6 +90,29 @@ const remove = adminAction(mediaDeleteInput, async (input, { session }) => {
   return { id: row.id };
 });
 
+// A video's poster: a photo uploaded for this suit as a poster, or null for the first frame. The
+// poster it replaces is deleted from Cloudinary once the new one is saved.
+const setPoster = adminAction(mediaPosterInput, async (input, { session }) => {
+  const db = getDb();
+  const video = await media.getById(db, input.mediaId);
+  if (!video) throw notFound('Video');
+  if (input.posterPublicId) {
+    try {
+      await verifyAsset(mediaConfig(), input.posterPublicId, {
+        kind: 'image',
+        prefix: `${assetPrefix('product', video.productId)}poster-`,
+      });
+    } catch (error) {
+      if (error instanceof AssetRejected) throw invalid({ file: error.problems });
+      throw error;
+    }
+  }
+  const { previous } = await media.setPoster(db, input, { actorId: session.user.id });
+  if (previous && previous !== input.posterPublicId) await removeFromCloudinary(previous, 'image');
+  await refresh(video.productId);
+  return { id: video.id, posterPublicId: input.posterPublicId };
+});
+
 // A 'use server' file exports async functions only.
 export async function addProductMedia(raw: unknown) {
   return add(raw);
@@ -108,4 +132,8 @@ export async function updateMediaAlt(raw: unknown) {
 
 export async function deleteProductMedia(raw: unknown) {
   return remove(raw);
+}
+
+export async function setVideoPoster(raw: unknown) {
+  return setPoster(raw);
 }

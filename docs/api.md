@@ -96,7 +96,7 @@ All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). B
 | `updateMediaAlt` | `mediaAltInput` `{ mediaId, alt }` | `products`, `product:<id>` |
 | `reorderProductMedia` | `{ productId, mediaIds[] }` (every item; the first photo becomes main) | `products`, `product:<id>` |
 | `setPrimaryProductImage` | `{ productId, mediaId }` (must be `kind = image`; moves it to the front) | `product:<id>`, `products` |
-| `setVideoPoster` | `{ mediaId, posterPublicId }` | `product:<id>` |
+| `setVideoPoster` | `mediaPosterInput` `{ mediaId, posterPublicId | null }`; a poster must be a photo uploaded for this suit with `purpose: 'poster'` (`products/<id>/poster-…`, checked by `verifyAsset`); null is the first frame. The replaced poster is deleted from Cloudinary | `products`, `product:<id>` |
 | `deleteProductMedia` | `{ mediaId }` — also deletes the file and any poster from Cloudinary (a failed delete is logged, the save still succeeds) | `products`, `product:<id>` |
 | `setCategoryImage` (`app/(panel)/collections/actions.ts`) | `categoryImageInput` `{ id, publicId | null }`; runs `verifyAsset` with `categories/<id>/`, deletes the photo it replaces | `categories`, `products`, `category:<slug>` |
 

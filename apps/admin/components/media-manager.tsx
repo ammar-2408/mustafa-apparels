@@ -3,7 +3,7 @@
 import { Button } from '@mustafa/ui/button';
 import { Textarea } from '@mustafa/ui/textarea';
 import Image from 'next/image';
-import { type DragEvent, type ReactNode, useId, useRef, useState } from 'react';
+import { type DragEvent, useId, useRef, useState } from 'react';
 
 import { addProductMedia } from '../app/(panel)/suits/[id]/actions';
 import { ACCEPT, checkDuration, checkFile } from '../lib/file-check';
@@ -27,14 +27,13 @@ type MediaManagerProps = {
   productId: string;
   cloudName: string;
   media: MediaItem[];
-  videoExtra?: (item: MediaItem) => ReactNode;
 };
 
 let counter = 0;
 
 // Photos and videos of one suit: drop or choose files, each uploads at once and is saved when it
 // has alt text. Saved items can be reordered, made main, described and deleted.
-export function MediaManager({ productId, cloudName, media, videoExtra }: MediaManagerProps) {
+export function MediaManager({ productId, cloudName, media }: MediaManagerProps) {
   const inputId = useId();
   const input = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<Pending[]>([]);
@@ -232,13 +231,7 @@ export function MediaManager({ productId, cloudName, media, videoExtra }: MediaM
         </ul>
       ) : null}
 
-      <SavedMedia
-        key={savedKey}
-        productId={productId}
-        cloudName={cloudName}
-        items={media}
-        {...(videoExtra && { videoExtra })}
-      />
+      <SavedMedia key={savedKey} productId={productId} cloudName={cloudName} items={media} />
     </section>
   );
 }
