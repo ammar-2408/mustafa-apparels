@@ -109,6 +109,42 @@ export function signUpload(config: MediaConfig, options: SignOptions): SignedUpl
   };
 }
 
+// Stock from catalog/ (scripts/import-stock.ts): a fixed id per file and crop, so dev and production
+// share one upload, and a re-run finds the file already there.
+export const IMPORTED_PREFIX = 'products/imported/';
+const IMPORTED_ID = /^products\/imported\/[A-Z]{3}-\d{2}\/[\w.-]+-[0-9a-f]{8}$/;
+
+export function signImportUpload(
+  config: MediaConfig,
+  {
+    kind,
+    publicId,
+    now = Math.floor(Date.now() / 1000),
+  }: { kind: MediaKind; publicId: string; now?: number },
+): SignedUpload {
+  if (!IMPORTED_ID.test(publicId) || publicId.includes('..')) {
+    throw new Error(`Not an imported stock id: ${publicId}`);
+  }
+  const { cloudName, apiKey, apiSecret } = credentials(config);
+  const params: Params = {
+    public_id: publicId,
+    asset_folder: publicId.slice(0, publicId.lastIndexOf('/')),
+    overwrite: 'false',
+    allowed_formats: MEDIA_LIMITS[kind].formats.join(','),
+    timestamp: now,
+    ...(kind === 'video' && { eager: VIDEO_EAGER, eager_async: 'true' }),
+  };
+  const fields = Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)]));
+  return {
+    uploadUrl:
+      config.mode === 'mock'
+        ? MOCK_UPLOAD_PATH
+        : `https://api.cloudinary.com/v1_1/${cloudName}/${kind}/upload`,
+    publicId,
+    fields: { ...fields, api_key: apiKey, signature: cloudinarySignature(params, apiSecret) },
+  };
+}
+
 // The fields Cloudinary leaves out of the signature.
 const UNSIGNED = new Set(['file', 'api_key', 'signature', 'resource_type', 'cloud_name']);
 
@@ -218,12 +254,16 @@ export async function getAsset(
 }
 
 // Deletes the asset and its cached copies. True when it is gone (or was never there).
+// Imported stock is never deleted: the dev and production databases point at the same file, so
+// removing it from one suit only drops that row (the caller's job). The import report lists
+// files no suit uses any more.
 export async function deleteAsset(
   config: MediaConfig,
   publicId: string,
   kind: MediaKind,
   { fetchImpl = fetch, timeoutMs = API_TIMEOUT_MS, storeDir }: ApiOptions = {},
 ): Promise<boolean> {
+  if (publicId.startsWith(IMPORTED_PREFIX)) return true;
   if (config.mode === 'mock') {
     createMockStore(storeDir).remove(publicId);
     return true;

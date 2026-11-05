@@ -13,6 +13,7 @@ import {
   MEDIA_LIMITS,
   type MediaConfig,
   MOCK_CLOUD,
+  signImportUpload,
   signUpload,
   verifyUploadSignature,
   VIDEO_EAGER,
@@ -116,6 +117,48 @@ describe('signUpload', () => {
 
   it('fails clearly in live mode without credentials, naming the variables, not values', () => {
     expect(() => credentials({ ...live, apiSecret: undefined })).toThrow(/CLOUDINARY_API_SECRET/);
+  });
+});
+
+describe('signImportUpload', () => {
+  it('signs a stock photo at its fixed id, in its own folder, never overwriting', () => {
+    const signed = signImportUpload(live, {
+      kind: 'image',
+      publicId: 'products/imported/DHN-01/dhnk1-0a1b2c3d',
+      now: NOW,
+    });
+    expect(signed.uploadUrl).toBe('https://api.cloudinary.com/v1_1/mustafa/image/upload');
+    expect(signed.publicId).toBe('products/imported/DHN-01/dhnk1-0a1b2c3d');
+    expect(signed.fields).toMatchObject({
+      public_id: 'products/imported/DHN-01/dhnk1-0a1b2c3d',
+      asset_folder: 'products/imported/DHN-01',
+      overwrite: 'false',
+      allowed_formats: 'jpg,png,webp',
+      timestamp: String(NOW),
+      api_key: '123456',
+    });
+    expect(signed.fields.eager).toBeUndefined();
+    expect(verifyUploadSignature(signed.fields, 's3cret')).toBe(true);
+  });
+
+  it('gives a video the same 720 px eager version as the admin', () => {
+    const signed = signImportUpload(live, {
+      kind: 'video',
+      publicId: 'products/imported/LAJ-02/Laj2vid-9f8e7d6c',
+    });
+    expect(signed.fields).toMatchObject({ eager: VIDEO_EAGER, eager_async: 'true' });
+  });
+
+  it('refuses any id outside products/imported/<design id>/<name>-<hash>', () => {
+    for (const publicId of [
+      'products/p1/x',
+      'products/imported/DHN-01/x',
+      'products/imported/dhn-01/dhnk1-0a1b2c3d',
+      'products/imported/DHN-01/../a-0a1b2c3d',
+      'products/imported/DHN-01/sub/a-0a1b2c3d',
+    ]) {
+      expect(() => signImportUpload(live, { kind: 'image', publicId })).toThrow(/imported/);
+    }
   });
 });
 

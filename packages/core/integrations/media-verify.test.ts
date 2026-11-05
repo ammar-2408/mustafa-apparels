@@ -149,6 +149,20 @@ describe('getAsset and deleteAsset against Cloudinary', () => {
   });
 });
 
+describe('imported stock is shared by every database', () => {
+  it('deleteAsset never deletes a products/imported/ file, live or mock, and reports it kept', async () => {
+    const fetchImpl = vi.fn(async () => Response.json({ result: 'ok' }));
+    const id = 'products/imported/DHN-01/dhnk1-0a1b2c3d';
+    expect(await deleteAsset(live, id, 'image', { fetchImpl: fetchImpl as never })).toBe(true);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    const dir = mkdtempSync(join(tmpdir(), 'media-'));
+    const store = createMockStore(dir);
+    store.save(photo({ publicId: id }));
+    expect(await deleteAsset(mockConfig, id, 'image', { storeDir: dir })).toBe(true);
+    expect(store.get(id)).not.toBeNull();
+  });
+});
+
 describe('verifyAsset (mock store)', () => {
   let storeDir: string;
   beforeEach(() => {
