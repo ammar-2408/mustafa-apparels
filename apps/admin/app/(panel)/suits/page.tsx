@@ -7,9 +7,9 @@ import { Input } from '@mustafa/ui/input';
 import { Select } from '@mustafa/ui/select';
 import { adminProductListInput } from '@mustafa/validators/product';
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 
+import { Thumb } from '../../../components/thumb';
 import { requireAdminPage } from '../../../lib/auth';
 import { imageThumbUrl } from '../../../lib/cloudinary-url';
 import { formatPrice } from '../../../lib/format';
@@ -138,7 +138,9 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
                   href={`/suits/${item.id}`}
                   className="flex gap-3 rounded-sm border border-border p-3 hover:border-border-strong"
                 >
-                  <Thumb item={item} cloudName={cloudName} />
+                  <Thumb
+                    src={item.mainImage ? imageThumbUrl(cloudName, item.mainImage, 120) : null}
+                  />
                   <span className="flex min-w-0 flex-col gap-1">
                     <span className="text-body">{item.name}</span>
                     <span className="text-small text-muted">
@@ -180,7 +182,9 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
               {result.items.map((item) => (
                 <tr key={item.id} className="border-b border-border">
                   <td className="py-2 pr-3">
-                    <Thumb item={item} cloudName={cloudName} />
+                    <Thumb
+                      src={item.mainImage ? imageThumbUrl(cloudName, item.mainImage, 120) : null}
+                    />
                   </td>
                   <td className="py-2 pr-3">
                     <Link
@@ -223,23 +227,6 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
         </nav>
       ) : null}
     </>
-  );
-}
-
-function Thumb({ item, cloudName }: { item: AdminListItem; cloudName: string }) {
-  return item.mainImage ? (
-    <Image
-      src={imageThumbUrl(cloudName, item.mainImage, 120)}
-      alt=""
-      width={45}
-      height={60}
-      unoptimized
-      className="aspect-[3/4] w-12 shrink-0 rounded-sm bg-border object-cover"
-    />
-  ) : (
-    <span className="flex aspect-[3/4] w-12 shrink-0 items-center justify-center rounded-sm border border-border bg-surface text-center text-label text-muted">
-      No photo
-    </span>
   );
 }
 

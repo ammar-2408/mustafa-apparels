@@ -110,6 +110,12 @@ test('add a collection photo, then remove it', async ({ page, users, db }) => {
     )
     .toMatch(new RegExp(`^categories/${row!.id}/`));
 
+  // The list shows it as a small thumbnail.
+  await page.goto('/collections');
+  const listed = page.getByRole('listitem').filter({ hasText: `E2E Col ${tag}` });
+  await expect(listed.locator('img')).toHaveAttribute('src', /\/image\/upload\/.*categories\//);
+  await page.goto(`/collections/${row!.id}`);
+
   await page.getByRole('button', { name: 'Remove photo' }).click();
   await expect(page.getByText(/No photo yet/)).toBeVisible({ timeout: 15_000 });
 });

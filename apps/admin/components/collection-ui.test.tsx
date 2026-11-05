@@ -85,8 +85,15 @@ describe('CollectionImage', () => {
 
 describe('CollectionList', () => {
   const collections = [
-    { id: 'a', name: 'Dhanak', slug: 'dhanak', isActive: true, productCount: 3 },
-    { id: 'b', name: 'Khaddar', slug: 'khaddar', isActive: true, productCount: 1 },
+    {
+      id: 'a',
+      name: 'Dhanak',
+      slug: 'dhanak',
+      isActive: true,
+      productCount: 3,
+      thumbUrl: 'https://res.cloudinary.com/demo/image/upload/w_120/categories/a/x',
+    },
+    { id: 'b', name: 'Khaddar', slug: 'khaddar', isActive: true, productCount: 1, thumbUrl: null },
   ];
   const names = () =>
     screen.getAllByRole('listitem').map((li) => li.querySelector('a')?.textContent);
@@ -120,6 +127,15 @@ describe('CollectionList', () => {
     );
     expect(screen.getByText('Hidden')).toBeTruthy();
     expect(await screen.findByText('Dhanak is now hidden on the shop.')).toBeTruthy();
+  });
+
+  it('shows each collection image as a small thumbnail, or a placeholder', () => {
+    render(<CollectionList collections={collections} />);
+    const [dhanak, khaddar] = screen.getAllByRole('listitem');
+    expect(dhanak!.querySelector('img')?.getAttribute('src')).toBe(collections[0]!.thumbUrl);
+    expect(dhanak!.querySelector('img')?.getAttribute('alt')).toBe('');
+    expect(khaddar!.querySelector('img')).toBeNull();
+    expect(khaddar!.textContent).toContain('No photo');
   });
 
   it('says so when there are no collections', () => {

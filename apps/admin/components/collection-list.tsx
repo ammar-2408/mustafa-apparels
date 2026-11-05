@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 import { reorderCategories, setCategoryActive } from '../app/(panel)/collections/actions';
 import { SortableList } from './sortable-list';
+import { Thumb } from './thumb';
 
 export type CollectionRow = {
   id: string;
@@ -14,6 +15,8 @@ export type CollectionRow = {
   slug: string;
   isActive: boolean;
   productCount: number;
+  // The collection image as a small delivery URL, or null when it has none.
+  thumbUrl: string | null;
 };
 
 // The order here is the order on the storefront. Each change saves at once.
@@ -69,6 +72,7 @@ export function CollectionList({ collections }: { collections: CollectionRow[] }
         disabled={pending}
         renderItem={(item) => (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Thumb src={item.thumbUrl} />
             <Link
               href={`/collections/${item.id}`}
               className="text-body underline-offset-4 hover:underline"
