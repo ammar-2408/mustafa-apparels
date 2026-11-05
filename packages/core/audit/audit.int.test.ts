@@ -3,7 +3,7 @@ import { createTestDb, resetTestDb, type TestDb } from '@mustafa/db/testing';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { makeUser } from '../test/factories';
+import { makeCategory, makeProduct, makeUser } from '../test/factories';
 import * as audit from './index';
 
 let db: TestDb;
@@ -77,6 +77,50 @@ describe('audit.list', () => {
     expect(shown.items.map((i) => i.entityId)).toEqual(['p2']);
     expect(shown.total).toBe(1);
     expect((await audit.list(db, {})).total).toBe(2);
+  });
+});
+
+describe('audit.list entity names', () => {
+  it('names the suit or collection: its current name, else the name the row recorded', async () => {
+    const owner = await makeUser(db, { role: 'admin' });
+    const suit = await makeProduct(db, { name: 'Teal Embroidered Dhanak 3-Piece Suit' });
+    const collection = await makeCategory(db, { name: 'Dhanak' });
+    await write(owner.id, 'product.update', 'product', suit.id);
+    await write(owner.id, 'category.update', 'category', collection.id);
+    // A deleted suit: only its create row still knows the name.
+    await audit.record(
+      db,
+      { actorId: owner.id },
+      {
+        action: 'product.create',
+        entity: 'product',
+        entityId: '01a1aafe-3c9a-7171-9145-9cc892bf8ac5',
+        changes: { after: { name: 'Gone Suit' } },
+      },
+    );
+    // A renamed collection that no longer exists: the newest name in the row wins.
+    await audit.record(
+      db,
+      { actorId: owner.id },
+      {
+        action: 'category.update',
+        entity: 'category',
+        entityId: '01a1aafe-3c9a-7171-9145-9cc892bf8ac6',
+        changes: { before: { name: 'Old' }, after: { name: 'New' } },
+      },
+    );
+    await write(owner.id, 'setting.update', 'setting', 'whatsapp');
+
+    const names = Object.fromEntries(
+      (await audit.list(db, {})).items.map((i) => [i.entityId, i.entityName]),
+    );
+    expect(names).toEqual({
+      [suit.id]: 'Teal Embroidered Dhanak 3-Piece Suit',
+      [collection.id]: 'Dhanak',
+      '01a1aafe-3c9a-7171-9145-9cc892bf8ac5': 'Gone Suit',
+      '01a1aafe-3c9a-7171-9145-9cc892bf8ac6': 'New',
+      whatsapp: null,
+    });
   });
 });
 

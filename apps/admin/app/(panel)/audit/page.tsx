@@ -113,7 +113,13 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
         <ol className="flex flex-col gap-3">
           {result.items.map((item) => {
             const link = recordHref(item.entity, item.entityId);
-            const label = `${ENTITY_LABEL[item.entity] ?? item.entity}${item.entity === 'setting' && item.entityId ? `: ${item.entityId}` : ''}`;
+            const kind = ENTITY_LABEL[item.entity] ?? item.entity;
+            const label =
+              item.entity === 'setting' && item.entityId
+                ? `${kind}: ${item.entityId}`
+                : item.entityName
+                  ? `${kind} · ${item.entityName}`
+                  : kind;
             return (
               <li
                 key={item.id}

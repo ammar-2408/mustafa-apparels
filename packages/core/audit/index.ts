@@ -1,8 +1,8 @@
 // The admin's change history (docs/database.md §2 audit_log). Every admin mutation records
 // one row inside its own transaction, so a failed change leaves no audit row.
 import type { Database } from '@mustafa/db/client';
-import { auditLog, user } from '@mustafa/db/schema';
-import { and, count, desc, eq, isNotNull } from 'drizzle-orm';
+import { auditLog, category, product, user } from '@mustafa/db/schema';
+import { and, count, desc, eq, isNotNull, sql } from 'drizzle-orm';
 
 export type Actor = { actorId: string };
 
@@ -49,6 +49,17 @@ type ListInput = {
   page?: number;
 };
 
+// The suit or collection a row is about, by name: its current name, else the newest name the row
+// itself recorded (a deleted record). Null for settings and inquiries.
+const entityName = sql<string | null>`case
+  when ${auditLog.entity} in ('product', 'category') then coalesce(
+    ${product.name},
+    ${category.name},
+    ${auditLog.changes} -> 'after' ->> 'name',
+    ${auditLog.changes} -> 'before' ->> 'name'
+  )
+end`;
+
 // For the admin audit page: newest first, with the actor's name (null once their account goes).
 export async function list(
   db: Database,
@@ -71,9 +82,19 @@ export async function list(
         createdAt: auditLog.createdAt,
         actorId: user.id,
         actorName: user.name,
+        entityName,
       })
       .from(auditLog)
       .leftJoin(user, eq(auditLog.actorId, user.id))
+      // entity_id is text (settings use their key), so compare against the id as text.
+      .leftJoin(
+        product,
+        and(eq(auditLog.entity, 'product'), eq(sql`${product.id}::text`, auditLog.entityId)),
+      )
+      .leftJoin(
+        category,
+        and(eq(auditLog.entity, 'category'), eq(sql`${category.id}::text`, auditLog.entityId)),
+      )
       .where(where)
       // Rows from one transaction share created_at; ids are time-ordered UUID v7.
       .orderBy(desc(auditLog.createdAt), desc(auditLog.id))

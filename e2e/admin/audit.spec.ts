@@ -38,7 +38,7 @@ test('a suit edit shows in the log with who made it and the before and after', a
 
   const entry = page.getByRole('listitem').filter({ hasText: 'product.update' }).first();
   await expect(entry).toContainText(admin.name);
-  await expect(entry.getByRole('link', { name: 'Suit' })).toHaveAttribute(
+  await expect(entry.getByRole('link', { name: `Suit · ${suit.name}` })).toHaveAttribute(
     'href',
     `/suits/${suit.id}`,
   );
