@@ -5,6 +5,7 @@ const createAuth = vi.hoisted(() => vi.fn(() => 'auth'));
 const createMailer = vi.hoisted(() => vi.fn(() => 'mailer'));
 const createLimiter = vi.hoisted(() => vi.fn(() => 'limiter'));
 
+vi.mock('server-only', () => ({}));
 vi.mock('./index', () => ({ createAuth }));
 vi.mock('@mustafa/core/integrations/email', () => ({ createMailer }));
 vi.mock('@mustafa/core/integrations/rate-limit', () => ({ createLimiter }));

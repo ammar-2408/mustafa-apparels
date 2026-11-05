@@ -6,6 +6,11 @@
 //
 // Mock mode (CI, local E2E): the same signature, checked by the admin's /api/upload/mock route,
 // which records each "upload" as a JSON file in .e2e-media/ for getAsset to read back.
+//
+// No server-only import: scripts/import-stock.ts runs this in plain Node, where 'server-only'
+// throws. It reads no env; the API secret only arrives as an argument from server code
+// (apps/admin/lib/media.ts, which is server-only) or the import script. scripts/server-only.test.ts
+// fails if a 'use client' file imports it.
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

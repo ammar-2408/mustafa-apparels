@@ -19,7 +19,8 @@
     "@mustafa/db": "workspace:*",
     "@mustafa/validators": "workspace:*",
     "better-auth": "1.7.15",
-    "drizzle-orm": "^0.45.4"
+    "drizzle-orm": "^0.45.4",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@mustafa/config": "workspace:*",

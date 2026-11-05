@@ -1,5 +1,7 @@
 // Turns an app's env into its Better Auth instance, so both apps wire the mailer, limiter and
 // breach check the same way. Each app's lib/auth.ts keeps only the memo and its page guards.
+import 'server-only';
+
 import { createBreachCheck } from '@mustafa/core/integrations/breached-passwords';
 import { createMailer } from '@mustafa/core/integrations/email';
 import { createLimiter } from '@mustafa/core/integrations/rate-limit';
