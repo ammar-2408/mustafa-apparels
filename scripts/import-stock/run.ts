@@ -406,6 +406,12 @@ async function importSuit({
       continue;
     }
     const old = before && rows.find((r) => r.publicId === before.publicId);
+    // Imported before but no longer on the suit: the owner removed it in admin. Their edit wins,
+    // even when catalog/ now has a new version of it (they can upload that in admin).
+    if (before && !old) {
+      result.keptEdits.push(`removed ${item.file}`);
+      continue;
+    }
     const added = await media.add(
       db,
       {

@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { createMockStore, type MediaConfig } from '@mustafa/core/integrations/media';
+import * as media from '@mustafa/core/media';
 import * as products from '@mustafa/core/products';
 import { makeCategory, makeUser } from '@mustafa/core/test/factories';
 import { auditLog, product, productMedia } from '@mustafa/db/schema';
@@ -208,6 +209,18 @@ describe('importStock', () => {
     expect(report.unused).toEqual([oldPhoto!.publicId]);
     // The old file stays in Cloudinary: production may use it.
     expect(createMockStore(storeDir).get(oldPhoto!.publicId)).not.toBeNull();
+  });
+
+  it('never brings back a photo or video the owner removed in admin', async () => {
+    await run();
+    const suit = await suitRow('DHN-01');
+    const [, video] = await mediaOf(suit.id);
+    await media.remove(db, { mediaId: video!.id }, actor);
+    const report = await run();
+    const result = report.suits.find((s) => s.designId === 'DHN-01')!;
+    expect(result).toMatchObject({ outcome: 'unchanged', uploaded: 0, reused: 0 });
+    expect(result.keptEdits).toEqual(['removed Dhanak/dhn-01.mp4']);
+    expect((await mediaOf(suit.id)).map((m) => m.kind)).toEqual(['image']);
   });
 
   it('refuses before writing anything when the uploads would pass --max-credits', async () => {
