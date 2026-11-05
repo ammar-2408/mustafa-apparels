@@ -71,4 +71,11 @@ describe('parseArgs', () => {
     expect(parseArgs([]).stockDir).toMatch(/Business data[\\/]Stock$/);
     expect(() => parseArgs(['--force'])).toThrow('Unknown option --force');
   });
+
+  it('refuses a flag with its value missing', () => {
+    expect(() => parseArgs(['--max-credits'])).toThrow('--max-credits needs a value');
+    expect(() => parseArgs(['--stock-dir', '--dry-run'])).toThrow('--stock-dir needs a value');
+    expect(() => parseArgs(['--max-credits', '-1'])).toThrow('--max-credits takes a number');
+    expect(parseArgs(['--max-credits', '0.5']).maxCredits).toBe(0.5);
+  });
 });

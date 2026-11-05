@@ -280,6 +280,55 @@ describe('importStock', () => {
     expect(items.some((m) => m.publicId === oldPhoto!.publicId)).toBe(false);
   });
 
+  it('keeps the owner’s alt text and poster on a re-cropped photo and a replaced video', async () => {
+    await run();
+    const suit = await suitRow('DHN-01');
+    const [photo, video] = await mediaOf(suit.id);
+    await media.updateAlt(db, { mediaId: photo!.id, alt: 'My own alt text' }, actor);
+    const poster = `products/${suit.id}/poster-1`;
+    await db
+      .update(productMedia)
+      .set({ posterPublicId: poster })
+      .where(eq(productMedia.id, video!.id));
+    writeFileSync(join(stockDir, 'Dhanak', 'dhn-01-v2.mp4'), fakeMp4(12));
+    writeFileSync(
+      join(catalogDir, 'dhanak', 'dhn-01.md'),
+      suitText('DHN-01')
+        .replace(
+          'alt: "Model wearing a teal 3-piece Dhanak suit"',
+          'alt: "Model wearing a teal 3-piece Dhanak suit"\n    crop: { x: 0, y: 0, width: 60, height: 70 }',
+        )
+        .replace('file: Dhanak/dhn-01.mp4', 'file: Dhanak/dhn-01-v2.mp4'),
+    );
+    await run();
+    const [newPhoto, newVideo] = await mediaOf(suit.id);
+    expect(newPhoto).toMatchObject({ alt: 'My own alt text', height: 70, isPrimary: true });
+    expect(newVideo).toMatchObject({
+      kind: 'video',
+      durationSeconds: '12',
+      posterPublicId: poster,
+    });
+  });
+
+  it('never writes price, status or availability, even on a published suit', async () => {
+    await run();
+    await db
+      .update(product)
+      .set({ price: 5000, status: 'published', availability: 'out_of_stock' })
+      .where(eq(product.importKey, 'DHN-01'));
+    writeFileSync(
+      join(catalogDir, 'dhanak', 'dhn-01.md'),
+      suitText('DHN-01').replace('motifs: [small flower sprigs]', 'motifs: [lace hem]'),
+    );
+    await run();
+    expect(await suitRow('DHN-01')).toMatchObject({
+      price: 5000,
+      status: 'published',
+      availability: 'out_of_stock',
+      motifs: ['lace hem'],
+    });
+  });
+
   it('never brings back a photo or video the owner removed in admin', async () => {
     await run();
     const suit = await suitRow('DHN-01');

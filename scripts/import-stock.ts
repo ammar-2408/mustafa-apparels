@@ -31,7 +31,10 @@ const FLAGS = ['--dry-run', '--production', ...VALUE_FLAGS];
 export function parseArgs(argv: string[]): Options {
   const value = (flag: string) => {
     const at = argv.indexOf(flag);
-    return at >= 0 ? argv[at + 1] : undefined;
+    if (at < 0) return undefined;
+    const given = argv[at + 1];
+    if (given === undefined || given.startsWith('--')) throw new Error(`${flag} needs a value`);
+    return given;
   };
   for (const [index, arg] of argv.entries()) {
     const isValue = index > 0 && VALUE_FLAGS.includes(argv[index - 1]!);

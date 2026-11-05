@@ -313,7 +313,8 @@ async function importSuit({
   // The stored asset for each planned file: already on this suit, already in Cloudinary, or new.
   const prefix = `${IMPORTED_PREFIX}${suit.design_id}/`;
   const stored = async (item: PlannedMedia) => {
-    let asset = existing.get(item.publicId);
+    // Pass 1 only asked Cloudinary about files no row used; ask again rather than upload blind.
+    let asset = existing.get(item.publicId) ?? (await uploader.find(item.publicId, item.kind));
     if (asset) result.reused += 1;
     else {
       asset = await uploader.upload(item.publicId, item.kind, item.bytes, item.fileName);
@@ -456,6 +457,10 @@ async function importSuit({
     );
     mediaChanged = true;
     if (old) {
+      // A replaced video keeps the poster the owner chose.
+      if (old.posterPublicId && item.kind === 'video') {
+        await media.setPoster(db, { mediaId: added.id, posterPublicId: old.posterPublicId }, actor);
+      }
       // Same place in the order, and main if the old one was.
       const order = (
         await db
