@@ -149,7 +149,7 @@ Script: `scripts/import-stock.ts`. Built in Phase 5 of `docs/project-implementat
 3. Crops photos in memory if `crop` is set, and uploads to `products/imported/<design-id>/`. Files on disk never change.
 4. Creates or updates a **draft** with `import_key` = `design_id`. Re-running creates no duplicates and never overwrites a price or a change made in admin.
 
-`--dry-run` does steps 1 and 2 and writes nothing.
+`--dry-run` does steps 1 and 2 and writes nothing. It also checks each file against the upload limits (a video's length comes from its MP4 header), checks that a `crop` fits inside its photo, and prints a table per suit and an estimate of the Cloudinary credits if every file were uploaded (each upload 1 transformation, the 720 px video 4 per second, plus storage). It exits with an error if anything needs fixing. `--stock-dir` and `--catalog-dir` point it at other folders (tests).
 
 Most fields keep their name in the database (`docs/database.md` §2). These change:
 
