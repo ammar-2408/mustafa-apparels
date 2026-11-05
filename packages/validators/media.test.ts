@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { mediaInput, mediaListInput, uploadSignInput } from './media';
+import {
+  mediaAddInput,
+  mediaAltInput,
+  mediaDeleteInput,
+  mediaInput,
+  mediaListInput,
+  mediaPosterInput,
+  mediaPrimaryInput,
+  mediaReorderInput,
+  uploadSignInput,
+} from './media';
 
 const photo = {
   kind: 'image',
@@ -86,5 +96,45 @@ describe('uploadSignInput', () => {
     ['no id', { kind: 'image', target: 'product' }],
   ])('refuses %s', (_name, input) => {
     expect(ok(input)).toBe(false);
+  });
+});
+
+describe('media action inputs', () => {
+  it('accepts only public ids the server could have signed', () => {
+    const ok = (publicId: string) =>
+      mediaAddInput.safeParse({
+        productId: 'p1',
+        kind: 'image',
+        publicId,
+        alt: 'Black suit, front',
+      }).success;
+    expect(ok('products/p1/0193c1a2-7b1e-7cc0-9d2a-4c1f0e8b9a11')).toBe(true);
+    expect(ok('categories/c1/abc')).toBe(true);
+    for (const bad of [
+      'products/p1',
+      'products/p1/../x',
+      'other/p1/x',
+      'products/p1/a/b',
+      'products/p1/a.jpg',
+    ]) {
+      expect(ok(bad), bad).toBe(false);
+    }
+  });
+
+  it('needs alt text of 3–200 characters with no brand name', () => {
+    const ok = (alt: string) => mediaAltInput.safeParse({ mediaId: 'm1', alt }).success;
+    expect(ok('Black suit, front')).toBe(true);
+    expect(ok('  ab ')).toBe(false);
+    expect(ok('x'.repeat(201))).toBe(false);
+    expect(ok('Elaf style black suit')).toBe(false);
+  });
+
+  it('lists each item once when reordering, and takes a null poster', () => {
+    expect(mediaReorderInput.safeParse({ productId: 'p1', mediaIds: ['a', 'a'] }).success).toBe(
+      false,
+    );
+    expect(mediaPosterInput.safeParse({ mediaId: 'm1', posterPublicId: null }).success).toBe(true);
+    expect(mediaDeleteInput.safeParse({ mediaId: 'm1', productId: 'p1' }).success).toBe(false);
+    expect(mediaPrimaryInput.safeParse({ productId: 'p1', mediaId: 'm1' }).success).toBe(true);
   });
 });

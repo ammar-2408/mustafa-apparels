@@ -115,6 +115,7 @@ There is **no sizes column**. Suits are unstitched. Allowed filter values live i
 Rules:
 - Partial unique index: one `is_primary = true` per product.
 - Check: `is_primary = false OR kind = 'image'`. The main item is always a photo, because it feeds LCP, the share image and JSON-LD.
+- **The main image is the first photo in the order** (`packages/core/media`): reordering makes the first photo main, `setPrimary` moves the chosen photo to the front, and removing the main photo hands it to the next one. A suit's first photo becomes main when added.
 - Check: `kind = 'image' OR (duration_seconds IS NOT NULL AND duration_seconds <= 60)`.
 - Publishing (`core.products.setStatus`) requires a price, a colour, a main image and alt text on all media, and refuses any product whose media or text fails §9. Every problem comes back at once, by field (`price`, `colorFamily`, `media`, or the text field with the brand name). `published_at` is set on the first publish only. An archived suit must be restored to a draft before it can be published. `setStatus` is the only way the status changes (`core/products/publish.ts` holds the rules).
 

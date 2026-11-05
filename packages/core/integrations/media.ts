@@ -159,3 +159,162 @@ export function createMockStore(dir = defaultMediaStoreDir()) {
     },
   };
 }
+
+// --- Reading back and deleting (step 4.4) ---
+
+type ApiOptions = {
+  fetchImpl?: typeof fetch;
+  timeoutMs?: number;
+  storeDir?: string;
+};
+
+const API_TIMEOUT_MS = 10_000;
+
+type CloudinaryResource = {
+  public_id: string;
+  resource_type: string;
+  format: string;
+  bytes: number;
+  width: number;
+  height: number;
+  duration?: number;
+  created_at: string;
+};
+
+// What Cloudinary holds under this public id, or null if nothing.
+export async function getAsset(
+  config: MediaConfig,
+  publicId: string,
+  kind: MediaKind,
+  { fetchImpl = fetch, timeoutMs = API_TIMEOUT_MS, storeDir }: ApiOptions = {},
+): Promise<AssetInfo | null> {
+  if (config.mode === 'mock') {
+    const asset = createMockStore(storeDir).get(publicId);
+    return asset?.kind === kind ? asset : null;
+  }
+  const { cloudName, apiKey, apiSecret } = credentials(config);
+  const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/${kind}/upload/${publicId
+    .split('/')
+    .map(encodeURIComponent)
+    .join('/')}`;
+  const response = await fetchImpl(url, {
+    headers: { Authorization: `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')}` },
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Cloudinary answered ${response.status}`);
+  const resource = (await response.json()) as CloudinaryResource;
+  return {
+    publicId: resource.public_id,
+    kind,
+    format: resource.format,
+    bytes: resource.bytes,
+    width: resource.width,
+    height: resource.height,
+    durationSeconds: kind === 'video' ? (resource.duration ?? null) : null,
+    createdAt: Math.floor(Date.parse(resource.created_at) / 1000),
+  };
+}
+
+// Deletes the asset and its cached copies. True when it is gone (or was never there).
+export async function deleteAsset(
+  config: MediaConfig,
+  publicId: string,
+  kind: MediaKind,
+  { fetchImpl = fetch, timeoutMs = API_TIMEOUT_MS, storeDir }: ApiOptions = {},
+): Promise<boolean> {
+  if (config.mode === 'mock') {
+    createMockStore(storeDir).remove(publicId);
+    return true;
+  }
+  const { cloudName, apiKey, apiSecret } = credentials(config);
+  const params = {
+    public_id: publicId,
+    invalidate: 'true',
+    timestamp: Math.floor(Date.now() / 1000),
+  };
+  const body = new URLSearchParams({
+    ...Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
+    api_key: apiKey,
+    signature: cloudinarySignature(params, apiSecret),
+  });
+  const response = await fetchImpl(`https://api.cloudinary.com/v1_1/${cloudName}/${kind}/destroy`, {
+    method: 'POST',
+    body,
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (!response.ok) return false;
+  const { result } = (await response.json()) as { result?: string };
+  return result === 'ok' || result === 'not found';
+}
+
+const formatName = (format: string) => format.toUpperCase().replace('JPG', 'JPEG');
+
+// Why an asset may not be saved, in words for the owner; empty when it may.
+export function assetProblems(
+  asset: AssetInfo,
+  {
+    kind,
+    prefix,
+    now = Math.floor(Date.now() / 1000),
+  }: { kind: MediaKind; prefix: string; now?: number },
+): string[] {
+  const limits = MEDIA_LIMITS[kind];
+  const problems: string[] = [];
+  if (asset.kind !== kind)
+    problems.push(kind === 'image' ? 'This is not a photo.' : 'This is not a video.');
+  if (!asset.publicId.startsWith(prefix) || asset.publicId.includes('..')) {
+    problems.push('This file was uploaded for something else.');
+  }
+  if (!(limits.formats as readonly string[]).includes(asset.format)) {
+    problems.push(
+      `${formatName(asset.format)} files can't be used. Use ${limits.formats.map(formatName).join(', ')}.`,
+    );
+  }
+  if (asset.bytes > limits.maxBytes) {
+    problems.push(`The file is over ${limits.maxBytes / (1024 * 1024)} MB.`);
+  }
+  if (kind === 'video') {
+    const seconds = asset.durationSeconds;
+    if (seconds === null || seconds > MEDIA_LIMITS.video.maxSeconds) {
+      problems.push(`The video is longer than ${MEDIA_LIMITS.video.maxSeconds} seconds.`);
+    }
+  }
+  if (now - asset.createdAt > UPLOAD_MAX_AGE_SECONDS) {
+    problems.push('This upload is more than an hour old. Upload it again.');
+  }
+  return problems;
+}
+
+export class AssetRejected extends Error {
+  constructor(readonly problems: string[]) {
+    super('Asset rejected');
+    this.name = 'AssetRejected';
+  }
+}
+
+// The save-time check (docs/auth-security.md §5): read the asset back from Cloudinary and refuse,
+// and delete, anything outside the limits. Returns Cloudinary's figures, never the browser's.
+export async function verifyAsset(
+  config: MediaConfig,
+  publicId: string,
+  expected: { kind: MediaKind; prefix: string; now?: number },
+  options: ApiOptions = {},
+): Promise<AssetInfo> {
+  const asset = await getAsset(config, publicId, expected.kind, options);
+  if (!asset) throw new AssetRejected(['The upload could not be found. Upload it again.']);
+  const problems = assetProblems(asset, expected);
+  if (problems.length > 0) {
+    // Only an upload made for this suit or collection is deleted: an id that points elsewhere
+    // (another suit's photo) is refused but never removed.
+    if (asset.publicId.startsWith(expected.prefix) && !asset.publicId.includes('..')) {
+      await deleteAsset(config, publicId, expected.kind, options);
+    }
+    throw new AssetRejected(problems);
+  }
+  return asset;
+}
+
+// The stored delivery URL of the original; transformations are added when it is shown.
+export const assetUrl = (config: MediaConfig, asset: AssetInfo) =>
+  `https://res.cloudinary.com/${credentials(config).cloudName}/${asset.kind}/upload/${asset.publicId}.${asset.format}`;

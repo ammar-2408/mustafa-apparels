@@ -9,6 +9,7 @@
     "./categories": "./categories/index.ts",
     "./dashboard": "./dashboard/index.ts",
     "./errors": "./errors.ts",
+    "./media": "./media/index.ts",
     "./products": "./products/index.ts",
     "./search": "./search/index.ts",
     "./settings": "./settings/index.ts",

@@ -3,7 +3,7 @@
 import { z } from 'zod';
 
 import { noBannedTerms } from './banned-terms';
-import { cloudinaryUrl, unique } from './common';
+import { cloudinaryUrl, id, unique } from './common';
 
 const publicId = z.string().startsWith('products/', 'Must be in the products folder').max(200);
 
@@ -56,3 +56,35 @@ export const uploadSignInput = z
   });
 
 export type UploadSignInput = z.infer<typeof uploadSignInput>;
+
+// --- The admin's media actions (docs/api.md §3) ---
+
+// A public id the server signed: products/<id>/<name> or categories/<id>/<name>.
+export const assetId = z
+  .string()
+  .max(200)
+  .regex(/^(products|categories)\/[\w-]+\/[\w-]+$/, 'Not one of our uploads');
+
+const alt = noBannedTerms(z.string().trim().min(3, 'Describe the photo in a few words').max(200));
+
+export const mediaAddInput = z
+  .object({ productId: id, kind: z.enum(['image', 'video']), publicId: assetId, alt })
+  .strict();
+
+export const mediaReorderInput = z
+  .object({
+    productId: id,
+    mediaIds: z.array(id).min(1).max(30).refine(unique, { message: 'List each item once' }),
+  })
+  .strict();
+
+export const mediaPrimaryInput = z.object({ productId: id, mediaId: id }).strict();
+
+// null goes back to the video's first frame.
+export const mediaPosterInput = z
+  .object({ mediaId: id, posterPublicId: assetId.nullable() })
+  .strict();
+
+export const mediaAltInput = z.object({ mediaId: id, alt }).strict();
+
+export const mediaDeleteInput = z.object({ mediaId: id }).strict();
