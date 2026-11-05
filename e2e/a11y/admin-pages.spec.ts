@@ -17,6 +17,7 @@ const ADMIN_PAGES = (ids: { collectionId: string; suitId: string }) => [
   { name: 'admin suits', path: '/suits' },
   { name: 'admin new suit', path: '/suits/new' },
   { name: 'admin inquiries', path: '/inquiries' },
+  { name: 'admin customers', path: '/customers' },
   { name: 'admin suit edit', path: `/suits/${ids.suitId}` },
 ];
 

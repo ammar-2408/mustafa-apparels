@@ -62,3 +62,18 @@ export const suggestInput = z.object({ q: query }).strict();
 
 export type SearchInput = z.output<typeof searchInput>;
 export type SuggestInput = z.output<typeof suggestInput>;
+
+// The admin's customer list (`/customers?q=&page=`): name or email search, read from the URL.
+export const customerListInput = z
+  .object({
+    q: z
+      .string()
+      .trim()
+      .max(80)
+      .optional()
+      .transform((value) => (value ? value : undefined)),
+    page: page.default(1),
+  })
+  .strict();
+
+export type CustomerListInput = z.infer<typeof customerListInput>;

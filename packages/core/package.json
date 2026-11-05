@@ -8,6 +8,7 @@
     "./audit": "./audit/index.ts",
     "./categories": "./categories/index.ts",
     "./contact-links": "./contact-links.ts",
+    "./customers": "./customers/index.ts",
     "./dashboard": "./dashboard/index.ts",
     "./errors": "./errors.ts",
     "./inquiries": "./inquiries/index.ts",

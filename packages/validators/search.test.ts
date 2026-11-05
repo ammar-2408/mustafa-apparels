@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { productFilters, searchInput, suggestInput } from './search';
+import { customerListInput, productFilters, searchInput, suggestInput } from './search';
 
 describe('searchInput', () => {
   it('trims the query and collapses spaces', () => {
@@ -69,5 +69,13 @@ describe('suggestInput', () => {
   it('needs 2–60 characters', () => {
     expect(suggestInput.safeParse({ q: 'dh' }).success).toBe(true);
     expect(suggestInput.safeParse({ q: 'd' }).success).toBe(false);
+  });
+});
+
+describe('customerListInput', () => {
+  it('reads an optional search and a page from the URL', () => {
+    expect(customerListInput.parse({})).toEqual({ page: 1 });
+    expect(customerListInput.parse({ q: ' ayesha ', page: '2' })).toEqual({ q: 'ayesha', page: 2 });
+    expect(customerListInput.safeParse({ role: 'admin' }).success).toBe(false);
   });
 });
