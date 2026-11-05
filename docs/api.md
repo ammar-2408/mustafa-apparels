@@ -106,7 +106,7 @@ The suit media actions also call `revalidatePath('/suits/<id>')`, so the admin p
 Media saves (`addProductMedia`, `setVideoPoster`) call `verifyAsset` (`packages/core/integrations/media.ts`) before writing: it reads the asset back from Cloudinary and refuses, with every reason at once, anything outside this suit's `products/<id>/` prefix, the format list, 10 MB / 50 MB, 60 s or over 1 hour old. A refused upload made for this suit is deleted from Cloudinary; an id pointing at another suit's file is refused but never deleted. The row stores Cloudinary's width, height, bytes, format and duration (`core.media.add`). Schemas: `mediaAddInput`, `mediaReorderInput`, `mediaPrimaryInput`, `mediaPosterInput`, `mediaAltInput`, `mediaDeleteInput` in `packages/validators/media.ts`.
 | `createCategory` / `updateCategory` / `reorderCategories` / `setCategoryActive` (`app/(panel)/collections/actions.ts`) | `categoryInput` / `categoryUpdateInput` / `categoryReorderInput` (every id) / `categoryVisibilityInput` `{ id, isActive }` | `categories`, `products`, `category:<slug>` (old and new slug on a rename); reorder: `categories` only |
 | `setInquiryStatus` (`app/(panel)/inquiries/actions.ts`) | `inquiryStatusInput` `{ id, status: 'new' | 'contacted' | 'closed' }`; the audit row holds the status change only, never contact details or the message | — (admin inbox and dashboard only) |
-| `updateSiteSettings` | `{ key, value }` (validated per key) | `settings` |
+| `updateSiteSettings` (`app/(panel)/settings/actions.ts`) | `settingInput` `{ key, value }`, one key per call (the page sends each changed key of a group); phones saved as E.164, email in lower case; the same value again writes nothing | `settings` |
 
 ### Route handlers
 | Route | Method | Purpose | Notes |
