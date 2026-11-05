@@ -68,7 +68,7 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
         action="/suits"
         role="search"
         aria-label="Find suits"
-        className="mb-8 grid gap-4 md:grid-cols-[2fr_1fr_1fr] md:items-end"
+        className="mb-8 grid gap-4 md:grid-cols-[2fr_1fr_1fr] md:items-start"
       >
         <Input
           label="Search"

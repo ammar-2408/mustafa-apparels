@@ -6,6 +6,7 @@ import { customerListInput } from '@mustafa/validators/search';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { LabelSpacer } from '../../../components/label-spacer';
 import { requireAdminPage } from '../../../lib/auth';
 import { formatDate } from '../../../lib/format';
 
@@ -46,7 +47,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
         action="/customers"
         role="search"
         aria-label="Find customers"
-        className="mb-6 flex flex-wrap items-end gap-4"
+        className="mb-6 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start"
       >
         <Input
           label="Search"
@@ -55,11 +56,13 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
           defaultValue={input.q ?? ''}
           maxLength={80}
           hint="Name or email"
-          className="min-w-64 flex-1"
         />
-        <button type="submit" className={buttonClass('primary')}>
-          Search
-        </button>
+        <div className="flex flex-col">
+          <LabelSpacer />
+          <button type="submit" className={buttonClass('primary')}>
+            Search
+          </button>
+        </div>
       </form>
       <p className="mb-4 text-small text-muted" aria-live="polite">
         {result.total === 1 ? '1 customer' : `${result.total} customers`}
