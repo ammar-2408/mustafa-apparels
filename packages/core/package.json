@@ -11,6 +11,7 @@
     "./errors": "./errors.ts",
     "./media": "./media/index.ts",
     "./products": "./products/index.ts",
+    "./products/admin-list": "./products/admin-list.ts",
     "./search": "./search/index.ts",
     "./settings": "./settings/index.ts",
     "./integrations/email": "./integrations/email.ts",

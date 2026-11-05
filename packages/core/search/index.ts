@@ -28,7 +28,8 @@ const compactCode = (q: string) => q.toLowerCase().replace(/[^a-z0-9]/g, '');
 const similarity = (text: string) =>
   sql<number>`greatest(word_similarity(${text}, ${product.name}), word_similarity(${text}, ${category.name}))`;
 
-function matchers(q: string) {
+// Also used by the admin suit list (products/admin-list.ts).
+export function searchMatchers(q: string) {
   const prefix = prefixQuery(q);
   const tsquery = prefix === null ? null : sql`to_tsquery('simple', ${prefix})`;
   const code = compactCode(q);
@@ -57,7 +58,7 @@ function matchers(q: string) {
 }
 
 export async function search(db: Database, input: SearchInput) {
-  const { where: matches, order } = matchers(input.q);
+  const { where: matches, order } = searchMatchers(input.q);
   const where = and(isPublic, filterConditions(input.filters), matches);
   const [rows, [{ total } = { total: 0 }]] = await Promise.all([
     db
@@ -109,7 +110,7 @@ export async function suggest(db: Database, input: SuggestInput) {
     .orderBy(sql`${similar} desc`, category.sortOrder)
     .limit(2);
 
-  const { where, order } = matchers(input.q);
+  const { where, order } = searchMatchers(input.q);
   const products = await db
     .select({ name: product.name, slug: product.slug, designCode: product.designCode })
     .from(product)

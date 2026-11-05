@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  adminProductListInput,
   productInput,
   productListInput,
   productRuleErrors,
@@ -188,5 +189,31 @@ describe('productListInput', () => {
 
   it('rejects an unknown sort', () => {
     expect(productListInput.safeParse({ sort: 'popular' }).success).toBe(false);
+  });
+});
+
+describe('adminProductListInput', () => {
+  it('reads the list filters from URL strings', () => {
+    expect(adminProductListInput.parse({})).toEqual({ needsPrice: false, page: 1 });
+    expect(
+      adminProductListInput.parse({
+        q: '  kdr ',
+        status: 'draft',
+        collection: 'c1',
+        needsPrice: '1',
+        page: '2',
+      }),
+    ).toEqual({ q: 'kdr', status: 'draft', collection: 'c1', needsPrice: true, page: 2 });
+    expect(adminProductListInput.parse({ q: '   ' }).q).toBeUndefined();
+  });
+
+  it.each([
+    ['an unknown status', { status: 'deleted' }],
+    ['a page of 0', { page: '0' }],
+    ['a long search', { q: 'x'.repeat(61) }],
+    ['needsPrice other than 1', { needsPrice: 'yes' }],
+    ['an unknown filter', { sort: 'price' }],
+  ])('refuses %s', (_name, input) => {
+    expect(adminProductListInput.safeParse(input).success).toBe(false);
   });
 });

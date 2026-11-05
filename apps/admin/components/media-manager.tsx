@@ -167,7 +167,7 @@ export function MediaManager({ productId, cloudName, media }: MediaManagerProps)
         <ul aria-label="New uploads" className="flex flex-col gap-3">
           {pending.map((item) => (
             <li key={item.key} className="flex gap-3 rounded-sm border border-border p-3">
-              <div className="flex aspect-[3/4] w-20 shrink-0 items-center justify-center rounded-sm bg-border">
+              <div className="flex aspect-[3/4] w-20 shrink-0 items-center justify-center rounded-sm border border-border bg-surface">
                 {item.previewUrl ? (
                   <Image
                     src={item.previewUrl}

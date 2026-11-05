@@ -22,7 +22,10 @@ export async function loginAsAdmin(page: Page, users: Users): Promise<SignedInAd
   const secret = ((await page.getByTestId('totp-secret').textContent()) ?? '').trim();
   await page.getByLabel('Code from your app').fill(totp(secret));
   await page.getByRole('button', { name: 'Turn on 2FA' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeVisible();
+  // Several database round trips; generous for a busy machine on the Neon dev branch.
+  await expect(page.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeVisible({
+    timeout: 15_000,
+  });
   return { ...admin, secret };
 }
 

@@ -129,3 +129,26 @@ export const productListInput = z
   .strict();
 
 export type ProductListInput = z.infer<typeof productListInput>;
+
+// The admin's suit list (`/suits?q=&status=&collection=&needsPrice=1&page=`). Read from the URL,
+// so every value arrives as a string; anything unknown is refused and the page shows the
+// unfiltered list.
+export const adminProductListInput = z
+  .object({
+    q: z
+      .string()
+      .trim()
+      .max(60)
+      .optional()
+      .transform((value) => (value ? value : undefined)),
+    status: z.enum(PRODUCT_STATUSES).optional(),
+    collection: id.optional(),
+    needsPrice: z
+      .enum(['1'])
+      .optional()
+      .transform((value) => value === '1'),
+    page: page.default(1),
+  })
+  .strict();
+
+export type AdminProductListInput = z.infer<typeof adminProductListInput>;
