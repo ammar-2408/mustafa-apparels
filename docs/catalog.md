@@ -146,8 +146,17 @@ Script: `scripts/import-stock.ts`. Built in Phase 5 of `docs/project-implementat
 
 1. Reads every `catalog/<collection>/*.md` and validates it with Zod (`packages/validators/catalog.ts`; reader and cross-file rules in `scripts/import-stock/catalog.ts`), including the taxonomy and banned names. Across files: unique design IDs, names and slugs, the collection's prefix, and `also_in_this_design` listed both ways. Alt text is 3–200 characters, the same limit as in admin. `scripts/import-stock/catalog.test.ts` runs every rule over the real `catalog/`. The taxonomy check covers suit files only: `_collection.md` keeps the source file's wording, such as "Printed", and each suit file names the allowed value.
 2. Checks that every listed file exists in `Business data/Stock/`, and reports files in the folder that no suit lists and `_collection.md` doesn't explain.
-3. Crops photos in memory if `crop` is set, and uploads to `products/imported/<design-id>/`. Files on disk never change.
-4. Creates or updates a **draft** with `import_key` = `design_id`. Re-running creates no duplicates and never overwrites a price or a change made in admin.
+3. Crops photos in memory if `crop` is set (`sharp`, JPEG at quality 90, PNG kept as PNG), and uploads to `products/imported/<design-id>/<file name>-<hash>`. The hash covers the original file and its crop, so the same file always gets the same id. Before uploading, it skips a file this database already has, and reuses one Cloudinary already has (Admin API, no credit). Only the rest are uploaded, with the admin's 720 px eager video version. Cloudinary's size, format and length are re-checked against the upload limits before saving. Files on disk never change.
+4. Creates or updates a **draft** with `import_key` = `design_id`. A new suit gets no price, `in_stock`, the first photo as main image, and its `check:` items. Re-running creates no duplicates.
+   - **Your admin edits win.** Each suit keeps what the last import wrote in `attributes.import`. A field, an alt text or a media item changes only if it still holds that value. Price, status and availability are never written.
+   - A check you cleared never comes back; a new `check:` in the file is added.
+   - A re-cropped or replaced photo takes the old one's place, and stays main if it was. The old file stays in Cloudinary, because the other database may use it; the report lists it.
+   - A suit deleted in admin is never imported again.
+   - It writes a `product.import` row in the audit log for each suit it creates or changes, as the owner (`SEED_ADMIN_EMAIL`, else the first admin).
+
+**Guards:** it runs the dry-run checks first and stops on any problem. It refuses to start if the uploads would pass `--max-credits` (default 3). It imports into your local database (`DATABASE_URL`, the Neon `dev` branch) unless `IMPORT_DATABASE_URL` and `--production` are both given.
+
+**Production (step 10.3):** `IMPORT_DATABASE_URL=<production direct URL> pnpm import:stock --production`. Every file is already in Cloudinary from the dev import, so the report should say 0 uploaded: no credits used. Run it again and it changes nothing.
 
 `--dry-run` does steps 1 and 2 and writes nothing. It also checks each file against the upload limits (a video's length comes from its MP4 header), checks that a `crop` fits inside its photo, and prints a table per suit and an estimate of the Cloudinary credits if every file were uploaded (each upload 1 transformation, the 720 px video 4 per second, plus storage). It exits with an error if anything needs fixing. `--stock-dir` and `--catalog-dir` point it at other folders (tests).
 

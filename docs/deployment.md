@@ -234,7 +234,7 @@ Rollback doesn't undo a database migration, which is why migrations must stay ba
 1. Step 3.1: Resend and email DNS.
 2. Phase 10: confirm the launch checklist (`docs/launch-checklist.md`).
 3. Add domains in Netlify, then DNS at Spaceship (§4).
-4. Wait for HTTPS; set production variables (§6); merge to `main`.
+4. Wait for HTTPS; set production variables (§6); migrate and seed the production database, then import the stock into it with no new uploads: `IMPORT_DATABASE_URL=<production direct URL> pnpm import:stock --production` (`docs/catalog.md` §6; the report should say 0 uploaded). Then merge to `main`.
 5. Run the checks in §4.
 6. Search Console, Bing and IndexNow (`docs/seo-geo.md`); confirm GA4 (`docs/analytics.md`).
 7. Watch credits daily for the first week.
