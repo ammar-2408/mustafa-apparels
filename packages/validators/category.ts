@@ -18,8 +18,15 @@ const fields = {
   seoDescription: optionalText(160),
 };
 
+// What the admin forms may send: never the image, which only setCategoryImage writes, after
+// reading the upload back from Cloudinary (docs/auth-security.md §5).
+const formFields = z.object(fields).omit({ imageUrl: true, imagePublicId: true }).shape;
+
+// The image as core stores it (set by setCategoryImage and the seed only).
+export type CategoryImageFields = { imageUrl?: string | null; imagePublicId?: string | null };
+
 export const categoryInput = z
-  .object(fields)
+  .object(formFields)
   .partial()
   .required({ name: true, slug: true })
   .strict()
@@ -38,7 +45,7 @@ export const categoryInput = z
 export type CategoryInput = z.infer<typeof categoryInput>;
 
 export const categoryUpdateInput = z
-  .object(fields)
+  .object(formFields)
   .partial()
   .extend({ id })
   .strict()

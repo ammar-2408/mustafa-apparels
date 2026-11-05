@@ -113,6 +113,24 @@ describe('collection actions', () => {
     expect(await db.select().from(category)).toHaveLength(0);
   });
 
+  it.each([
+    ['an image id', { imagePublicId: 'products/p1/x' }],
+    ['an image URL', { imageUrl: 'https://res.cloudinary.com/elsewhere/image/upload/x.jpg' }],
+  ])(
+    'refuses %s on create and update: only setCategoryImage writes the image',
+    async (_n, extra) => {
+      expect(await createCategory({ name: 'Lawn', slug: 'lawn', ...extra })).toMatchObject({
+        error: { code: 'VALIDATION' },
+      });
+      const id = await created('Dhanak', 'dhanak');
+      expect(await updateCategory({ id, ...extra })).toMatchObject({
+        error: { code: 'VALIDATION' },
+      });
+      const [row] = await db.select().from(category).where(eq(category.id, id));
+      expect(row).toMatchObject({ imageUrl: null, imagePublicId: null });
+    },
+  );
+
   it('refuses fields the form never sends', async () => {
     expect(await createCategory({ name: 'Lawn', slug: 'lawn', id: 'mine' })).toMatchObject({
       ok: false,

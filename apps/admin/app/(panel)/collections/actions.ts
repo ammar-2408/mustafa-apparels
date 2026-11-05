@@ -78,8 +78,10 @@ const setImage = adminAction(categoryImageInput, async (input, { session }) => {
     }
   }
   const row = await categories.update(db, { id: input.id, ...image }, { actorId: session.user.id });
-  if (before.imagePublicId && before.imagePublicId !== image.imagePublicId) {
-    const deleted = await deleteAsset(config, before.imagePublicId, 'image').catch(() => false);
+  // Only a file uploaded for this collection is deleted, never one an id points at elsewhere.
+  const old = before.imagePublicId;
+  if (old && old !== image.imagePublicId && old.startsWith(assetPrefix('category', input.id))) {
+    const deleted = await deleteAsset(config, old, 'image').catch(() => false);
     if (!deleted) console.error('[media] Cloudinary delete failed; the file is left over');
   }
   await revalidateStorefront(tagsFor(row.slug));

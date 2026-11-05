@@ -1,7 +1,11 @@
 // Collections (the `category` table). Inputs are already parsed by packages/validators.
 import type { Database } from '@mustafa/db/client';
 import { category, product } from '@mustafa/db/schema';
-import type { CategoryInput, CategoryUpdateInput } from '@mustafa/validators/category';
+import type {
+  CategoryImageFields,
+  CategoryInput,
+  CategoryUpdateInput,
+} from '@mustafa/validators/category';
 import { and, asc, eq, getTableColumns, isNull, sql } from 'drizzle-orm';
 
 import { type Actor, diff, record, snapshot } from '../audit';
@@ -97,7 +101,12 @@ async function assertNotOwnAncestor(db: Database, id: string, parentId: string |
   }
 }
 
-export async function update(db: Database, { id, ...changes }: CategoryUpdateInput, actor: Actor) {
+// The image fields come only from setCategoryImage, after the upload is verified.
+export async function update(
+  db: Database,
+  { id, ...changes }: CategoryUpdateInput & CategoryImageFields,
+  actor: Actor,
+) {
   try {
     return await db.transaction(async (tx) => {
       const [before] = await tx.select().from(category).where(eq(category.id, id)).for('update');

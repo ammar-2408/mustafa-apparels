@@ -88,3 +88,12 @@ describe('categoryImageInput', () => {
     expect(ok('categories/c1/../x')).toBe(false);
   });
 });
+
+describe('collection form schemas and the image', () => {
+  it('refuse image fields: setCategoryImage is the only way to set them', () => {
+    expect(
+      categoryInput.safeParse({ name: 'Lawn', slug: 'lawn', imagePublicId: 'x' }).success,
+    ).toBe(false);
+    expect(categoryUpdateInput.safeParse({ id: 'c1', imageUrl: null }).success).toBe(false);
+  });
+});
