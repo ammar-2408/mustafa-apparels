@@ -96,6 +96,7 @@ export function ProductForm({ collections, suit }: ProductFormProps) {
 
   const render = (field: FieldConfig) => {
     const common = {
+      id: `field-${field.name}`,
       name: field.name,
       label: field.label,
       hint: field.hint,
@@ -184,10 +185,20 @@ export function ProductForm({ collections, suit }: ProductFormProps) {
           />
         );
       case 'toggle':
-        return <Checkbox name={field.name} label={field.label} defaultChecked={initial === true} />;
+        return (
+          <Checkbox
+            id={`field-${field.name}`}
+            name={field.name}
+            label={field.label}
+            defaultChecked={initial === true}
+          />
+        );
       case 'checkboxes':
         return (
-          <fieldset aria-describedby={error(field.name) ? `${field.name}-error` : undefined}>
+          <fieldset
+            id={`field-${field.name}`}
+            aria-describedby={error(field.name) ? `${field.name}-error` : undefined}
+          >
             <legend className="mb-2 caps-tight">{field.label}</legend>
             {field.hint ? <p className="mb-2 text-small text-muted">{field.hint}</p> : null}
             <div className="grid gap-x-6 sm:grid-cols-2">
@@ -253,7 +264,7 @@ function PiecesField({
   error?: string | undefined;
 }) {
   return (
-    <fieldset aria-describedby={error ? 'pieces-error' : undefined}>
+    <fieldset id="field-pieceDetails" aria-describedby={error ? 'pieces-error' : undefined}>
       <legend className="mb-2 caps-tight">{field.label}</legend>
       {field.hint ? <p className="mb-4 text-small text-muted">{field.hint}</p> : null}
       <div className="flex flex-col gap-4">

@@ -179,3 +179,57 @@ describe('other status changes', () => {
     ).toHaveLength(1);
   });
 });
+
+describe('check: items', () => {
+  const ready = (checks: unknown) =>
+    makeProduct(db, {
+      published: true,
+      status: 'draft',
+      publishedAt: null,
+      attributes: { checks },
+    });
+
+  const publishError = (id: string) =>
+    products.setStatus(db, { id, status: 'published' }, actor).then(
+      () => null,
+      (error: unknown) => (error instanceof CoreError ? error.fieldErrors : error),
+    );
+
+  it('blocks publishing while any check is open, saying how many', async () => {
+    const suit = await ready(['Confirm the trouser fabric', 'Corner flowers: a brand mark?']);
+    expect(await publishError(suit.id)).toMatchObject({
+      checks: ['Clear the 2 open checks first'],
+    });
+  });
+
+  it('clears checks one at a time with an audit row, then lets the suit publish', async () => {
+    const suit = await ready(['Confirm the trouser fabric', 'Corner flowers: a brand mark?']);
+    await products.clearCheck(db, { id: suit.id, check: 'Confirm the trouser fabric' }, actor);
+    expect(await publishError(suit.id)).toMatchObject({ checks: ['Clear the open check first'] });
+    const row = await products.clearCheck(
+      db,
+      { id: suit.id, check: 'Corner flowers: a brand mark?' },
+      actor,
+    );
+    expect(row.attributes).toEqual({ checks: [] });
+    expect(await publishError(suit.id)).toBeNull();
+    const clears = (await db.select().from(auditLog)).filter(
+      (r) => r.action === 'product.check.clear',
+    );
+    expect(clears).toHaveLength(2);
+    expect(clears[0]!.changes).toMatchObject({ before: { check: 'Confirm the trouser fabric' } });
+  });
+
+  it('answers NOT_FOUND for a check the suit does not have', async () => {
+    const suit = await ready(['Confirm the trouser fabric']);
+    await expect(
+      products.clearCheck(db, { id: suit.id, check: 'Something else' }, actor),
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+  });
+
+  it('treats checks that are not a list of text as none', async () => {
+    expect(products.openChecks({ checks: 'oops' })).toEqual([]);
+    expect(products.openChecks({ checks: ['a', 3, null] })).toEqual(['a']);
+    expect(products.openChecks({})).toEqual([]);
+  });
+});

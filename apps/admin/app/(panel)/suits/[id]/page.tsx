@@ -5,8 +5,11 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { MediaManager } from '../../../../components/media-manager';
+import { OpenChecks } from '../../../../components/open-checks';
 import { ProductForm } from '../../../../components/product-form';
+import { SuitStatus } from '../../../../components/suit-status';
 import { requireAdminPage } from '../../../../lib/auth';
+import { formatDate } from '../../../../lib/format';
 import { cloudNameForPreviews } from '../../../../lib/media';
 
 export const metadata: Metadata = { title: 'Edit suit' };
@@ -25,6 +28,12 @@ export default async function EditSuitPage({ params }: { params: Promise<{ id: s
     <>
       <p className="caps-tight text-muted">{suit.designCode ?? 'No design code'}</p>
       <h1 className="mt-2 mb-10 text-h2 font-light">{suit.name}</h1>
+      <SuitStatus
+        id={suit.id}
+        status={suit.status}
+        publishedOn={suit.publishedAt ? formatDate(suit.publishedAt) : null}
+      />
+      <OpenChecks id={suit.id} checks={products.openChecks(suit.attributes)} />
       <div className="mb-16">
         <MediaManager
           productId={suit.id}

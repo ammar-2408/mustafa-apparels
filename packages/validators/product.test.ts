@@ -3,10 +3,13 @@ import { describe, expect, it } from 'vitest';
 import {
   adminProductListInput,
   PRODUCT_FORM_FIELDS,
+  productCheckInput,
   productCreateInput,
   productEditInput,
+  productIdInput,
   productInput,
   productListInput,
+  productPublishInput,
   productRuleErrors,
   productStatusInput,
   productUpdateInput,
@@ -272,5 +275,19 @@ describe('productCreateInput and productEditInput', () => {
     expect(PRODUCT_FORM_FIELDS).not.toContain('status');
     expect(PRODUCT_FORM_FIELDS).not.toContain('attributes');
     expect(PRODUCT_FORM_FIELDS).toContain('pieceDetails');
+  });
+});
+
+describe('status and check inputs', () => {
+  it('publishes or unpublishes only; archiving has its own action', () => {
+    expect(productPublishInput.safeParse({ id: 'p1', status: 'published' }).success).toBe(true);
+    expect(productPublishInput.safeParse({ id: 'p1', status: 'draft' }).success).toBe(true);
+    expect(productPublishInput.safeParse({ id: 'p1', status: 'archived' }).success).toBe(false);
+  });
+
+  it('takes an id, or an id and the check text', () => {
+    expect(productIdInput.safeParse({ id: 'p1', name: 'x' }).success).toBe(false);
+    expect(productCheckInput.safeParse({ id: 'p1', check: 'Confirm fabric' }).success).toBe(true);
+    expect(productCheckInput.safeParse({ id: 'p1', check: '' }).success).toBe(false);
   });
 });

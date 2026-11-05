@@ -23,7 +23,9 @@ import {
 } from '../errors';
 import { claimSlug, moveSlug, redirectTarget } from '../redirects';
 import { filterConditions } from './filters';
-import { publishErrors } from './publish';
+import { openChecks, publishErrors } from './publish';
+
+export { openChecks };
 
 export const PAGE_SIZE = 24;
 
@@ -401,6 +403,32 @@ export async function setStatus(
       entity: 'product',
       entityId: id,
       changes: { before: { status: before.status }, after: { status } },
+    });
+    return row!;
+  });
+}
+
+// Marks one check: item as done: it leaves the list, and the audit log keeps its text.
+export async function clearCheck(
+  db: Database,
+  { id, check }: { id: string; check: string },
+  actor: Actor,
+) {
+  return db.transaction(async (tx) => {
+    const before = await lockLive(tx, id);
+    const checks = openChecks(before.attributes);
+    if (!checks.includes(check)) throw notFound('Check');
+    const remaining = checks.filter((item) => item !== check);
+    const [row] = await tx
+      .update(product)
+      .set({ attributes: { ...before.attributes, checks: remaining } })
+      .where(eq(product.id, id))
+      .returning();
+    await record(tx, actor, {
+      action: 'product.check.clear',
+      entity: 'product',
+      entityId: id,
+      changes: { before: { check }, after: { remaining: remaining.length } },
     });
     return row!;
   });

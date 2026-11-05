@@ -177,3 +177,15 @@ export type ProductEditInput = z.infer<typeof productEditInput>;
 
 // The form's field names, for the field config's drift test.
 export const PRODUCT_FORM_FIELDS = Object.keys(formFields) as (keyof typeof formFields)[];
+
+// Publish (draft → published) or unpublish (published → draft); archive and restore have their
+// own actions.
+export const productPublishInput = z
+  .object({ id, status: z.enum(['published', 'draft']) })
+  .strict();
+
+// Duplicate, archive, restore.
+export const productIdInput = z.object({ id }).strict();
+
+// Mark one check: item done, by its text.
+export const productCheckInput = z.object({ id, check: z.string().min(1).max(500) }).strict();

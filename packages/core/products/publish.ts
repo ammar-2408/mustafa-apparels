@@ -1,6 +1,7 @@
 // What a suit needs before it can go on the site (docs/database.md §2 product_media rules):
 // a price, a colour, a main photo, alt text on every photo and video, and no other brand's
-// name anywhere a customer or search engine can read. Every problem is reported at once.
+// name anywhere a customer or search engine can read, and no open check: items (docs/catalog.md).
+// Every problem is reported at once.
 import { productMedia } from '@mustafa/db/schema';
 import { findBannedTerm } from '@mustafa/validators/banned-terms';
 import { productRuleErrors } from '@mustafa/validators/product';
@@ -32,12 +33,27 @@ const brandIn = (value: string | string[] | null) =>
 
 const brandMessage = (term: string) => `Remove the brand name “${term}”`;
 
+// The owner's open check: items, kept on the suit as attributes.checks (filled by the import).
+export function openChecks(attributes: Record<string, unknown>): string[] {
+  const checks = attributes.checks;
+  return Array.isArray(checks) ? checks.filter((c): c is string => typeof c === 'string') : [];
+}
+
 export function publishErrors(suit: Product, media: Media[]): FieldErrors {
   const errors: FieldErrors = productRuleErrors({ ...suit, status: 'published' });
 
   for (const field of TEXT_FIELDS) {
     const term = brandIn(suit[field]);
     if (term) errors[field] = [brandMessage(term)];
+  }
+
+  const checks = openChecks(suit.attributes);
+  if (checks.length > 0) {
+    errors.checks = [
+      checks.length === 1
+        ? 'Clear the open check first'
+        : `Clear the ${checks.length} open checks first`,
+    ];
   }
 
   const mediaErrors: string[] = [];

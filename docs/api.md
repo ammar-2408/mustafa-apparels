@@ -89,9 +89,10 @@ All actions call `requireAdmin()` first (role `admin` + 2FA-verified session). B
 |---|---|---|
 | `createProduct` (`app/(panel)/suits/actions.ts`) | `productCreateInput`: every form field, never `status` or `attributes`; always saved as a draft | `products`, `product:<id>`, `category:<slug>` |
 | `updateProduct` | `productEditInput` `{ id, ...changed fields }`: no `status` or `attributes`; a slug change keeps a redirect | `products`, `product:<id>`, old and new `category:<slug>` |
-| `setProductStatus` | `{ id, status }`. Publishing requires a price, a main image, alt text on all media, and no banned brand names | same as update. On publish or unpublish, also sends the URL to IndexNow (non-blocking) |
-| `duplicateProduct` | `{ id }` (copy saved as draft; `design_code` and `import_key` cleared) | — |
-| `archiveProduct` / `restoreProduct` | `{ id }` | `products` |
+| `setProductStatus` | `productPublishInput` `{ id, status: 'published' | 'draft' }` (publish or unpublish). Publishing requires a price, a colour, a main photo, alt text on all media, no banned brand names and no open `check:` items; every failure comes back at once, keyed `price`, `colorFamily`, `media`, `checks` or the text field | `products`, `product:<id>`, `category:<slug>`. IndexNow joins at step 7.11 |
+| `duplicateProduct` | `productIdInput` `{ id }` (copy saved as draft; `design_code` and `import_key` cleared; no photos) | — (nothing public changes) |
+| `archiveProduct` / `restoreProduct` | `productIdInput` `{ id }`; restore comes back as a draft | `products`, `product:<id>`, `category:<slug>` (a gap in the earlier table: the product page and its collection list change too) |
+| `clearProductCheck` | `productCheckInput` `{ id, check }`: removes that item from `attributes.checks`; the audit row keeps its text | — |
 | `addProductMedia` (`app/(panel)/suits/[id]/actions.ts`, as are the next five) | `mediaAddInput` `{ productId, kind, publicId, alt }`; runs `verifyAsset` first | `products`, `product:<id>` |
 | `updateMediaAlt` | `mediaAltInput` `{ mediaId, alt }` | `products`, `product:<id>` |
 | `reorderProductMedia` | `{ productId, mediaIds[] }` (every item; the first photo becomes main) | `products`, `product:<id>` |
