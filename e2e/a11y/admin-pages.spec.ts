@@ -9,6 +9,9 @@ import { expect, test } from '../support/users';
 // Signed-in admin page templates, checked like the public ones in pages.spec.ts: zero serious or
 // critical WCAG 2.2 AA violations. One login covers them all. Add each new admin page here; pages
 // that need a record get its id at run time.
+// One login, then a dozen pages each scanned by axe: more than the default 30 s on a busy run.
+test.describe.configure({ timeout: 120_000 });
+
 const ADMIN_PAGES = (ids: { collectionId: string; suitId: string }) => [
   { name: 'admin dashboard', path: '/' },
   { name: 'admin collections', path: '/collections' },

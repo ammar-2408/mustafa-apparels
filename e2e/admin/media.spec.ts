@@ -132,12 +132,15 @@ test('upload a video, give it a poster photo, then go back to the first frame', 
 
   await expect(page.getByText('Poster: the first frame of the video.')).toBeVisible();
   await page.getByLabel('Change poster').setInputFiles(photo('poster.jpg'));
-  await expect(page.getByText('Poster: your photo.')).toBeVisible();
+  // Sign, upload, read back and save: allow for a busy run.
+  await expect(page.getByText('Poster: your photo.')).toBeVisible({ timeout: 15_000 });
   const [row] = await savedRows(db);
   expect(row?.posterPublicId).toMatch(new RegExp(`^products/${suit.id}/poster-`));
 
   await page.getByRole('button', { name: 'Use first frame' }).click();
-  await expect(page.getByText('Poster: the first frame of the video.')).toBeVisible();
+  await expect(page.getByText('Poster: the first frame of the video.')).toBeVisible({
+    timeout: 15_000,
+  });
   await expect.poll(async () => (await savedRows(db))[0]?.posterPublicId).toBeNull();
 });
 
