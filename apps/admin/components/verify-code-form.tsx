@@ -42,8 +42,8 @@ export function VerifyCodeForm() {
       setFormError(authErrorMessage(error));
       return;
     }
+    // No refresh() after a move: it re-renders the old page and can cancel the move (Next 16.4.5).
     router.replace('/');
-    router.refresh();
   }
 
   return (

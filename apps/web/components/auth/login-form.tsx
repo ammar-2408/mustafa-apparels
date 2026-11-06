@@ -31,8 +31,9 @@ export function LoginForm() {
       setFormError(authErrorMessage(error));
       return;
     }
+    // /account renders per request, so it reads the new session cookie; a refresh() here would
+    // re-render /login instead and can cancel the move.
     router.replace('/account');
-    router.refresh();
   }
 
   return (

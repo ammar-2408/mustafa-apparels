@@ -33,8 +33,8 @@ export function LoginForm() {
     }
     // With 2FA on, no session exists yet: the code comes next. Without it, setup comes first.
     const next = data && 'twoFactorRedirect' in data && data.twoFactorRedirect;
+    // No refresh() after a move: it re-renders the old page and can cancel the move (Next 16.4.5).
     router.replace(next ? '/login/verify' : '/setup-2fa');
-    router.refresh();
   }
 
   return (

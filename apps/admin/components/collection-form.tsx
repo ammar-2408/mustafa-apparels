@@ -65,8 +65,8 @@ export function CollectionForm({ collection }: CollectionFormProps) {
       setFormError(result.error.message);
       return;
     }
+    // No refresh() after a move: it re-renders the old page and can cancel the move (Next 16.4.5).
     router.push('/collections');
-    router.refresh();
   }
 
   const error = (key: string) => fieldErrors[key]?.[0];

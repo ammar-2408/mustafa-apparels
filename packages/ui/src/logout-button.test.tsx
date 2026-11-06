@@ -14,13 +14,13 @@ beforeEach(() => {
 const click = () => fireEvent.click(screen.getByRole('button', { name: /log out/i }));
 
 describe('LogoutButton', () => {
-  it('signs out, then goes to the login page and refreshes', async () => {
+  it('signs out, then moves to the login page with no refresh (it can cancel the move)', async () => {
     const signOut = vi.fn().mockResolvedValue({});
     render(<LogoutButton signOut={signOut} />);
     click();
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/login'));
     expect(signOut).toHaveBeenCalledTimes(1);
-    expect(router.refresh).toHaveBeenCalled();
+    expect(router.refresh).not.toHaveBeenCalled();
   });
 
   it('goes where it is told', async () => {

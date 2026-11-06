@@ -20,8 +20,8 @@ export function LogoutButton({ signOut, redirectTo = '/login', className }: Logo
   async function logOut() {
     setPending(true);
     await signOut();
+    // No refresh() after a move: it re-renders the old page and can cancel the move (Next 16.4.5).
     router.replace(redirectTo);
-    router.refresh();
   }
 
   return (

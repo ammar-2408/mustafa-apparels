@@ -44,6 +44,7 @@ describe('LoginForm', () => {
     type('Password', 'correct horse battery');
     submit(/log in/i);
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/account'));
+    expect(router.refresh).not.toHaveBeenCalled(); // it can cancel the move (docs/debugging.md)
     expect(client.signIn.email).toHaveBeenCalledWith({
       email: 'ayesha@example.com',
       password: 'correct horse battery',
