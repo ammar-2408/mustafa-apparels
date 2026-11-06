@@ -14,5 +14,8 @@ export function mailtoLink(email: string, subject?: string, body?: string) {
   if (body) query.set('body', body);
   // mailto wants %20, not +, for spaces.
   const text = query.toString().replace(/\+/g, '%20');
-  return `mailto:${email}${text ? `?${text}` : ''}`;
+  // The address is encoded too (keeping @), so a value from settings can't add its own ?cc= or
+  // break the link.
+  const address = encodeURIComponent(email).replace(/%40/g, '@');
+  return `mailto:${address}${text ? `?${text}` : ''}`;
 }

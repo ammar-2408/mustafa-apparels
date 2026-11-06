@@ -1,2 +1,10 @@
 @import 'tailwindcss';
 @import '@mustafa/config/tailwind/theme.css';
+
+/* Room under the page for the suit page's sticky WhatsApp bar (phones and tablets), so it never
+   covers the footer's last line. */
+@media (width < 64rem) {
+  body:has([data-sticky-bar]) {
+    padding-bottom: 5.5rem;
+  }
+}

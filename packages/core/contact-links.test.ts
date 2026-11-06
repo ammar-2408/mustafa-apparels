@@ -20,4 +20,11 @@ describe('contact links', () => {
       'mailto:ayesha@example.com?subject=Your%20inquiry&body=Hi%20Ayesha%2C%20thanks',
     );
   });
+
+  it('encodes the address, so it can never add its own query', () => {
+    expect(mailtoLink('shop@example.com?cc=x@evil.test')).toBe(
+      'mailto:shop@example.com%3Fcc%3Dx@evil.test',
+    );
+    expect(mailtoLink('a b@example.com', 'Hi')).toBe('mailto:a%20b@example.com?subject=Hi');
+  });
 });

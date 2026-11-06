@@ -102,3 +102,34 @@ test('grids never show a video', async ({ page }) => {
   await page.goto('/shop');
   await expect(page.locator('video')).toHaveCount(0);
 });
+
+test('WhatsApp comes first and names the suit; on phones a bar keeps it in reach', async ({
+  page,
+  db,
+}) => {
+  const slug = await slugOf(db, 'E2E-01');
+  await page.goto(`/products/${slug}`);
+  const main = page.getByRole('main');
+  const whatsapp = main.getByRole('link', { name: 'Order on WhatsApp' }).first();
+  const href = decodeURIComponent((await whatsapp.getAttribute('href'))!);
+  expect(href).toMatch(
+    /^https:\/\/wa\.me\/\d+\?text=Hi! I'm interested in ".+" \(E2E-01, PKR 3,500\): /,
+  );
+  expect(href).toContain(`/products/${slug}`);
+  await expect(main.getByRole('link', { name: /^Call/ })).toBeVisible();
+
+  const bars = main.getByRole('link', { name: 'Order on WhatsApp' });
+  const phone = page.viewportSize()!.width < 1024;
+  // Two on phones (in the details and in the bar), one from lg.
+  await expect(bars).toHaveCount(phone ? 2 : 1);
+  if (phone) {
+    const bar = bars.last();
+    await expect(bar).toBeVisible();
+    // At the very bottom of the page, the footer's last line still sits above the bar.
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    const barTop = (await bar.boundingBox())!.y - 12;
+    const content = page.getByRole('contentinfo').getByText('© Mustafa Apparels');
+    const box = (await content.boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(barTop + 1);
+  }
+});

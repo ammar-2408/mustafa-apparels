@@ -3,9 +3,10 @@ import { notFound, permanentRedirect } from 'next/navigation';
 
 import { JsonLd } from '../../../../components/json-ld';
 import { ProductGrid } from '../../../../components/product/product-grid';
+import { StickyWhatsApp, SuitContact } from '../../../../components/product/suit-contact';
 import { SuitDetails } from '../../../../components/product/suit-details';
 import { SuitGallery } from '../../../../components/product/suit-gallery';
-import { getSuit, listSuits, suitRedirect } from '../../../../lib/catalog';
+import { getSiteSettings, getSuit, listSuits, suitRedirect } from '../../../../lib/catalog';
 import { buildMetadata } from '../../../../lib/seo';
 import { breadcrumbList } from '../../../../lib/structured-data';
 import { productJsonLd } from '../../../../lib/structured-product';
@@ -51,7 +52,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SuitPage({ params }: Props) {
-  const suit = await load(params);
+  const [suit, settings] = await Promise.all([load(params), getSiteSettings()]);
+  const contact = {
+    whatsapp: settings.whatsapp,
+    phone: settings.phone,
+    email: settings.email,
+    delivery: settings.delivery_info,
+    payment: settings.payment_info,
+    replyNote: settings.reply_note,
+  };
   const crumbs = [
     { name: 'Home', path: '/' },
     { name: suit.category.name, path: `/collections/${suit.category.slug}` },
@@ -64,7 +73,7 @@ export default async function SuitPage({ params }: Props) {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
         <SuitGallery name={suit.name} media={suit.media} />
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <SuitDetails suit={suit} />
+          <SuitDetails suit={suit} actions={<SuitContact suit={suit} contact={contact} />} />
         </div>
       </div>
 
@@ -80,6 +89,7 @@ export default async function SuitPage({ params }: Props) {
           <ProductGrid suits={suit.related} eager={0} />
         </section>
       )}
+      <StickyWhatsApp suit={suit} whatsapp={contact.whatsapp} />
     </article>
   );
 }
