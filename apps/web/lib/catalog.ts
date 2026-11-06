@@ -5,6 +5,7 @@
 // unstable_cache stores JSON: results carry no Date values, so what a page gets matches its type.
 import 'server-only';
 
+import { getEnv } from '@mustafa/config/env';
 import * as categories from '@mustafa/core/categories';
 import { CoreError } from '@mustafa/core/errors';
 import * as products from '@mustafa/core/products';
@@ -18,13 +19,24 @@ import type { Collection, Suit, SuitCard } from './types';
 /** Seconds before a cached read is refreshed even with no tag from the admin. */
 export const REVALIDATE_SECONDS = 3600;
 
+// Which database a cached entry came from: the dev server and local E2E share the .next cache
+// but use different Neon branches. The host and database name only, never the password.
+function databaseKey() {
+  try {
+    const url = new URL(getEnv('web').DATABASE_URL ?? '');
+    return `${url.hostname}${url.pathname}`;
+  } catch {
+    return 'no-database';
+  }
+}
+
 function cached<Args extends unknown[], Result>(
   name: string,
   read: (...args: Args) => Promise<Result>,
   tags: (...args: Args) => string[],
 ) {
   return (...args: Args) =>
-    unstable_cache(() => read(...args), [name, JSON.stringify(args)], {
+    unstable_cache(() => read(...args), [name, databaseKey(), JSON.stringify(args)], {
       tags: tags(...args),
       revalidate: REVALIDATE_SECONDS,
     })();

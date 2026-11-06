@@ -1,11 +1,14 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const tags = vi.hoisted(() => ({ list: [] as string[] }));
+const tags = vi.hoisted(() => ({ list: [] as string[], keys: [] as string[][] }));
+const env = vi.hoisted(() => ({ DATABASE_URL: undefined as string | undefined }));
+vi.mock('@mustafa/config/env', () => ({ getEnv: () => env }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/cache', () => ({
   unstable_cache:
-    (read: () => Promise<unknown>, _key: string[], options: { tags: string[] }) => () => {
+    (read: () => Promise<unknown>, key: string[], options: { tags: string[] }) => () => {
+      tags.keys.push(key);
       tags.list.push(...options.tags);
       return read();
     },
@@ -35,6 +38,19 @@ import {
 
 beforeEach(() => {
   tags.list = [];
+  tags.keys = [];
+});
+
+it('keys each entry by the database it read, without the password', async () => {
+  env.DATABASE_URL = 'postgresql://u:secret@ep-dev-1.neon.tech/neondb';
+  await getSiteSettings();
+  env.DATABASE_URL = 'postgresql://u:secret@ep-e2e-2.neon.tech/neondb';
+  await getSiteSettings();
+  expect(tags.keys.map((k) => k[1])).toEqual([
+    'ep-dev-1.neon.tech/neondb',
+    'ep-e2e-2.neon.tech/neondb',
+  ]);
+  expect(JSON.stringify(tags.keys)).not.toContain('secret');
 });
 
 describe('cached reads carry the tags the admin sends', () => {
