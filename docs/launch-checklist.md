@@ -33,7 +33,7 @@ Most customers are on phones. **Use real devices**, not just the browser's emula
 - [ ] Sticky WhatsApp bar doesn't cover content or the home indicator
 - [ ] Filters and search usable with the thumb; keyboard doesn't hide inputs
 - [ ] Portrait and landscape; no sideways scrolling at 360px
-- [ ] Automated: `pnpm test:e2e` passes on all 6 device projects
+- [ ] Automated: `pnpm test:e2e` passes on all 7 device projects
 
 ## 3. Links
 

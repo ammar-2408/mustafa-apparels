@@ -99,7 +99,7 @@ The owner has no written permission to use other fashion brands' names. So:
 
 | Area | Requirement |
 |---|---|
-| Responsive | Works from 320px phones to 2560px+ monitors, incl. tablets and landscape. Tested on 6 device projects in CI, plus a 320px overflow check. |
+| Responsive | Works from 320px phones to 2560px+ monitors, incl. tablets and landscape. Tested on 7 device projects in CI, plus a 320px overflow check. |
 | Performance | Mobile Lighthouse ≥ 90 Performance; LCP < 2.5 s, CLS < 0.1, INP < 200 ms on product and collection pages. 3D and video never block first paint. |
 | Accessibility | WCAG 2.2 AA. Keyboard navigable, screen-reader labels, colour contrast, reduced motion. |
 | SEO | All rules in `AGENTS.md` §8, `docs/design.md` §8 and `docs/seo-geo.md`. Lighthouse SEO = 100. |
