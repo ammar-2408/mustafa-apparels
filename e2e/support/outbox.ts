@@ -27,3 +27,21 @@ export async function linkFromEmail(to: string, kind: string, nth = 1) {
   if (!link) throw new Error(`the ${kind} email to ${to} has no link`);
   return link;
 }
+
+// Waits for an email of a kind whose text contains `marker`, and returns it.
+export async function emailWith(kind: string, marker: string) {
+  let found: SavedEmail | undefined;
+  await expect
+    .poll(
+      () => {
+        if (!existsSync(OUTBOX)) return false;
+        found = readdirSync(OUTBOX)
+          .map((file) => JSON.parse(readFileSync(join(OUTBOX, file), 'utf8')) as SavedEmail)
+          .find((email) => email.kind === kind && email.text.includes(marker));
+        return found !== undefined;
+      },
+      { timeout: 15_000 },
+    )
+    .toBe(true);
+  return found!;
+}

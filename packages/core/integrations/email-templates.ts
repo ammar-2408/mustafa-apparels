@@ -55,3 +55,34 @@ export const existingAccount = ({ url }: { url: string }): Template =>
     ],
     { label: 'Reset password', url },
   );
+
+type InquiryEmail = {
+  name: string;
+  phone?: string;
+  email?: string;
+  message: string;
+  suit: { name: string; designCode: string | null; url: string } | null;
+  inboxUrl: string;
+};
+
+// To the shop only (owner's choice, 2026-11-06): the shopper sees a thank-you on screen.
+export const newInquiry = ({
+  name,
+  phone,
+  email,
+  message,
+  suit,
+  inboxUrl,
+}: InquiryEmail): Template =>
+  render(
+    suit
+      ? `New question about ${suit.name}${suit.designCode ? ` (${suit.designCode})` : ''}`
+      : `New question from ${name}`,
+    [
+      `${name} sent a question${suit ? ` about ${suit.name}: ${suit.url}` : ''}.`,
+      ...(phone ? [`Phone or WhatsApp: ${phone}`] : []),
+      ...(email ? [`Email: ${email}`] : []),
+      `Message: ${message}`,
+    ],
+    { label: 'Open the inbox', url: inboxUrl },
+  );

@@ -25,6 +25,13 @@ describe('inquiryInput', () => {
     expect(parsed.email).toBeUndefined();
   });
 
+  it('reads when the form appeared, from a hidden field sent as text', () => {
+    expect(inquiryInput.parse({ ...guest, startedAt: '1762400000000' }).startedAt).toBe(
+      1762400000000,
+    );
+    expect(errorsOf({ ...guest, startedAt: 'soon' })).toHaveProperty('startedAt');
+  });
+
   it('needs a phone or an email', () => {
     expect(errorsOf({ name: 'Ayesha', message: 'Hi', phone: '', email: '' })).toEqual({
       phone: ['Add a phone number or an email'],
@@ -38,9 +45,14 @@ describe('inquiryInput', () => {
     ['a 2,001-character message', { message: 'a'.repeat(2001) }, 'message'],
     ['a landline', { phone: '042 35761234' }, 'phone'],
     ['a bad email', { email: 'ayesha@' }, 'email'],
-    ['a filled honeypot', { website: 'https://spam.example' }, 'website'],
   ])('rejects %s', (_, change, field) => {
     expect(Object.keys(errorsOf({ ...guest, ...change }))).toEqual([field]);
+  });
+
+  it('passes a filled honeypot through for the action to answer quietly', () => {
+    expect(inquiryInput.parse({ ...guest, website: 'https://spam.example' }).website).toBe(
+      'https://spam.example',
+    );
   });
 
   it('accepts a 2,000-character message', () => {

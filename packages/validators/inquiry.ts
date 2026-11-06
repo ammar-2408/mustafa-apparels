@@ -1,5 +1,5 @@
 // The inquiry form (docs/api.md §2 submitInquiry). A phone or an email is required (owner's
-// decision, 2026-11-02). The honeypot `website` must stay empty; the time check is in the action.
+// decision, 2026-11-02). The honeypot `website` and the time check are read by the action.
 import { z } from 'zod';
 
 import { blankToUndefined, id } from './common';
@@ -16,7 +16,12 @@ export const inquiryInput = z
     email: optional(z.string().trim().toLowerCase().max(254).pipe(z.email('Enter a valid email'))),
     phone: optional(pkMobile),
     message: z.string().trim().min(1, 'Write your question').max(2000),
-    website: optional(z.string().max(0)),
+    // The honeypot: people never see it, so anything in it means a bot. Accepted here, so a bot gets
+    // no field error telling it so; the action answers as if saved and saves nothing.
+    website: optional(z.string().max(500)),
+    // When the form appeared, in ms since 1970 (set in the browser on mount, so a page cached for
+    // hours still works). The action refuses a form sent under 2 seconds after it appeared.
+    startedAt: optional(z.coerce.number().int().positive()),
   })
   .strict()
   .refine((i) => i.email !== undefined || i.phone !== undefined, {

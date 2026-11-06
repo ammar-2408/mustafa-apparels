@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 
 import { JsonLd } from '../../../../components/json-ld';
+import { InquiryForm } from '../../../../components/product/inquiry-form';
 import { ProductGrid } from '../../../../components/product/product-grid';
 import { StickyWhatsApp, SuitContact } from '../../../../components/product/suit-contact';
 import { SuitDetails } from '../../../../components/product/suit-details';
@@ -10,6 +11,7 @@ import { getSiteSettings, getSuit, listSuits, suitRedirect } from '../../../../l
 import { buildMetadata } from '../../../../lib/seo';
 import { breadcrumbList } from '../../../../lib/structured-data';
 import { productJsonLd } from '../../../../lib/structured-product';
+import { submitInquiry } from './actions';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -76,6 +78,24 @@ export default async function SuitPage({ params }: Props) {
           <SuitDetails suit={suit} actions={<SuitContact suit={suit} contact={contact} />} />
         </div>
       </div>
+
+      <section
+        aria-labelledby="ask-title"
+        className="mt-section grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+      >
+        <div className="flex flex-col gap-4">
+          <h2 id="ask-title" className="text-h3 font-light">
+            Ask about this suit
+          </h2>
+          <p className="text-body text-muted">
+            Prefer to write? Send your question here and we&rsquo;ll reply. For the quickest answer,
+            use WhatsApp.
+          </p>
+        </div>
+        <div className="max-w-xl">
+          <InquiryForm productId={suit.id} suitName={suit.name} submit={submitInquiry} />
+        </div>
+      </section>
 
       {suit.alsoInDesign.length > 0 && (
         <section className="mt-section">

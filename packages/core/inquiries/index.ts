@@ -1,8 +1,8 @@
-// Inquiries for the admin inbox (docs/prd.md A5). The storefront form that creates them is step 6.8.
+// Inquiries: the storefront form creates them (step 6.8), the admin inbox works through them.
 import type { Database } from '@mustafa/db/client';
 import { inquiry, product } from '@mustafa/db/schema';
 import type { InquiryListInput } from '@mustafa/validators/inquiry';
-import { count, desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq, isNull } from 'drizzle-orm';
 
 import { type Actor, record } from '../audit';
 import { notFound } from '../errors';
@@ -74,4 +74,53 @@ export async function setStatus(
     });
     return row!;
   });
+}
+
+export type NewInquiry = {
+  productId?: string;
+  userId?: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  message: string;
+  ipHash?: string;
+};
+
+/**
+ * Saves a shopper's question (docs/api.md submitInquiry). A suit that isn't published any more is
+ * left off rather than refusing the question. Returns the new inquiry with the suit it names.
+ */
+export async function create(db: Database, input: NewInquiry) {
+  let suit: { id: string; name: string; slug: string; designCode: string | null } | null = null;
+  if (input.productId) {
+    const [row] = await db
+      .select({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        designCode: product.designCode,
+      })
+      .from(product)
+      .where(
+        and(
+          eq(product.id, input.productId),
+          eq(product.status, 'published'),
+          isNull(product.deletedAt),
+        ),
+      );
+    suit = row ?? null;
+  }
+  const [row] = await db
+    .insert(inquiry)
+    .values({
+      productId: suit?.id ?? null,
+      userId: input.userId ?? null,
+      name: input.name,
+      email: input.email ?? null,
+      phone: input.phone ?? null,
+      message: input.message,
+      ipHash: input.ipHash ?? null,
+    })
+    .returning({ id: inquiry.id });
+  return { id: row!.id, suit };
 }

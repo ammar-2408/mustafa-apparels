@@ -34,7 +34,7 @@ Messages are safe to show users; never include stack traces, SQL or whether an e
 ### Server actions
 | Action | Input (Zod) | Auth | Rate limit | Returns |
 |---|---|---|---|---|
-| `submitInquiry` | `{ productId?, name (2–80), email, phone (PK format, optional if email), message (≤2000), website (honeypot, must be empty) }` | none (user linked if logged in with a verified email) | 5 / 10 min / IP | `{ inquiryId }` |
+| `submitInquiry` | `{ productId?, name (2–80), email, phone (PK format, optional if email), message (≤2000), website (honeypot), startedAt (ms since 1970, set in the browser) }` | none (user linked if logged in with a verified email) | 5 / 10 min / IP, counted first (bots too) | `{ inquiryId }`; a filled honeypot or a form sent under 2 s gets a quiet `{ inquiryId: null }` and nothing is saved |
 | `toggleWishlist` | `{ productId }` | user | 60 / min / user | `{ saved: boolean }` |
 | `updateProfile` | `{ name, phone? }` | user | 20 / hour / user | `{ user }` |
 | `deleteAccount` | `{ confirm: "DELETE", password }` | user (fresh session) | 3 / hour / user | `{ ok }` then sign out |

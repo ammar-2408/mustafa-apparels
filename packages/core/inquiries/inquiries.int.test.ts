@@ -94,3 +94,40 @@ describe('inquiries', () => {
     expect((await list({ page: '2' })).items).toHaveLength(1);
   });
 });
+
+describe('create', () => {
+  it('saves a guest question about a published suit, with no user', async () => {
+    const suit = await makeProduct(db, { published: true });
+    const created = await inquiries.create(db, {
+      productId: suit.id,
+      name: 'Ayesha',
+      phone: '+923001234567',
+      message: 'Is this in stock?',
+      ipHash: 'abc',
+    });
+    expect(created.suit).toMatchObject({ id: suit.id, designCode: suit.designCode });
+    const [row] = await db.select().from(inquiry).where(eq(inquiry.id, created.id));
+    expect(row).toMatchObject({
+      productId: suit.id,
+      userId: null,
+      status: 'new',
+      ipHash: 'abc',
+      email: null,
+    });
+  });
+
+  it('links a signed-in shopper, and keeps the question when the suit is not published', async () => {
+    const user = await makeUser(db);
+    const draft = await makeProduct(db);
+    const created = await inquiries.create(db, {
+      productId: draft.id,
+      userId: user.id,
+      name: 'Sana',
+      email: 'sana@example.com',
+      message: 'Hello',
+    });
+    expect(created.suit).toBeNull();
+    const [row] = await db.select().from(inquiry).where(eq(inquiry.id, created.id));
+    expect(row).toMatchObject({ productId: null, userId: user.id, email: 'sana@example.com' });
+  });
+});
