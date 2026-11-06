@@ -70,3 +70,8 @@ function splitOnce(value: string, separator: string): [string, string] {
 }
 
 const firstSegment = (path: string) => path.split('/')[0] ?? '';
+
+/** The Cloudinary cloud a delivery URL belongs to, or null for any other URL. */
+export function cloudNameOf(url: string) {
+  return url.match(/^https:\/\/res\.cloudinary\.com\/([^/]+)\//)?.[1] ?? null;
+}

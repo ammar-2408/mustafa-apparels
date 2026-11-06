@@ -78,3 +78,27 @@ test('an old slug moves permanently; unknown, draft and archived suits are real 
     expect((await request.get(path, { maxRedirects: 0 })).status(), path).toBe(404);
   }
 });
+
+test('a suit video loads nothing until it comes into view, then plays silently', async ({
+  page,
+  db,
+}) => {
+  await page.goto(`/products/${await slugOf(db, 'E2E-02')}`);
+  const video = page.locator('video');
+  await expect(video).toHaveCount(1);
+  await expect(video).toHaveAttribute('preload', 'none');
+  await expect(video).not.toHaveAttribute('src', /.+/);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.muted)).toBe(true);
+
+  // Phones swipe to it (or tap its thumbnail); from lg it sits below the main photo.
+  const thumb = page.getByRole('button', { name: /^Show the video/ });
+  if (await thumb.isVisible()) await thumb.click();
+  else await video.scrollIntoViewIfNeeded();
+  await expect(video).toHaveAttribute('src', /\/video\/upload\/ac_none,/);
+  await expect(page.getByRole('button', { name: /^(Pause|Play) video$/ })).toBeVisible();
+});
+
+test('grids never show a video', async ({ page }) => {
+  await page.goto('/shop');
+  await expect(page.locator('video')).toHaveCount(0);
+});

@@ -1,24 +1,32 @@
 'use client';
 
-import { shapedImageUrl } from '@mustafa/core/media-url';
+import { cloudNameOf, shapedImageUrl, videoPosterUrl } from '@mustafa/core/media-url';
 import { Dialog } from '@mustafa/ui/dialog';
 import Image from 'next/image';
-import { type ReactNode, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import type { SuitMedia } from '../../lib/types';
+import { ProductVideo } from './product-video';
 
 type Props = {
   name: string;
-  photos: SuitMedia[];
-  /** Shown after the main photo, so a video is never the first thing to load (§5.2). */
-  afterMain?: ReactNode;
+  /** Photos and videos, main photo first: a video is never the first thing to load (§5.2). */
+  media: SuitMedia[];
 };
+
+// A small still for a thumbnail: the photo, or the video's poster.
+function thumbUrl(item: SuitMedia) {
+  if (item.kind === 'image') return shapedImageUrl(item.url, 'card');
+  const cloud = cloudNameOf(item.url);
+  return cloud ? videoPosterUrl(cloud, item.publicId, item.posterPublicId, 160) : null;
+}
 
 const SIZES = '(min-width: 64rem) 55vw, 100vw';
 
 // The suit's photos, each shown whole on the page colour (docs/design.md §2): a swipe row with
 // thumbnails on phones and tablets, a column beside the sticky details from lg. Tap to zoom.
-export function SuitGallery({ name, photos, afterMain }: Props) {
+export function SuitGallery({ name, media }: Props) {
+  const photos = media.filter((m) => m.kind === 'image');
   const track = useRef<HTMLUListElement>(null);
   const [zoomed, setZoomed] = useState<SuitMedia | null>(null);
   const [current, setCurrent] = useState(0);
@@ -36,7 +44,7 @@ export function SuitGallery({ name, photos, afterMain }: Props) {
     setCurrent(Math.round(el.scrollLeft / el.clientWidth));
   };
 
-  if (photos.length === 0) {
+  if (media.length === 0) {
     return (
       <div className="flex aspect-3/4 items-center justify-center bg-primary caps-tight text-primary-fg">
         Photo coming soon
@@ -52,48 +60,56 @@ export function SuitGallery({ name, photos, afterMain }: Props) {
         aria-label={`Photos of ${name}`}
         className="-mx-gutter flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] lg:mx-0 lg:flex-col lg:gap-grid lg:overflow-visible"
       >
-        {photos.map((photo, i) => (
-          <li key={photo.id} className="w-full shrink-0 snap-start">
-            <button
-              type="button"
-              onClick={() => setZoomed(photo)}
-              aria-label={`Zoom photo ${i + 1} of ${photos.length}`}
-              className="relative block aspect-3/4 w-full cursor-zoom-in bg-bg"
-            >
-              <Image
-                src={shapedImageUrl(photo.url, 'whole')}
-                alt={photo.alt}
-                fill
-                sizes={SIZES}
-                priority={i === 0}
-                className="object-contain"
-              />
-            </button>
-            {i === 0 && afterMain}
+        {media.map((item, i) => (
+          <li key={item.id} className="w-full shrink-0 snap-start">
+            {item.kind === 'video' ? (
+              <div className="flex aspect-3/4 items-center justify-center bg-bg lg:aspect-auto">
+                <ProductVideo video={item} className="h-full lg:h-auto lg:w-full" />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setZoomed(item)}
+                aria-label={`Zoom photo ${photos.indexOf(item) + 1} of ${photos.length}`}
+                className="relative block aspect-3/4 w-full cursor-zoom-in bg-bg"
+              >
+                <Image
+                  src={shapedImageUrl(item.url, 'whole')}
+                  alt={item.alt}
+                  fill
+                  sizes={SIZES}
+                  priority={i === 0}
+                  className="object-contain"
+                />
+              </button>
+            )}
           </li>
         ))}
       </ul>
 
-      {photos.length > 1 && (
-        <div className="mt-3 flex gap-2 lg:hidden" role="group" aria-label="Choose a photo">
-          {photos.map((photo, i) => (
-            <button
-              key={photo.id}
-              type="button"
-              onClick={() => show(i)}
-              aria-label={`Show photo ${i + 1} of ${photos.length}`}
-              aria-current={current === i}
-              className="relative size-14 overflow-hidden rounded-sm border border-border aria-[current=true]:border-fg"
-            >
-              <Image
-                src={shapedImageUrl(photo.url, 'card')}
-                alt=""
-                fill
-                sizes="56px"
-                className="object-cover object-top"
-              />
-            </button>
-          ))}
+      {media.length > 1 && (
+        <div
+          className="mt-3 flex gap-2 lg:hidden"
+          role="group"
+          aria-label="Choose a photo or video"
+        >
+          {media.map((item, i) => {
+            const thumb = thumbUrl(item);
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => show(i)}
+                aria-label={`Show ${item.kind === 'video' ? 'the video' : 'photo'} (${i + 1} of ${media.length})`}
+                aria-current={current === i}
+                className="relative size-14 overflow-hidden rounded-sm border border-border bg-primary aria-[current=true]:border-fg"
+              >
+                {thumb && (
+                  <Image src={thumb} alt="" fill sizes="56px" className="object-cover object-top" />
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
 

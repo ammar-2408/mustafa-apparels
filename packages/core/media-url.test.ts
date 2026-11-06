@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  cloudNameOf,
   imageAtWidth,
   imageThumbUrl,
   isCloudinaryImage,
@@ -60,4 +61,10 @@ describe('storefront images', () => {
     const video = 'https://res.cloudinary.com/ma/video/upload/products/v.mp4';
     expect(imageAtWidth(video, 640)).toBe(video);
   });
+});
+
+it('reads the cloud name from a delivery URL', () => {
+  expect(cloudNameOf(PHOTO)).toBe('ma');
+  expect(cloudNameOf('https://res.cloudinary.com/demo/video/upload/x.mp4')).toBe('demo');
+  expect(cloudNameOf('/brand/logo.svg')).toBeNull();
 });

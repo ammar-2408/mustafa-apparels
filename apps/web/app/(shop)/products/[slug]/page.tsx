@@ -52,7 +52,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SuitPage({ params }: Props) {
   const suit = await load(params);
-  const photos = suit.media.filter((m) => m.kind === 'image');
   const crumbs = [
     { name: 'Home', path: '/' },
     { name: suit.category.name, path: `/collections/${suit.category.slug}` },
@@ -63,7 +62,7 @@ export default async function SuitPage({ params }: Props) {
       <JsonLd data={productJsonLd(suit, suitDescription(suit))} />
       <JsonLd data={breadcrumbList(crumbs)} />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
-        <SuitGallery name={suit.name} photos={photos} />
+        <SuitGallery name={suit.name} media={suit.media} />
         <div className="lg:sticky lg:top-24 lg:self-start">
           <SuitDetails suit={suit} />
         </div>
