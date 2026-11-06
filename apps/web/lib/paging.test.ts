@@ -19,8 +19,8 @@ describe('page links', () => {
     expect(pageHref('/collections/dhanak', 3)).toBe('/collections/dhanak/page/3');
   });
 
-  it('prerenders every later page, and /page/2 even for a one-page list', () => {
+  it('prerenders every later page, and none for a one-page list', () => {
     expect(laterPageParams(3)).toEqual([{ n: '2' }, { n: '3' }]);
-    expect(laterPageParams(1)).toEqual([{ n: '2' }]);
+    expect(laterPageParams(1)).toEqual([]);
   });
 });

@@ -79,6 +79,24 @@ describe('seed', () => {
     ]);
   });
 
+  it('gives each collection its page text, filling only text that is missing', async () => {
+    await seed(db, { appEnv: 'development' });
+    const texts = await db.select().from(category);
+    for (const row of texts) {
+      expect(row.description!.length, row.slug).toBeGreaterThanOrEqual(120);
+      expect(row.description!.length, row.slug).toBeLessThanOrEqual(160);
+    }
+    await db.update(category).set({ description: null }).where(eq(category.slug, 'khaddar'));
+    await db
+      .update(category)
+      .set({ description: 'The owner’s own words.' })
+      .where(eq(category.slug, 'dhanak'));
+    await seed(db, { appEnv: 'development' });
+    const after = new Map((await db.select().from(category)).map((c) => [c.slug, c.description]));
+    expect(after.get('dhanak')).toBe('The owner’s own words.');
+    expect(after.get('khaddar')).toMatch(/^Unstitched 3-piece Khaddar suits for winter/);
+  });
+
   it('adds a setting that is still missing', async () => {
     await seed(db, { appEnv: 'development' });
     await db.delete(siteSetting).where(eq(siteSetting.key, 'email'));

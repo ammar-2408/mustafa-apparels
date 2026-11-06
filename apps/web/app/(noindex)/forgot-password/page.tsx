@@ -4,9 +4,6 @@ import { connection } from 'next/server';
 import { ForgotPasswordForm } from '../../../components/auth/forgot-password-form';
 import { buildMetadata } from '../../../lib/seo';
 
-// Per request, rendered whole (ADR-021): no streamed shell, so redirects and status codes are real.
-export const instant = false;
-
 export const metadata = buildMetadata({
   title: 'Forgot your password',
   description:

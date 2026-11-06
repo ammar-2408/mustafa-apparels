@@ -6,9 +6,6 @@ loadEnvFiles();
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // ADR-021: cached by 'use cache' + cacheTag; per-request pages opt out with `instant = false`.
-  cacheComponents: true,
-  partialPrefetching: true,
   // Photos come from Cloudinary at each width (lib/image-loader.ts); logos are unoptimized SVGs.
   images: {
     loader: 'custom',

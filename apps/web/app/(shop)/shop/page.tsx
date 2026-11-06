@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { ListPage } from '../../../components/list-page';
 import { listSuits } from '../../../lib/catalog';
 import { buildMetadata } from '../../../lib/seo';
@@ -13,6 +15,7 @@ export const metadata = buildMetadata({
 // Cached (ADR-021); filters and sort arrive in the browser at step 6.4a (ADR-018).
 export default async function ShopPage() {
   const list = await listSuits({ page: 1 });
+  if (!list) notFound(); // only a collection list can be missing
   return (
     <ListPage
       title={SHOP_TITLE}

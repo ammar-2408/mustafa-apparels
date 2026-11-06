@@ -6,7 +6,7 @@
 // Real stock comes from catalog/ through scripts/import-stock.ts, never from here.
 import { emailInput, PASSWORD_MAX, PASSWORD_MIN } from '@mustafa/validators/auth';
 import { hashPassword } from 'better-auth/crypto';
-import { count, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray, isNull } from 'drizzle-orm';
 
 import type { Database } from './client';
 import {
@@ -19,10 +19,30 @@ import {
   user,
 } from './schema';
 
+// Collection page text, drafted at step 6.4 from the catalog/ collection files: only the fabric,
+// season and pieces they state. The owner checks the fabric facts and edits them in admin.
 const COLLECTIONS = [
-  { name: 'Dhanak', slug: 'dhanak', sortOrder: 0 },
-  { name: 'Khaddar', slug: 'khaddar', sortOrder: 1 },
-  { name: 'Lajwanti', slug: 'lajwanti', sortOrder: 2 },
+  {
+    name: 'Dhanak',
+    slug: 'dhanak',
+    sortOrder: 0,
+    description:
+      'Unstitched Dhanak suits for winter, in 2-piece and 3-piece sets. Pick an embroidered or printed shirt and take the fabric to your tailor for the cut you like.',
+  },
+  {
+    name: 'Khaddar',
+    slug: 'khaddar',
+    sortOrder: 1,
+    description:
+      'Unstitched 3-piece Khaddar suits for winter: an embroidered Khaddar shirt, a printed Khaddar dupatta and dyed trousers, ready for your tailor to stitch.',
+  },
+  {
+    name: 'Lajwanti',
+    slug: 'lajwanti',
+    sortOrder: 2,
+    description:
+      'Unstitched 2-piece Lajwanti suits for winter, in Dhanak fabric. The shirt and trousers are both printed all over, ready for your tailor to stitch as you like.',
+  },
 ];
 
 // The owner's real details, already in their stored form (E.164, lower case).
@@ -116,6 +136,14 @@ export async function seed(db: Database, options: SeedOptions): Promise<SeedSumm
     const [{ existing } = { existing: 0 }] = await tx.select({ existing: count() }).from(category);
     if (existing === 0) {
       summary.categories = (await tx.insert(category).values(COLLECTIONS).returning()).length;
+    } else {
+      // Collections made before the text existed get it, but never over the owner's own words.
+      for (const { slug, description } of COLLECTIONS) {
+        await tx
+          .update(category)
+          .set({ description })
+          .where(and(eq(category.slug, slug), isNull(category.description)));
+      }
     }
 
     const inserted = await tx

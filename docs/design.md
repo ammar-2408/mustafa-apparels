@@ -339,7 +339,7 @@ Route `app/llms.txt/route.ts`, `Content-Type: text/plain; charset=utf-8`, cached
 - Preview, dev and production before launch (`SITE_INDEXABLE=false`): `Disallow: /`.
 
 ### 8.6 Status codes
-- Unknown product/collection/page number → `notFound()` → real **404**. Under Cache Components, every dynamic `(shop)` route (`/page/[n]`, `/collections/[slug]`, `/products/[slug]`) has a layout exporting `instant = false`: a value the build didn't prerender then renders whole before any byte is sent (the default fallback streams a shell with 200). The 404 is cached too. No `loading.tsx` above `(shop)` routes: once streaming starts, a 404 or redirect loses its real status code.
+- Unknown product/collection/page number → `notFound()` → real **404**, on the first request too (classic ISR, ADR-021). The 404 is cached as well. No `loading.tsx` above `(shop)` routes: once streaming starts, a 404 or redirect loses its real status code.
 - Changed slug → **permanent redirect** via `slug_redirect` (`permanentRedirect()` sends 308; search engines treat it like a 301).
 - `/page/1` → **301** to the clean URL, set in `next.config` with `statusCode: 301`.
 - Unpublished/archived product → 404 (or 410 for permanently removed).

@@ -1,11 +1,11 @@
-import type { Card } from '@mustafa/core/products';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import cloudinaryLoader from '../../lib/image-loader';
+import type { SuitCard } from '../../lib/types';
 import { ProductCard } from './product-card';
 
-const suit = (overrides: Partial<Card> = {}): Card => ({
+const suit = (overrides: Partial<SuitCard> = {}): SuitCard => ({
   id: 's1',
   name: 'Black Embroidered Dhanak 3-Piece Suit',
   slug: 'black-embroidered-dhanak-3-piece-dhn-01',
@@ -21,7 +21,6 @@ const suit = (overrides: Partial<Card> = {}): Card => ({
   availability: 'in_stock',
   status: 'published',
   featured: false,
-  publishedAt: new Date('2026-11-06'),
   category: { slug: 'dhanak', name: 'Dhanak' },
   image: {
     url: 'https://res.cloudinary.com/ma/image/upload/products/imported/DHN-01/dhn-01.jpg',

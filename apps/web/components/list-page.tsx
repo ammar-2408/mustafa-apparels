@@ -1,9 +1,9 @@
-import type { Card } from '@mustafa/core/products';
 import { PAGE_SIZE } from '@mustafa/core/products';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { breadcrumbList, type Crumb, itemList } from '../lib/structured-data';
+import type { SuitCard } from '../lib/types';
 import { JsonLd } from './json-ld';
 import { Pagination } from './pagination';
 import { ProductGrid } from './product/product-grid';
@@ -13,7 +13,7 @@ type Props = {
   intro?: ReactNode;
   crumbs: Crumb[];
   base: string;
-  list: { items: Card[]; total: number; page: number; pageCount: number };
+  list: { items: SuitCard[]; total: number; page: number; pageCount: number };
 };
 
 const suitsLabel = (n: number) => `${n} ${n === 1 ? 'suit' : 'suits'}`;

@@ -11,8 +11,7 @@ type Props = { params: Promise<{ n: string }> };
 
 // Every later page is prerendered; one that appears after the build is made on first request.
 export async function generateStaticParams() {
-  const { pageCount } = await listSuits({ page: 1 });
-  return laterPageParams(pageCount);
+  return laterPageParams((await listSuits({ page: 1 }))?.pageCount ?? 1);
 }
 
 // Page 2 and up, or a 404 for anything else (ADR-017). Page 1 is /shop (next.config 301).
@@ -20,7 +19,7 @@ async function load(params: Props['params']) {
   const page = parsePageParam((await params).n);
   if (page === null) notFound();
   const list = await listSuits({ page });
-  if (page > list.pageCount) notFound();
+  if (!list || page > list.pageCount) notFound();
   return list;
 }
 

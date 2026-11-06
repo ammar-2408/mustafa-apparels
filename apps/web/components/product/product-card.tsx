@@ -1,5 +1,4 @@
 import { shapedImageUrl } from '@mustafa/core/media-url';
-import type { Card } from '@mustafa/core/products';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -10,13 +9,14 @@ import {
   piecesLabel,
   showCompareAt,
 } from '../../lib/format';
+import type { SuitCard } from '../../lib/types';
 import { WishlistButton } from './wishlist-button';
 
 // Widths per grid (docs/design.md §2): 2 columns on phones, 3 from md, 4 from xl, 5 from 3xl.
 export const GRID_SIZES =
   '(min-width: 120rem) 20vw, (min-width: 80rem) 25vw, (min-width: 48rem) 33vw, 50vw';
 
-type Props = { suit: Card; sizes?: string; priority?: boolean };
+type Props = { suit: SuitCard; sizes?: string; priority?: boolean };
 
 // A suit in a grid (docs/design.md §9.2): photo, finish and fabric, name, pieces, price, heart.
 // Never a video (Cloudinary bandwidth, §5.2). The whole card opens the suit's page.
