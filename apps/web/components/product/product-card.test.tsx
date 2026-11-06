@@ -1,5 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+
+// The heart's server action; a guest gets UNAUTHENTICATED.
+vi.mock('../../app/(account)/account/actions', () => ({
+  toggleWishlist: vi.fn(async () => ({
+    ok: false,
+    error: { code: 'UNAUTHENTICATED', message: 'Log in to do that.' },
+  })),
+}));
 
 import cloudinaryLoader from '../../lib/image-loader';
 import type { SuitCard } from '../../lib/types';
@@ -83,15 +91,15 @@ describe('ProductCard', () => {
     expect(container.querySelector('video')).toBeNull();
   });
 
-  it('asks a guest to log in when they tap the heart', () => {
+  it('asks a guest to log in when they tap the heart', async () => {
     render(<ProductCard suit={suit()} />);
     const heart = screen.getByRole('button', {
       name: 'Save Black Embroidered Dhanak 3-Piece Suit',
     });
     expect(heart.getAttribute('aria-pressed')).toBe('false');
     fireEvent.click(heart);
-    expect(screen.getByRole('link', { name: 'Log in', hidden: true }).getAttribute('href')).toBe(
-      '/login',
-    );
+    expect(
+      (await screen.findByRole('link', { name: 'Log in', hidden: true })).getAttribute('href'),
+    ).toBe('/login');
   });
 });

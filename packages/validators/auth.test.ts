@@ -9,6 +9,7 @@ import {
   PASSWORD_MAX,
   PASSWORD_MIN,
   resetPasswordInput,
+  resetPasswordParams,
   signInInput,
   signUpInput,
   totpCodeInput,
@@ -155,5 +156,22 @@ describe('admin 2FA forms', () => {
     expect(authErrorMessage({ code: 'ACCOUNT_TEMPORARILY_LOCKED', status: 429 })).toBe(
       AUTH_MESSAGES.twoFactorLocked,
     );
+  });
+});
+
+describe('resetPasswordParams', () => {
+  it('accepts one usable token and no error', () => {
+    expect(resetPasswordParams.safeParse({ token: 'abc' }).success).toBe(true);
+    expect(resetPasswordParams.safeParse({ token: 'abc', utm_source: 'mail' }).success).toBe(true);
+  });
+
+  it.each([
+    ['no token', {}],
+    ['an empty token', { token: '' }],
+    ['two tokens', { token: ['a', 'b'] }],
+    ['a token too long', { token: 'x'.repeat(201) }],
+    ['an error from the link check', { token: 'abc', error: 'INVALID_TOKEN' }],
+  ])('refuses %s', (_name, params) => {
+    expect(resetPasswordParams.safeParse(params).success).toBe(false);
   });
 });

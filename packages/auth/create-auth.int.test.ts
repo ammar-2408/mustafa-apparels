@@ -234,3 +234,40 @@ describe('route', () => {
     expect(response.status).toBe(200);
   });
 });
+
+describe('signing out', () => {
+  // Phase 3 review: a copied session cookie must stop working once its owner signs out, and
+  // "log out everywhere" (revoke-sessions) ends every other device's session too.
+  const cookieFrom = (response: Response) =>
+    response.headers
+      .getSetCookie()
+      .find((c) => c.includes('session_token'))!
+      .split(';')[0]!;
+  const withCookie = (cookie: string) =>
+    new Headers({ cookie, origin: 'http://localhost:3000', 'content-type': 'application/json' });
+
+  it('a signed-out session token no longer works', async () => {
+    const auth = webAuth();
+    await signUp(auth, { email: 'ayesha@example.com' });
+    const cookie = cookieFrom(
+      await post(auth, '/sign-in/email', { email: 'ayesha@example.com', password: PASSWORD }),
+    );
+    expect(await auth.api.getSession({ headers: withCookie(cookie) })).not.toBeNull();
+
+    await auth.api.signOut({ headers: withCookie(cookie) });
+    expect(await auth.api.getSession({ headers: withCookie(cookie) })).toBeNull();
+    expect(await db.select().from(session)).toHaveLength(0);
+  });
+
+  it('logging out everywhere ends the sessions on every device', async () => {
+    const auth = webAuth();
+    await signUp(auth, { email: 'ayesha@example.com' });
+    const signIn = () =>
+      post(auth, '/sign-in/email', { email: 'ayesha@example.com', password: PASSWORD });
+    const phone = cookieFrom(await signIn());
+    const laptop = cookieFrom(await signIn());
+    await auth.api.revokeSessions({ headers: withCookie(laptop) });
+    expect(await auth.api.getSession({ headers: withCookie(phone) })).toBeNull();
+    expect(await auth.api.getSession({ headers: withCookie(laptop) })).toBeNull();
+  });
+});

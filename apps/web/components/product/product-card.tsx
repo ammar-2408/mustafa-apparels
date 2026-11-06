@@ -2,6 +2,7 @@ import { shapedImageUrl } from '@mustafa/core/media-url';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { toggleWishlist } from '../../app/(account)/account/actions';
 import {
   availabilityLabel,
   cardLine,
@@ -65,7 +66,7 @@ export function ProductCard({ suit, sizes = GRID_SIZES, priority = false }: Prop
         </div>
       </Link>
       <div className="absolute top-3 right-3">
-        <WishlistButton name={suit.name} />
+        <WishlistButton productId={suit.id} name={suit.name} toggle={toggleWishlist} />
       </div>
     </article>
   );

@@ -12,6 +12,7 @@ import {
 import type { Suit } from '../../lib/types';
 
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
+vi.mock('../(account)/account/actions', () => ({ toggleWishlist: vi.fn() }));
 
 describe('home sections', () => {
   it('opens with one large heading, the submark and the two ways in', () => {

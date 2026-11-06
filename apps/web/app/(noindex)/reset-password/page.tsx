@@ -1,4 +1,4 @@
-import { AUTH_MESSAGES } from '@mustafa/validators/auth';
+import { AUTH_MESSAGES, resetPasswordParams } from '@mustafa/validators/auth';
 import Link from 'next/link';
 
 import { ResetPasswordForm } from '../../../components/auth/reset-password-form';
@@ -19,8 +19,9 @@ export default async function ResetPasswordPage({
 }: {
   searchParams: Promise<{ token?: string | string[]; error?: string | string[] }>;
 }) {
-  const { token, error } = await searchParams;
-  const usable = typeof token === 'string' && token.length > 0 && !error;
+  const parsed = resetPasswordParams.safeParse(await searchParams);
+  const usable = parsed.success;
+  const token = parsed.success ? parsed.data.token : '';
   return (
     <>
       <p className="caps-tight text-muted sm:caps">Account</p>

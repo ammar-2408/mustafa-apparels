@@ -40,9 +40,15 @@ export const signInInput = z
 
 export const forgotPasswordInput = z.object({ email: emailInput }).strict();
 
-export const resetPasswordInput = z
-  .object({ token: z.string().min(1).max(200), newPassword: password })
-  .strict();
+// The reset token, the same rule for the form and for the ?token= the emailed link lands with.
+const resetToken = z.string().min(1).max(200);
+
+export const resetPasswordInput = z.object({ token: resetToken, newPassword: password }).strict();
+
+/** The /reset-password page's query: a usable token and no error from the link check. */
+export const resetPasswordParams = z
+  .object({ token: resetToken, error: z.undefined().optional() })
+  .loose();
 
 // Admin 2FA: the password to start setup, then a 6-digit code or a backup code (xxxxx-xxxxx).
 export const twoFactorSetupInput = z

@@ -1,5 +1,6 @@
 'use client';
 
+import type { ActionResult } from '@mustafa/core/action-result';
 import { buttonClass } from '@mustafa/ui/button';
 import { Dialog } from '@mustafa/ui/dialog';
 import Link from 'next/link';
@@ -20,16 +21,17 @@ export function HeartIcon({ filled }: { filled: boolean }) {
 }
 
 type Props = {
+  productId: string;
   name: string;
-  /** Saves or removes the suit; resolves to the new state, or null when the shopper isn't signed in. */
-  onToggle?: () => Promise<boolean | null>;
-  initiallySaved?: boolean;
+  /** The toggleWishlist server action. Without it, the heart only asks the shopper to log in. */
+  toggle?: (raw: unknown) => Promise<ActionResult<{ saved: boolean }>>;
 };
 
-// The heart on a card or a suit page. Cached pages carry no session, so it learns the state only
-// when tapped: a guest is asked to log in (step 6.10 connects the save itself).
-export function WishlistButton({ name, onToggle, initiallySaved = false }: Props) {
-  const [saved, setSaved] = useState(initiallySaved);
+// The heart on a card. Cached pages carry no session, so it doesn't know what's saved: the first
+// tap saves (saving twice is harmless), a second tap removes, and a guest is asked to log in.
+// The full list, with Remove, is on the account page.
+export function WishlistButton({ productId, name, toggle }: Props) {
+  const [saved, setSaved] = useState(false);
   const [askLogin, setAskLogin] = useState(false);
   // Mounted on the first tap only: a grid would otherwise carry one hidden dialog per card.
   const [asked, setAsked] = useState(false);
@@ -39,26 +41,26 @@ export function WishlistButton({ name, onToggle, initiallySaved = false }: Props
   };
   const [pending, setPending] = useState(false);
 
-  async function toggle() {
-    if (!onToggle) {
+  async function onTap() {
+    if (!toggle) {
       ask();
       return;
     }
     setPending(true);
-    const next = await onToggle();
+    const result = await toggle({ productId, saved: !saved });
     setPending(false);
-    if (next === null) ask();
-    else setSaved(next);
+    if (result.ok) setSaved(result.data.saved);
+    else if (result.error.code === 'UNAUTHENTICATED' || result.error.code === 'UNAVAILABLE') ask();
   }
 
   return (
     <>
       <button
         type="button"
-        onClick={toggle}
+        onClick={onTap}
         disabled={pending}
         aria-pressed={saved}
-        aria-label={`Save ${name}`}
+        aria-label={saved ? `Saved: ${name}. Tap to remove` : `Save ${name}`}
         className="inline-flex size-11 items-center justify-center rounded-full bg-bg text-fg shadow-soft"
       >
         <HeartIcon filled={saved} />

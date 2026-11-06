@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./account": "./account/index.ts",
     "./action-result": "./action-result.ts",
     "./audit": "./audit/index.ts",
     "./categories": "./categories/index.ts",

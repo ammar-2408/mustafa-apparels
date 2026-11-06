@@ -30,7 +30,7 @@ test.describe('sign-up, login and logout', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Your account' })).toBeVisible();
     await expect(page.getByText(customer.email)).toBeVisible();
 
-    await page.getByRole('button', { name: 'Log out' }).click();
+    await page.getByRole('button', { name: 'Log out', exact: true }).click();
     await expect(page).toHaveURL(/\/login$/);
     await page.goto('/account');
     await expect(page).toHaveURL(/\/login$/);
