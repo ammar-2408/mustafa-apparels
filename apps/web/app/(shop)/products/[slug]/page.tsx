@@ -1,0 +1,86 @@
+import type { Metadata } from 'next';
+import { notFound, permanentRedirect } from 'next/navigation';
+
+import { JsonLd } from '../../../../components/json-ld';
+import { ProductGrid } from '../../../../components/product/product-grid';
+import { SuitDetails } from '../../../../components/product/suit-details';
+import { SuitGallery } from '../../../../components/product/suit-gallery';
+import { getSuit, listSuits, suitRedirect } from '../../../../lib/catalog';
+import { buildMetadata } from '../../../../lib/seo';
+import { breadcrumbList } from '../../../../lib/structured-data';
+import { productJsonLd } from '../../../../lib/structured-product';
+
+type Props = { params: Promise<{ slug: string }> };
+
+// Every published suit is prerendered; one published later renders on its first request.
+export async function generateStaticParams() {
+  const slugs: { slug: string }[] = [];
+  for (let page = 1; ; page++) {
+    const list = await listSuits({ page });
+    if (!list) break;
+    slugs.push(...list.items.map((s) => ({ slug: s.slug })));
+    if (page >= list.pageCount) break;
+  }
+  return slugs;
+}
+
+// The suit, or the right answer instead: an old slug moves permanently (308), anything else
+// (unknown, draft, archived, deleted) is a real 404 (docs/design.md §8.6).
+async function load(params: Props['params']) {
+  const { slug } = await params;
+  const suit = await getSuit(slug);
+  if (suit) return suit;
+  const current = await suitRedirect(slug);
+  if (current) permanentRedirect(`/products/${current}`);
+  notFound();
+}
+
+const suitDescription = (suit: Awaited<ReturnType<typeof load>>) =>
+  suit.seoDescription ??
+  suit.description ??
+  `${suit.name}: an unstitched ${suit.fabric} suit from Mustafa Apparels. Order on WhatsApp with courier delivery across Pakistan.`;
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const suit = await load(params);
+  // The default share image until the generated 1200×630 one (step 7.4).
+  return buildMetadata({
+    title: suit.seoTitle ?? suit.name,
+    description: suitDescription(suit),
+    path: `/products/${suit.slug}`,
+  });
+}
+
+export default async function SuitPage({ params }: Props) {
+  const suit = await load(params);
+  const photos = suit.media.filter((m) => m.kind === 'image');
+  const crumbs = [
+    { name: 'Home', path: '/' },
+    { name: suit.category.name, path: `/collections/${suit.category.slug}` },
+    { name: suit.name, path: `/products/${suit.slug}` },
+  ];
+  return (
+    <article className="mx-auto max-w-content-wide px-gutter pt-6 pb-section md:pt-12">
+      <JsonLd data={productJsonLd(suit, suitDescription(suit))} />
+      <JsonLd data={breadcrumbList(crumbs)} />
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
+        <SuitGallery name={suit.name} photos={photos} />
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <SuitDetails suit={suit} />
+        </div>
+      </div>
+
+      {suit.alsoInDesign.length > 0 && (
+        <section className="mt-section">
+          <h2 className="mb-8 text-h3 font-light">Also in this design</h2>
+          <ProductGrid suits={suit.alsoInDesign} eager={0} />
+        </section>
+      )}
+      {suit.related.length > 0 && (
+        <section className="mt-section">
+          <h2 className="mb-8 text-h3 font-light">More from {suit.category.name}</h2>
+          <ProductGrid suits={suit.related} eager={0} />
+        </section>
+      )}
+    </article>
+  );
+}

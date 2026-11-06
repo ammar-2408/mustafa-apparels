@@ -33,6 +33,8 @@ const server = (app: string, port: number) => ({
 
 export default defineConfig({
   testDir: 'e2e',
+  // Compiles each storefront page type once before the tests (e2e/support/warm-up.ts).
+  globalSetup: './e2e/support/warm-up.ts',
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,

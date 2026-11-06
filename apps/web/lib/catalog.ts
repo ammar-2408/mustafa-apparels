@@ -13,7 +13,7 @@ import { getDb } from '@mustafa/db/client';
 import { categoryTag, TAGS } from '@mustafa/validators/revalidate';
 import { unstable_cache } from 'next/cache';
 
-import type { Collection, SuitCard } from './types';
+import type { Collection, Suit, SuitCard } from './types';
 
 /** Seconds before a cached read is refreshed even with no tag from the admin. */
 export const REVALIDATE_SECONDS = 3600;
@@ -103,4 +103,76 @@ export const listSuits = cached(
     TAGS.categories,
     ...(categorySlug ? [categoryTag(categorySlug)] : []),
   ],
+);
+
+/**
+ * A published suit with its photos and videos, its other colours and more from its collection,
+ * or null. Every suit save refreshes it (the products tag), since its rows show other suits.
+ */
+export const getSuit = cached(
+  'suit',
+  async (slug: string): Promise<Suit | null> => {
+    const db = getDb();
+    const row = await products.getBySlug(db, slug);
+    if (!row) return null;
+    const alsoInDesign = (await products.alsoInDesign(db, row.relatedDesignCodes, row.id)).map(
+      toSuitCard,
+    );
+    const related = (
+      await products.related(db, row, { exclude: alsoInDesign.map((card) => card.id) })
+    ).map(toSuitCard);
+    const primary = row.media.find((m) => m.isPrimary) ?? row.media[0];
+    return {
+      id: row.id,
+      name: row.name,
+      slug: row.slug,
+      designCode: row.designCode,
+      price: row.price,
+      compareAtPrice: row.compareAtPrice,
+      pieces: row.pieces,
+      pieceDetails: row.pieceDetails,
+      collectionType: row.collectionType,
+      fabric: row.fabric,
+      mainColor: row.mainColor,
+      colorFamily: row.colorFamily,
+      availability: row.availability,
+      category: row.category,
+      description: row.description,
+      design: row.design,
+      season: row.season,
+      outfitStyle: row.outfitStyle,
+      accentColors: row.accentColors,
+      motifs: row.motifs,
+      careInstructions: row.careInstructions,
+      seoTitle: row.seoTitle,
+      seoDescription: row.seoDescription,
+      publishedAt: row.publishedAt?.toISOString() ?? null,
+      updatedAt: row.updatedAt.toISOString(),
+      // The main photo first, then the rest in the owner's order (docs/design.md §5.2).
+      media: [...(primary ? [primary] : []), ...row.media.filter((m) => m !== primary)].map(
+        (m) => ({
+          id: m.id,
+          kind: m.kind,
+          url: m.url,
+          publicId: m.publicId,
+          alt: m.alt,
+          width: m.width,
+          height: m.height,
+          durationSeconds: m.durationSeconds === null ? null : Number(m.durationSeconds),
+          posterPublicId: m.posterPublicId,
+        }),
+      ),
+      alsoInDesign,
+      related,
+    };
+  },
+  // Tags are fixed before the read, so the id is unknown here: the products tag covers it.
+  () => [TAGS.products, TAGS.categories],
+);
+
+/** The current slug for a suit's old one, if that suit is public (docs/design.md §8.6). */
+export const suitRedirect = cached(
+  'suit-redirect',
+  (oldSlug: string) => products.resolveRedirect(getDb(), oldSlug),
+  () => [TAGS.products],
 );

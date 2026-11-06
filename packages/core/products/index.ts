@@ -10,7 +10,20 @@ import {
   type ProductUpdateInput,
 } from '@mustafa/validators/product';
 import { PRICE_BANDS, priceBandOf } from '@mustafa/validators/taxonomy';
-import { and, asc, count, desc, eq, isNull, like, type SQL, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  inArray,
+  isNull,
+  like,
+  ne,
+  notInArray,
+  type SQL,
+  sql,
+} from 'drizzle-orm';
 
 import { type Actor, diff, record, snapshot } from '../audit';
 import {
@@ -443,3 +456,54 @@ export const restore = (db: Database, id: string, actor: Actor) =>
 
 /** One suit as a grid card shows it: card fields plus its main photo. */
 export type Card = Awaited<ReturnType<typeof list>>['items'][number];
+
+/** Cards for one suit's other colours ("Also in this design"): published suits only, in order. */
+export async function alsoInDesign(db: Database, designCodes: string[], exceptId?: string) {
+  const codes = [...new Set(designCodes.map((code) => code.trim().toUpperCase()))].filter(Boolean);
+  if (codes.length === 0) return [];
+  const rows = await db
+    .select(cardColumns)
+    .from(product)
+    .innerJoin(category, eq(product.categoryId, category.id))
+    .leftJoin(
+      productMedia,
+      and(eq(productMedia.productId, product.id), eq(productMedia.isPrimary, true)),
+    )
+    .where(
+      and(
+        isPublic,
+        inArray(sql`upper(${product.designCode})`, codes),
+        exceptId ? ne(product.id, exceptId) : undefined,
+      ),
+    );
+  const order = new Map(codes.map((code, i) => [code, i]));
+  return rows
+    .map(toCard)
+    .sort(
+      (a, b) =>
+        (order.get(a.designCode?.toUpperCase() ?? '') ?? 0) -
+        (order.get(b.designCode?.toUpperCase() ?? '') ?? 0),
+    );
+}
+
+/** More suits from the same collection, newest first, leaving out the suit itself and some ids. */
+export async function related(
+  db: Database,
+  { id, categoryId }: { id: string; categoryId: string },
+  { limit = 4, exclude = [] as string[] } = {},
+) {
+  const rows = await db
+    .select(cardColumns)
+    .from(product)
+    .innerJoin(category, eq(product.categoryId, category.id))
+    .leftJoin(
+      productMedia,
+      and(eq(productMedia.productId, product.id), eq(productMedia.isPrimary, true)),
+    )
+    .where(
+      and(isPublic, eq(product.categoryId, categoryId), notInArray(product.id, [id, ...exclude])),
+    )
+    .orderBy(...ORDER.newest)
+    .limit(limit);
+  return rows.map(toCard);
+}
