@@ -64,7 +64,7 @@ export function SuitGallery({ name, media }: Props) {
           <li key={item.id} className="w-full shrink-0 snap-start">
             {item.kind === 'video' ? (
               <div className="flex aspect-3/4 items-center justify-center bg-surface-soft lg:aspect-auto">
-                <ProductVideo video={item} className="h-full lg:h-auto lg:w-full" />
+                <ProductVideo video={item} className="h-full max-w-full lg:h-auto lg:w-full" />
               </div>
             ) : (
               <button

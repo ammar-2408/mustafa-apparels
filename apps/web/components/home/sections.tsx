@@ -149,9 +149,9 @@ export function FeaturedSuit({ suit }: { suit: Suit | null }) {
   return (
     <section aria-labelledby="featured-title" className={`${wrap} pb-section`}>
       <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-24">
-        <div className="flex justify-center bg-surface-soft">
+        <div className="flex min-w-0 justify-center bg-surface-soft">
           {video ? (
-            <ProductVideo video={video} className="h-[min(80svh,48rem)]" />
+            <ProductVideo video={video} className="w-full max-w-md" />
           ) : (
             photo && (
               <div className="relative aspect-3/4 w-full max-w-md">
@@ -166,7 +166,7 @@ export function FeaturedSuit({ suit }: { suit: Suit | null }) {
             )
           )}
         </div>
-        <div className="flex flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6">
           <p className="caps-tight text-muted">
             Featured · {suit.category.name} · {piecesLabel(suit.pieces)}
           </p>
