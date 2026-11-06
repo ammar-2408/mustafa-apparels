@@ -1,5 +1,6 @@
 'use client';
 
+import { imageThumbUrl, videoPosterUrl } from '@mustafa/core/media-url';
 import { Button } from '@mustafa/ui/button';
 import { Dialog } from '@mustafa/ui/dialog';
 import { FormError } from '@mustafa/ui/form-error';
@@ -13,7 +14,6 @@ import {
   setPrimaryProductImage,
   updateMediaAlt,
 } from '../app/(panel)/suits/[id]/actions';
-import { imageThumbUrl, videoPosterUrl } from '../lib/cloudinary-url';
 import { SortableList } from './sortable-list';
 import { VideoControls } from './video-controls';
 

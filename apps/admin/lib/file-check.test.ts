@@ -1,6 +1,6 @@
+import { imageThumbUrl, videoDeliveryUrl, videoPosterUrl } from '@mustafa/core/media-url';
 import { describe, expect, it } from 'vitest';
 
-import { imageThumbUrl, videoDeliveryUrl, videoPosterUrl } from './cloudinary-url';
 import { checkDuration, checkFile, kindOf } from './file-check';
 
 const MB = 1024 * 1024;

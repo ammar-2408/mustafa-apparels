@@ -1,4 +1,5 @@
 import * as categories from '@mustafa/core/categories';
+import { imageThumbUrl } from '@mustafa/core/media-url';
 import { getDb } from '@mustafa/db/client';
 import { buttonClass } from '@mustafa/ui/button';
 import type { Metadata } from 'next';
@@ -6,7 +7,6 @@ import Link from 'next/link';
 
 import { CollectionList } from '../../../components/collection-list';
 import { requireAdminPage } from '../../../lib/auth';
-import { imageThumbUrl } from '../../../lib/cloudinary-url';
 import { cloudNameForPreviews } from '../../../lib/media';
 
 export const metadata: Metadata = { title: 'Collections' };

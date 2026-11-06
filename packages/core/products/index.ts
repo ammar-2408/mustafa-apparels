@@ -440,3 +440,6 @@ export const archive = (db: Database, id: string, actor: Actor) =>
 // A restored suit comes back as a draft, to be checked and published again.
 export const restore = (db: Database, id: string, actor: Actor) =>
   setStatus(db, { id, status: 'draft' }, actor);
+
+/** One suit as a grid card shows it: card fields plus its main photo. */
+export type Card = Awaited<ReturnType<typeof list>>['items'][number];

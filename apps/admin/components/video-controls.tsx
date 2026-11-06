@@ -1,10 +1,10 @@
 'use client';
 
+import { videoDeliveryUrl, videoPosterUrl } from '@mustafa/core/media-url';
 import { FormError } from '@mustafa/ui/form-error';
 import { useId, useRef, useState } from 'react';
 
 import { setVideoPoster } from '../app/(panel)/suits/[id]/actions';
-import { videoDeliveryUrl, videoPosterUrl } from '../lib/cloudinary-url';
 import { ACCEPT, checkFile } from '../lib/file-check';
 import { UploadError, uploadFile } from '../lib/upload';
 

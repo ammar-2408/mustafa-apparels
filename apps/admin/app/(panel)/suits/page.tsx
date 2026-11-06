@@ -1,4 +1,5 @@
 import * as categories from '@mustafa/core/categories';
+import { imageThumbUrl } from '@mustafa/core/media-url';
 import { adminList, type AdminListItem } from '@mustafa/core/products/admin-list';
 import { getDb } from '@mustafa/db/client';
 import { buttonClass } from '@mustafa/ui/button';
@@ -11,7 +12,6 @@ import Link from 'next/link';
 
 import { Thumb } from '../../../components/thumb';
 import { requireAdminPage } from '../../../lib/auth';
-import { imageThumbUrl } from '../../../lib/cloudinary-url';
 import { formatPrice } from '../../../lib/format';
 import { cloudNameForPreviews } from '../../../lib/media';
 

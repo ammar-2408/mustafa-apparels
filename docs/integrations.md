@@ -17,11 +17,10 @@ Each external service is wrapped in one module in `packages/core/integrations/` 
 
 ### Folders and delivery
 - Folder structure: `products/{productId}/{uuid}` (a video poster: `products/{productId}/poster-{uuid}`), `categories/{categoryId}/{uuid}`, `brand/`. A new suit is saved as a draft first and photos are added on its edit page, so the admin always knows the product id. The server picks the full public id and signs it with an `asset_folder` of the same path, so the layout is the same in Cloudinary's fixed and dynamic folder modes. Imported stock uses `products/imported/{design ID}/{file name}-{hash}`, where the hash covers the file's bytes and its crop (`signImportUpload`, `docs/catalog.md` §6). The same file always gets the same id, so the dev and production databases share one upload. For the same reason **`deleteAsset` never deletes a `products/imported/` file**: removing imported media in admin drops only that suit's row, and the import report lists files no suit uses any more.
-- Image URLs, via a custom `next/image` loader (`apps/web/lib/cloudinary-loader.ts`), so neither Next.js nor Netlify re-optimizes images:
+- Image URLs, via a custom `next/image` loader (`apps/web/lib/image-loader.ts`, over `shapedImageUrl` and `imageAtWidth` in `packages/core/media-url.ts`, which the admin's previews share), so neither Next.js nor Netlify re-optimizes images. The page marks the shape, and the loader adds the width:
   - **Grid cards:** `f_auto,q_auto,c_fill,g_north,ar_3:4,w_{width}`. `g_north` crops from the top: the default crops from the centre, which would cut the model's head off these tall photos.
   - **Product gallery:** `f_auto,q_auto,c_limit,w_{width}`, so the whole photo shows (`docs/design.md` §2).
-- Widths for `srcset`: 320, 480, 640, 828, 1080, 1440, 1920.
-- `next.config` `images.remotePatterns` allows only `res.cloudinary.com/<cloud_name>/**`.
+- Widths for `srcset`: 320, 480, 640, 828, 1080, 1440, 1920 (`images.deviceSizes`), plus 160 and 240 for small images. A custom loader never fetches through Next, so no `remotePatterns` are needed; a URL that isn't a Cloudinary photo is passed through unchanged.
 
 ### Video
 - **Limits:** MP4, MOV, WebM; 50 MB; 60 seconds. Cloudinary's free plan caps a video at 100 MB, so our limit sits well under it.

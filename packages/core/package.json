@@ -13,6 +13,7 @@
     "./errors": "./errors.ts",
     "./inquiries": "./inquiries/index.ts",
     "./media": "./media/index.ts",
+    "./media-url": "./media-url.ts",
     "./products": "./products/index.ts",
     "./products/admin-list": "./products/admin-list.ts",
     "./search": "./search/index.ts",

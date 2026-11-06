@@ -1,5 +1,6 @@
 'use client';
 
+import { imageThumbUrl } from '@mustafa/core/media-url';
 import { Button } from '@mustafa/ui/button';
 import { FormError } from '@mustafa/ui/form-error';
 import Image from 'next/image';
@@ -7,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { useId, useRef, useState } from 'react';
 
 import { setCategoryImage } from '../app/(panel)/collections/actions';
-import { imageThumbUrl } from '../lib/cloudinary-url';
 import { ACCEPT, checkFile } from '../lib/file-check';
 import { UploadError, uploadFile } from '../lib/upload';
 
