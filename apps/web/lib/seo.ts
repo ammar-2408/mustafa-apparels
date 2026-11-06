@@ -98,3 +98,11 @@ export function buildMetadata({
     robots: { index: !noindex, follow: !nofollow },
   };
 }
+
+/**
+ * JSON-LD for a `<script type="application/ld+json">`: `<` is escaped so text from the database
+ * can never close the script tag. The only allowed use of dangerouslySetInnerHTML (AGENTS.md §7).
+ */
+export function serializeJsonLd(data: unknown) {
+  return JSON.stringify(data).replace(/</g, '\u003c');
+}

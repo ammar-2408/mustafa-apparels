@@ -5,6 +5,7 @@
 import 'server-only';
 
 import * as categories from '@mustafa/core/categories';
+import * as products from '@mustafa/core/products';
 import * as settings from '@mustafa/core/settings';
 import { getDb } from '@mustafa/db/client';
 import { categoryTag, TAGS } from '@mustafa/validators/revalidate';
@@ -28,4 +29,13 @@ export async function listCollections() {
   const rows = await categories.list(getDb());
   cacheTag(...rows.map((row) => categoryTag(row.slug)));
   return rows;
+}
+
+/** A list page of published suits, newest first: all suits, or one collection's. */
+export async function listSuits({ categorySlug, page }: { categorySlug?: string; page: number }) {
+  'use cache';
+  cacheLife(CACHE_PROFILE);
+  // A collection that's hidden, renamed or new changes these lists too.
+  cacheTag(TAGS.products, TAGS.categories, ...(categorySlug ? [categoryTag(categorySlug)] : []));
+  return products.list(getDb(), { categorySlug, page, sort: 'newest', filters: {} });
 }

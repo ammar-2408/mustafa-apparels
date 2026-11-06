@@ -17,7 +17,8 @@
     "./settings": "./settings.ts",
     "./taxonomy": "./taxonomy.ts",
     "./password-strength": "./password-strength.ts",
-    "./revalidate": "./revalidate.ts"
+    "./revalidate": "./revalidate.ts",
+    "./paging": "./paging.ts"
   },
   "scripts": {
     "lint": "eslint .",
