@@ -25,7 +25,7 @@ export function ProductCard({ suit, sizes = GRID_SIZES, priority = false }: Prop
   return (
     <article className="@container relative flex flex-col">
       <Link href={`/products/${suit.slug}`} className="group flex flex-col gap-3">
-        <div className="relative aspect-3/4 overflow-hidden bg-primary">
+        <div className="relative aspect-3/4 overflow-hidden bg-surface-soft">
           {suit.image ? (
             <Image
               src={shapedImageUrl(suit.image.url, 'card')}
@@ -36,7 +36,7 @@ export function ProductCard({ suit, sizes = GRID_SIZES, priority = false }: Prop
               className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
             />
           ) : (
-            <span className="absolute inset-0 flex items-center justify-center caps-tight bg-primary text-primary-fg">
+            <span className="absolute inset-0 flex items-center justify-center caps-tight bg-surface-soft text-fg">
               Photo coming soon
             </span>
           )}

@@ -13,6 +13,8 @@
   /* Allowed pairings and their uses: colour-pairs.ts. */
   --color-bg: #ffffff;
   --color-surface: #ffffff;
+  /* Pale powder blue behind suit photos, so tall photos shown whole sit in a frame (2026-11-06). */
+  --color-surface-soft: #eef4f4;
   --color-fg: #111111;
   --color-muted: #4b5757;
   --color-primary: #a8c9c8;

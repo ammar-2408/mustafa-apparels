@@ -99,7 +99,7 @@ export function ProductVideo({ video, className = '' }: Props) {
   return (
     <div
       ref={box}
-      className={`relative mx-auto bg-bg ${className}`}
+      className={`relative mx-auto bg-surface-soft ${className}`}
       style={{ aspectRatio: `${video.width} / ${video.height}`, maxHeight: '80vh' }}
     >
       <video

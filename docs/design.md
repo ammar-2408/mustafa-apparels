@@ -15,6 +15,7 @@ Tokens live in `packages/config/tailwind/theme.css`, a Tailwind v4 `@theme stati
 | Token | Value | Use |
 |---|---|---|
 | `--color-bg`, `--color-surface` | `#FFFFFF` white | Page background, form fields, white cards |
+| `--color-surface-soft` | `#EEF4F4` pale powder blue | **Photo boxes only**: behind suit photos in the gallery, cards and collection panels, so tall photos shown whole sit in a frame instead of floating on white (owner, 2026-11-06 design checkpoint). Ink text only on it |
 | `--color-primary` / `--color-primary-fg` | `#A8C9C8` powder blue / `#111111` | **Large surfaces only**: header band, section backgrounds, cards, footer, admin sidebar / text on them (10.66:1). Never a text colour (1.77:1 on white) |
 | `--color-fg` | `#111111` ink (the logo colour) | All text: 18.88:1 on white |
 | `--color-muted` | `#4B5757` | Secondary text, **on white only** (7.50:1; 4.23:1 on powder blue fails) |

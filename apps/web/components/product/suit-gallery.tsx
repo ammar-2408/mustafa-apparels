@@ -46,7 +46,7 @@ export function SuitGallery({ name, media }: Props) {
 
   if (media.length === 0) {
     return (
-      <div className="flex aspect-3/4 items-center justify-center bg-primary caps-tight text-primary-fg">
+      <div className="flex aspect-3/4 items-center justify-center bg-surface-soft caps-tight text-fg">
         Photo coming soon
       </div>
     );
@@ -63,7 +63,7 @@ export function SuitGallery({ name, media }: Props) {
         {media.map((item, i) => (
           <li key={item.id} className="w-full shrink-0 snap-start">
             {item.kind === 'video' ? (
-              <div className="flex aspect-3/4 items-center justify-center bg-bg lg:aspect-auto">
+              <div className="flex aspect-3/4 items-center justify-center bg-surface-soft lg:aspect-auto">
                 <ProductVideo video={item} className="h-full lg:h-auto lg:w-full" />
               </div>
             ) : (
@@ -71,7 +71,7 @@ export function SuitGallery({ name, media }: Props) {
                 type="button"
                 onClick={() => setZoomed(item)}
                 aria-label={`Zoom photo ${photos.indexOf(item) + 1} of ${photos.length}`}
-                className="relative block aspect-3/4 w-full cursor-zoom-in bg-bg"
+                className="relative block aspect-3/4 w-full cursor-zoom-in bg-surface-soft"
               >
                 <Image
                   src={shapedImageUrl(item.url, 'whole')}

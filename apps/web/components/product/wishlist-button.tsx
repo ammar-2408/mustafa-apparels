@@ -31,17 +31,23 @@ type Props = {
 export function WishlistButton({ name, onToggle, initiallySaved = false }: Props) {
   const [saved, setSaved] = useState(initiallySaved);
   const [askLogin, setAskLogin] = useState(false);
+  // Mounted on the first tap only: a grid would otherwise carry one hidden dialog per card.
+  const [asked, setAsked] = useState(false);
+  const ask = () => {
+    setAsked(true);
+    setAskLogin(true);
+  };
   const [pending, setPending] = useState(false);
 
   async function toggle() {
     if (!onToggle) {
-      setAskLogin(true);
+      ask();
       return;
     }
     setPending(true);
     const next = await onToggle();
     setPending(false);
-    if (next === null) setAskLogin(true);
+    if (next === null) ask();
     else setSaved(next);
   }
 
@@ -57,17 +63,19 @@ export function WishlistButton({ name, onToggle, initiallySaved = false }: Props
       >
         <HeartIcon filled={saved} />
       </button>
-      <Dialog open={askLogin} onClose={() => setAskLogin(false)} title="Save suits you like">
-        <p className="text-body">Log in or create an account to keep a list of suits you like.</p>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link href="/login" className={buttonClass('primary')}>
-            Log in
-          </Link>
-          <Link href="/register" className={buttonClass('secondary')}>
-            Create account
-          </Link>
-        </div>
-      </Dialog>
+      {asked && (
+        <Dialog open={askLogin} onClose={() => setAskLogin(false)} title="Save suits you like">
+          <p className="text-body">Log in or create an account to keep a list of suits you like.</p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Link href="/login" className={buttonClass('primary')}>
+              Log in
+            </Link>
+            <Link href="/register" className={buttonClass('secondary')}>
+              Create account
+            </Link>
+          </div>
+        </Dialog>
+      )}
     </>
   );
 }

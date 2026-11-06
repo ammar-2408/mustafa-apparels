@@ -14,6 +14,7 @@ export const ALLOWED_PAIRS: readonly Pair[] = [
   // Text. Ink is the only text colour on powder blue.
   ['fg', 'bg', 'text', 'All text on the white page'],
   ['fg', 'surface', 'text', 'Text in form fields and white cards'],
+  ['fg', 'surface-soft', 'text', 'The few words in an empty photo box ("Photo coming soon")'],
   ['primary-fg', 'primary', 'text', 'Text on the header band, sections, cards, footer, sidebar'],
   ['muted', 'bg', 'text', 'Secondary text, on white only'],
   ['muted', 'surface', 'text', 'Hints and help text in white fields'],

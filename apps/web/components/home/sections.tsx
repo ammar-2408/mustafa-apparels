@@ -115,7 +115,7 @@ export function Collections({ collections }: { collections: CollectionPanel[] })
               href={`/collections/${c.slug}`}
               className="group flex h-full flex-col gap-6 py-8 md:px-6"
             >
-              <div className="relative aspect-3/4 overflow-hidden bg-primary">
+              <div className="relative aspect-3/4 overflow-hidden bg-surface-soft">
                 {c.cover && (
                   <Image
                     src={shapedImageUrl(c.cover.url, 'card')}
@@ -149,7 +149,7 @@ export function FeaturedSuit({ suit }: { suit: Suit | null }) {
   return (
     <section aria-labelledby="featured-title" className={`${wrap} pb-section`}>
       <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-24">
-        <div className="flex justify-center bg-bg">
+        <div className="flex justify-center bg-surface-soft">
           {video ? (
             <ProductVideo video={video} className="h-[min(80svh,48rem)]" />
           ) : (
