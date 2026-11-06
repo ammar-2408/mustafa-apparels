@@ -51,3 +51,17 @@ test('the FAQ headings are questions, and Privacy discloses Google Analytics', a
   await page.goto('/privacy');
   await expect(page.getByRole('heading', { name: 'Google Analytics' })).toBeVisible();
 });
+
+test('a missing page or suit is a real 404 with the branded page, inside one main', async ({
+  page,
+}) => {
+  for (const path of ['/no-such-page', '/products/no-such-suit', '/shop/page/abc']) {
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(404);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('We can’t find that page');
+    await expect(page.getByRole('main')).toHaveCount(1);
+    await expect(page.getByRole('main').getByRole('link', { name: 'See all suits' })).toBeVisible();
+    await expect(page.getByRole('banner')).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  }
+});
