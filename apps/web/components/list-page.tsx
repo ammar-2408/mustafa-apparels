@@ -1,9 +1,11 @@
 import { PAGE_SIZE } from '@mustafa/core/products';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { type ReactNode, Suspense } from 'react';
 
+import type { Facets } from '../lib/filters';
 import { breadcrumbList, type Crumb, itemList } from '../lib/structured-data';
 import type { SuitCard } from '../lib/types';
+import { FilterableList } from './filters/filterable-list';
 import { JsonLd } from './json-ld';
 import { Pagination } from './pagination';
 import { ProductGrid } from './product/product-grid';
@@ -13,15 +15,25 @@ type Props = {
   intro?: ReactNode;
   crumbs: Crumb[];
   base: string;
-  list: { items: SuitCard[]; total: number; page: number; pageCount: number };
+  list: { items: SuitCard[]; total: number; page: number; pageCount: number; facets: Facets };
+  /** /shop also filters by collection. */
+  collections?: { slug: string; name: string }[];
+  /** A collection page filters only its own suits. */
+  collectionSlug?: string;
 };
 
 const suitsLabel = (n: number) => `${n} ${n === 1 ? 'suit' : 'suits'}`;
 
 // The shared body of /shop and collection pages, page 1 or later: breadcrumbs, a large heading,
 // the count, the grid and real page links. Filters arrive in step 6.4a, in the browser.
-export function ListPage({ title, intro, crumbs, base, list }: Props) {
+export function ListPage({ title, intro, crumbs, base, list, collections, collectionSlug }: Props) {
   const firstPosition = (list.page - 1) * PAGE_SIZE + 1;
+  const grid = (
+    <>
+      <ProductGrid suits={list.items} eager={list.page === 1 ? 4 : 0} />
+      <Pagination base={base} page={list.page} pageCount={list.pageCount} />
+    </>
+  );
   return (
     <div className="mx-auto max-w-content-wide px-gutter pt-12 pb-section md:pt-16">
       <JsonLd data={breadcrumbList(crumbs)} />
@@ -57,13 +69,20 @@ export function ListPage({ title, intro, crumbs, base, list }: Props) {
         </p>
       </header>
       {list.items.length > 0 ? (
-        <ProductGrid suits={list.items} eager={list.page === 1 ? 4 : 0} />
+        // The server grid shows until a filter is chosen; then the browser takes over (ADR-018).
+        <Suspense fallback={grid}>
+          <FilterableList
+            facets={collections ? { ...list.facets, collections } : list.facets}
+            collectionSlug={collectionSlug}
+          >
+            {grid}
+          </FilterableList>
+        </Suspense>
       ) : (
         <p className="text-body-lg">
           New suits are on their way. Ask us on WhatsApp what&rsquo;s coming.
         </p>
       )}
-      <Pagination base={base} page={list.page} pageCount={list.pageCount} />
     </div>
   );
 }

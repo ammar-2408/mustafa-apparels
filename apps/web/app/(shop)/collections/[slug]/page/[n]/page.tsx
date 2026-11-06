@@ -48,6 +48,7 @@ export default async function CollectionLaterPage({ params }: Props) {
       ]}
       base={base}
       list={list}
+      collectionSlug={collection.slug}
     />
   );
 }

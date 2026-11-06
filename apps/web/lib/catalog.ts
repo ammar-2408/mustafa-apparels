@@ -14,6 +14,7 @@ import { getDb } from '@mustafa/db/client';
 import { categoryTag, TAGS } from '@mustafa/validators/revalidate';
 import { unstable_cache } from 'next/cache';
 
+import type { FilterSuit } from './filters';
 import type { Collection, Suit, SuitCard } from './types';
 
 /** Seconds before a cached read is refreshed even with no tag from the admin. */
@@ -193,5 +194,17 @@ export const suitRedirect = cached(
 export const featuredSuitSlug = cached(
   'featured-suit',
   () => products.featuredSlug(getDb()),
+  () => [TAGS.products, TAGS.categories],
+);
+
+/** Every public suit with its filter fields, newest first: the body of /api/suits (ADR-018). */
+export const listForFilters = cached(
+  'filter-list',
+  async (): Promise<FilterSuit[]> =>
+    (await products.filterList(getDb())).map((row) => {
+      const { publishedAt, ...rest } = row;
+      void publishedAt;
+      return rest;
+    }),
   () => [TAGS.products, TAGS.categories],
 );

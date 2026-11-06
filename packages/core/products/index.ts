@@ -535,3 +535,27 @@ export async function featuredSlug(db: Database) {
     .limit(1);
   return withVideo?.slug ?? null;
 }
+
+/**
+ * Every public suit as a card plus the fields the browser filters on, newest first: the body of
+ * the cached `/api/suits` (ADR-018). No paging: the shop is small enough to filter in one go.
+ */
+export async function filterList(db: Database) {
+  const rows = await db
+    .select({
+      ...cardColumns,
+      dressCategories: product.dressCategories,
+      design: product.design,
+      season: product.season,
+      outfitStyle: product.outfitStyle,
+    })
+    .from(product)
+    .innerJoin(category, eq(product.categoryId, category.id))
+    .leftJoin(
+      productMedia,
+      and(eq(productMedia.productId, product.id), eq(productMedia.isPrimary, true)),
+    )
+    .where(isPublic)
+    .orderBy(...ORDER.newest);
+  return rows.map(toCard);
+}

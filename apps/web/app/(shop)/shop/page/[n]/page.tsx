@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { ListPage } from '../../../../../components/list-page';
-import { listSuits } from '../../../../../lib/catalog';
+import { listCollections, listSuits } from '../../../../../lib/catalog';
 import { laterPageParams, parsePageParam } from '../../../../../lib/paging';
 import { buildMetadata } from '../../../../../lib/seo';
 import { SHOP_CRUMBS, SHOP_TITLE } from '../../../../../lib/shop';
@@ -33,13 +33,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ShopLaterPage({ params }: Props) {
-  const list = await load(params);
+  const [list, collections] = await Promise.all([load(params), listCollections()]);
   return (
     <ListPage
       title={SHOP_TITLE}
       crumbs={[...SHOP_CRUMBS, { name: `Page ${list.page}`, path: `/shop/page/${list.page}` }]}
       base="/shop"
       list={list}
+      collections={collections.map(({ slug, name }) => ({ slug, name }))}
     />
   );
 }

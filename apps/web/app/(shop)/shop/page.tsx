@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { ListPage } from '../../../components/list-page';
-import { listSuits } from '../../../lib/catalog';
+import { listCollections, listSuits } from '../../../lib/catalog';
 import { buildMetadata } from '../../../lib/seo';
 import { SHOP_CRUMBS, SHOP_TITLE } from '../../../lib/shop';
 
@@ -14,7 +14,7 @@ export const metadata = buildMetadata({
 
 // Cached (ADR-021); filters and sort arrive in the browser at step 6.4a (ADR-018).
 export default async function ShopPage() {
-  const list = await listSuits({ page: 1 });
+  const [list, collections] = await Promise.all([listSuits({ page: 1 }), listCollections()]);
   if (!list) notFound(); // only a collection list can be missing
   return (
     <ListPage
@@ -23,6 +23,7 @@ export default async function ShopPage() {
       crumbs={SHOP_CRUMBS}
       base="/shop"
       list={list}
+      collections={collections.map(({ slug, name }) => ({ slug, name }))}
     />
   );
 }

@@ -122,3 +122,35 @@ describe('featuredSlug', () => {
     expect(await products.featuredSlug(db)).toBe(marked.slug);
   });
 });
+
+describe('filterList', () => {
+  it('lists every public suit newest first, with the fields the browser filters on', async () => {
+    const dhanak = await makeCategory(db);
+    const hidden = await makeCategory(db, { isActive: false });
+    const at = (day: number) => new Date(`2026-11-0${day}T00:00:00Z`);
+    const older = await makeProduct(db, {
+      published: true,
+      categoryId: dhanak.id,
+      publishedAt: at(1),
+    });
+    const newer = await makeProduct(db, {
+      published: true,
+      categoryId: dhanak.id,
+      publishedAt: at(2),
+      design: ['Floral Print'],
+      season: 'summer',
+    });
+    await makeProduct(db, { categoryId: dhanak.id }); // a draft
+    await makeProduct(db, { published: true, categoryId: hidden.id });
+
+    const list = await products.filterList(db);
+    expect(list.map((s) => s.id)).toEqual([newer.id, older.id]);
+    expect(list[0]).toMatchObject({
+      design: ['Floral Print'],
+      season: 'summer',
+      dressCategories: ['Unstitched Suits'],
+      category: { slug: dhanak.slug },
+    });
+    expect(list[0]!.image?.url).toMatch(/^https:/);
+  });
+});

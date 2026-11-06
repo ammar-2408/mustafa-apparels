@@ -34,6 +34,7 @@ export default async function CollectionPage({ params }: Props) {
       crumbs={collectionCrumbs(collection)}
       base={`/collections/${collection.slug}`}
       list={list}
+      collectionSlug={collection.slug}
     />
   );
 }
