@@ -507,3 +507,31 @@ export async function related(
     .limit(limit);
   return rows.map(toCard);
 }
+
+/**
+ * The suit the home page features: the newest one the owner marked featured, else the newest
+ * published suit with a video, else none. Returns its slug.
+ */
+export async function featuredSlug(db: Database) {
+  const [marked] = await db
+    .select({ slug: product.slug })
+    .from(product)
+    .innerJoin(category, eq(product.categoryId, category.id))
+    .where(and(isPublic, eq(product.featured, true)))
+    .orderBy(...ORDER.newest)
+    .limit(1);
+  if (marked) return marked.slug;
+  const [withVideo] = await db
+    .select({ slug: product.slug })
+    .from(product)
+    .innerJoin(category, eq(product.categoryId, category.id))
+    .where(
+      and(
+        isPublic,
+        sql`exists (select 1 from ${productMedia} where ${productMedia.productId} = ${product.id} and ${productMedia.kind} = 'video')`,
+      ),
+    )
+    .orderBy(...ORDER.newest)
+    .limit(1);
+  return withVideo?.slug ?? null;
+}

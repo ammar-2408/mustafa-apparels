@@ -1,7 +1,7 @@
 import { createTestDb, resetTestDb, type TestDb } from '@mustafa/db/testing';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { makeCategory, makeProduct } from '../test/factories';
+import { makeCategory, makeMedia, makeProduct } from '../test/factories';
 import * as products from './index';
 
 let db: TestDb;
@@ -88,5 +88,37 @@ describe('related', () => {
     const cards = await products.related(db, self, { exclude: [shownAbove.id] });
     expect(cards.map((c) => c.id)).toEqual([newer.id, older.id]);
     expect(await products.related(db, self, { limit: 1 })).toHaveLength(1);
+  });
+});
+
+describe('featuredSlug', () => {
+  it('picks the newest suit marked featured, else the newest published suit with a video', async () => {
+    const dhanak = await makeCategory(db);
+    const at = (day: number) => new Date(`2026-11-0${day}T00:00:00Z`);
+    expect(await products.featuredSlug(db)).toBeNull();
+
+    const older = await makeProduct(db, {
+      published: true,
+      categoryId: dhanak.id,
+      publishedAt: at(1),
+    });
+    await makeMedia(db, { productId: older.id, kind: 'video', durationSeconds: '12' });
+    const newer = await makeProduct(db, {
+      published: true,
+      categoryId: dhanak.id,
+      publishedAt: at(3),
+    });
+    await makeMedia(db, { productId: newer.id, kind: 'video', durationSeconds: '12' });
+    const draft = await makeProduct(db, { categoryId: dhanak.id });
+    await makeMedia(db, { productId: draft.id, kind: 'video', durationSeconds: '12' });
+    expect(await products.featuredSlug(db)).toBe(newer.slug);
+
+    const marked = await makeProduct(db, {
+      published: true,
+      categoryId: dhanak.id,
+      publishedAt: at(2),
+      featured: true,
+    });
+    expect(await products.featuredSlug(db)).toBe(marked.slug);
   });
 });
