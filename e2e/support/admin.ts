@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
 import { totp } from './totp';
-import type { TestUser, Users } from './users';
+import { AFTER_SIGN_IN, type TestUser, type Users } from './users';
 
 export const ADMIN_URL = 'http://localhost:3001';
 
@@ -16,7 +16,7 @@ export async function loginAsAdmin(page: Page, users: Users): Promise<SignedInAd
   await page.getByLabel('Email').fill(admin.email);
   await page.getByLabel('Password').fill(admin.password);
   await page.getByRole('button', { name: 'Log in' }).click();
-  await expect(page).toHaveURL(/\/setup-2fa$/);
+  await expect(page).toHaveURL(/\/setup-2fa$/, AFTER_SIGN_IN);
   await page.getByLabel('Your password').fill(admin.password);
   await page.getByRole('button', { name: 'Continue' }).click();
   const secret = ((await page.getByTestId('totp-secret').textContent()) ?? '').trim();

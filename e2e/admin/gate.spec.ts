@@ -1,5 +1,5 @@
 import { openAdminMenu } from '../support/admin';
-import { expect, test } from '../support/users';
+import { AFTER_SIGN_IN, expect, test } from '../support/users';
 
 test.use({ baseURL: 'http://localhost:3001' });
 
@@ -28,7 +28,7 @@ test.describe('admin gate', () => {
     await page.getByLabel('Email').fill(customer.email);
     await page.getByLabel('Password').fill(customer.password);
     await page.getByRole('button', { name: 'Log in' }).click();
-    await expect(page).toHaveURL(/\/account$/);
+    await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
 
     // Same host, different cookie name: the admin doesn't see it.
     await page.goto('/');

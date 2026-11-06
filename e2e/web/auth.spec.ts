@@ -1,4 +1,4 @@
-import { expect, test } from '../support/users';
+import { AFTER_SIGN_IN, expect, test } from '../support/users';
 
 test.describe('sign-up, login and logout', () => {
   test('register says to check email', async ({ page, users }) => {
@@ -26,7 +26,7 @@ test.describe('sign-up, login and logout', () => {
     await page.getByLabel('Password').fill(customer.password);
     await page.getByRole('button', { name: 'Log in' }).click();
 
-    await expect(page).toHaveURL(/\/account$/);
+    await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
     await expect(page.getByRole('heading', { level: 1, name: 'Your account' })).toBeVisible();
     await expect(page.getByText(customer.email)).toBeVisible();
 

@@ -1,5 +1,5 @@
 import { totp } from '../support/totp';
-import { expect, test } from '../support/users';
+import { AFTER_SIGN_IN, expect, test } from '../support/users';
 
 test.use({ baseURL: 'http://localhost:3001' });
 // Up to 30 s waiting for a fresh code, on top of two logins.
@@ -19,7 +19,7 @@ test('2FA is set up on the first admin login, then asked for at every login', as
 
   // First login: straight to setup, which needs the password again.
   await logIn();
-  await expect(page).toHaveURL(/\/setup-2fa$/);
+  await expect(page).toHaveURL(/\/setup-2fa$/, AFTER_SIGN_IN);
   await page.getByLabel('Your password').fill(admin.password);
   await page.getByRole('button', { name: 'Continue' }).click();
   const secret = (await page.getByTestId('totp-secret').textContent())!.trim();

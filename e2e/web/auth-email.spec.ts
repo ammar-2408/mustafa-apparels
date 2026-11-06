@@ -1,5 +1,5 @@
 import { linkFromEmail } from '../support/outbox';
-import { expect, test } from '../support/users';
+import { AFTER_SIGN_IN, expect, test } from '../support/users';
 
 const NEW_PASSWORD = 'e2e a brand new passphrase';
 
@@ -17,7 +17,7 @@ test.describe('email verification and password reset', () => {
     await expect(page.getByRole('status')).toContainText('Check your email');
 
     await page.goto(await linkFromEmail(email, 'verify-email'));
-    await expect(page).toHaveURL(/\/account$/);
+    await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
     await expect(page.getByText(email)).toBeVisible();
   });
 
@@ -60,7 +60,7 @@ test.describe('email verification and password reset', () => {
     await page.getByLabel('Email').fill(customer.email);
     await page.getByLabel('Password').fill(NEW_PASSWORD);
     await page.getByRole('button', { name: 'Log in' }).click();
-    await expect(page).toHaveURL(/\/account$/);
+    await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
 
     // The same link can't be used again.
     await page.goto(link);

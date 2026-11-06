@@ -91,3 +91,7 @@ export const test = base.extend<{ users: Users }, { db: Database }>({
 });
 
 export { expect } from '@playwright/test';
+
+// After a sign-in click: a password hash, a session write and, on the local dev server, a route
+// compile. Under parallel workers that can pass the 5 s default (docs/debugging.md).
+export const AFTER_SIGN_IN = { timeout: 15_000 };
