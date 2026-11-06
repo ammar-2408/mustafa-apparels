@@ -23,6 +23,7 @@ import type { Database } from '@mustafa/db/client';
 import { category, product, productMedia, user } from '@mustafa/db/schema';
 import { toProductInput } from '@mustafa/validators/catalog';
 import { productInput, type ProductUpdateInput } from '@mustafa/validators/product';
+import { suitTags } from '@mustafa/validators/revalidate';
 import { and, asc, eq, isNull } from 'drizzle-orm';
 import sharp from 'sharp';
 
@@ -79,6 +80,7 @@ export type PlannedMedia = {
 export type SuitResult = {
   designId: string;
   outcome: 'created' | 'updated' | 'unchanged' | 'skipped';
+  productId?: string;
   changed: string[];
   keptEdits: string[];
   uploaded: number;
@@ -192,6 +194,8 @@ type Options = {
   actor: Actor;
   maxCredits: number;
   log?: (line: string) => void;
+  // Refreshes the storefront's cached pages for a suit the import changed (docs/api.md §4).
+  revalidate?: (tags: string[]) => Promise<void>;
 };
 
 export async function importStock({
@@ -203,6 +207,7 @@ export async function importStock({
   actor,
   maxCredits,
   log = () => {},
+  revalidate = async () => {},
 }: Options): Promise<ImportReport> {
   const categories = new Map(
     (await db.select({ id: category.id, slug: category.slug }).from(category)).map((c) => [
@@ -262,6 +267,10 @@ export async function importStock({
       unused: report.unused,
     });
     report.suits.push(result);
+    // A new suit is a draft, so only an update can change a page shoppers see.
+    if (result.outcome === 'updated' && result.productId) {
+      await revalidate(suitTags(result.productId, suit.collection));
+    }
     report.uploaded += result.uploaded;
     report.reused += result.reused;
     log(
@@ -503,6 +512,7 @@ async function importSuit({
   if (mediaChanged) result.changed.push('media');
   if (result.changed.length > 0) {
     result.outcome = 'updated';
+    result.productId = current.id;
     await record(db, actor, {
       action: 'product.import',
       entity: 'product',

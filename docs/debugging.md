@@ -52,6 +52,9 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 | `/page/<n>` still 404 after new suits are published | The cached 404 wasn't revalidated | Check the page reads tagged data before `notFound()`, and that the admin's `/api/revalidate` call succeeded |
 | Canonical missing in `curl` output | Set in a client component or via JS | Move to `generateMetadata`; never set SEO tags client-side |
 | Canonical appears in `<body>` | Streaming metadata for some user-agents | Configure `htmlLimitedBots`; re-run SEO suite |
+| Build fails: "encountered uncached or runtime data during prerendering" | A page reads the session, `searchParams` or `connection()` under Cache Components (ADR-021) | Per-request page: `export const instant = false` on its layout **and** page (the dev server checks the page too). Public page: move the read into a `'use cache'` function in `lib/catalog.ts` or a client island |
+| E2E finds two of a field after a client-side move (strict mode violation) | Cache Components keeps the previous page mounted but hidden (React Activity) | Use role queries (`getByRole('textbox', { name })`), which skip hidden elements; `getByLabel` doesn't |
+| After login the page stays on `/login` (E2E, local) | `router.replace()` then `router.refresh()`: on Next 16.4.5 the refresh re-renders the old page and can cancel the move (web login failed 8 of 10) | Navigate without `refresh()`; the target renders per request anyway. Fixed in the web and admin login, 2FA, logout and collection forms. Admin login on `mobile-small` can still time out when many workers load the local **dev** server at once (it passes run alone, and CI uses the built app): re-run it alone before chasing it (step 9.1) |
 | Page blank with CSP errors in console | Tier mismatch (`docs/auth-security.md` §3.2): page needs a nonce it doesn't get, or a host is missing | Check which tier the route is in; add the missing host deliberately |
 
 ### Netlify

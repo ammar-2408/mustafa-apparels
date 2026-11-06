@@ -65,7 +65,13 @@ afterEach(async () => {
   rmSync(root, { recursive: true, force: true });
 });
 
-const run = (options: { maxCredits?: number; uploader?: Uploader } = {}) =>
+const run = (
+  options: {
+    maxCredits?: number;
+    uploader?: Uploader;
+    revalidate?: (tags: string[]) => Promise<void>;
+  } = {},
+) =>
   importStock({
     db,
     suits: loadCatalog(catalogDir).suits,
@@ -74,6 +80,7 @@ const run = (options: { maxCredits?: number; uploader?: Uploader } = {}) =>
     mediaConfig,
     actor,
     maxCredits: options.maxCredits ?? 3,
+    revalidate: options.revalidate,
   });
 
 const suitRow = async (code: string) =>
@@ -327,6 +334,22 @@ describe('importStock', () => {
       availability: 'out_of_stock',
       motifs: ['lace hem'],
     });
+  });
+
+  it('refreshes the storefront for each suit it changes, and only those', async () => {
+    const sent: string[][] = [];
+    const revalidate = async (tags: string[]) => {
+      sent.push(tags);
+    };
+    await run({ revalidate });
+    expect(sent).toEqual([]); // new suits are drafts
+    writeFileSync(
+      join(catalogDir, 'dhanak', 'dhn-01.md'),
+      suitText('DHN-01').replace('motifs: [small flower sprigs]', 'motifs: [lace hem]'),
+    );
+    await run({ revalidate });
+    const suit = await suitRow('DHN-01');
+    expect(sent).toEqual([['products', `product:${suit.id}`, 'category:dhanak']]);
   });
 
   it('never brings back a photo or video the owner removed in admin', async () => {

@@ -20,6 +20,7 @@ import {
   mediaPrimaryInput,
   mediaReorderInput,
 } from '@mustafa/validators/media';
+import { suitTags } from '@mustafa/validators/revalidate';
 import { revalidatePath } from 'next/cache';
 
 import { adminAction } from '../../../../lib/action';
@@ -30,7 +31,7 @@ import { revalidateStorefront } from '../../../../lib/revalidate';
 // queue a following action behind it), and the storefront's cards and product page refresh.
 const refresh = (productId: string) => {
   revalidatePath(`/suits/${productId}`);
-  return revalidateStorefront(['products', `product:${productId}`]);
+  return revalidateStorefront(suitTags(productId));
 };
 
 // A failed Cloudinary delete leaves an orphan file, not a broken page: log and carry on.

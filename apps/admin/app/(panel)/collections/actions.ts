@@ -19,17 +19,14 @@ import {
   categoryUpdateInput,
   categoryVisibilityInput,
 } from '@mustafa/validators/category';
+import { collectionTags, TAGS } from '@mustafa/validators/revalidate';
 
 import { adminAction } from '../../../lib/action';
 import { mediaConfig } from '../../../lib/media';
 import { revalidateStorefront } from '../../../lib/revalidate';
 
 // Collection pages and every suit card show the collection's name, so both lists refresh.
-const tagsFor = (...slugs: string[]) => [
-  'categories',
-  'products',
-  ...[...new Set(slugs)].map((slug) => `category:${slug}`),
-];
+const tagsFor = collectionTags;
 
 const create = adminAction(categoryInput, async (input, { session }) => {
   const row = await categories.create(getDb(), input, { actorId: session.user.id });
@@ -48,7 +45,7 @@ const update = adminAction(categoryUpdateInput, async (input, { session }) => {
 
 const reorder = adminAction(categoryReorderInput, async (input, { session }) => {
   await categories.reorder(getDb(), input, { actorId: session.user.id });
-  await revalidateStorefront(['categories']);
+  await revalidateStorefront([TAGS.categories]);
   return { count: input.ids.length };
 });
 

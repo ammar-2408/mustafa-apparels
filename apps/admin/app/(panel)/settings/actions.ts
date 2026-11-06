@@ -3,6 +3,7 @@ import 'server-only';
 
 import * as settings from '@mustafa/core/settings';
 import { getDb } from '@mustafa/db/client';
+import { TAGS } from '@mustafa/validators/revalidate';
 import { settingInput } from '@mustafa/validators/settings';
 import { revalidatePath } from 'next/cache';
 
@@ -15,7 +16,7 @@ import { revalidateStorefront } from '../../../lib/revalidate';
 const update = adminAction(settingInput, async (input, { session }) => {
   await settings.set(getDb(), input, { actorId: session.user.id });
   revalidatePath('/settings');
-  await revalidateStorefront(['settings']);
+  await revalidateStorefront([TAGS.settings]);
   return { key: input.key };
 });
 

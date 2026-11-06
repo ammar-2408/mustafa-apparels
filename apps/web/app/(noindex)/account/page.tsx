@@ -2,6 +2,9 @@ import { LogoutButton } from '../../../components/auth/logout-button';
 import { requireUserPage } from '../../../lib/auth';
 import { buildMetadata } from '../../../lib/seo';
 
+// Per request, rendered whole (ADR-021): no streamed shell, so redirects and status codes are real.
+export const instant = false;
+
 export const metadata = buildMetadata({
   title: 'Your account',
   description:

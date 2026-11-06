@@ -21,7 +21,8 @@
     "prepare": "husky || exit 0",
     "smoke:cloudinary": "pnpm --filter @mustafa/db exec tsx ../../scripts/cloudinary-smoke.ts",
     "import:stock": "pnpm --filter @mustafa/db exec tsx ../../scripts/import-stock.ts",
-    "preview:publish": "pnpm --filter @mustafa/db exec tsx ../../scripts/preview-publish.ts"
+    "preview:publish": "pnpm --filter @mustafa/db exec tsx ../../scripts/preview-publish.ts",
+    "check:static": "pnpm --filter @mustafa/db exec tsx ../../scripts/check-static.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

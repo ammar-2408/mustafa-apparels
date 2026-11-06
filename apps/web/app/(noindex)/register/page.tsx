@@ -4,6 +4,9 @@ import { connection } from 'next/server';
 import { RegisterForm } from '../../../components/auth/register-form';
 import { buildMetadata } from '../../../lib/seo';
 
+// Per request, rendered whole (ADR-021): no streamed shell, so redirects and status codes are real.
+export const instant = false;
+
 export const metadata = buildMetadata({
   title: 'Create an account',
   description:

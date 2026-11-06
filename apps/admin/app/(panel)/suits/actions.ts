@@ -11,6 +11,7 @@ import {
   productIdInput,
   productPublishInput,
 } from '@mustafa/validators/product';
+import { suitTags } from '@mustafa/validators/revalidate';
 import { revalidatePath } from 'next/cache';
 
 import { adminAction } from '../../../lib/action';
@@ -20,11 +21,7 @@ const slugOf = async (categoryId: string) =>
   (await categories.getById(getDb(), categoryId))?.slug ?? null;
 
 // Lists show the suit's card, its page shows the rest, and its collection pages list it.
-const storefrontTags = (productId: string, ...collectionSlugs: (string | null)[]) => [
-  'products',
-  `product:${productId}`,
-  ...[...new Set(collectionSlugs.filter(Boolean))].map((slug) => `category:${slug}`),
-];
+const storefrontTags = suitTags;
 
 // Always a draft (core refuses anything else). Photos are added on the edit page that follows.
 const create = adminAction(productCreateInput, async (input, { session }) => {

@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { ResetPasswordForm } from '../../../components/auth/reset-password-form';
 import { buildMetadata } from '../../../lib/seo';
 
+// Per request, rendered whole (ADR-021): no streamed shell, so redirects and status codes are real.
+export const instant = false;
+
 export const metadata = buildMetadata({
   title: 'Set a new password',
   description:

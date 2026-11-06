@@ -44,7 +44,8 @@ test.describe('email verification and password reset', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Forgot your password' }),
     ).toBeVisible();
-    await page.getByLabel('Email').fill(customer.email);
+    // A role query: the login page stays mounted but hidden after the client-side move (ADR-021).
+    await page.getByRole('textbox', { name: 'Email' }).fill(customer.email);
     await page.getByRole('button', { name: 'Send reset link' }).click();
     await expect(page.getByRole('status')).toContainText('If an account uses that email');
 

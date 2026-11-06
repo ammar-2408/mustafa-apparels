@@ -9,6 +9,7 @@ import { join, resolve } from 'node:path';
 
 import { loadEnvFiles } from '@mustafa/config/env';
 import type { MediaConfig } from '@mustafa/core/integrations/media';
+import { createRevalidator } from '@mustafa/core/integrations/revalidate';
 import { createDb } from '@mustafa/db/client';
 
 import { dryRun } from './import-stock/dry-run';
@@ -125,6 +126,12 @@ async function main() {
       mediaConfig,
       actor: await importActor(db, process.env.SEED_ADMIN_EMAIL),
       maxCredits: options.maxCredits,
+      // The storefront in WEB_URL (with REVALIDATE_SECRET); a failure is logged, never fatal.
+      revalidate: createRevalidator({
+        mode: process.env.INTEGRATIONS_MODE === 'mock' ? 'mock' : 'live',
+        webUrl: process.env.WEB_URL,
+        secret: process.env.REVALIDATE_SECRET,
+      }),
       log: (line) => console.log(line),
     });
     printReport(report);
