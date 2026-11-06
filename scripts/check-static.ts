@@ -11,7 +11,17 @@ export type PrerenderManifest = {
 };
 
 // Public pages served whole from the cache. Grows with each storefront step.
-export const CACHED = ['/', '/shop', '/api/suits'];
+export const CACHED = [
+  '/',
+  '/shop',
+  '/api/suits',
+  '/about',
+  '/contact',
+  '/how-to-order',
+  '/faq',
+  '/privacy',
+  '/terms',
+];
 // Per-request pages (proxy.ts nonce, session): they must never be served from the cache.
 export const PER_REQUEST = [
   '/login',
