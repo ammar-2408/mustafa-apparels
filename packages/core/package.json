@@ -19,6 +19,7 @@
     "./search": "./search/index.ts",
     "./settings": "./settings/index.ts",
     "./integrations/email": "./integrations/email.ts",
+    "./integrations/email-caps": "./integrations/email-caps.ts",
     "./integrations/email-templates": "./integrations/email-templates.ts",
     "./integrations/breached-passwords": "./integrations/breached-passwords.ts",
     "./integrations/rate-limit": "./integrations/rate-limit.ts",

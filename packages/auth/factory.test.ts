@@ -9,6 +9,10 @@ vi.mock('server-only', () => ({}));
 vi.mock('./index', () => ({ createAuth }));
 vi.mock('@mustafa/core/integrations/email', () => ({ createMailer }));
 vi.mock('@mustafa/core/integrations/rate-limit', () => ({ createLimiter }));
+const cappedMailer = vi.hoisted(() =>
+  vi.fn((mailer: string, limiter: string) => `${mailer}+${limiter}`),
+);
+vi.mock('@mustafa/core/integrations/email-caps', () => ({ cappedMailer }));
 vi.mock('@mustafa/core/integrations/breached-passwords', () => ({
   createBreachCheck: () => 'breach-check',
 }));
@@ -76,6 +80,13 @@ describe('authFromEnv', () => {
     );
     expect(createLimiter).toHaveBeenCalledWith(
       expect.objectContaining({ mode: 'mock', secret: base.BETTER_AUTH_SECRET }),
+    );
+  });
+
+  it('caps real account emails on the same limiter', () => {
+    authFromEnv('web', { ...base, INTEGRATIONS_MODE: 'live' }, { db });
+    expect(createAuth).toHaveBeenLastCalledWith(
+      expect.objectContaining({ sendEmail: 'mailer+limiter', limiter: 'limiter' }),
     );
   });
 });

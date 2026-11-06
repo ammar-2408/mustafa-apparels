@@ -4,6 +4,7 @@ import 'server-only';
 
 import { createBreachCheck } from '@mustafa/core/integrations/breached-passwords';
 import { createMailer } from '@mustafa/core/integrations/email';
+import { cappedMailer } from '@mustafa/core/integrations/email-caps';
 import { createLimiter } from '@mustafa/core/integrations/rate-limit';
 import type { Database } from '@mustafa/db/client';
 
@@ -38,25 +39,29 @@ export type AppAuth = ReturnType<typeof createAuth>;
 export function authFromEnv(app: AuthApp, env: AuthEnv, deps: AuthDeps): AppAuth | null {
   const baseURL = app === 'admin' ? env.ADMIN_URL : env.NEXT_PUBLIC_SITE_URL;
   if (!env.DATABASE_URL || !env.BETTER_AUTH_SECRET || !baseURL) return null;
+  const limiter = createLimiter({
+    mode: env.INTEGRATIONS_MODE,
+    appEnv: env.APP_ENV,
+    secret: env.BETTER_AUTH_SECRET,
+    url: env.UPSTASH_REDIS_REST_URL,
+    token: env.UPSTASH_REDIS_REST_TOKEN,
+  });
+  const mailer = createMailer({
+    mode: env.INTEGRATIONS_MODE,
+    appEnv: env.APP_ENV,
+    apiKey: env.RESEND_API_KEY,
+    from: env.EMAIL_FROM,
+    replyTo: env.SHOP_INBOX_EMAIL,
+  });
+  // Real emails count toward the per-address and daily caps. Mock mode sends nothing, and a full
+  // E2E run would pass the daily cap of its in-memory counter.
   return createAuth({
     app,
     db: deps.db(),
     baseURL,
     secret: env.BETTER_AUTH_SECRET,
-    sendEmail: createMailer({
-      mode: env.INTEGRATIONS_MODE,
-      appEnv: env.APP_ENV,
-      apiKey: env.RESEND_API_KEY,
-      from: env.EMAIL_FROM,
-      replyTo: env.SHOP_INBOX_EMAIL,
-    }),
-    limiter: createLimiter({
-      mode: env.INTEGRATIONS_MODE,
-      appEnv: env.APP_ENV,
-      secret: env.BETTER_AUTH_SECRET,
-      url: env.UPSTASH_REDIS_REST_URL,
-      token: env.UPSTASH_REDIS_REST_TOKEN,
-    }),
+    sendEmail: env.INTEGRATIONS_MODE === 'live' ? cappedMailer(mailer, limiter) : mailer,
+    limiter,
     isBreached: createBreachCheck({ mode: env.INTEGRATIONS_MODE }),
     ...(deps.background && { background: deps.background }),
   });
