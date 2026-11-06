@@ -159,6 +159,8 @@ Script: `scripts/import-stock.ts`. Built in Phase 5 of `docs/project-implementat
 
 **Production (step 10.3):** `IMPORT_DATABASE_URL=<production direct URL> pnpm import:stock --production`. Every file is already in Cloudinary from the dev import, so the report should say 0 uploaded: no credits used. Run it again and it changes nothing.
 
+**Local preview data (dev only):** `pnpm preview:publish --confirm-host=<dev host>` gives every imported draft on the Neon `dev` branch a placeholder price of PKR 4,999, clears its checks and publishes it through the normal publish rules, so the local storefront shows real photos. It keeps any price already set. It refuses unless `APP_ENV=development`, refuses `--production`, refuses when `DATABASE_URL` is the same database as `IMPORT_DATABASE_URL` or `E2E_DATABASE_URL`, and needs the host typed back (it prints the host when it's missing). Run on 2026-11-06: all 30 published. Real prices and checks are set in the production admin (step 5.7); production gets fresh drafts from the import.
+
 `--dry-run` does steps 1 and 2 and writes nothing. It also checks each file against the upload limits (a video's length comes from its MP4 header), checks that a `crop` fits inside its photo, and prints a table per suit and an estimate of the Cloudinary credits if every file were uploaded (each upload 1 transformation, the 720 px video 4 per second, plus storage). It exits with an error if anything needs fixing. `--stock-dir` and `--catalog-dir` point it at other folders (tests).
 
 Most fields keep their name in the database (`docs/database.md` §2). These change:

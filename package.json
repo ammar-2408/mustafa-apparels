@@ -20,7 +20,8 @@
     "db:seed": "pnpm --filter @mustafa/db seed",
     "prepare": "husky || exit 0",
     "smoke:cloudinary": "pnpm --filter @mustafa/db exec tsx ../../scripts/cloudinary-smoke.ts",
-    "import:stock": "pnpm --filter @mustafa/db exec tsx ../../scripts/import-stock.ts"
+    "import:stock": "pnpm --filter @mustafa/db exec tsx ../../scripts/import-stock.ts",
+    "preview:publish": "pnpm --filter @mustafa/db exec tsx ../../scripts/preview-publish.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
