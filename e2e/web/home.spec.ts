@@ -1,7 +1,7 @@
 import { expect, test } from '../support/users';
 
 // Home (docs/design.md §4), static: no motion or 3D yet (Phase 8).
-test('home has the hero, new arrivals, the three collections, a featured suit and how to order', async ({
+test('home has the hero, Shop by Fabric, new arrivals, a featured suit and how to order', async ({
   page,
 }) => {
   const response = await page.goto('/');
@@ -21,7 +21,8 @@ test('home has the hero, new arrivals, the three collections, a featured suit an
   const arrivals = page.getByRole('region', { name: 'New arrivals' });
   expect(await arrivals.getByRole('article').count()).toBeGreaterThanOrEqual(4);
 
-  const collections = page.getByRole('region', { name: 'Collections' });
+  // Shop by Fabric comes straight after the hero: one card link per collection.
+  const collections = page.getByRole('region', { name: 'Shop by Fabric' });
   for (const name of ['Dhanak', 'Khaddar', 'Lajwanti']) {
     await expect(collections.getByRole('heading', { name })).toBeVisible();
   }

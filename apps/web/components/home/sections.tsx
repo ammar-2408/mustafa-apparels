@@ -11,8 +11,8 @@ import type { Collection, Suit, SuitCard } from '../../lib/types';
 import { ProductCard } from '../product/product-card';
 import { ProductVideo } from '../product/product-video';
 import { type Contact, ContactList } from '../site/contact-list';
-import { FlowerSprig } from '../site/flourish';
-import { ArrowIcon, WhatsAppIcon } from '../site/icons';
+import { FlowerSprig, LotusOrnament } from '../site/flourish';
+import { ArrowIcon, collectionIcon, WhatsAppIcon } from '../site/icons';
 
 const wrap = 'mx-auto max-w-content-wide px-gutter';
 
@@ -131,42 +131,86 @@ export function NewArrivals({ suits }: { suits: SuitCard[] }) {
 
 type CollectionPanel = Collection & { cover: SuitCard['image'] };
 
-// 4. Collections: three tall panels with thin dividers (hover reveal and WebGL come in Phase 8).
-export function Collections({ collections }: { collections: CollectionPanel[] }) {
+// Short lines for the Shop by Fabric cards, from the owner's mockup (2026-11-15). Lajwanti is a
+// winter Dhanak line, so it isn't called "light". A collection without one shows its description.
+const FABRIC_TAGLINES: Record<string, string> = {
+  dhanak: 'Soft, warm and perfect for the season.',
+  khaddar: 'A classic fabric with a rich, textured feel.',
+  lajwanti: 'Graceful prints, beautifully elegant.',
+};
+
+// 2. Shop by Fabric (docs/design.md §4): one card per collection, straight after the hero. The
+// whole card is the link; its photo is decoration, so the text alone names it.
+export function ShopByFabric({ collections }: { collections: CollectionPanel[] }) {
   if (collections.length === 0) return null;
   return (
-    <section aria-labelledby="collections-title" className={`${wrap} pb-section`}>
-      <h2 id="collections-title" className="mb-8 text-h2 font-light">
-        Collections
-      </h2>
-      <ul className="grid divide-y divide-border border-y border-border md:grid-cols-3 md:divide-x md:divide-y-0">
-        {collections.map((c) => (
-          <li key={c.id}>
-            <Link
-              href={`/collections/${c.slug}`}
-              className="group flex h-full flex-col gap-6 py-8 md:px-6"
-            >
-              <div className="relative aspect-3/4 overflow-hidden bg-surface-soft">
+    <section
+      id="shop-by-fabric"
+      aria-labelledby="fabric-title"
+      className={`${wrap} scroll-mt-24 py-16 md:py-24`}
+    >
+      <div className="mb-10 flex flex-col items-center gap-3 text-center">
+        <LotusOrnament />
+        <div className="flex w-full items-center justify-center gap-6">
+          <span
+            aria-hidden="true"
+            className="hidden h-px max-w-32 flex-1 bg-border-strong sm:block"
+          />
+          <h2 id="fabric-title" className="text-h2 font-bold">
+            Shop by Fabric
+          </h2>
+          <span
+            aria-hidden="true"
+            className="hidden h-px max-w-32 flex-1 bg-border-strong sm:block"
+          />
+        </div>
+        <p className="text-body text-muted">
+          Explore our unstitched suit collections in your favourite fabrics.
+        </p>
+      </div>
+      <ul className="grid gap-6 md:grid-cols-3">
+        {collections.map((c) => {
+          const Icon = collectionIcon(c.slug, 'card');
+          const tagline = FABRIC_TAGLINES[c.slug] ?? c.description;
+          return (
+            <li key={c.id}>
+              <Link
+                href={`/collections/${c.slug}`}
+                className="fabric-card group relative flex h-full min-h-44 overflow-hidden rounded-sm bg-surface-soft"
+              >
                 {c.cover && (
-                  <Image
-                    src={shapedImageUrl(c.cover.url, 'card')}
-                    alt={c.cover.alt}
-                    fill
-                    sizes="(min-width: 48rem) 30vw, 100vw"
-                    className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none"
-                  />
+                  <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
+                    <Image
+                      src={shapedImageUrl(c.cover.url, 'detail')}
+                      alt=""
+                      fill
+                      sizes="(min-width: 48rem) 16vw, 50vw"
+                      className="fabric-photo object-cover"
+                    />
+                    {/* Fades the photo into the card, so the text side stays calm. */}
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-surface-soft"
+                    />
+                  </div>
                 )}
-              </div>
-              <h3 className="text-h2 font-light">{c.name}</h3>
-              {c.description && (
-                <p className="line-clamp-3 text-body text-muted">{c.description}</p>
-              )}
-              <span className="caps-tight mt-auto underline decoration-transparent underline-offset-8 group-hover:decoration-accent">
-                See the collection
-              </span>
-            </Link>
-          </li>
-        ))}
+                <div className="relative flex w-3/5 flex-col gap-2 p-6">
+                  <div className="flex items-center gap-3">
+                    <Icon className="card-icon size-8 text-accent-text" />
+                    <h3 className="text-h3 font-bold">{c.name}</h3>
+                  </div>
+                  {tagline && <p className="line-clamp-3 text-small text-muted">{tagline}</p>}
+                  <span className="mt-auto inline-flex items-center gap-2 pt-3 caps-tight">
+                    <span className="underline decoration-accent-text decoration-2 underline-offset-8">
+                      Explore
+                    </span>
+                    <ArrowIcon className="nudge size-4" />
+                  </span>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

@@ -1,10 +1,10 @@
 import {
-  Collections,
   ContactStrip,
   FeaturedSuit,
   Hero,
   HowToOrder,
   NewArrivals,
+  ShopByFabric,
   Statement,
 } from '../../components/home/sections';
 import { JsonLd } from '../../components/json-ld';
@@ -59,9 +59,9 @@ export default async function Home() {
         })}
       />
       <Hero whatsapp={settings.whatsapp} photo={heroPhoto} />
+      <ShopByFabric collections={panels} />
       <Statement />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
-      <Collections collections={panels} />
       <FeaturedSuit suit={featured} />
       <HowToOrder />
       <ContactStrip contact={contact} />

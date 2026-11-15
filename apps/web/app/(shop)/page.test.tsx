@@ -7,6 +7,7 @@ import {
   Hero,
   HowToOrder,
   NewArrivals,
+  ShopByFabric,
   Statement,
 } from '../../components/home/sections';
 import type { Suit } from '../../lib/types';
@@ -95,5 +96,47 @@ describe('home sections', () => {
       '/products/teal-embroidered-khaddar-3-piece-kdr-05',
     );
     expect(document.querySelector('video')).toBeNull();
+  });
+
+  it('shows a Shop by Fabric card per collection, each one link with its tagline', () => {
+    const cover = {
+      url: 'https://res.cloudinary.com/ma/image/upload/products/x/a.jpg',
+      alt: 'A suit',
+    };
+    const make = (slug: string, name: string, description: string | null) =>
+      ({ id: slug, slug, name, description, cover }) as Parameters<
+        typeof ShopByFabric
+      >[0]['collections'][number];
+    render(
+      <ShopByFabric
+        collections={[
+          make('dhanak', 'Dhanak', 'Long text'),
+          make('khaddar', 'Khaddar', null),
+          make('lawn', 'Lawn', 'Light summer suits.'),
+        ]}
+      />,
+    );
+    const region = screen.getByRole('region', { name: 'Shop by Fabric' });
+    const links = within(region).getAllByRole('link');
+    expect(links.map((l) => l.getAttribute('href'))).toEqual([
+      '/collections/dhanak',
+      '/collections/khaddar',
+      '/collections/lawn',
+    ]);
+    expect(links[0]!.textContent).toContain('Soft, warm and perfect for the season.');
+    expect(links[1]!.textContent).toContain('A classic fabric with a rich, textured feel.');
+    // A collection with no tagline of its own shows its description.
+    expect(links[2]!.textContent).toContain('Light summer suits.');
+    // The photo is decoration: the card's text names the link.
+    expect(within(region).queryAllByRole('img')).toHaveLength(0);
+    expect(region.querySelectorAll('img[alt=""]')).toHaveLength(3);
+    expect(decodeURIComponent(region.querySelector('img')!.getAttribute('src')!)).toContain(
+      'c_fill,g_center,ar_1:1',
+    );
+  });
+
+  it('leaves Shop by Fabric out when there are no collections', () => {
+    const { container } = render(<ShopByFabric collections={[]} />);
+    expect(container.innerHTML).toBe('');
   });
 });
