@@ -5,32 +5,40 @@ import { Logo } from '@mustafa/ui/logo';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { formatPrice, piecesLabel } from '../../lib/format';
+import { collectionList, formatPrice, piecesLabel } from '../../lib/format';
 import { GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
+import type { SiteArt } from '../../lib/site-art';
 import type { Collection, Suit, SuitCard } from '../../lib/types';
 import { ProductCard } from '../product/product-card';
 import { ProductVideo } from '../product/product-video';
 import { type Contact, ContactList } from '../site/contact-list';
-import { FlowerSprig, LotusOrnament } from '../site/flourish';
+import { LotusOrnament } from '../site/flourish';
 import { ArrowIcon, collectionIcon, WhatsAppIcon } from '../site/icons';
 
 const wrap = 'mx-auto max-w-content-wide px-gutter';
 
-type HeroPhoto = { url: string; alt: string };
-
 // 1. Hero (docs/design.md §4, the owner's mockup of 2026-11-15): Bold headline with a deep orange
-// second line, the MA submark, the two ways in, and a real suit photo in a powder blue arch.
-export function Hero({ whatsapp, photo }: { whatsapp: string | null; photo: HeroPhoto | null }) {
+// second line, the MA submark, the two ways in, and the mockup's fabric picture filling the right
+// half. The collection names come from admin, so new collections never need a code change.
+export function Hero({
+  whatsapp,
+  collections,
+  art,
+}: {
+  whatsapp: string | null;
+  collections: string[];
+  art: SiteArt | null;
+}) {
+  const names = collectionList(collections);
   return (
     <section
       aria-labelledby="hero-title"
       className="relative overflow-hidden bg-surface-soft text-fg"
     >
-      <FlowerSprig className="sway absolute -top-2 right-0 w-40 md:w-56 lg:w-80" />
       <div
-        className={`${wrap} grid items-center gap-12 py-12 md:py-16 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16 lg:py-20`}
+        className={`${wrap} grid items-center lg:min-h-[34rem] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]`}
       >
-        <div className="flex min-w-0 flex-col gap-8">
+        <div className="relative z-10 flex min-w-0 flex-col gap-8 py-12 md:py-16 lg:py-20">
           <div className="flex items-center gap-6">
             <Logo variant="submark" height={40} />
             <span aria-hidden="true" className="h-px w-24 bg-fg md:w-40" />
@@ -40,8 +48,8 @@ export function Hero({ whatsapp, photo }: { whatsapp: string | null; photo: Hero
             <span className="block text-accent-text">Made for Every Occasion</span>
           </h1>
           <p className="max-w-xl text-body-lg">
-            Premium unstitched 2-piece and 3-piece suits in Dhanak, Khaddar and Lajwanti. Choose
-            your favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
+            Premium unstitched 2-piece and 3-piece suits{names ? ` in ${names}` : ''}. Choose your
+            favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href="/shop" className={buttonClass('primary', undefined, 'bold')}>
@@ -61,24 +69,25 @@ export function Hero({ whatsapp, photo }: { whatsapp: string | null; photo: Hero
             )}
           </div>
         </div>
-        <div className="relative mx-auto w-full max-w-sm md:max-w-md">
-          {/* The arch: powder blue behind, the photo inset on top. */}
-          <div aria-hidden="true" className="absolute inset-0 rounded-t-[999px] bg-primary" />
-          <div className="relative mx-6 mt-6 aspect-4/5 overflow-hidden rounded-t-[999px] bg-surface-soft">
-            {photo && (
-              <Image
-                src={shapedImageUrl(photo.url, 'hero')}
-                alt={photo.alt}
-                fill
-                loading="eager"
-                fetchPriority="high"
-                sizes="(min-width: 64rem) 28rem, (min-width: 48rem) 26rem, 22rem"
-                className="object-cover"
-              />
-            )}
-          </div>
-        </div>
       </div>
+      {art && (
+        <div className="relative aspect-[563/470] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:aspect-auto lg:w-[44%]">
+          <Image
+            src={art.src}
+            alt={art.alt}
+            fill
+            loading="eager"
+            fetchPriority="high"
+            sizes="(min-width: 64rem) 44vw, 100vw"
+            className="object-cover object-left"
+          />
+          {/* Fades the picture into the band, so the text side stays calm. */}
+          <span
+            aria-hidden="true"
+            className="absolute inset-y-0 left-0 hidden w-1/4 bg-linear-to-r from-surface-soft lg:block"
+          />
+        </div>
+      )}
     </section>
   );
 }

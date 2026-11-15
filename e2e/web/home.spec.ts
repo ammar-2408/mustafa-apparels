@@ -9,13 +9,15 @@ test('home has the hero, Shop by Fabric, new arrivals, a featured suit and how t
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Elegant Unstitched Suits, Made for Every Occasion',
   );
-  // The hero photo is the featured suit's, asked for at once (it is the largest thing on screen).
-  // The E2E demo photos aren't real Cloudinary files, so check the request, not the pixels.
+  // The hero names the collections from the database, and its fabric picture (when a Cloudinary
+  // cloud is set) is asked for at once, being the largest thing on screen.
   const hero = page.getByRole('region', { name: /^Elegant Unstitched Suits/ });
-  const photo = hero.getByRole('img').last();
-  await expect(photo).toHaveAttribute('loading', 'eager');
-  await expect(photo).toHaveAttribute('fetchpriority', 'high');
-  await expect(photo).toHaveAttribute('src', /c_fill,g_north,ar_4:5/);
+  await expect(hero).toContainText('suits in Dhanak, ');
+  const picture = hero.locator('img[src*="hero-fabric"]');
+  if ((await picture.count()) > 0) {
+    await expect(picture).toHaveAttribute('loading', 'eager');
+    await expect(picture).toHaveAttribute('fetchpriority', 'high');
+  }
   await expect(hero.getByRole('link', { name: 'See All Suits' })).toHaveAttribute('href', '/shop');
 
   const arrivals = page.getByRole('region', { name: 'New arrivals' });

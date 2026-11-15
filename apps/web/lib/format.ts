@@ -48,3 +48,11 @@ export const availabilityLabel = (availability: Availability) =>
     : availability === 'low_stock'
       ? 'Few left'
       : null;
+
+// The collections as a phrase for running text: "Dhanak, Khaddar and Lajwanti". Past three it adds
+// "and more", so new collections from admin never make the sentence long (owner, 2026-11-15).
+export function collectionList(names: string[]) {
+  if (names.length <= 1) return names[0] ?? '';
+  if (names.length > 3) return `${names.slice(0, 3).join(', ')} and more`;
+  return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+}

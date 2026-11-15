@@ -16,30 +16,40 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 vi.mock('../(account)/account/actions', () => ({ toggleWishlist: vi.fn() }));
 
 describe('home sections', () => {
-  it('opens with one large heading, the submark, a suit photo and the two ways in', () => {
-    const photo = {
-      url: 'https://res.cloudinary.com/ma/image/upload/products/x/teal.jpg',
-      alt: 'Teal embroidered Khaddar suit',
+  it('opens with one large heading, the submark, the fabric picture and the two ways in', () => {
+    const art = {
+      src: 'https://res.cloudinary.com/ma/image/upload/c_limit/site/home/hero-fabric',
+      alt: 'Folded embroidered fabrics',
     };
-    render(<Hero whatsapp="+923482799707" photo={photo} />);
+    render(
+      <Hero
+        whatsapp="+923482799707"
+        collections={['Dhanak', 'Khaddar', 'Lajwanti', 'Lawn']}
+        art={art}
+      />,
+    );
     const h1 = screen.getByRole('heading', { level: 1 });
     expect(h1.textContent).toBe('Elegant Unstitched Suits, Made for Every Occasion');
     expect(h1.querySelector('.text-accent-text')!.textContent).toBe('Made for Every Occasion');
     expect(screen.getByRole('img', { name: 'MA Apparels' })).toBeTruthy();
-    const image = screen.getByRole('img', { name: photo.alt });
-    expect(decodeURIComponent(image.getAttribute('src')!)).toContain('c_fill,g_north,ar_4:5');
+    expect(
+      decodeURIComponent(screen.getByRole('img', { name: art.alt }).getAttribute('src')!),
+    ).toContain('site/home/hero-fabric');
+    // The collections come from admin, so a new one never needs a code change.
+    expect(document.body.textContent).toContain('suits in Dhanak, Khaddar, Lajwanti and more.');
     expect(screen.getByRole('link', { name: 'See All Suits' }).getAttribute('href')).toBe('/shop');
     expect(screen.getByRole('link', { name: 'WhatsApp Us' }).getAttribute('href')).toMatch(
       /^https:\/\/wa\.me\/923482799707/,
     );
   });
 
-  it('keeps the hero whole with no photo and no WhatsApp number', () => {
-    render(<Hero whatsapp={null} photo={null} />);
+  it('keeps the hero whole with no picture, no collections and no WhatsApp number', () => {
+    render(<Hero whatsapp={null} collections={[]} art={null} />);
     expect(screen.getByRole('heading', { level: 1 })).toBeTruthy();
     expect(screen.getAllByRole('img').map((img) => img.getAttribute('alt'))).toEqual([
       'MA Apparels',
     ]);
+    expect(document.body.textContent).toContain('Premium unstitched 2-piece and 3-piece suits.');
     expect(screen.queryByRole('link', { name: 'WhatsApp Us' })).toBeNull();
   });
 

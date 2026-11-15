@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   availabilityLabel,
   cardLine,
+  collectionList,
   formatPrice,
   pieceRow,
   piecesLabel,
@@ -48,5 +49,17 @@ describe('suit text', () => {
     expect(availabilityLabel('in_stock')).toBeNull();
     expect(availabilityLabel('low_stock')).toBe('Few left');
     expect(availabilityLabel('out_of_stock')).toBe('Out of stock');
+  });
+});
+
+describe('collectionList', () => {
+  it('names up to three collections, then adds "and more"', () => {
+    expect(collectionList([])).toBe('');
+    expect(collectionList(['Dhanak'])).toBe('Dhanak');
+    expect(collectionList(['Dhanak', 'Khaddar'])).toBe('Dhanak and Khaddar');
+    expect(collectionList(['Dhanak', 'Khaddar', 'Lajwanti'])).toBe('Dhanak, Khaddar and Lajwanti');
+    expect(collectionList(['Dhanak', 'Khaddar', 'Lajwanti', 'Lawn', 'Linen'])).toBe(
+      'Dhanak, Khaddar, Lajwanti and more',
+    );
   });
 });
