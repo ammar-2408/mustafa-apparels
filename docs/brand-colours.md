@@ -75,7 +75,16 @@ The table gives each text colour's contrast against each background. Normal text
 - **Badge text on orange is ink, not white.** White on orange is 3.31, too low for small text.
 - **Keyboard focus on powder blue is ink.** The orange ring is too faint there.
 
-## 4. Changing a colour
+## 4. Exceptions the owner approved (2026-11-15)
+
+From the owner's home and menu mockup:
+
+- **Deep orange as large headline text** on pale powder blue (4.41): the second line of the home hero headline only. Small orange text still goes on white only.
+- **Slate grey text on pale powder blue** (6.74): taglines on the Shop by Fabric cards.
+- **Deep orange icons and lines** on white and on pale powder blue: card icons, the Explore underline, the lotus ornament and the swash under "New Arrivals" in the menu.
+- **Bold 700** joins Light 300 and Regular 400 (`docs/design.md` §1.2).
+
+## 5. Changing a colour
 
 1. Change the token in `packages/config/tailwind/theme.css`.
 2. Update the hex copies in section 2 of this file: `brand.ts`, the email template, and the share images.

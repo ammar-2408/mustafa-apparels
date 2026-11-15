@@ -33,17 +33,17 @@ Components use tokens, never hard-coded colours. Tokens live in `packages/config
 
 ## Type: Montserrat only
 
-Self-hosted through `next/font`. Load only weights 300 and 400.
+Self-hosted through `next/font`. Load only weights 300, 400 and 700.
 
 | Use | Weight | Style |
 |---|---|---|
-| Headings | Light 300 | Fluid sizes with `clamp()` |
+| Headings | Light 300; Bold 700 in the redesigned sections (home hero, Shop by Fabric, menu) | Fluid sizes with `clamp()` |
 | Small labels, nav, buttons | Regular 400 | Uppercase, `letter-spacing: 0.4em` (about `0.2em` where it would wrap on phones) |
 | Body | Regular 400 | Sentence case, no extra tracking |
 
 Don't use Light 300 under about 20px: it gets hard to read on phones.
 
-Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `text-h1`, `text-h2` or `text-h3` with `font-light`; body is `text-body-lg`, `text-body` or `text-small`; spaced capitals are `caps` (0.4em) or `caps-tight` (0.2em), e.g. `caps-tight sm:caps`. Only `font-light` and `font-normal` exist: there is no bold.
+Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `text-h1`, `text-h2` or `text-h3` with `font-light`; body is `text-body-lg`, `text-body` or `text-small`; spaced capitals are `caps` (0.4em) or `caps-tight` (0.2em), e.g. `caps-tight sm:caps`. Only `font-light`, `font-normal` and `font-bold` exist. Bold is for headings and button labels in the redesigned sections (owner, 2026-11-15). Every colour and its approved exceptions: `docs/brand-colours.md`.
 
 ## Spacing and shape
 

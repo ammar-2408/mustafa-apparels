@@ -207,13 +207,21 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
     assert.doesNotMatch(out, /\.font-serif|\.font-mono/);
   });
 
-  test('offers only the two loaded weights, so nothing is faux-bolded', async () => {
-    const out = await build(['font-light', 'font-normal', 'font-medium', 'font-bold']);
+  test('offers only the three loaded weights, so nothing is faux-bolded', async () => {
+    const out = await build([
+      'font-light',
+      'font-normal',
+      'font-medium',
+      'font-bold',
+      'font-black',
+    ]);
     assert.match(out, /--font-weight-light:\s*300/);
     assert.match(out, /--font-weight-normal:\s*400/);
+    assert.match(out, /--font-weight-bold:\s*700/);
     assert.match(out, /\.font-light\s*\{/);
     assert.match(out, /\.font-normal\s*\{/);
-    assert.doesNotMatch(out, /\.font-medium|\.font-bold/);
+    assert.match(out, /\.font-bold\s*\{/);
+    assert.doesNotMatch(out, /\.font-medium|\.font-black/);
   });
 
   test('generates the type scale and drops the default sizes', async () => {

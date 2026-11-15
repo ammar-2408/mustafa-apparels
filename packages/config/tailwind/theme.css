@@ -51,12 +51,14 @@
   --shadow-*: initial;
   --shadow-soft: 0 1px 2px rgb(17 17 17 / 0.04), 0 12px 32px -12px rgb(17 17 17 / 0.12);
 
-  /* Montserrat only, from next/font on <html>. Only 300 and 400 are loaded, so no other weights. */
+  /* Montserrat only, from next/font on <html>. Only 300, 400 and 700 are loaded, so no other weights. */
   --font-*: initial;
   --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
   --font-weight-*: initial;
   --font-weight-light: 300;
   --font-weight-normal: 400;
+  /* Bold headings and buttons in the redesigned sections (owner, 2026-11-15). */
+  --font-weight-bold: 700;
 
   /* Headings are Light 300 and never below 20px; large ones get tight leading. */
   --text-*: initial;

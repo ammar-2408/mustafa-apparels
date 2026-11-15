@@ -38,13 +38,13 @@ Error and success are deep tones for text and borders on white, and never the on
 **Typography:** Montserrat only, via `next/font` (self-hosted).
 | Use | Weight | Style |
 |---|---|---|
-| Headings | Light 300 | Fluid sizes with `clamp()` |
+| Headings | Light 300, or Bold 700 in the redesigned sections (home hero, Shop by Fabric, menu) | Fluid sizes with `clamp()` |
 | Small labels, nav, buttons | Regular 400 | Uppercase, `letter-spacing: 0.4em` (reduce to about `0.2em` where text would wrap on phones) |
 | Body | Regular 400 | Sentence case, no extra tracking |
 
-Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300 and 400. The logo pack's readme suggests Light 300 for spaced capitals, but these labels are small, so Regular 400 is the deliberate choice here.
+Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300, 400 and 700. Bold 700 is the owner's choice (2026-11-15, from their home and menu mockup): headings and button labels in the redesigned sections use it. Other pages keep Light headings until they are redesigned. The logo pack's readme suggests Light 300 for spaced capitals, but these labels are small, so Regular 400 is the deliberate choice here.
 
-Each app loads the font in `app/fonts.ts` (`next/font/google`, served from our own domain, `display: swap`) and puts its `--font-montserrat` variable on `<html>`. The theme clears Tailwind's other font families and weights, so only `font-sans`, `font-light` (300) and `font-normal` (400) exist and nothing is faux-bolded. The type scale replaces Tailwind's sizes:
+Each app loads the font in `app/fonts.ts` (`next/font/google`, served from our own domain, `display: swap`) and puts its `--font-montserrat` variable on `<html>`. The theme clears Tailwind's other font families and weights, so only `font-sans`, `font-light` (300), `font-normal` (400) and `font-bold` (700) exist and nothing is faux-bolded. The type scale replaces Tailwind's sizes:
 
 | Utility | Size | Leading | Use |
 |---|---|---|---|
@@ -200,9 +200,10 @@ Filters and sort run in the browser, so pages stay static (ADR-018). The first u
 
 ## 4. Home page structure (draft)
 
-Motion for each section follows §9.1.
+Motion for each section follows §9.1. The hero, Shop by Fabric and the menu follow the owner's mockup (2026-11-15); its pictures are replaced by real suit photos and our own drawn flowers.
 
-1. **Hero** — full-screen 3D fabric scene (see §6) with a large headline revealed line by line by SplitText; static poster fallback. On scroll it insets from the page edges (desktop).
+1. **Hero** — pale powder blue (`surface-soft`) band: the MA submark, a Bold headline whose second line is deep orange (`accent-text`, large text only), a short paragraph, "See All Suits" and "WhatsApp Us". On the right, the featured suit's photo in a powder blue arch with a drawn flower sprig. This replaces the 2026-11-06 "type only, no photo" choice; whether the Phase 8 fabric shader still belongs here is open (step 8.8).
+1a. **Shop by Fabric** — straight after the hero: a lotus ornament and Bold heading, then one card per collection (icon, name, short tagline, Explore, and the collection's cover photo). Replaces the Collections panels in item 4.
 2. **Statement** — one plain sentence about the shop in large type, each word filling from muted to ink as you scroll.
 3. **New arrivals** — horizontal scroll-driven gallery (ScrollTrigger pin on desktop, swipe carousel on mobile).
 4. **Collections** — three tall panels for Dhanak, Khaddar and Lajwanti with thin dividers, large names and a hover reveal, with WebGL hover distortion (desktop) / simple scale (mobile).
