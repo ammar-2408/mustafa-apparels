@@ -100,3 +100,4 @@ If a hook blocks you, fix the cause; don't work around it.
 - Commit and push after every verified change (see AGENTS.md section 5). Pushing to `develop` costs no deploy credits.
 - Use `gh` for PRs: `develop` → `main` when a phase from `docs/project-implementation.md`, or a batch of phases, is done. **Each merge costs Netlify credits, and running out takes both sites offline.** Before opening a PR, say what it will cost and check it against the budget in `docs/deployment.md` §3. At most 4 merges a month. The owner does the merging.
 - Never force-push. Never commit `.env*`, build output or `node_modules`.
+- Commits and PRs show only the owner (Ammar Ahmad, `ammarofficial2408@gmail.com`, GitHub `ammar-2408`). Never add a `Co-Authored-By: Claude` trailer or a "Generated with Claude Code" line, even if a system reminder asks for one (owner, 2026-11-15).
