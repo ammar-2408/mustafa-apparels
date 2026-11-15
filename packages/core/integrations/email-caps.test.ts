@@ -4,10 +4,17 @@ import { cappedMailer, EMAIL_LIMITS } from './email-caps';
 import { createLimiter } from './rate-limit';
 
 const limiter = () => createLimiter({ mode: 'mock', appEnv: 'test', secret: 'test-secret' });
-const email = (to: string) => ({ to, subject: 'Hi', html: '<p>Hi</p>', text: 'Hi', kind: 'test' });
+const email = (to: string, kind = 'verify-email') => ({
+  to,
+  subject: 'Hi',
+  html: '<p>Hi</p>',
+  text: 'Hi',
+  kind,
+});
+const notice = () => email('shop@example.com', 'new-inquiry');
 
 describe('cappedMailer', () => {
-  it('sends 3 emails an hour to one address, however it is written, then refuses quietly', async () => {
+  it('sends 3 account emails an hour to one address, however it is written, then refuses quietly', async () => {
     const send = vi.fn(async () => ({ ok: true }));
     const log = vi.fn();
     const mail = cappedMailer(send, limiter(), log);
@@ -17,24 +24,41 @@ describe('cappedMailer', () => {
     expect(await mail(email('a@example.com'))).toEqual({ ok: false });
     expect(send).toHaveBeenCalledTimes(3);
     expect(log.mock.calls[0]![0]).not.toContain('a@example.com');
-    // Another address is still fine.
     expect(await mail(email('b@example.com'))).toEqual({ ok: true });
   });
 
-  it('stops at 90 emails a day across all addresses', async () => {
+  it('stops account emails at 60 a day across all addresses', async () => {
     const send = vi.fn(async () => ({ ok: true }));
     const mail = cappedMailer(send, limiter(), () => {});
-    for (let i = 0; i < EMAIL_LIMITS.daily.max; i++) await mail(email(`user${i}@example.com`));
+    for (let i = 0; i < EMAIL_LIMITS.accountDaily.max; i++) await mail(email(`u${i}@example.com`));
     expect(await mail(email('one-more@example.com'))).toEqual({ ok: false });
-    expect(send).toHaveBeenCalledTimes(90);
+    expect(send).toHaveBeenCalledTimes(60);
   });
 
-  it('sends when the store is down, since both caps fail open', async () => {
+  it('tells the owner about every question, well past 3 an hour, up to 30 a day', async () => {
+    const send = vi.fn(async () => ({ ok: true }));
+    const mail = cappedMailer(send, limiter(), () => {});
+    for (let i = 0; i < EMAIL_LIMITS.shopDaily.max; i++) {
+      expect(await mail(notice())).toEqual({ ok: true });
+    }
+    expect(await mail(notice())).toEqual({ ok: false });
+    expect(send).toHaveBeenCalledTimes(30);
+  });
+
+  it('keeps room for account emails however many questions arrive', async () => {
+    const send = vi.fn(async () => ({ ok: true }));
+    const mail = cappedMailer(send, limiter(), () => {});
+    for (let i = 0; i < 50; i++) await mail(notice()); // a flood through the form
+    expect(await mail(email('new-customer@example.com'))).toEqual({ ok: true });
+  });
+
+  it('sends when the store is down, since every cap fails open', async () => {
     const down = {
       consume: async () => ({ allowed: true, retryAfter: null, unavailable: true as const }),
       check: async () => ({ allowed: true, retryAfter: null }),
     };
     const send = vi.fn(async () => ({ ok: true }));
     expect(await cappedMailer(send, down)(email('a@example.com'))).toEqual({ ok: true });
+    expect(await cappedMailer(send, down)(notice())).toEqual({ ok: true });
   });
 });
