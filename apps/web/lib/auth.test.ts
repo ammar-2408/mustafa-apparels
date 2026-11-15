@@ -112,6 +112,23 @@ describe('session helpers', () => {
     getSession.mockResolvedValueOnce(signedIn);
     expect(await (await load()).requireUserPage()).toBe(signedIn);
   });
+
+  it('currentCustomer gives the same answer as the guard, as null instead of an error', async () => {
+    env.value = withDatabase;
+    for (const refused of [
+      null,
+      { ...signedIn, user: { id: 'u1', banned: true } },
+      { ...signedIn, user: { id: 'u1', role: 'admin' } },
+      { ...signedIn, session: { app: 'admin' } },
+    ]) {
+      vi.resetModules();
+      getSession.mockResolvedValueOnce(refused);
+      expect(await (await load()).currentCustomer()).toBeNull();
+    }
+    vi.resetModules();
+    getSession.mockResolvedValueOnce(signedIn);
+    expect(await (await load()).currentCustomer()).toBe(signedIn);
+  });
 });
 
 it('reads the request even when auth is off, so the page stays per-request', async () => {

@@ -25,17 +25,27 @@ vi.mock('next/headers', () => ({
 }));
 vi.mock('@mustafa/db/client', () => ({ getDb: () => 'db' }));
 vi.mock('@mustafa/core/account', () => account);
-vi.mock('../../../lib/auth', () => ({
-  getSession: async () => session.value,
-  getAuth: () => ({ api: { verifyPassword } }),
-}));
+// The real guard, over a session the test chooses.
+vi.mock('../../../lib/auth', async () => {
+  const { requireUser } = await import('@mustafa/auth/guards');
+  return {
+    currentCustomer: async () => {
+      try {
+        return requireUser(session.value as never);
+      } catch {
+        return null;
+      }
+    },
+    getAuth: () => ({ api: { verifyPassword } }),
+  };
+});
 vi.mock('../../../lib/services', () => ({ withinLimit: async () => allowed.value }));
 
 import { deleteAccount, toggleWishlist, updateProfile } from './actions';
 
-const signedIn = (createdAgoMs = 60_000) => ({
-  user: { id: 'u1', emailVerified: true },
-  session: { createdAt: new Date(Date.now() - createdAgoMs) },
+const signedIn = (createdAgoMs = 60_000, user: Record<string, unknown> = {}, app = 'web') => ({
+  user: { id: 'u1', emailVerified: true, role: 'customer', banned: false, ...user },
+  session: { createdAt: new Date(Date.now() - createdAgoMs), app },
 });
 
 beforeEach(() => {
@@ -72,6 +82,25 @@ describe('toggleWishlist', () => {
       error: { code: 'RATE_LIMITED' },
     });
     expect(account.setSaved).not.toHaveBeenCalled();
+  });
+});
+
+describe('who may use them (the full guard, ADR-020)', () => {
+  it.each([
+    ['a banned customer', signedIn(60_000, { banned: true })],
+    ['an admin account', signedIn(60_000, { role: 'admin' })],
+    ['an admin-app session', signedIn(60_000, {}, 'admin')],
+  ])('refuses %s as signed out', async (_name, value) => {
+    session.value = value;
+    for (const result of [
+      await toggleWishlist({ productId: 'p1', saved: true }),
+      await updateProfile({ name: 'Ayesha', phone: '' }),
+      await deleteAccount({ confirm: 'DELETE', password: 'pw' }),
+    ]) {
+      expect(result).toMatchObject({ ok: false, error: { code: 'UNAUTHENTICATED' } });
+    }
+    expect(account.setSaved).not.toHaveBeenCalled();
+    expect(account.deleteAccount).not.toHaveBeenCalled();
   });
 });
 

@@ -35,6 +35,16 @@ export const getSession = cache(async () => {
   return auth.api.getSession({ headers: requestHeaders });
 });
 
+// The signed-in customer, or null: a banned user, an admin account or an admin-app session counts
+// as signed out (ADR-020). For checks that mustn't throw, such as linking an inquiry.
+export async function currentCustomer() {
+  try {
+    return guardUser(await getSession());
+  } catch {
+    return null;
+  }
+}
+
 // For server actions and route handlers: throws UNAUTHENTICATED.
 export async function requireUser() {
   return guardUser(await getSession());

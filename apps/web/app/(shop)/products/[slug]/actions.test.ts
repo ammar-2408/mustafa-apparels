@@ -22,7 +22,18 @@ vi.mock('@mustafa/config/env', () => ({
 vi.mock('@mustafa/db/client', () => ({ getDb: () => 'db' }));
 vi.mock('@mustafa/core/inquiries', () => ({ create }));
 vi.mock('@mustafa/core/settings', () => ({ get: async () => ({ email: shopEmail.value }) }));
-vi.mock('../../../../lib/auth', () => ({ getSession: async () => session.value }));
+vi.mock('../../../../lib/auth', async () => {
+  const { requireUser } = await import('@mustafa/auth/guards');
+  return {
+    currentCustomer: async () => {
+      try {
+        return requireUser(session.value as never);
+      } catch {
+        return null;
+      }
+    },
+  };
+});
 vi.mock('../../../../lib/services', () => ({
   withinLimit: async () => allowed.value,
   getMailer: () => send,
@@ -94,10 +105,17 @@ describe('submitInquiry', () => {
   });
 
   it('links a signed-in shopper only when their email is verified', async () => {
-    session.value = { user: { id: 'u1', emailVerified: true } };
+    session.value = { user: { id: 'u1', emailVerified: true }, session: { app: 'web' } };
     await submitInquiry(form());
     expect(create).toHaveBeenLastCalledWith('db', expect.objectContaining({ userId: 'u1' }));
-    session.value = { user: { id: 'u2', emailVerified: false } };
+    session.value = { user: { id: 'u2', emailVerified: false }, session: { app: 'web' } };
+    await submitInquiry(form());
+    expect(create).toHaveBeenLastCalledWith('db', expect.objectContaining({ userId: undefined }));
+    // A banned customer's question is saved, but not linked to their account.
+    session.value = {
+      user: { id: 'u3', emailVerified: true, banned: true },
+      session: { app: 'web' },
+    };
     await submitInquiry(form());
     expect(create).toHaveBeenLastCalledWith('db', expect.objectContaining({ userId: undefined }));
   });

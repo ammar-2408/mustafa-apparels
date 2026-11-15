@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { LoginForm } from '../../../components/auth/login-form';
-import { getSession } from '../../../lib/auth';
+import { currentCustomer } from '../../../lib/auth';
 import { buildMetadata } from '../../../lib/seo';
 
 export const metadata = buildMetadata({
@@ -15,7 +15,8 @@ export const metadata = buildMetadata({
 });
 
 export default async function LoginPage() {
-  if (await getSession()) redirect('/account');
+  // Only a session /account accepts, or a banned user would bounce between the two pages.
+  if (await currentCustomer()) redirect('/account');
   return (
     <>
       <p className="caps-tight text-muted sm:caps">Account</p>

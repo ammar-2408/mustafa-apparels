@@ -12,10 +12,10 @@ import { fieldErrorsOf } from '@mustafa/validators/auth';
 import { cookies, headers } from 'next/headers';
 
 import { ACCOUNT_LIMITS, FRESH_SESSION_MS } from '../../../lib/account-limits';
-import { getAuth, getSession } from '../../../lib/auth';
+import { currentCustomer, getAuth } from '../../../lib/auth';
 import { withinLimit } from '../../../lib/services';
 
-type Session = NonNullable<Awaited<ReturnType<typeof getSession>>>;
+type Session = NonNullable<Awaited<ReturnType<typeof currentCustomer>>>;
 // A Zod schema, typed by what it parses to (the app doesn't depend on zod itself).
 type Schema<I> = {
   safeParse(
@@ -31,7 +31,8 @@ function customerAction<I, T>(
 ) {
   return async (raw: unknown): Promise<ActionResult<T>> => {
     try {
-      const session = await getSession();
+      // The full guard: a banned user, an admin account or an admin-app session is refused.
+      const session = await currentCustomer();
       if (!session) return fail('UNAUTHENTICATED', 'Log in to do that.');
       const parsed = schema.safeParse(raw);
       if (!parsed.success) {

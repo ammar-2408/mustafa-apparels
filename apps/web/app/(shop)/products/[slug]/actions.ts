@@ -14,7 +14,7 @@ import { fieldErrorsOf } from '@mustafa/validators/auth';
 import { inquiryInput } from '@mustafa/validators/inquiry';
 import { headers } from 'next/headers';
 
-import { getSession } from '../../../../lib/auth';
+import { currentCustomer } from '../../../../lib/auth';
 import { INQUIRY_LIMIT, MIN_FILL_MS } from '../../../../lib/inquiry-limits';
 import { canonicalUrl } from '../../../../lib/seo';
 import { getMailer, withinLimit } from '../../../../lib/services';
@@ -43,7 +43,7 @@ export async function submitInquiry(
     }
 
     const env = getEnv('web');
-    const session = await getSession();
+    const session = await currentCustomer();
     // Only a verified email links the question to an account (docs/api.md).
     const userId = session?.user.emailVerified ? session.user.id : undefined;
     const db = getDb();
