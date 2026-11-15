@@ -82,3 +82,37 @@ test('on a laptop, a new arrival lifts 3px on hover', async ({ page, isMobile })
   await card.hover();
   await expect.poll(() => card.evaluate((el) => getComputedStyle(el).translate)).toBe('0px -3px');
 });
+
+test.describe('blocks across the page', () => {
+  test('How to Order steps and the footer columns reveal as they come into view', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    const step = page.locator('.step-card').last();
+    await expect(step).not.toHaveClass(/is-shown/);
+    await step.scrollIntoViewIfNeeded();
+    await expect(step).toHaveClass(/is-shown/);
+    const column = page.getByRole('contentinfo').locator('.reveal').last();
+    await column.scrollIntoViewIfNeeded();
+    await expect(column).toHaveClass(/is-shown/);
+    await expect.poll(() => column.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+  });
+
+  test('the footer reveals on other pages too', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/shop');
+    const column = page.getByRole('contentinfo').locator('.reveal').first();
+    await column.scrollIntoViewIfNeeded();
+    await expect(column).toHaveClass(/is-shown/);
+  });
+
+  test('nothing is hidden with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const opacities = await page
+      .locator('.reveal')
+      .evaluateAll((els) => els.map((el) => getComputedStyle(el).opacity));
+    expect(opacities.every((o) => o === '1')).toBe(true);
+  });
+});

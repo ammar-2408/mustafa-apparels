@@ -1,11 +1,14 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 // Marks each `.reveal` heading `is-shown` the first time it scrolls into view; motion.css does the
 // rest (8px rise and fade, 220ms). One observer for the whole page, and each heading is let go once
 // shown. Renders nothing. Without IntersectionObserver every heading is shown at once.
 export function RevealOnView() {
+  // A client navigation brings new blocks, so look again on every page.
+  const pathname = usePathname();
   useEffect(() => {
     const items = Array.from(document.querySelectorAll<HTMLElement>('.reveal:not(.is-shown)'));
     if (typeof IntersectionObserver === 'undefined') {
@@ -24,6 +27,6 @@ export function RevealOnView() {
     );
     for (const item of items) observer.observe(item);
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
   return null;
 }

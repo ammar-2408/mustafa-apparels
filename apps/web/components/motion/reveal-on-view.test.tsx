@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { RevealOnView } from './reveal-on-view';
 
+vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });

@@ -3,6 +3,7 @@ import { Logo } from '@mustafa/ui/logo';
 import Link from 'next/link';
 
 import { GENERAL_WHATSAPP_TEXT, HELP_LINKS, LEGAL_LINKS, type NavLink } from '../../lib/nav';
+import { revealDelay } from '../motion/reveal';
 import { LeafBranch } from './flourish';
 import {
   ArrowIcon,
@@ -91,7 +92,7 @@ export function FooterView({ shop, socials, serviceArea, whatsapp }: Props) {
       <LeafBranch className="absolute top-6 right-0 hidden w-44 -scale-x-100 lg:block" />
 
       <div className="relative mx-auto grid max-w-content-wide gap-12 px-gutter pt-28 pb-12 md:pt-40 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1.2fr)] lg:gap-0">
-        <div className="lg:pr-10">
+        <div className="reveal lg:pr-10">
           <Link href="/" className="inline-block">
             <Logo variant="primary" height={120} />
           </Link>
@@ -101,17 +102,20 @@ export function FooterView({ shop, socials, serviceArea, whatsapp }: Props) {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:contents">
-          <div className="lg:border-l lg:border-fg/20 lg:px-8">
+          <div className="reveal lg:border-l lg:border-fg/20 lg:px-8" style={revealDelay(1)}>
             <Column title="Shop" links={shop} />
           </div>
-          <div className="lg:border-l lg:border-fg/20 lg:px-8">
+          <div className="reveal lg:border-l lg:border-fg/20 lg:px-8" style={revealDelay(2)}>
             <Column title="Help" links={HELP_LINKS} />
           </div>
-          <div className="lg:border-l lg:border-fg/20 lg:px-8">
+          <div className="reveal lg:border-l lg:border-fg/20 lg:px-8" style={revealDelay(3)}>
             <Column title="Policies" links={LEGAL_LINKS} />
           </div>
         </div>
-        <div className="flex flex-col gap-4 lg:border-l lg:border-fg/20 lg:pl-10">
+        <div
+          style={revealDelay(4)}
+          className="reveal flex flex-col gap-4 lg:border-l lg:border-fg/20 lg:pl-10"
+        >
           <div className="flex items-start gap-4">
             <span className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-bg">
               <WhatsAppIcon className="size-8" />

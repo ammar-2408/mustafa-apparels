@@ -60,12 +60,14 @@
     transition: translate 180ms ease-out;
   }
 
-  /* Section headings rise 8px and fade in once, when they first scroll into view. Hidden only
+  /* Headings and blocks rise 8px and fade in once, when they first scroll into view; blocks with
+     --reveal-i start 60ms apart. Hidden only
      once the page's script has run (html.js), so without JavaScript they are simply there. */
   .js .reveal {
     transition:
       opacity 220ms ease-out,
       translate 220ms ease-out;
+    transition-delay: calc(var(--reveal-i, 0) * 60ms);
   }
 
   .js .reveal:not(.is-shown) {

@@ -8,7 +8,6 @@ import {
   NewArrivals,
 } from '../../components/home/sections';
 import { JsonLd } from '../../components/json-ld';
-import { RevealOnView } from '../../components/motion/reveal-on-view';
 import { getSiteSettings, listCollections, listSuits } from '../../lib/catalog';
 import { collectionList } from '../../lib/format';
 import { socialLinks } from '../../lib/nav';
@@ -61,7 +60,6 @@ export default async function Home() {
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
       <ExploreCollections collections={panels} />
       <HowToOrder whatsapp={settings.whatsapp} />
-      <RevealOnView />
     </>
   );
 }

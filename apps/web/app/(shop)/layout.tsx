@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 
+import { RevealOnView } from '../../components/motion/reveal-on-view';
+
 // Public, cached pages (ADR-021). The `js` class lets motion set hidden start states only when
 // scripts run (docs/design.md §5.1); it runs before the content paints. Tier A's CSP allows it;
 // the per-request pages, which need a nonce, don't have it and don't need it.
@@ -15,6 +17,8 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
       <main id="main" tabIndex={-1} className="focus:outline-none">
         {children}
       </main>
+      {/* Reveals blocks on this page and the footer as they scroll into view (motion.css). */}
+      <RevealOnView />
     </>
   );
 }

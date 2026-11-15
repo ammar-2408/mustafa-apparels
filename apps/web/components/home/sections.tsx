@@ -10,6 +10,7 @@ import { DELIVERY_WHATSAPP_TEXT, GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import type { SiteArt } from '../../lib/site-art';
 import type { Collection, SuitCard } from '../../lib/types';
 import { Carousel } from '../carousel/carousel';
+import { revealDelay } from '../motion/reveal';
 import { ProductCard } from '../product/product-card';
 import { Eyebrow, FlowerSprig, LeafBranch, LotusOrnament, Swash, Wave } from '../site/flourish';
 import {
@@ -52,11 +53,11 @@ export function Hero({
             <span className="block">Elegant Unstitched Suits,</span>{' '}
             <span className="block text-accent-text">Made for Every Occasion</span>
           </h1>
-          <p className="max-w-xl text-body-lg">
+          <p className="reveal max-w-xl text-body-lg" style={revealDelay(1)}>
             Premium unstitched 2-piece and 3-piece suits{names ? ` in ${names}` : ''}. Choose your
             favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="reveal flex flex-wrap gap-4" style={revealDelay(2)}>
             <Link href="/shop" className={buttonClass('primary', undefined, 'bold')}>
               See All Suits
               <ArrowIcon className="nudge size-5" />
@@ -119,11 +120,14 @@ export function About({ art }: { art: SiteArt }) {
             <span className="block">unstitched suits in Pakistan.</span>
           </h2>
           <Swash className="h-3 w-44" />
-          <p className="max-w-xl text-body-lg">
+          <p className="reveal max-w-xl text-body-lg" style={revealDelay(1)}>
             Every suit comes as fabric for your own tailor, and every order is arranged with you on
             WhatsApp.
           </p>
-          <ul className="mt-2 grid grid-cols-3 divide-x divide-border">
+          <ul
+            className="reveal mt-2 grid grid-cols-3 divide-x divide-border"
+            style={revealDelay(2)}
+          >
             {ABOUT_POINTS.map(({ Icon, title, text }) => (
               <li key={title} className="flex flex-col items-center gap-2 px-2 text-center">
                 <span className="flex size-14 items-center justify-center rounded-full bg-surface-soft">
@@ -135,7 +139,10 @@ export function About({ art }: { art: SiteArt }) {
             ))}
           </ul>
         </div>
-        <div className="relative mx-auto aspect-[914/887] w-full max-w-xl [mask-image:linear-gradient(to_right,transparent,black_15%)]">
+        <div
+          style={revealDelay(1)}
+          className="reveal relative mx-auto aspect-[914/887] w-full max-w-xl [mask-image:linear-gradient(to_right,transparent,black_15%)]"
+        >
           <Image
             src={art.src}
             alt={art.alt}
@@ -187,13 +194,15 @@ export function NewArrivals({ suits }: { suits: SuitCard[] }) {
             <ArrowIcon className="nudge size-5" />
           </Link>
         </div>
-        <Carousel
-          label="Newest suits"
-          itemClassName={ARRIVAL_WIDTHS}
-          items={suits.map((suit) => (
-            <ProductCard key={suit.id} suit={suit} sizes={ARRIVAL_SIZES} framed />
-          ))}
-        />
+        <div className="reveal" style={revealDelay(1)}>
+          <Carousel
+            label="Newest suits"
+            itemClassName={ARRIVAL_WIDTHS}
+            items={suits.map((suit) => (
+              <ProductCard key={suit.id} suit={suit} sizes={ARRIVAL_SIZES} framed />
+            ))}
+          />
+        </div>
       </div>
     </section>
   );
@@ -228,48 +237,53 @@ export function ExploreCollections({ collections }: { collections: CollectionPan
             Premium unstitched suits in beautiful fabrics, made for every season.
           </p>
         </div>
-        <Carousel
-          label="Collections"
-          itemClassName={COLLECTION_WIDTHS}
-          items={collections.map((c) => {
-            const Icon = collectionIcon(c.slug, 'card');
-            return (
-              <article
-                key={c.id}
-                className="collection-card flex h-full flex-col overflow-hidden rounded-lg bg-bg shadow-soft"
-              >
-                <div className="relative aspect-4/3 overflow-hidden bg-surface-soft">
-                  {c.cover && (
-                    <Image
-                      src={shapedImageUrl(c.cover.url, 'cover')}
-                      alt={c.cover.alt}
-                      fill
-                      sizes="(min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 88vw"
-                      className="product-photo object-cover"
-                    />
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col gap-3 bg-linear-to-b from-bg to-surface-soft p-6">
-                  <div className="flex items-center gap-3">
-                    <Icon className="card-icon size-9 text-accent-text" />
-                    <h3 className="text-h3 font-bold">{c.name}</h3>
+        <div className="reveal" style={revealDelay(1)}>
+          <Carousel
+            label="Collections"
+            itemClassName={COLLECTION_WIDTHS}
+            items={collections.map((c) => {
+              const Icon = collectionIcon(c.slug, 'card');
+              return (
+                <article
+                  key={c.id}
+                  className="collection-card flex h-full flex-col overflow-hidden rounded-lg bg-bg shadow-soft"
+                >
+                  <div className="relative aspect-4/3 overflow-hidden bg-surface-soft">
+                    {c.cover && (
+                      <Image
+                        src={shapedImageUrl(c.cover.url, 'cover')}
+                        alt={c.cover.alt}
+                        fill
+                        sizes="(min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 88vw"
+                        className="product-photo object-cover"
+                      />
+                    )}
                   </div>
-                  {c.description && (
-                    <p className="line-clamp-4 text-small text-muted">{c.description}</p>
-                  )}
-                  <Link
-                    href={`/collections/${c.slug}`}
-                    aria-label={`See the collection: ${c.name}`}
-                    className={buttonClass('primary', 'mt-auto self-start px-5 whitespace-nowrap')}
-                  >
-                    See the collection
-                    <ArrowIcon className="nudge size-5" />
-                  </Link>
-                </div>
-              </article>
-            );
-          })}
-        />
+                  <div className="flex flex-1 flex-col gap-3 bg-linear-to-b from-bg to-surface-soft p-6">
+                    <div className="flex items-center gap-3">
+                      <Icon className="card-icon size-9 text-accent-text" />
+                      <h3 className="text-h3 font-bold">{c.name}</h3>
+                    </div>
+                    {c.description && (
+                      <p className="line-clamp-4 text-small text-muted">{c.description}</p>
+                    )}
+                    <Link
+                      href={`/collections/${c.slug}`}
+                      aria-label={`See the collection: ${c.name}`}
+                      className={buttonClass(
+                        'primary',
+                        'mt-auto self-start px-5 whitespace-nowrap',
+                      )}
+                    >
+                      See the collection
+                      <ArrowIcon className="nudge size-5" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          />
+        </div>
       </div>
     </section>
   );
@@ -330,7 +344,8 @@ export function HowToOrder({ whatsapp }: { whatsapp: string | null }) {
             return (
               <li
                 key={title}
-                className="step-card relative flex flex-col gap-5 rounded-lg bg-bg p-6 shadow-soft md:p-8"
+                style={revealDelay(i + 1)}
+                className="reveal step-card relative flex flex-col gap-5 rounded-lg bg-bg p-6 shadow-soft md:p-8"
               >
                 {i > 0 && (
                   <span
