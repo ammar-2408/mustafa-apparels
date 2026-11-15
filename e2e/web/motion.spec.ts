@@ -4,6 +4,8 @@ import { expect, test } from '../support/users';
 const animationName = (el: Element) => getComputedStyle(el).animationName;
 
 test.describe('with motion allowed', () => {
+  // These open the side panel, which is for phones and tablets.
+  test.use({ viewport: { width: 390, height: 844 } });
   test.use({ reducedMotion: 'no-preference' });
 
   test('the hero headline rises once, and the menu slides in with its rows one by one', async ({
@@ -35,6 +37,7 @@ test.describe('with motion allowed', () => {
 });
 
 test.describe('with reduced motion', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
   test.use({ reducedMotion: 'reduce' });
 
   test('nothing moves: no headline rise, no sway, no menu slide', async ({ page }) => {

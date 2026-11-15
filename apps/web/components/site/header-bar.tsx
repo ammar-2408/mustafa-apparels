@@ -10,17 +10,19 @@ import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { GENERAL_WHATSAPP_TEXT, HELP_LINKS, type NavLink } from '../../lib/nav';
 import { HeaderLogo } from '../logo';
 import { type Contact, ContactList } from './contact-list';
-import { FlowerSprig, Swash } from './flourish';
+import { FlowerSprig, LeafBranch, Swash } from './flourish';
 import {
   AccountIcon,
   BagIcon,
   ChevronIcon,
   collectionIcon,
+  HeartIcon,
   LayersIcon,
   MenuIcon,
   SearchIcon,
   WhatsAppIcon,
 } from './icons';
+import { MainNav } from './main-nav';
 
 type Props = { links: NavLink[]; contact: Contact };
 
@@ -34,7 +36,7 @@ function menuIcon(href: string) {
 // A 44px icon control with a visible label from sm, so phones keep the header on one line.
 const control =
   'header-control inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-fg';
-const label = 'control-label caps-tight hidden sm:inline';
+const label = 'control-label hidden text-body sm:inline';
 
 // The header band, the floating bar that takes over once it scrolls away, and the side-panel menu.
 // No session read: Account is a plain link, so cached pages stay free of per-user work.
@@ -68,8 +70,11 @@ export function HeaderBar({ links, contact }: Props) {
     opener.current?.focus();
   };
 
+  const collections = links.filter((link) => link.href.startsWith('/collections/'));
+
   const actions = (
     <>
+      <span aria-hidden="true" className="mr-3 hidden h-8 w-px bg-fg/30 lg:block" />
       <Link href="/search" className={control} aria-label="Search">
         <SearchIcon />
       </Link>
@@ -83,9 +88,13 @@ export function HeaderBar({ links, contact }: Props) {
           <span className="sr-only sm:hidden">WhatsApp</span>
         </a>
       )}
+      <Link href="/account#saved" className={control} aria-label="Saved suits">
+        <HeartIcon />
+      </Link>
+      {/* Phones and tablets open the side panel; from lg the links sit in the bar instead. */}
       <button
         type="button"
-        className={control}
+        className={`${control} lg:hidden`}
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={(event) => {
@@ -102,10 +111,23 @@ export function HeaderBar({ links, contact }: Props) {
 
   return (
     <>
-      <header ref={bandRef} className="bg-primary text-primary-fg">
-        <div className="mx-auto flex h-16 max-w-content-wide items-center justify-between gap-4 px-gutter md:h-20 lg:h-24">
+      {/* The navbar (the owner's mockup, 2026-11-15): powder blue with a soft wave and a leaf. */}
+      <header ref={bandRef} className="relative overflow-hidden bg-primary text-primary-fg">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 1440 40"
+          preserveAspectRatio="none"
+          className="pointer-events-none absolute bottom-0 left-0 h-5 w-full fill-bg/25"
+        >
+          <path d="M0 40V26c180-24 380-26 560-8s360 20 540 2 260-18 340-12v32z" />
+        </svg>
+        <LeafBranch className="absolute top-1 -right-4 hidden w-24 lg:block" />
+        <div className="relative mx-auto flex h-16 max-w-content-wide items-center justify-between gap-4 px-gutter md:h-20 lg:h-24">
           <HeaderLogo />
-          <nav aria-label="Quick links" className="flex items-center gap-1 sm:gap-2">
+          <div className="hidden lg:block">
+            <MainNav collections={collections} pathname={pathname} />
+          </div>
+          <nav aria-label="Quick links" className="flex items-center gap-1 sm:gap-2 lg:pr-20">
             {actions}
           </nav>
         </div>
@@ -126,6 +148,9 @@ export function HeaderBar({ links, contact }: Props) {
           >
             <Logo variant="simplified" height={28} />
           </Link>
+          <div className="hidden lg:block">
+            <MainNav collections={collections} pathname={pathname} label="Primary, on scroll" />
+          </div>
           <div className="flex items-center gap-1 sm:gap-2">{actions}</div>
         </div>
       </div>

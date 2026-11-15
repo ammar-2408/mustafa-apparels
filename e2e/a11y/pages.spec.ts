@@ -59,6 +59,8 @@ test('a suit page with a video, and its open menu and zoom, have no serious viol
   await page.getByRole('button', { name: /^Zoom photo 1/ }).click();
   expect(await seriousViolations(page)).toEqual([]);
   await page.keyboard.press('Escape');
+  // The side panel is for phones and tablets (from 1024px the links sit in the navbar).
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('banner').getByRole('button', { name: 'Menu' }).click();
   expect(await seriousViolations(page)).toEqual([]);
 });

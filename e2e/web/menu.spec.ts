@@ -2,6 +2,9 @@ import { expect, test } from '../support/users';
 
 // The side-panel menu (docs/design.md §9.1, step 6.1): the native modal dialog keeps Tab inside,
 // Esc closes it, focus goes back to the menu button, and the page behind doesn't scroll.
+// The side panel is for phones and tablets: from 1024px the links sit in the navbar instead.
+test.use({ viewport: { width: 390, height: 844 } });
+
 test.describe('side-panel menu', () => {
   test('opens with the collections first, keeps focus inside, and closes on Esc', async ({
     page,

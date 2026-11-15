@@ -211,6 +211,8 @@ Motion for each section follows §9.1. Every section and the menu follow the own
 5. **How to order** — three steps as cards on pale powder blue, with links to the collections and WhatsApp.
 6. Footer — pale powder blue with a wave, the logo, Shop / Help / Policies, Stay in Touch with WhatsApp, and true trust lines.
 
+**Navbar** (every page, the owner's `nav.png`, 2026-11-15): powder blue with a soft wave and a drawn leaf; the secondary logo; from 1024px Home, a Collections list (every collection from admin, so the bar never grows; `components/site/main-nav.tsx`) and All Suits, with the current page in Bold and an orange underline (orange text is too faint on powder blue); then search, account, WhatsApp and a heart for saved suits (`/account#saved`). No cart icon: the shop has no cart. Below 1024px the Menu button opens the side panel instead of the links. Heights are fixed (64, 80, 96px) so the hero can fill the rest of the first screen.
+
 Removed on 2026-11-15 (owner): Shop by Fabric (it repeated the collections), the featured suit and the contact strip (the footer has WhatsApp). The home page now has no video.
 
 ## 5. Motion and video

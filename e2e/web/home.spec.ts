@@ -45,6 +45,8 @@ test('home has the hero, about, new arrivals and how to order', async ({ page })
 });
 
 test('the menu link to new arrivals lands on that row', async ({ page }) => {
+  // The side panel is for phones and tablets (from 1024px the links sit in the navbar).
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/shop');
   await page.getByRole('banner').getByRole('button', { name: 'Menu' }).click();
   await page
