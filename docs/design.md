@@ -202,17 +202,16 @@ Filters and sort run in the browser, so pages stay static (ADR-018). The first u
 
 ## 4. Home page structure (draft)
 
-Motion for each section follows §9.1. The hero, Shop by Fabric and the menu follow the owner's mockup (2026-11-15); its pictures are replaced by real suit photos and our own drawn flowers.
+Motion for each section follows §9.1. Every section and the menu follow the owner's mockups (2026-11-15); the decoration is our own drawn flowers, leaves and waves.
 
 1. **Hero** — pale powder blue (`surface-soft`) band: the MA submark, a Bold headline whose second line is deep orange (`accent-text`, large text only), a short paragraph, "See All Suits" and "WhatsApp Us". On the right, the fabric picture from the owner's mockup (`site/home/hero-fabric` on Cloudinary, `apps/web/lib/site-art.ts`) fills the right side and fades into the band. The paragraph names the collections from admin (`collectionList()`: up to three, then "and more"), and so does the home page's meta description. This replaces the 2026-11-06 "type only, no photo" choice; whether the Phase 8 fabric shader still belongs here is open (step 8.8).
-1a. **Shop by Fabric** — straight after the hero: a lotus ornament and Bold heading, then one card per collection (icon, name, short tagline, Explore, and the collection's cover photo). Replaces the Collections panels in item 4.
-2. **Statement** — one plain sentence about the shop in large type, each word filling from muted to ink as you scroll.
-3. **New arrivals** — horizontal scroll-driven gallery (ScrollTrigger pin on desktop, swipe carousel on mobile).
-4. **Collections** — three tall panels for Dhanak, Khaddar and Lajwanti with thin dividers, large names and a hover reveal, with WebGL hover distortion (desktop) / simple scale (mobile).
-5. **Featured suit** — sticky image + scrolling details, including a muted video when in view.
-6. **How to order** — WhatsApp, courier across Pakistan, payment in chat, as cards that stack on scroll (desktop) with a text reveal.
-7. **Contact strip** — WhatsApp first, then call and email. No address or map.
-8. Footer — powder blue band with the primary black logo, links, socials (hidden when empty).
+2. **About** — the plain facts about the shop as one Bold sentence ("Mustafa Apparels is an online shop for women's unstitched suits in Pakistan."), its middle line in deep orange, the swash, one line on tailoring and WhatsApp, three short points (Women's Suits, Premium Fabrics, Order on WhatsApp), and the second fabric picture (`site/home/about-fabric`). It replaces the old Statement.
+3. **New arrivals** — a carousel of the newest suits (`components/carousel`): framed cards, arrows, dots, swipe and mouse drag.
+4. **Explore Our Collections** — one card per active collection from admin, in the same carousel. A new collection appears with no code change.
+5. **How to order** — three steps as cards on pale powder blue, with links to the collections and WhatsApp.
+6. Footer — pale powder blue with a wave, the logo, Shop / Help / Policies, Stay in Touch with WhatsApp, and true trust lines.
+
+Removed on 2026-11-15 (owner): Shop by Fabric (it repeated the collections), the featured suit and the contact strip (the footer has WhatsApp). The home page now has no video.
 
 ## 5. Motion and video
 

@@ -1,9 +1,7 @@
 import { expect, test } from '../support/users';
 
 // Home (docs/design.md §4), static: no motion or 3D yet (Phase 8).
-test('home has the hero, Shop by Fabric, new arrivals, a featured suit and how to order', async ({
-  page,
-}) => {
+test('home has the hero, about, new arrivals and how to order', async ({ page }) => {
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
@@ -20,28 +18,21 @@ test('home has the hero, Shop by Fabric, new arrivals, a featured suit and how t
   }
   await expect(hero.getByRole('link', { name: 'See All Suits' })).toHaveAttribute('href', '/shop');
 
+  // The plain facts about the shop come next, as one sentence in the server HTML.
+  await expect(
+    page.getByRole('heading', {
+      name: 'Mustafa Apparels is an online shop for women’s unstitched suits in Pakistan.',
+    }),
+  ).toBeVisible();
+
   const arrivals = page.getByRole('region', { name: 'New arrivals' });
   expect(await arrivals.getByRole('article').count()).toBeGreaterThanOrEqual(4);
 
-  // Shop by Fabric comes straight after the hero: one card link per collection.
-  const collections = page.getByRole('region', { name: 'Shop by Fabric' });
-  for (const name of ['Dhanak', 'Khaddar', 'Lajwanti']) {
-    await expect(collections.getByRole('heading', { name })).toBeVisible();
-  }
-  await expect(collections.getByRole('link').first()).toHaveAttribute(
-    'href',
-    '/collections/dhanak',
-  );
-
-  // E2E-02 is the newest published suit with a video.
-  const featured = page.getByRole('region', { name: /Suit$/ }).filter({ hasText: 'Featured' });
-  await expect(featured.locator('video')).toHaveCount(1);
-
   const steps = page.getByRole('region', { name: 'How to order' }).getByRole('listitem');
   await expect(steps).toHaveCount(3);
-  await expect(page.getByRole('region', { name: 'Ask us about any suit' })).toContainText(
-    'WhatsApp us',
-  );
+  // The featured suit and the "Ask us" strip were removed (owner, 2026-11-15).
+  await expect(page.locator('main video')).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Ask us about any suit' })).toHaveCount(0);
 });
 
 test('the menu link to new arrivals lands on that row', async ({ page }) => {

@@ -1,22 +1,8 @@
 import type { Metadata } from 'next';
 
-import {
-  ContactStrip,
-  FeaturedSuit,
-  Hero,
-  HowToOrder,
-  NewArrivals,
-  ShopByFabric,
-  Statement,
-} from '../../components/home/sections';
+import { About, Hero, HowToOrder, NewArrivals } from '../../components/home/sections';
 import { JsonLd } from '../../components/json-ld';
-import {
-  featuredSuitSlug,
-  getSiteSettings,
-  getSuit,
-  listCollections,
-  listSuits,
-} from '../../lib/catalog';
+import { getSiteSettings, listCollections, listSuits } from '../../lib/catalog';
 import { collectionList } from '../../lib/format';
 import { socialLinks } from '../../lib/nav';
 import { buildMetadata } from '../../lib/seo';
@@ -35,24 +21,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const NEW_ARRIVALS = 8;
 
-// Home (docs/design.md §4), static: every read is cached and tagged. Motion and 3D: Phase 8.
+// Home (docs/design.md §4), static: every read is cached and tagged. Order: hero, about, new
+// arrivals, collections, how to order (the owner's mockups, 2026-11-15).
 export default async function Home() {
-  const [settings, collections, newest, slug] = await Promise.all([
+  const [settings, collections, newest] = await Promise.all([
     getSiteSettings(),
     listCollections(),
     listSuits({ page: 1 }),
-    featuredSuitSlug(),
   ]);
-  const [featured, panels] = await Promise.all([
-    slug ? getSuit(slug) : null,
-    Promise.all(
-      collections.map(async (c) => {
-        const list = await listSuits({ categorySlug: c.slug, page: 1 });
-        return { ...c, cover: list?.items[0]?.image ?? null };
-      }),
-    ),
-  ]);
-  const contact = { whatsapp: settings.whatsapp, phone: settings.phone, email: settings.email };
   return (
     <>
       <JsonLd
@@ -67,12 +43,9 @@ export default async function Home() {
         collections={collections.map((c) => c.name)}
         art={siteArt(SITE_ART.heroFabric)}
       />
-      <ShopByFabric collections={panels} />
-      <Statement />
+      <About art={siteArt(SITE_ART.aboutFabric)} />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
-      <FeaturedSuit suit={featured} />
       <HowToOrder />
-      <ContactStrip contact={contact} />
     </>
   );
 }

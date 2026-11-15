@@ -101,3 +101,82 @@ export function Swash({ className }: Props) {
     </svg>
   );
 }
+
+// A soft wave along the bottom of a section, in pale powder blue (or powder blue with `fill-primary`).
+export function Wave({ className }: Props) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 1440 120"
+      preserveAspectRatio="none"
+      className={join('pointer-events-none fill-surface-soft', className)}
+    >
+      <path d="M0 64c180-40 360-52 560-20s380 60 560 32 240-56 320-60v104H0z" />
+    </svg>
+  );
+}
+
+// A leafy branch in thin grey-green lines, for section corners.
+export function LeafBranch({ className }: Props) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 200 140"
+      fill="none"
+      className={join('pointer-events-none stroke-border-strong', className)}
+    >
+      <path d="M8 132C60 100 120 58 192 8" strokeWidth="1.2" strokeLinecap="round" />
+      {(
+        [
+          [40, 110, -50],
+          [70, 90, -40],
+          [100, 70, -45],
+          [130, 50, -35],
+          [160, 30, -40],
+        ] as const
+      ).map(([x, y, turn]) => (
+        <g key={x} transform={`translate(${x} ${y})`}>
+          <path
+            d="M0 0c6-14 20-22 34-20-4 14-18 22-34 20z"
+            transform={`rotate(${turn})`}
+            strokeWidth="1"
+          />
+          <path
+            d="M0 0c-14-4-22-16-20-30 12 2 22 14 20 30z"
+            transform={`rotate(${turn + 40})`}
+            strokeWidth="1"
+          />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+// The small heading above a section title: a lotus, then the label between two thin lines.
+export function Eyebrow({
+  label,
+  align = 'center',
+}: {
+  label: string;
+  align?: 'center' | 'start';
+}) {
+  return (
+    <div
+      className={join('flex flex-col gap-2', align === 'start' ? 'items-start' : 'items-center')}
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-7 text-accent-text">
+        <path
+          d="M12 4c2.6 3 3.4 7.5 0 13-3.4-5.5-2.6-10 0-13zM12 17c-2-4.5-5.5-7-9-7 .5 4.5 4 7 9 7zM12 17c2-4.5 5.5-7 9-7-.5 4.5-4 7-9 7z"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <p className="flex items-center gap-4 caps-tight sm:caps">
+        <span aria-hidden="true" className="h-px w-6 bg-fg sm:w-16" />
+        {label}
+        <span aria-hidden="true" className="h-px w-6 bg-fg sm:w-16" />
+      </p>
+    </div>
+  );
+}

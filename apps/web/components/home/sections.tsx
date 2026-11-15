@@ -1,19 +1,16 @@
 import { whatsappLink } from '@mustafa/core/contact-links';
-import { shapedImageUrl } from '@mustafa/core/media-url';
 import { buttonClass } from '@mustafa/ui/button';
 import { Logo } from '@mustafa/ui/logo';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { collectionList, formatPrice, piecesLabel } from '../../lib/format';
+import { collectionList } from '../../lib/format';
 import { GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import type { SiteArt } from '../../lib/site-art';
-import type { Collection, Suit, SuitCard } from '../../lib/types';
+import type { SuitCard } from '../../lib/types';
 import { ProductCard } from '../product/product-card';
-import { ProductVideo } from '../product/product-video';
-import { type Contact, ContactList } from '../site/contact-list';
-import { LotusOrnament } from '../site/flourish';
-import { ArrowIcon, collectionIcon, WhatsAppIcon } from '../site/icons';
+import { Eyebrow, Swash, Wave } from '../site/flourish';
+import { ArrowIcon, LayersIcon, ShirtIcon, WhatsAppIcon } from '../site/icons';
 
 const wrap = 'mx-auto max-w-content-wide px-gutter';
 
@@ -92,14 +89,57 @@ export function Hero({
   );
 }
 
-// 2. Statement: the plain facts about the shop, in large type (docs/seo-geo.md §7).
-export function Statement() {
+const ABOUT_POINTS = [
+  { Icon: ShirtIcon, title: 'Women’s Suits', text: 'Elegant collections' },
+  { Icon: LayersIcon, title: 'Premium Fabrics', text: 'Carefully selected' },
+  { Icon: WhatsAppIcon, title: 'Order on WhatsApp', text: 'Quick & convenient' },
+];
+
+// 2. About (the owner's mockup, 2026-11-15): the plain facts about the shop (docs/seo-geo.md §7),
+// three short points, and the fabric picture. The heading reads as one sentence for search.
+export function About({ art }: { art: SiteArt | null }) {
   return (
-    <section className={`${wrap} py-section`}>
-      <p className="max-w-5xl text-h2 font-light">
-        Mustafa Apparels is an online shop for women&rsquo;s unstitched suits in Pakistan. Every
-        suit comes as fabric for your own tailor, and every order is arranged with you on WhatsApp.
-      </p>
+    <section aria-labelledby="about-title" className="relative overflow-hidden bg-bg">
+      <Wave className="absolute bottom-0 left-0 h-24 w-full" />
+      <div
+        className={`${wrap} relative grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]`}
+      >
+        <div className="flex min-w-0 flex-col gap-6">
+          <Eyebrow label="About Mustafa Apparels" align="start" />
+          <h2 id="about-title" className="reveal text-h2 font-bold text-wrap">
+            <span className="block">Mustafa Apparels is an</span>{' '}
+            <span className="block text-accent-text">online shop for women’s</span>{' '}
+            <span className="block">unstitched suits in Pakistan.</span>
+          </h2>
+          <Swash className="h-3 w-44" />
+          <p className="max-w-xl text-body-lg">
+            Every suit comes as fabric for your own tailor, and every order is arranged with you on
+            WhatsApp.
+          </p>
+          <ul className="mt-2 grid grid-cols-3 divide-x divide-border">
+            {ABOUT_POINTS.map(({ Icon, title, text }) => (
+              <li key={title} className="flex flex-col items-center gap-2 px-2 text-center">
+                <span className="flex size-14 items-center justify-center rounded-full bg-surface-soft">
+                  <Icon className="size-7" />
+                </span>
+                <span className="text-small font-bold">{title}</span>
+                <span className="text-small text-muted">{text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {art && (
+          <div className="relative mx-auto aspect-[914/887] w-full max-w-xl [mask-image:linear-gradient(to_right,transparent,black_15%)]">
+            <Image
+              src={art.src}
+              alt={art.alt}
+              fill
+              sizes="(min-width: 64rem) 40vw, 100vw"
+              className="object-contain"
+            />
+          </div>
+        )}
+      </div>
     </section>
   );
 }
@@ -134,139 +174,6 @@ export function NewArrivals({ suits }: { suits: SuitCard[] }) {
           </li>
         ))}
       </ul>
-    </section>
-  );
-}
-
-type CollectionPanel = Collection & { cover: SuitCard['image'] };
-
-// Short lines for the Shop by Fabric cards, from the owner's mockup (2026-11-15). Lajwanti is a
-// winter Dhanak line, so it isn't called "light". A collection without one shows its description.
-const FABRIC_TAGLINES: Record<string, string> = {
-  dhanak: 'Soft, warm and perfect for the season.',
-  khaddar: 'A classic fabric with a rich, textured feel.',
-  lajwanti: 'Graceful prints, beautifully elegant.',
-};
-
-// 2. Shop by Fabric (docs/design.md §4): one card per collection, straight after the hero. The
-// whole card is the link; its photo is decoration, so the text alone names it.
-export function ShopByFabric({ collections }: { collections: CollectionPanel[] }) {
-  if (collections.length === 0) return null;
-  return (
-    <section
-      id="shop-by-fabric"
-      aria-labelledby="fabric-title"
-      className={`${wrap} scroll-mt-24 py-16 md:py-24`}
-    >
-      <div className="mb-10 flex flex-col items-center gap-3 text-center">
-        <LotusOrnament />
-        <div className="flex w-full items-center justify-center gap-6">
-          <span
-            aria-hidden="true"
-            className="hidden h-px max-w-32 flex-1 bg-border-strong sm:block"
-          />
-          <h2 id="fabric-title" className="text-h2 font-bold">
-            Shop by Fabric
-          </h2>
-          <span
-            aria-hidden="true"
-            className="hidden h-px max-w-32 flex-1 bg-border-strong sm:block"
-          />
-        </div>
-        <p className="text-body text-muted">
-          Explore our unstitched suit collections in your favourite fabrics.
-        </p>
-      </div>
-      <ul className="grid gap-6 md:grid-cols-3">
-        {collections.map((c) => {
-          const Icon = collectionIcon(c.slug, 'card');
-          const tagline = FABRIC_TAGLINES[c.slug] ?? c.description;
-          return (
-            <li key={c.id}>
-              <Link
-                href={`/collections/${c.slug}`}
-                className="fabric-card group relative flex h-full min-h-44 overflow-hidden rounded-sm bg-surface-soft"
-              >
-                {c.cover && (
-                  <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
-                    <Image
-                      src={shapedImageUrl(c.cover.url, 'detail')}
-                      alt=""
-                      fill
-                      sizes="(min-width: 48rem) 16vw, 50vw"
-                      className="fabric-photo object-cover"
-                    />
-                    {/* Fades the photo into the card, so the text side stays calm. */}
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-surface-soft"
-                    />
-                  </div>
-                )}
-                <div className="relative flex w-3/5 flex-col gap-2 p-6">
-                  <div className="flex items-center gap-3">
-                    <Icon className="card-icon size-8 text-accent-text" />
-                    <h3 className="text-h3 font-bold">{c.name}</h3>
-                  </div>
-                  {tagline && <p className="line-clamp-3 text-small text-muted">{tagline}</p>}
-                  <span className="mt-auto inline-flex items-center gap-2 pt-3 caps-tight">
-                    <span className="underline decoration-accent-text decoration-2 underline-offset-8">
-                      Explore
-                    </span>
-                    <ArrowIcon className="nudge size-4" />
-                  </span>
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-// 5. Featured suit: its video (or main photo) beside the details. The only video on Home.
-export function FeaturedSuit({ suit }: { suit: Suit | null }) {
-  if (!suit) return null;
-  const video = suit.media.find((m) => m.kind === 'video');
-  const photo = suit.media.find((m) => m.kind === 'image');
-  return (
-    <section aria-labelledby="featured-title" className={`${wrap} pb-section`}>
-      <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-24">
-        <div className="flex min-w-0 justify-center bg-surface-soft">
-          {video ? (
-            <ProductVideo video={video} className="w-full max-w-md" />
-          ) : (
-            photo && (
-              <div className="relative aspect-3/4 w-full max-w-md">
-                <Image
-                  src={shapedImageUrl(photo.url, 'whole')}
-                  alt={photo.alt}
-                  fill
-                  sizes="(min-width: 64rem) 40vw, 100vw"
-                  className="object-contain"
-                />
-              </div>
-            )
-          )}
-        </div>
-        <div className="flex min-w-0 flex-col gap-6">
-          <p className="caps-tight text-muted">
-            Featured · {suit.category.name} · {piecesLabel(suit.pieces)}
-          </p>
-          <h2 id="featured-title" className="text-h2 font-light">
-            {suit.name}
-          </h2>
-          {suit.description && <p className="text-body-lg">{suit.description}</p>}
-          {suit.price !== null && <p className="text-body-lg">{formatPrice(suit.price)}</p>}
-          <Link
-            href={`/products/${suit.slug}`}
-            className={`${buttonClass('secondary')} self-start`}
-          >
-            See this suit
-          </Link>
-        </div>
-      </div>
     </section>
   );
 }
@@ -306,29 +213,6 @@ export function HowToOrder() {
         <Link href="/how-to-order" className="link mt-12 inline-block py-2">
           Delivery, payment and returns
         </Link>
-      </div>
-    </section>
-  );
-}
-
-// 7. Contact strip: WhatsApp first, then call and email. No address or map (online only).
-export function ContactStrip({ contact }: { contact: Contact }) {
-  if (!contact.whatsapp && !contact.phone && !contact.email) return null;
-  return (
-    <section aria-labelledby="contact-title" className={`${wrap} py-section`}>
-      <div className="grid gap-8 md:grid-cols-2 md:items-center md:gap-24">
-        <div className="flex flex-col gap-4">
-          <h2 id="contact-title" className="text-h2 font-light">
-            Ask us about any suit
-          </h2>
-          <p className="text-body-lg">
-            Send a photo or a design code on WhatsApp, or call us. We&rsquo;re online only, with no
-            shop to visit.
-          </p>
-        </div>
-        <div className="max-w-md">
-          <ContactList contact={contact} />
-        </div>
       </div>
     </section>
   );

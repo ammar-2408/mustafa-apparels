@@ -50,13 +50,3 @@ test.describe('with reduced motion', () => {
     expect(await panel.locator('.menu-item').nth(1).evaluate(animationName)).toBe('none');
   });
 });
-
-test('on a laptop, a Shop by Fabric card lifts on hover', async ({ page, isMobile }) => {
-  test.skip(isMobile, 'Phones have no hover.');
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/');
-  const card = page.getByRole('region', { name: 'Shop by Fabric' }).getByRole('link').first();
-  await card.scrollIntoViewIfNeeded();
-  await card.hover();
-  await expect.poll(() => card.evaluate((el) => getComputedStyle(el).translate)).toBe('0px -4px');
-});

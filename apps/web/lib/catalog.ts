@@ -190,13 +190,6 @@ export const suitRedirect = cached(
   () => [TAGS.products],
 );
 
-/** The slug of the suit the home page features (the owner's pick, else the newest with a video). */
-export const featuredSuitSlug = cached(
-  'featured-suit',
-  () => products.featuredSlug(getDb()),
-  () => [TAGS.products, TAGS.categories],
-);
-
 /** Every public suit with its filter fields, newest first: the body of /api/suits (ADR-018). */
 export const listForFilters = cached(
   'filter-list',
