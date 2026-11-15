@@ -20,6 +20,7 @@ Components use tokens, never hard-coded colours. Tokens live in `packages/config
 | `--color-bg`, `--color-surface` | `#FFFFFF` | Page, form fields, white cards |
 | `--color-surface-soft` | `#EEF4F4` | Photo boxes only (gallery, cards, collection panels); ink text only on it |
 | `--color-primary` / `--color-primary-fg` | `#A8C9C8` powder blue / `#111111` | Large surfaces only (header band, sections, cards, footer, admin sidebar) / text on them. Never text (1.77:1 on white) |
+| `--color-deep` | `#164A45` | Deep green: home hero buttons (`deep`, `deep-outline` variants), How to Order icon circles and hover fill. White text on it; it can be text on white or pale powder blue |
 | `--color-teal` | `#86AFAE` | Footer background only; ink text only on it (orange and grey fail) |
 | `--color-fg` | `#111111` ink | All text |
 | `--color-muted` | `#4B5757` | Secondary text, on white only |

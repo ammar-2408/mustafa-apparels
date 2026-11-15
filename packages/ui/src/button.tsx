@@ -3,7 +3,7 @@ import type { ComponentProps } from 'react';
 // Ink and white (docs/design.md §1.2). Every button ends its hover the same way: ink with white
 // text, lifted 2px with a soft shadow (the theme's `lift`). Orange is kept for small accents.
 // Spaced capitals tighten on phones so labels don't wrap. The focus ring comes from the theme.
-export type ButtonVariant = 'primary' | 'secondary';
+export type ButtonVariant = 'primary' | 'secondary' | 'deep' | 'deep-outline';
 /** Spaced capitals (the default), or Bold sentence case for the redesigned home and menu. */
 export type ButtonLabel = 'caps' | 'bold';
 
@@ -18,6 +18,9 @@ const LABELS: Record<ButtonLabel, string> = {
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: 'border-action bg-action text-action-fg',
   secondary: 'border-action bg-transparent text-fg hover:bg-action hover:text-action-fg',
+  // The home hero's deep green pair (owner's mockup, 2026-11-15).
+  deep: 'border-deep bg-deep text-action-fg',
+  'deep-outline': 'border-deep bg-bg/60 text-deep hover:bg-deep hover:text-action-fg',
 };
 
 /** Button classes, also for links that act as buttons (WhatsApp, Call, Email). */

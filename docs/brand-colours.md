@@ -16,6 +16,7 @@ Every colour the storefront, admin, emails and share images use, as of the end o
 | `fg` | `#111111` | Ink | All body text and headings; the logo colour | Everywhere |
 | `muted` | `#4B5757` | Slate grey | Secondary text, on white only | Breadcrumbs, "3 Piece" lines, suit counts, form hints |
 | `primary` | `#A8C9C8` | Powder blue | Large surfaces only, never text | Header band, footer, home hero, "How to order" band, admin sidebar, browser bar on phones, share image |
+| `deep` | `#164A45` | Deep green | The home hero buttons (`buttonClass("deep")` and `"deep-outline"`), the How to Order icon circles and the card hover fill (owner, 2026-11-15). White on it 10:1; as text on white 10:1, on pale powder blue 8.99:1. Racing orange on it 3.02 (underlines only); deep orange fails | Home hero, How to Order |
 | `teal` | `#86AFAE` | Deeper powder blue | The footer only (owner, 2026-11-15). Ink text only: 7.87:1. Grey (3.13) and orange (1.38) fail, so orange there is decoration (short heading underlines), never words or icons | Footer |
 | `primary-fg` | `#111111` | Ink | Text on powder blue | Header links, footer links, hero headline |
 | `action` | `#111111` | Ink | Main buttons | "See all suits", "WhatsApp us", "Send" |

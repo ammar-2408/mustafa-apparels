@@ -17,6 +17,14 @@ export const ALLOWED_PAIRS: readonly Pair[] = [
   ['fg', 'surface-soft', 'text', 'The few words in an empty photo box ("Photo coming soon")'],
   ['primary-fg', 'primary', 'text', 'Text on the header band, sections, cards, footer, sidebar'],
   ['fg', 'teal', 'text', 'All footer text: ink only on the deeper teal (7.87:1)'],
+  [
+    'action-fg',
+    'deep',
+    'text',
+    'White on deep green: hero button, filled How to Order cards (10:1)',
+  ],
+  ['deep', 'bg', 'text', 'Deep green label of the WhatsApp button in the hero (10:1)'],
+  ['deep', 'surface-soft', 'text', 'Deep green label on the pale hero band (8.99:1)'],
   ['muted', 'bg', 'text', 'Secondary text, on white only'],
   ['muted', 'surface', 'text', 'Hints and help text in white fields'],
   ['muted', 'surface-soft', 'text', 'Taglines on the Shop by Fabric cards and the home hero text'],
@@ -36,6 +44,7 @@ export const ALLOWED_PAIRS: readonly Pair[] = [
   ['accent', 'bg', 'ui', 'Focus ring, hover underline and small icons on white'],
   ['accent', 'surface', 'ui', 'Focus ring on white fields'],
   ['accent', 'action', 'ui', 'Small orange icons on ink'],
+  ['accent', 'deep', 'ui', 'Orange underlines on a filled How to Order card (3.02:1)'],
   ['accent-text', 'surface-soft', 'ui', 'Orange icons and underlines on the Shop by Fabric cards'],
   ['accent-text', 'bg', 'ui', 'Orange icons, ornaments and the swash on white (menu, headings)'],
   ['fg', 'primary', 'ui', 'Focus ring on powder blue (orange is too faint there)'],
@@ -60,4 +69,5 @@ export const FORBIDDEN_TEXT: readonly (readonly [string, string])[] = [
   ['accent', 'teal'],
   ['accent-text', 'teal'],
   ['muted', 'teal'],
+  ['accent-text', 'deep'],
 ];

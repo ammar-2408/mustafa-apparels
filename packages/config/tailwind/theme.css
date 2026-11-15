@@ -21,6 +21,8 @@
   --color-primary-fg: #111111;
   /* A deeper powder blue for the footer only (owner's mockup, 2026-11-15). Ink text only on it. */
   --color-teal: #86afae;
+  /* Deep green for the home hero buttons, How to Order icons and card fill (owner, 2026-11-15). */
+  --color-deep: #164a45;
   --color-action: #111111;
   --color-action-fg: #ffffff;
   --color-accent: #f45b0b;

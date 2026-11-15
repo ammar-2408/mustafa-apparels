@@ -82,6 +82,16 @@ describe('Button', () => {
     expect(buttonClass('secondary', 'w-full', 'bold').endsWith(' w-full')).toBe(true);
   });
 
+  it('has deep green variants for the home hero, with the same lift as every button', () => {
+    expect(buttonClass('deep')).toContain('bg-deep text-action-fg');
+    expect(buttonClass('deep-outline')).toContain('border-deep');
+    expect(buttonClass('deep-outline')).toContain('text-deep');
+    expect(buttonClass('deep-outline')).toContain('hover:bg-deep hover:text-action-fg');
+    for (const variant of ['deep', 'deep-outline'] as const) {
+      expect(buttonClass(variant)).toMatch(/\blift\b/);
+    }
+  });
+
   it('keeps extra classes after its own', () => {
     expect(buttonClass('primary', 'w-full').endsWith(' w-full')).toBe(true);
   });
