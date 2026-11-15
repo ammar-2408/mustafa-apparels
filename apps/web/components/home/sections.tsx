@@ -107,12 +107,14 @@ const ABOUT_POINTS = [
 // three short points, and the fabric picture. The heading reads as one sentence for search.
 export function About({ art }: { art: SiteArt }) {
   return (
-    <section aria-labelledby="about-title" className="relative overflow-hidden bg-bg">
-      <Wave className="absolute bottom-0 left-0 h-24 w-full" />
-      <div
-        className={`${wrap} relative grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]`}
-      >
-        <div className="flex min-w-0 flex-col gap-6">
+    // Like the hero: the text on the left, the picture filling the right side top to bottom
+    // (the owner's "Crafted in Style" mockup, 2026-11-15).
+    <section
+      aria-labelledby="about-title"
+      className="relative flex flex-col overflow-hidden bg-linear-to-r from-bg via-bg to-surface-soft lg:block"
+    >
+      <div className={`${wrap} relative z-10 w-full`}>
+        <div className="flex min-w-0 flex-col gap-6 py-16 md:py-24 lg:w-[54%] lg:py-28 lg:pr-8">
           <Eyebrow label="About Mustafa Apparels" align="start" />
           <h2 id="about-title" className="reveal text-h2 font-bold text-wrap">
             <span className="block">Mustafa Apparels is an</span>{' '}
@@ -125,7 +127,7 @@ export function About({ art }: { art: SiteArt }) {
             WhatsApp.
           </p>
           <ul
-            className="reveal mt-2 grid grid-cols-3 divide-x divide-border"
+            className="reveal mt-2 grid max-w-2xl grid-cols-3 divide-x divide-border"
             style={revealDelay(2)}
           >
             {ABOUT_POINTS.map(({ Icon, title, text }) => (
@@ -139,18 +141,23 @@ export function About({ art }: { art: SiteArt }) {
             ))}
           </ul>
         </div>
-        <div
-          style={revealDelay(1)}
-          className="reveal relative mx-auto aspect-[914/887] w-full max-w-xl [mask-image:linear-gradient(to_right,transparent,black_15%)]"
-        >
-          <Image
-            src={art.src}
-            alt={art.alt}
-            fill
-            sizes="(min-width: 64rem) 40vw, 100vw"
-            className="object-contain"
-          />
-        </div>
+      </div>
+      <div
+        style={revealDelay(1)}
+        className="reveal relative aspect-[1071/724] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:aspect-auto lg:w-[46%]"
+      >
+        <Image
+          src={art.src}
+          alt={art.alt}
+          fill
+          sizes="(min-width: 64rem) 46vw, 100vw"
+          className="object-cover"
+        />
+        {/* Fades the picture into the page, so the text side stays calm. */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 hidden w-1/4 bg-linear-to-r from-bg lg:block"
+        />
       </div>
     </section>
   );

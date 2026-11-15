@@ -56,7 +56,7 @@ export default async function Home() {
         collections={collections.map((c) => c.name)}
         art={SITE_ART.heroFabric}
       />
-      <About art={SITE_ART.aboutFabric} />
+      <About art={SITE_ART.aboutStudio} />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
       <ExploreCollections collections={panels} />
       <HowToOrder whatsapp={settings.whatsapp} />

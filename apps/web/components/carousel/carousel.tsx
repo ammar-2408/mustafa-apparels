@@ -145,7 +145,7 @@ export function Carousel({ label, items, itemClassName }: Props) {
             aria-label="Previous"
             disabled={view.atStart}
             onClick={() => step(-1)}
-            className="carousel-arrow absolute top-1/2 left-0 z-10 hidden size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-bg text-fg shadow-soft disabled:opacity-40 md:flex"
+            className="carousel-arrow absolute top-1/2 left-0 z-10 hidden size-12 -translate-x-1/2 -translate-y-1/2 min-[112rem]:-translate-x-[calc(100%+16px)] items-center justify-center rounded-full bg-action text-action-fg shadow-soft disabled:opacity-30 md:flex"
           >
             <ChevronIcon className="size-5 rotate-180" />
           </button>
@@ -154,7 +154,7 @@ export function Carousel({ label, items, itemClassName }: Props) {
             aria-label="Next"
             disabled={view.atEnd}
             onClick={() => step(1)}
-            className="carousel-arrow absolute top-1/2 right-0 z-10 hidden size-12 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-bg text-fg shadow-soft disabled:opacity-40 md:flex"
+            className="carousel-arrow absolute top-1/2 right-0 z-10 hidden size-12 translate-x-1/2 -translate-y-1/2 min-[112rem]:translate-x-[calc(100%+16px)] items-center justify-center rounded-full bg-action text-action-fg shadow-soft disabled:opacity-30 md:flex"
           >
             <ChevronIcon className="size-5" />
           </button>

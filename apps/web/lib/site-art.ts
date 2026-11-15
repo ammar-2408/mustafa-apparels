@@ -14,6 +14,10 @@ export const SITE_ART = {
     src: shapedImageUrl(`${UPLOAD}site/home/hero-fabric`, 'whole'),
     alt: 'Folded embroidered fabrics in powder blue, cream and rose, with a vase of white flowers',
   },
+  aboutStudio: {
+    src: shapedImageUrl(`${UPLOAD}site/home/about-studio`, 'whole'),
+    alt: 'A tailoring table with a measuring tape, scissors, a pin cushion, an inlaid box and white flowers',
+  },
   aboutFabric: {
     src: shapedImageUrl(`${UPLOAD}site/home/about-fabric`, 'whole'),
     alt: 'Embroidered fabrics in powder blue, cream and rose, folded on a marble stand',
