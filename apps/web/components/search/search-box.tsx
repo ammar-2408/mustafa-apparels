@@ -57,13 +57,23 @@ export function SearchBox({ defaultValue = '' }: { defaultValue?: string }) {
     const timer = setTimeout(async () => {
       try {
         const response = await fetch(`/api/search/suggest?q=${encodeURIComponent(q)}`);
-        if (!response.ok || request !== latest.current) return;
+        if (request !== latest.current) return;
+        // Refused (too many searches) or failed: no old suggestions under new text.
+        if (!response.ok) {
+          setOptions([]);
+          setOpen(false);
+          return;
+        }
         const found = toOptions((await response.json()) as Suggestions, listId);
         setOptions(found);
         setActive(-1);
         setOpen(found.length > 0);
       } catch {
-        // Suggestions are a nicety: the search itself still works.
+        // Suggestions are a nicety: the search itself still works. Don't leave old ones open.
+        if (request === latest.current) {
+          setOptions([]);
+          setOpen(false);
+        }
       }
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);

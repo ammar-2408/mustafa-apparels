@@ -82,4 +82,14 @@ describe('SearchBox', () => {
     expect(form.getAttribute('method')).toBe('get');
     expect((screen.getByRole('combobox') as HTMLInputElement).name).toBe('q');
   });
+
+  it('closes old suggestions when the next request is refused', async () => {
+    render(<SearchBox />);
+    await type('khadar');
+    expect(screen.getAllByRole('option')).toHaveLength(2);
+    vi.mocked(fetch).mockResolvedValueOnce(new Response('{}', { status: 429 }));
+    await type('khaddar suit');
+    expect(screen.queryAllByRole('option')).toHaveLength(0);
+    expect(screen.getByRole('combobox').getAttribute('aria-expanded')).toBe('false');
+  });
 });

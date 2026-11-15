@@ -34,3 +34,11 @@ test('an empty or too short search asks for more, and searching submits the form
   await expect(page).toHaveURL(/\/search\?q=dhanak$/);
   await expect(page.getByText(/suits? for “dhanak”/)).toBeVisible();
 });
+
+test('a results page past the end points back to the first page', async ({ page }) => {
+  await page.goto('/search?q=dhanak&page=99');
+  await expect(page.getByText(/There are only \d+ pages? of results/)).toBeVisible();
+  await page.getByRole('link', { name: 'See the first page' }).click();
+  await expect(page).toHaveURL(/\/search\?q=dhanak$/);
+  await expect(page.getByText(/suits? for “dhanak”/)).toBeVisible();
+});

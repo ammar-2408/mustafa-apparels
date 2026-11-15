@@ -9,6 +9,7 @@ vi.mock('../../app/(account)/account/actions', () => ({
   })),
 }));
 
+import { toggleWishlist } from '../../app/(account)/account/actions';
 import cloudinaryLoader from '../../lib/image-loader';
 import type { SuitCard } from '../../lib/types';
 import { ProductCard } from './product-card';
@@ -101,5 +102,19 @@ describe('ProductCard', () => {
     expect(
       (await screen.findByRole('link', { name: 'Log in', hidden: true })).getAttribute('href'),
     ).toBe('/login');
+  });
+
+  it('says so when a save fails for another reason, instead of seeming to save', async () => {
+    vi.mocked(toggleWishlist).mockResolvedValueOnce({
+      ok: false,
+      error: { code: 'RATE_LIMITED', message: 'Too many tries.' },
+    } as never);
+    render(<ProductCard suit={suit()} />);
+    const heart = screen.getByRole('button', { name: /^Save / });
+    fireEvent.click(heart);
+    expect((await screen.findByRole('status')).textContent).toBe(
+      "Couldn't save that. Please try again.",
+    );
+    expect(heart.getAttribute('aria-pressed')).toBe('false');
   });
 });

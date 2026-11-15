@@ -40,6 +40,7 @@ export function WishlistButton({ productId, name, toggle }: Props) {
     setAskLogin(true);
   };
   const [pending, setPending] = useState(false);
+  const [problem, setProblem] = useState('');
 
   async function onTap() {
     if (!toggle) {
@@ -47,10 +48,18 @@ export function WishlistButton({ productId, name, toggle }: Props) {
       return;
     }
     setPending(true);
+    setProblem('');
     const result = await toggle({ productId, saved: !saved });
     setPending(false);
     if (result.ok) setSaved(result.data.saved);
     else if (result.error.code === 'UNAUTHENTICATED' || result.error.code === 'UNAVAILABLE') ask();
+    // Too many taps, a suit no longer on sale, or a fault: say so, rather than seem to save.
+    else
+      setProblem(
+        result.error.code === 'NOT_FOUND'
+          ? 'This suit is no longer available.'
+          : "Couldn't save that. Please try again.",
+      );
   }
 
   return (
@@ -77,6 +86,14 @@ export function WishlistButton({ productId, name, toggle }: Props) {
             </Link>
           </div>
         </Dialog>
+      )}
+      <span role="status" className="sr-only">
+        {problem}
+      </span>
+      {problem && (
+        <span className="absolute top-full right-0 mt-1 w-40 rounded-sm bg-bg px-2 py-1 text-small text-error shadow-soft">
+          {problem}
+        </span>
       )}
     </>
   );

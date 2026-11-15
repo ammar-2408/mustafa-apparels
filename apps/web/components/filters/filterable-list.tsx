@@ -23,15 +23,19 @@ import {
 } from '../../lib/filters';
 import { ProductGrid } from '../product/product-grid';
 
-// One fetch of /api/suits per visit, shared by every list page (ADR-018).
+// One fetch of /api/suits per visit, shared by every list page (ADR-018). A failed load is
+// forgotten, so the next try fetches again; it never becomes an empty shop.
 let suitsRequest: Promise<FilterSuit[]> | null = null;
-function loadSuits() {
+export function loadSuits() {
   suitsRequest ??= fetch('/api/suits')
-    .then((r) => (r.ok ? (r.json() as Promise<{ suits: FilterSuit[] }>) : { suits: [] }))
+    .then((r) => {
+      if (!r.ok) throw new Error('suits ' + r.status);
+      return r.json() as Promise<{ suits: FilterSuit[] }>;
+    })
     .then((body) => body.suits)
-    .catch(() => {
+    .catch((error: unknown) => {
       suitsRequest = null;
-      return [];
+      throw error;
     });
   return suitsRequest;
 }
@@ -60,18 +64,28 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
   );
   const active = isActive(state);
   const [suits, setSuits] = useState<FilterSuit[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [panel, setPanel] = useState(false);
 
   useEffect(() => {
     if (!active || suits) return;
     let cancelled = false;
-    void loadSuits().then((all) => {
-      if (!cancelled) setSuits(all);
-    });
+    loadSuits().then(
+      (all) => {
+        if (!cancelled) {
+          setFailed(false);
+          setSuits(all);
+        }
+      },
+      () => {
+        if (!cancelled) setFailed(true);
+      },
+    );
     return () => {
       cancelled = true;
     };
-  }, [active, suits]);
+  }, [active, suits, attempt]);
 
   const groups = visibleGroups(facets);
   const chips = quickChips(facets);
@@ -143,6 +157,24 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
 
       {!active ? (
         children
+      ) : failed ? (
+        // The filters couldn't load: say so, and keep showing every suit rather than none.
+        <div className="flex flex-col gap-8">
+          <div role="alert" className="flex flex-wrap items-center gap-4 text-body">
+            <p>The filters couldn&rsquo;t load just now. Here are all the suits instead.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setFailed(false);
+                setAttempt((n) => n + 1);
+              }}
+              className="link py-2"
+            >
+              Try again
+            </button>
+          </div>
+          {children}
+        </div>
       ) : suits === null ? (
         <p role="status" className="text-body text-muted">
           Loading suits…

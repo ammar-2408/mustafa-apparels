@@ -44,7 +44,15 @@ export default async function SearchPage({ searchParams }: Props) {
     const found = await search.search(getDb(), parsed.data);
     const { q, page } = parsed.data;
     body =
-      found.total === 0 ? (
+      found.total > 0 && page > found.pageCount ? (
+        // A page number past the end: point back to the results rather than show an empty grid.
+        <p className="text-body-lg">
+          There are only {found.pageCount} {found.pageCount === 1 ? 'page' : 'pages'} of results.{' '}
+          <Link href={`/search?q=${encodeURIComponent(q)}`} className="link">
+            See the first page
+          </Link>
+        </p>
+      ) : found.total === 0 ? (
         <div className="flex flex-col gap-4">
           <p className="text-body-lg">No suits match &ldquo;{q}&rdquo;.</p>
           <p className="text-body">
