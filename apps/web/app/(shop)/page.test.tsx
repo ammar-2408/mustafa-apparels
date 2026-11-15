@@ -1,7 +1,13 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { About, Hero, HowToOrder, NewArrivals } from '../../components/home/sections';
+import {
+  About,
+  ExploreCollections,
+  Hero,
+  HowToOrder,
+  NewArrivals,
+} from '../../components/home/sections';
 
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 vi.mock('../(account)/account/actions', () => ({ toggleWishlist: vi.fn() }));
@@ -80,6 +86,50 @@ describe('home sections', () => {
         <NewArrivals suits={[]} />
       </>,
     );
+    expect(container.innerHTML).toBe('');
+  });
+});
+
+describe('Explore Our Collections', () => {
+  const cover = {
+    url: 'https://res.cloudinary.com/ma/image/upload/products/x/a.jpg',
+    alt: 'A suit',
+  };
+  const make = (slug: string, name: string, description: string | null) =>
+    ({ id: slug, slug, name, description, cover }) as Parameters<
+      typeof ExploreCollections
+    >[0]['collections'][number];
+
+  it('shows a card per collection from admin, a new one included, each linking to its page', () => {
+    render(
+      <ExploreCollections
+        collections={[
+          make('dhanak', 'Dhanak', 'Unstitched Dhanak suits for winter.'),
+          make('khaddar', 'Khaddar', null),
+          make('lawn', 'Lawn', 'Light summer suits.'),
+        ]}
+      />,
+    );
+    const region = screen.getByRole('region', { name: 'Explore Our Collections' });
+    const links = within(region).getAllByRole('link', { name: /See the collection/ });
+    expect(links.map((l) => l.getAttribute('href'))).toEqual([
+      '/collections/dhanak',
+      '/collections/khaddar',
+      '/collections/lawn',
+    ]);
+    expect(
+      within(region)
+        .getAllByRole('heading', { level: 3 })
+        .map((h) => h.textContent),
+    ).toEqual(['Dhanak', 'Khaddar', 'Lawn']);
+    expect(region.textContent).toContain('Light summer suits.');
+    expect(decodeURIComponent(region.querySelector('img')!.getAttribute('src')!)).toContain(
+      'c_fill,g_north,ar_4:3',
+    );
+  });
+
+  it('is left out when there are no collections', () => {
+    const { container } = render(<ExploreCollections collections={[]} />);
     expect(container.innerHTML).toBe('');
   });
 });

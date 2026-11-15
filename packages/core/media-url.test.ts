@@ -60,6 +60,12 @@ describe('storefront images', () => {
     );
   });
 
+  it('crops a collection cover to a landscape 4:3 from the top', () => {
+    expect(shapedImageUrl(PHOTO, 'cover')).toBe(
+      'https://res.cloudinary.com/ma/image/upload/c_fill,g_north,ar_4:3/products/imported/DHN-01/dhn-01-ab12cd34.jpg',
+    );
+  });
+
   it('replaces a shape rather than stacking two', () => {
     const twice = shapedImageUrl(shapedImageUrl(PHOTO, 'card'), 'whole');
     expect(twice).toBe(shapedImageUrl(PHOTO, 'whole'));

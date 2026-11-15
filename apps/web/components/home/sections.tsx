@@ -1,4 +1,5 @@
 import { whatsappLink } from '@mustafa/core/contact-links';
+import { shapedImageUrl } from '@mustafa/core/media-url';
 import { buttonClass } from '@mustafa/ui/button';
 import { Logo } from '@mustafa/ui/logo';
 import Image from 'next/image';
@@ -7,11 +8,18 @@ import Link from 'next/link';
 import { collectionList } from '../../lib/format';
 import { GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import type { SiteArt } from '../../lib/site-art';
-import type { SuitCard } from '../../lib/types';
+import type { Collection, SuitCard } from '../../lib/types';
 import { Carousel } from '../carousel/carousel';
 import { ProductCard } from '../product/product-card';
-import { Eyebrow, FlowerSprig, Swash, Wave } from '../site/flourish';
-import { ArrowIcon, LayersIcon, LotusIcon, ShirtIcon, WhatsAppIcon } from '../site/icons';
+import { Eyebrow, FlowerSprig, LeafBranch, Swash, Wave } from '../site/flourish';
+import {
+  ArrowIcon,
+  collectionIcon,
+  LayersIcon,
+  LotusIcon,
+  ShirtIcon,
+  WhatsAppIcon,
+} from '../site/icons';
 
 const wrap = 'mx-auto max-w-content-wide px-gutter';
 
@@ -189,6 +197,82 @@ export function NewArrivals({ suits }: { suits: SuitCard[] }) {
           items={suits.map((suit) => (
             <ProductCard key={suit.id} suit={suit} sizes={ARRIVAL_SIZES} framed />
           ))}
+        />
+      </div>
+    </section>
+  );
+}
+
+export type CollectionPanel = Collection & { cover: SuitCard['image'] };
+
+// About 1.1 cards on phones, 2 on tablets, 3 on laptops.
+const COLLECTION_WIDTHS = 'w-[88%] md:w-[calc((100%_-_24px)/2)] lg:w-[calc((100%_-_48px)/3)]';
+
+// 4. Explore Our Collections (the owner's mockup, 2026-11-15): one card per active collection
+// from admin, newest suit as its cover, in the same carousel. A new collection joins with no code
+// change: it gets the default icon and its admin description.
+export function ExploreCollections({ collections }: { collections: CollectionPanel[] }) {
+  if (collections.length === 0) return null;
+  return (
+    <section
+      id="collections"
+      aria-labelledby="collections-title"
+      className="relative scroll-mt-24 overflow-hidden bg-bg py-16 md:py-24"
+    >
+      <LeafBranch className="absolute top-6 -left-6 hidden w-48 md:block" />
+      <FlowerSprig className="sway absolute top-0 right-0 hidden w-60 md:block" />
+      <Wave className="absolute bottom-0 left-0 h-20 w-full" />
+      <div className={`${wrap} relative`}>
+        <div className="mb-10 flex flex-col items-center gap-3 text-center">
+          <Eyebrow label="Collections" />
+          <h2 id="collections-title" className="reveal text-h2 font-bold">
+            Explore Our <span className="text-accent-text">Collections</span>
+          </h2>
+          <p className="text-body-lg text-muted">
+            Premium unstitched suits in beautiful fabrics, made for every season.
+          </p>
+        </div>
+        <Carousel
+          label="Collections"
+          itemClassName={COLLECTION_WIDTHS}
+          items={collections.map((c) => {
+            const Icon = collectionIcon(c.slug, 'card');
+            return (
+              <article
+                key={c.id}
+                className="collection-card flex h-full flex-col overflow-hidden rounded-lg bg-bg shadow-soft"
+              >
+                <div className="relative aspect-4/3 overflow-hidden bg-surface-soft">
+                  {c.cover && (
+                    <Image
+                      src={shapedImageUrl(c.cover.url, 'cover')}
+                      alt={c.cover.alt}
+                      fill
+                      sizes="(min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 88vw"
+                      className="product-photo object-cover"
+                    />
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col gap-3 bg-linear-to-b from-bg to-surface-soft p-6">
+                  <div className="flex items-center gap-3">
+                    <Icon className="card-icon size-9 text-accent-text" />
+                    <h3 className="text-h3 font-bold">{c.name}</h3>
+                  </div>
+                  {c.description && (
+                    <p className="line-clamp-4 text-small text-muted">{c.description}</p>
+                  )}
+                  <Link
+                    href={`/collections/${c.slug}`}
+                    aria-label={`See the collection: ${c.name}`}
+                    className={buttonClass('primary', 'mt-auto self-start px-5 whitespace-nowrap')}
+                  >
+                    See the collection
+                    <ArrowIcon className="nudge size-5" />
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
         />
       </div>
     </section>

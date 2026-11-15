@@ -28,6 +28,15 @@ test('home has the hero, about, new arrivals and how to order', async ({ page })
   const arrivals = page.getByRole('region', { name: 'New arrivals' });
   expect(await arrivals.getByRole('article').count()).toBeGreaterThanOrEqual(4);
 
+  // One card per collection in the database, each linking to its page.
+  const collections = page.getByRole('region', { name: 'Explore Our Collections' });
+  for (const name of ['Dhanak', 'Khaddar', 'Lajwanti']) {
+    await expect(collections.getByRole('heading', { name, exact: true })).toBeAttached();
+  }
+  await expect(
+    collections.getByRole('link', { name: 'See the collection: Dhanak' }),
+  ).toHaveAttribute('href', '/collections/dhanak');
+
   const steps = page.getByRole('region', { name: 'How to order' }).getByRole('listitem');
   await expect(steps).toHaveCount(3);
   // The featured suit and the "Ask us" strip were removed (owner, 2026-11-15).

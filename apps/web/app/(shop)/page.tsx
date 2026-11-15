@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 
-import { About, Hero, HowToOrder, NewArrivals } from '../../components/home/sections';
+import {
+  About,
+  ExploreCollections,
+  Hero,
+  HowToOrder,
+  NewArrivals,
+} from '../../components/home/sections';
 import { JsonLd } from '../../components/json-ld';
 import { getSiteSettings, listCollections, listSuits } from '../../lib/catalog';
 import { collectionList } from '../../lib/format';
@@ -29,6 +35,13 @@ export default async function Home() {
     listCollections(),
     listSuits({ page: 1 }),
   ]);
+  // Each collection's cover is its newest suit's photo (cached and tagged like every read).
+  const panels = await Promise.all(
+    collections.map(async (c) => {
+      const list = await listSuits({ categorySlug: c.slug, page: 1 });
+      return { ...c, cover: list?.items[0]?.image ?? null };
+    }),
+  );
   return (
     <>
       <JsonLd
@@ -45,6 +58,7 @@ export default async function Home() {
       />
       <About art={siteArt(SITE_ART.aboutFabric)} />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
+      <ExploreCollections collections={panels} />
       <HowToOrder />
     </>
   );
