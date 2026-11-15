@@ -21,7 +21,7 @@ test('/shop lists the published suits newest first, as cards that open each suit
   await expect(page.getByRole('main')).not.toContainText(/E2E-1[12]/);
 });
 
-test('the grid has 2 columns on phones and 4 on a laptop', async ({ page }) => {
+test('the grid has 2 columns on phones, 4 on a laptop and 5 from 1920px', async ({ page }) => {
   await page.goto('/shop');
   const tops = await page
     .getByRole('main')
@@ -29,7 +29,7 @@ test('the grid has 2 columns on phones and 4 on a laptop', async ({ page }) => {
     .evaluateAll((items) => items.slice(0, 5).map((el) => el.getBoundingClientRect().top));
   const firstRow = tops.filter((top) => Math.abs(top - tops[0]!) < 2).length;
   const width = page.viewportSize()!.width;
-  expect(firstRow).toBe(width >= 1280 ? 4 : width >= 768 ? 3 : 2);
+  expect(firstRow).toBe(width >= 1920 ? 5 : width >= 1280 ? 4 : width >= 768 ? 3 : 2);
 });
 
 test('the server HTML has one absolute canonical to /shop, even with filter params', async ({

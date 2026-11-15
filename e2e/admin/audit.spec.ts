@@ -29,6 +29,8 @@ test('a suit edit shows in the log with who made it and the before and after', a
   await page.getByLabel('Price (Rs)', { exact: true }).fill('4999');
   await page.getByRole('button', { name: 'Save changes' }).click();
   await expect(page.getByText('Changes saved.')).toBeVisible();
+  // The form then refreshes the page in the background; a goto during it is cancelled.
+  await page.waitForLoadState('networkidle');
 
   // Filtered to this admin by id (every E2E admin has the same name), so other workers' changes
   // don't get in the way. The filter form sends the same two parameters.
