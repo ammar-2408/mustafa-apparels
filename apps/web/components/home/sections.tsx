@@ -11,39 +11,70 @@ import type { Collection, Suit, SuitCard } from '../../lib/types';
 import { ProductCard } from '../product/product-card';
 import { ProductVideo } from '../product/product-video';
 import { type Contact, ContactList } from '../site/contact-list';
+import { FlowerSprig } from '../site/flourish';
+import { ArrowIcon, WhatsAppIcon } from '../site/icons';
 
 const wrap = 'mx-auto max-w-content-wide px-gutter';
 
-// 1. Hero (docs/design.md §4): large Light type on powder blue with the MA submark, no photo
-// (the owner's choice, 2026-11-06). It stays as the poster under the Phase 8 fabric shader.
-export function Hero({ whatsapp }: { whatsapp: string | null }) {
+type HeroPhoto = { url: string; alt: string };
+
+// 1. Hero (docs/design.md §4, the owner's mockup of 2026-11-15): Bold headline with a deep orange
+// second line, the MA submark, the two ways in, and a real suit photo in a powder blue arch.
+export function Hero({ whatsapp, photo }: { whatsapp: string | null; photo: HeroPhoto | null }) {
   return (
-    <section className="bg-primary text-primary-fg">
+    <section
+      aria-labelledby="hero-title"
+      className="relative overflow-hidden bg-surface-soft text-fg"
+    >
+      <FlowerSprig className="sway absolute -top-2 right-0 w-40 md:w-56 lg:w-80" />
       <div
-        className={`${wrap} flex min-h-[calc(100svh-6rem)] flex-col justify-end gap-12 pt-16 pb-16 md:pb-24`}
+        className={`${wrap} grid items-center gap-12 py-12 md:py-16 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16 lg:py-20`}
       >
-        <Logo variant="submark" height={48} className="self-start" />
-        <h1 className="max-w-5xl text-display font-light">
-          Unstitched suits, ready for your tailor
-        </h1>
-        <div className="flex max-w-3xl flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-16">
+        <div className="flex min-w-0 flex-col gap-8">
+          <div className="flex items-center gap-6">
+            <Logo variant="submark" height={40} />
+            <span aria-hidden="true" className="h-px w-24 bg-fg md:w-40" />
+          </div>
+          <h1 id="hero-title" className="hero-title text-h2 font-bold">
+            <span className="block">Elegant Unstitched Suits,</span>{' '}
+            <span className="block text-accent-text">Made for Every Occasion</span>
+          </h1>
           <p className="max-w-xl text-body-lg">
-            2-piece and 3-piece suits in Dhanak, Khaddar and Lajwanti. Choose one here, order it on
-            WhatsApp, and it comes by courier anywhere in Pakistan.
+            Premium unstitched 2-piece and 3-piece suits in Dhanak, Khaddar and Lajwanti. Choose
+            your favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
           </p>
-          <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
-            <Link href="/shop" className={buttonClass('primary')}>
-              See all suits
+          <div className="flex flex-wrap gap-4">
+            <Link href="/shop" className={buttonClass('primary', 'lift', 'bold')}>
+              See All Suits
+              <ArrowIcon className="nudge size-5" />
             </Link>
             {whatsapp && (
               <a
                 href={whatsappLink(whatsapp, GENERAL_WHATSAPP_TEXT)}
-                className={buttonClass('secondary')}
+                className={buttonClass('secondary', 'lift', 'bold')}
                 target="_blank"
                 rel="noopener"
               >
-                WhatsApp us
+                <WhatsAppIcon className="size-5" />
+                WhatsApp Us
               </a>
+            )}
+          </div>
+        </div>
+        <div className="relative mx-auto w-full max-w-sm md:max-w-md">
+          {/* The arch: powder blue behind, the photo inset on top. */}
+          <div aria-hidden="true" className="absolute inset-0 rounded-t-[999px] bg-primary" />
+          <div className="relative mx-6 mt-6 aspect-4/5 overflow-hidden rounded-t-[999px] bg-surface-soft">
+            {photo && (
+              <Image
+                src={shapedImageUrl(photo.url, 'hero')}
+                alt={photo.alt}
+                fill
+                loading="eager"
+                fetchPriority="high"
+                sizes="(min-width: 64rem) 28rem, (min-width: 48rem) 26rem, 22rem"
+                className="object-cover"
+              />
             )}
           </div>
         </div>

@@ -33,6 +33,10 @@ export const IMAGE_SHAPES = {
   card: 'c_fill,g_north,ar_3:4',
   // The gallery: the whole photo, never cropped.
   whole: 'c_limit',
+  // The home hero's arch: 4:5 from the top, so the face and shirt stay in.
+  hero: 'c_fill,g_north,ar_4:5',
+  // Shop by Fabric cards: a square from the middle of the photo, where the embroidery is.
+  detail: 'c_fill,g_center,ar_1:1',
 } as const;
 export type ImageShape = keyof typeof IMAGE_SHAPES;
 

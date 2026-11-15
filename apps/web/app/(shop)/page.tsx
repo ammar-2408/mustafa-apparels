@@ -46,6 +46,9 @@ export default async function Home() {
     ),
   ]);
   const contact = { whatsapp: settings.whatsapp, phone: settings.phone, email: settings.email };
+  // The hero shows the featured suit's main photo, else the newest suit's.
+  const featuredPhoto = featured?.media.find((m) => m.kind === 'image') ?? null;
+  const heroPhoto = featuredPhoto ?? newest?.items[0]?.image ?? null;
   return (
     <>
       <JsonLd
@@ -55,7 +58,7 @@ export default async function Home() {
           socials: socialLinks(settings.socials).map((s) => s.href),
         })}
       />
-      <Hero whatsapp={settings.whatsapp} />
+      <Hero whatsapp={settings.whatsapp} photo={heroPhoto} />
       <Statement />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
       <Collections collections={panels} />

@@ -15,16 +15,31 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 vi.mock('../(account)/account/actions', () => ({ toggleWishlist: vi.fn() }));
 
 describe('home sections', () => {
-  it('opens with one large heading, the submark and the two ways in', () => {
-    render(<Hero whatsapp="+923482799707" />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
-      'Unstitched suits, ready for your tailor',
-    );
+  it('opens with one large heading, the submark, a suit photo and the two ways in', () => {
+    const photo = {
+      url: 'https://res.cloudinary.com/ma/image/upload/products/x/teal.jpg',
+      alt: 'Teal embroidered Khaddar suit',
+    };
+    render(<Hero whatsapp="+923482799707" photo={photo} />);
+    const h1 = screen.getByRole('heading', { level: 1 });
+    expect(h1.textContent).toBe('Elegant Unstitched Suits, Made for Every Occasion');
+    expect(h1.querySelector('.text-accent-text')!.textContent).toBe('Made for Every Occasion');
     expect(screen.getByRole('img', { name: 'MA Apparels' })).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'See all suits' }).getAttribute('href')).toBe('/shop');
-    expect(screen.getByRole('link', { name: 'WhatsApp us' }).getAttribute('href')).toMatch(
+    const image = screen.getByRole('img', { name: photo.alt });
+    expect(decodeURIComponent(image.getAttribute('src')!)).toContain('c_fill,g_north,ar_4:5');
+    expect(screen.getByRole('link', { name: 'See All Suits' }).getAttribute('href')).toBe('/shop');
+    expect(screen.getByRole('link', { name: 'WhatsApp Us' }).getAttribute('href')).toMatch(
       /^https:\/\/wa\.me\/923482799707/,
     );
+  });
+
+  it('keeps the hero whole with no photo and no WhatsApp number', () => {
+    render(<Hero whatsapp={null} photo={null} />);
+    expect(screen.getByRole('heading', { level: 1 })).toBeTruthy();
+    expect(screen.getAllByRole('img').map((img) => img.getAttribute('alt'))).toEqual([
+      'MA Apparels',
+    ]);
+    expect(screen.queryByRole('link', { name: 'WhatsApp Us' })).toBeNull();
   });
 
   it('states the plain facts about the shop', () => {

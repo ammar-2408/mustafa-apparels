@@ -48,6 +48,18 @@ describe('storefront images', () => {
     );
   });
 
+  it('crops the home hero photo from the top at 4:5, and a card detail from the middle', () => {
+    expect(shapedImageUrl(PHOTO, 'hero')).toBe(
+      'https://res.cloudinary.com/ma/image/upload/c_fill,g_north,ar_4:5/products/imported/DHN-01/dhn-01-ab12cd34.jpg',
+    );
+    expect(shapedImageUrl(PHOTO, 'detail')).toBe(
+      'https://res.cloudinary.com/ma/image/upload/c_fill,g_center,ar_1:1/products/imported/DHN-01/dhn-01-ab12cd34.jpg',
+    );
+    expect(shapedImageUrl(shapedImageUrl(PHOTO, 'hero'), 'detail')).toBe(
+      shapedImageUrl(PHOTO, 'detail'),
+    );
+  });
+
   it('replaces a shape rather than stacking two', () => {
     const twice = shapedImageUrl(shapedImageUrl(PHOTO, 'card'), 'whole');
     expect(twice).toBe(shapedImageUrl(PHOTO, 'whole'));

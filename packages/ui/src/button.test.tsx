@@ -70,6 +70,14 @@ describe('Button', () => {
     expect(buttonClass('primary') + buttonClass('secondary')).not.toMatch(/accent/);
   });
 
+  it('can set its label in Bold sentence case instead of spaced capitals', () => {
+    const bold = buttonClass('primary', undefined, 'bold');
+    expect(bold).toContain('font-bold');
+    expect(bold).not.toMatch(/\bcaps/);
+    expect(buttonClass('primary')).toMatch(/\bcaps/);
+    expect(buttonClass('secondary', 'w-full', 'bold').endsWith(' w-full')).toBe(true);
+  });
+
   it('keeps extra classes after its own', () => {
     expect(buttonClass('primary', 'w-full').endsWith(' w-full')).toBe(true);
   });
