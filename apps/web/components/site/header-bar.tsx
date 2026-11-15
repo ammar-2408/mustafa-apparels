@@ -33,8 +33,8 @@ function menuIcon(href: string) {
 
 // A 44px icon control with a visible label from sm, so phones keep the header on one line.
 const control =
-  'inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-fg';
-const label = 'caps-tight hidden sm:inline';
+  'header-control inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-fg';
+const label = 'control-label caps-tight hidden sm:inline';
 
 // The header band, the floating bar that takes over once it scrolls away, and the side-panel menu.
 // No session read: Account is a plain link, so cached pages stay free of per-user work.
@@ -139,7 +139,10 @@ export function HeaderBar({ links, contact }: Props) {
       >
         <span aria-hidden="true">
           <FlowerSprig className="sway absolute top-16 right-0 w-24" />
-          <FlowerSprig className="sway absolute right-0 bottom-0 hidden w-40 -scale-y-100 sm:block" />
+          {/* Flipped on a wrapper, so the sway can turn the drawing from its own stem. */}
+          <span className="absolute right-0 bottom-0 hidden w-40 -scale-y-100 sm:block">
+            <FlowerSprig className="sway w-full" />
+          </span>
         </span>
         <nav aria-label="Main" className="relative">
           <ul className="flex flex-col">

@@ -140,9 +140,9 @@ The flow: collection file + photos in `Business data/` → per-suit files in `ca
 - [ ] 8.3 Text reveal component (SplitText), word-fill-on-scroll component + image clip reveal component
 - [ ] 8.4 Scroll reveals on home sections, hero inset and stacking cards (desktop); pinned horizontal "New arrivals" (desktop) / swipe (mobile); reveals on the other pages per `docs/design.md` §9.1
 - [ ] 8.5 Page transitions between all pages: short powder blue cover with the MA submark (View Transitions / GSAP overlay), none with reduced motion + Flip card→product image
-- [ ] 8.6 Micro-interactions: collection panel and product card hovers, menu panel motion, magnetic buttons, cursor follower (desktop, pointer:fine only), hover image swap
+- [ ] 8.6 Micro-interactions (button lift, fabric card hover, header underline and the menu slide are already done in CSS, `apps/web/app/motion.css`, 2026-11-15; keep them): collection panel and product card hovers, menu panel motion, magnetic buttons, cursor follower (desktop, pointer:fine only), hover image swap
 - [ ] 8.7 R3F setup: lazy `<HeroCanvas>` island with poster fallback + capability detection
-- [ ] 8.8 Flowing-fabric hero shader in ink folds on white with powder blue light, reading as real draped cloth with soft folds, **no model or video download**, within budget (≤ 250 kB JS)
+- [ ] 8.8 (Decide first: the hero now shows a suit photo in an arch, the owner's mockup of 2026-11-15, so ask the owner whether the shader still belongs in it) Flowing-fabric hero shader in ink folds on white with powder blue light, reading as real draped cloth with soft folds, **no model or video download**, within budget (≤ 250 kB JS)
 - [ ] 8.9 WebGL image hover distortion on collection tiles (desktop)
 - [ ] 8.10 Motion/3D tests: reduced motion, no-WebGL, no leaked triggers, CLS < 0.1; Lighthouse ≥ 90 mobile
 

@@ -1,0 +1,62 @@
+import { expect, test } from '../support/users';
+
+// Home and menu motion (apps/web/app/motion.css): CSS only, off with reduced motion.
+const animationName = (el: Element) => getComputedStyle(el).animationName;
+
+test.describe('with motion allowed', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('the hero headline rises once, and the menu slides in with its rows one by one', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const h1 = page.getByRole('heading', { level: 1 });
+    expect(await h1.evaluate(animationName)).toBe('hero-rise');
+    expect(await h1.evaluate((el) => getComputedStyle(el).animationIterationCount)).toBe('1');
+
+    await page.getByRole('banner').getByRole('button', { name: 'Menu' }).click();
+    const panel = page.getByRole('dialog', { name: 'Menu' });
+    await expect(panel).toBeVisible();
+    expect(await panel.evaluate((el) => getComputedStyle(el).transitionProperty)).toContain(
+      'translate',
+    );
+    const rows = panel.locator('.menu-item');
+    expect(await rows.nth(1).evaluate(animationName)).toBe('menu-item-in');
+    const delays = await rows.evaluateAll((items) =>
+      items.map((li) => parseFloat(getComputedStyle(li).animationDelay)),
+    );
+    // Each row starts about 25ms after the one before it.
+    expect(delays[2]! - delays[1]!).toBeCloseTo(0.025, 3);
+    // It ends in place, fully shown.
+    await expect
+      .poll(() => panel.evaluate((el) => getComputedStyle(el).translate))
+      .toMatch(/^(none|0px)$/);
+  });
+});
+
+test.describe('with reduced motion', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('nothing moves: no headline rise, no sway, no menu slide', async ({ page }) => {
+    await page.goto('/');
+    const h1 = page.getByRole('heading', { level: 1 });
+    expect(await h1.evaluate(animationName)).toBe('none');
+    expect(await page.locator('.sway').first().evaluate(animationName)).toBe('none');
+
+    await page.getByRole('banner').getByRole('button', { name: 'Menu' }).click();
+    const panel = page.getByRole('dialog', { name: 'Menu' });
+    await expect(panel).toBeVisible();
+    expect(await panel.evaluate((el) => getComputedStyle(el).translate)).toBe('none');
+    expect(await panel.locator('.menu-item').nth(1).evaluate(animationName)).toBe('none');
+  });
+});
+
+test('on a laptop, a Shop by Fabric card lifts on hover', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Phones have no hover.');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const card = page.getByRole('region', { name: 'Shop by Fabric' }).getByRole('link').first();
+  await card.scrollIntoViewIfNeeded();
+  await card.hover();
+  await expect.poll(() => card.evaluate((el) => getComputedStyle(el).translate)).toBe('0px -4px');
+});

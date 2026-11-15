@@ -214,6 +214,8 @@ Motion for each section follows §9.1. The hero, Shop by Fabric and the menu fol
 
 ## 5. Motion and video
 
+**Already in place (2026-11-15, the owner's spec):** `apps/web/app/motion.css` holds CSS-only motion for the home hero, Shop by Fabric, the header controls and the menu: the headline rises 8px over 220ms; flower sprigs sway about 2° (desktop with a mouse only); buttons lift 2px with the arrow moving 4px, and press to 98%; fabric cards lift 4px with the photo at 1.025 and the icon turning 5°; header labels get a growing orange underline; the menu slides in from the right over 220ms with the backdrop fading on its own and rows 25ms apart. Only `translate`, `rotate`, `scale` and `opacity` move, hover needs `(hover: hover)`, and all of it is off with reduced motion (`e2e/web/motion.spec.ts`). Phase 8 builds on this rather than replacing it.
+
 ### 5.1 Motion system (GSAP)
 
 Principles: motion should feel **soft, fabric-like and premium** — never slow down a shopper.

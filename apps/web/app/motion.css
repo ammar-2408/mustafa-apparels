@@ -1,0 +1,193 @@
+/*
+ * Home and menu motion, from the owner's spec (2026-11-15). CSS only, no animation library.
+ * Only transform and opacity move: the individual translate, rotate and scale properties, so these
+ * never fight Tailwind's own transforms.
+ * Everything sits under (prefers-reduced-motion: no-preference): with reduced motion nothing
+ * moves. Hover effects need a real hover device. The continuous flower sway is desktop only.
+ * Rules here are unlayered, so they win over the Tailwind utilities they extend (e.g. a
+ * button's transition-colors).
+ * Hook classes: hero-title, sway, lift, nudge, fabric-card, fabric-photo, card-icon,
+ * header-control, control-label, menu-panel, menu-item (with --i), menu-row.
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 1. The hero headline rises 8px and fades in once on load. It ends where it was laid out,
+     so nothing shifts. */
+  .hero-title {
+    animation: hero-rise 220ms ease-out both;
+  }
+
+  /* 2. Flower sprigs sway about 2° from their stem. Desktop with a mouse only. */
+  @media (min-width: 64rem) and (hover: hover) {
+    .sway {
+      transform-origin: 100% 0;
+      animation: sway 5s ease-in-out infinite alternate;
+    }
+  }
+
+  /* 3. Buttons lift 2px and their arrow moves 4px on hover. They press in a little when tapped. */
+  .lift {
+    transition:
+      translate 180ms ease-out,
+      scale 120ms ease-out,
+      background-color 180ms ease-out,
+      color 180ms ease-out,
+      border-color 180ms ease-out;
+  }
+
+  .lift:active {
+    scale: 0.98;
+  }
+
+  .nudge {
+    transition: translate 180ms ease-out;
+  }
+
+  /* 4 and 5. Fabric cards lift 4px with a soft shadow, the photo grows a little inside its frame,
+     and the icon turns 5°. The icon also turns on keyboard focus. */
+  .fabric-card {
+    transition:
+      translate 220ms ease-out,
+      box-shadow 220ms ease-out;
+  }
+
+  .fabric-photo {
+    transition: scale 220ms ease-out;
+  }
+
+  .card-icon {
+    transition: rotate 200ms ease-out;
+  }
+
+  .fabric-card:focus-visible .card-icon {
+    rotate: 5deg;
+  }
+
+  /* 6. Header controls: an orange line grows under the label, and the icon grows slightly. */
+  .header-control svg {
+    transition: scale 180ms ease-out;
+  }
+
+  .control-label {
+    position: relative;
+  }
+
+  .control-label::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0 0.4em;
+    bottom: -4px;
+    height: 1px;
+    background: var(--color-accent);
+    scale: 0 1;
+    transform-origin: left;
+    transition: scale 180ms ease-out;
+  }
+
+  .header-control:focus-visible .control-label::after {
+    scale: 1 1;
+  }
+
+  @media (hover: hover) {
+    .lift:hover {
+      translate: 0 -2px;
+    }
+
+    .lift:hover .nudge,
+    .fabric-card:hover .nudge,
+    .menu-row:hover .nudge {
+      translate: 4px 0;
+    }
+
+    .fabric-card:hover {
+      translate: 0 -4px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .fabric-card:hover .fabric-photo {
+      scale: 1.025;
+    }
+
+    .fabric-card:hover .card-icon {
+      rotate: 5deg;
+    }
+
+    .header-control:hover svg {
+      scale: 1.08;
+    }
+
+    .header-control:hover .control-label::after {
+      scale: 1 1;
+    }
+  }
+
+  /* 7. The menu slides in from the right while the backdrop fades on its own, then the rows
+     appear 25ms apart. Closing runs the slide backwards where the browser can animate a
+     closing dialog; elsewhere it just closes. No blur behind it. */
+  .menu-panel {
+    translate: 100% 0;
+    transition:
+      translate 220ms ease-out,
+      display 220ms allow-discrete,
+      overlay 220ms allow-discrete;
+  }
+
+  .menu-panel[open] {
+    translate: 0 0;
+  }
+
+  .menu-panel::backdrop {
+    opacity: 0;
+    transition:
+      opacity 220ms ease-out,
+      display 220ms allow-discrete,
+      overlay 220ms allow-discrete;
+  }
+
+  .menu-panel[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .menu-panel[open] {
+      translate: 100% 0;
+    }
+
+    .menu-panel[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  .menu-panel[open] .menu-item {
+    animation: menu-item-in 220ms ease-out both;
+    animation-delay: calc(60ms + var(--i, 0) * 25ms);
+  }
+
+  .menu-row {
+    transition: color 180ms ease-out;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+@keyframes sway {
+  from {
+    rotate: -1.5deg;
+  }
+
+  to {
+    rotate: 2deg;
+  }
+}
+
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    translate: 12px 0;
+  }
+}
