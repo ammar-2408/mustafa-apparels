@@ -25,7 +25,8 @@ export function HeaderBar({ links, contact }: Props) {
   const [open, setOpen] = useState(false);
   const [floating, setFloating] = useState(false);
   const bandRef = useRef<HTMLElement>(null);
-  const menuButton = useRef<HTMLButtonElement>(null);
+  // The button that opened the menu (the header's or the floating bar's), to give focus back to.
+  const opener = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
 
   // Moving to another page closes the menu.
@@ -44,7 +45,11 @@ export function HeaderBar({ links, contact }: Props) {
   }, []);
 
   const whatsapp = contact.whatsapp ? whatsappLink(contact.whatsapp, GENERAL_WHATSAPP_TEXT) : null;
-  const close = () => setOpen(false);
+  // Safari doesn't focus a button on click, so the dialog has nothing to return focus to: do it here.
+  const close = () => {
+    setOpen(false);
+    opener.current?.focus();
+  };
 
   const actions = (
     <>
@@ -62,12 +67,14 @@ export function HeaderBar({ links, contact }: Props) {
         </a>
       )}
       <button
-        ref={menuButton}
         type="button"
         className={control}
         aria-haspopup="dialog"
         aria-expanded={open}
-        onClick={() => setOpen(true)}
+        onClick={(event) => {
+          opener.current = event.currentTarget;
+          setOpen(true);
+        }}
       >
         <MenuIcon />
         <span className={label}>Menu</span>

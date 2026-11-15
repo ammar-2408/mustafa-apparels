@@ -41,6 +41,14 @@ export function SearchBox({ defaultValue = '' }: { defaultValue?: string }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const latest = useRef(0);
+  const input = useRef<HTMLInputElement>(null);
+
+  // Text typed before the page's scripts loaded is in the field but not in state: pick it up, so
+  // suggestions still come on a slow phone (and in WebKit tests).
+  useEffect(() => {
+    const typed = input.current?.value ?? '';
+    if (typed !== defaultValue) queueMicrotask(() => setValue(typed));
+  }, [defaultValue]);
 
   useEffect(() => {
     const q = value.trim();
@@ -90,6 +98,7 @@ export function SearchBox({ defaultValue = '' }: { defaultValue?: string }) {
       </label>
       <div className="flex gap-2">
         <input
+          ref={input}
           id={`${listId}-input`}
           name="q"
           type="search"

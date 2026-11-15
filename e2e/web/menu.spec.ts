@@ -38,14 +38,21 @@ test.describe('side-panel menu', () => {
     await expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('the page behind does not scroll while it is open', async ({ page }) => {
+  test('the page behind does not scroll while it is open', async ({ page, isMobile }) => {
     await page.goto('/');
     // A stylesheet, not an attribute: React would see a changed attribute as a hydration mismatch.
     await page.addStyleTag({ content: 'main { min-height: 400vh }' });
     await page.getByRole('banner').getByRole('button', { name: 'Menu' }).click();
     await expect(page.getByRole('dialog', { name: 'Menu' })).toBeVisible();
-    await page.mouse.move(10, 400);
-    await page.mouse.wheel(0, 1500);
+    // The page itself can't scroll while the dialog is open...
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe(
+      'hidden',
+    );
+    // ...and the wheel and keys don't move it (mobile WebKit has no wheel in Playwright).
+    if (!isMobile) {
+      await page.mouse.move(10, 400);
+      await page.mouse.wheel(0, 1500);
+    }
     await page.keyboard.press('PageDown');
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
@@ -65,7 +72,8 @@ test.describe('side-panel menu', () => {
 test('the floating bar takes over once the header scrolls away', async ({ page }) => {
   await page.goto('/');
   await page.addStyleTag({ content: 'main { min-height: 400vh }' });
-  await page.mouse.wheel(0, 800);
+  // Not the mouse wheel: mobile WebKit has none in Playwright.
+  await page.evaluate(() => window.scrollTo(0, 800));
   const bar = page.locator('[data-floating="true"]');
   await expect(bar).toBeVisible();
   await expect(bar.getByRole('link', { name: 'Mustafa Apparels home' })).toBeVisible();
@@ -75,10 +83,21 @@ test('the floating bar takes over once the header scrolls away', async ({ page }
   );
 });
 
-test('the skip link jumps to the main content', async ({ page }) => {
+test('the skip link jumps to the main content', async ({ page, browserName }) => {
   await page.goto('/');
-  await page.keyboard.press('Tab');
   const skip = page.getByRole('link', { name: 'Skip to content' });
+  if (browserName === 'webkit') {
+    // Safari's Tab skips links unless the user turns that on, so check the skip link is the first
+    // thing Tab would reach, then use it.
+    expect(
+      await page.evaluate(
+        () => document.querySelector('a[href], button, input, select, textarea')?.textContent,
+      ),
+    ).toBe('Skip to content');
+    await skip.focus();
+  } else {
+    await page.keyboard.press('Tab');
+  }
   await expect(skip).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('#main')).toBeFocused();
