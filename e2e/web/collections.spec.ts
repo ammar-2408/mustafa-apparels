@@ -42,6 +42,7 @@ test('unknown collections and bad page numbers are real 404s; page 1 moves to th
   const first = await request.get('/collections/khaddar/page/1', { maxRedirects: 0 });
   expect(first.status()).toBe(301);
   expect(first.headers()['location']).toMatch(/\/collections\/khaddar$/);
+  expect(first.headers()['location']).not.toContain(',');
 });
 
 test('an old collection address moves permanently to the current one', async ({ db, request }) => {
@@ -52,6 +53,7 @@ test('an old collection address moves permanently to the current one', async ({ 
     const response = await request.get(`/collections/${oldSlug}`, { maxRedirects: 0 });
     expect(response.status()).toBe(308);
     expect(response.headers()['location']).toMatch(/\/collections\/khaddar$/);
+    expect(response.headers()['location']).not.toContain(',');
   } finally {
     await db
       .delete(slugRedirect)

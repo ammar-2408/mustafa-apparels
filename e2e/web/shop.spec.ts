@@ -49,6 +49,7 @@ test('/shop/page/1 moves permanently to /shop', async ({ request }) => {
   const response = await request.get('/shop/page/1', { maxRedirects: 0 });
   expect(response.status()).toBe(301);
   expect(response.headers()['location']).toMatch(/\/shop$/);
+  expect(response.headers()['location']).not.toContain(',');
 });
 
 test('page 2 is its own page: 200, its own canonical, the rest of the suits and links back', async ({

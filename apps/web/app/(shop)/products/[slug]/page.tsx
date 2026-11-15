@@ -46,7 +46,10 @@ const suitDescription = (suit: Awaited<ReturnType<typeof load>>) =>
   `${suit.name}: an unstitched ${suit.fabric} suit from Mustafa Apparels. Order on WhatsApp with courier delivery across Pakistan.`;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const suit = await load(params);
+  // Never notFound() or redirect here: the page does that. Thrown from both, a redirect can reach
+  // the browser with its Location header twice (seen in CI), which sends it to a broken address.
+  const suit = await getSuit((await params).slug);
+  if (!suit) return {};
   // The default share image until the generated 1200×630 one (step 7.4).
   return buildMetadata({
     title: suit.seoTitle ?? suit.name,

@@ -34,7 +34,10 @@ test('an old collection address moves to the current one and keeps the page numb
   try {
     const page2 = await request.get(`/collections/${oldSlug}/page/2`, { maxRedirects: 0 });
     expect(page2.status()).toBe(308);
-    expect(page2.headers()['location']).toMatch(/\/collections\/lajwanti\/page\/2$/);
+    // The exact path: a Location header sent twice arrives joined with ", " and must fail here.
+    expect(new URL(page2.headers()['location']!, 'http://x').pathname).toBe(
+      '/collections/lajwanti/page/2',
+    );
   } finally {
     await db
       .delete(slugRedirect)

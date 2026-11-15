@@ -24,7 +24,11 @@ async function load(params: Props['params']) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const list = await load(params);
+  // Never notFound() or redirect here: the page does that. Thrown from both, a redirect can reach
+  // the browser with its Location header twice (seen in CI), which sends it to a broken address.
+  const page = parsePageParam((await params).n);
+  const list = page === null ? null : await listSuits({ page });
+  if (page === null || !list || page > list.pageCount) return {};
   return buildMetadata({
     title: `All unstitched suits, page ${list.page}`,
     description: `Page ${list.page} of every unstitched 2-piece and 3-piece suit from Mustafa Apparels in Dhanak, Khaddar and Lajwanti, ordered on WhatsApp with delivery across Pakistan.`,

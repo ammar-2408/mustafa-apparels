@@ -69,6 +69,7 @@ test('an old slug moves permanently; unknown, draft and archived suits are real 
   const moved = await request.get(`/products/${old!.oldSlug}`, { maxRedirects: 0 });
   expect(moved.status()).toBe(308);
   expect(moved.headers()['location']).toMatch(new RegExp(`/products/${target}$`));
+  expect(moved.headers()['location']).not.toContain(',');
 
   for (const path of [
     '/products/no-such-suit',

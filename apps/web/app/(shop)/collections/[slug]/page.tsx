@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import { ListPage } from '../../../../components/list-page';
-import { listCollections } from '../../../../lib/catalog';
+import { getCollection, listCollections } from '../../../../lib/catalog';
 import {
   collectionCrumbs,
   collectionDescription,
@@ -17,7 +17,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { collection } = await loadCollectionPage((await params).slug, 1);
+  // Never notFound() or redirect here: the page does that. Thrown from both, a redirect can reach
+  // the browser with its Location header twice (seen in CI), which sends it to a broken address.
+  const collection = await getCollection((await params).slug);
+  if (!collection) return {};
   return buildMetadata({
     title: collection.seoTitle ?? `${collection.name} unstitched suits`,
     description: collectionDescription(collection),

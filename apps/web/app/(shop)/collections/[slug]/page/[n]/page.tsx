@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { ListPage } from '../../../../../../components/list-page';
-import { listCollections, listSuits } from '../../../../../../lib/catalog';
+import { getCollection, listCollections, listSuits } from '../../../../../../lib/catalog';
 import { collectionCrumbs, loadCollectionPage } from '../../../../../../lib/collection-page';
 import { laterPageParams, parsePageParam } from '../../../../../../lib/paging';
 import { buildMetadata } from '../../../../../../lib/seo';
@@ -28,7 +28,14 @@ async function load(params: Props['params']) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { collection, list } = await load(params);
+  // Never notFound() or redirect here: the page does that. Thrown from both, a redirect can reach
+  // the browser with its Location header twice (seen in CI), which sends it to a broken address.
+  const { slug, n } = await params;
+  const page = parsePageParam(n);
+  const collection = await getCollection(slug);
+  const list =
+    page === null || !collection ? null : await listSuits({ categorySlug: collection.slug, page });
+  if (page === null || !collection || !list || page > list.pageCount) return {};
   return buildMetadata({
     title: `${collection.name} unstitched suits, page ${list.page}`,
     description: `Page ${list.page} of the ${collection.name} collection: unstitched 2-piece and 3-piece suits from Mustafa Apparels, ordered on WhatsApp with courier delivery across Pakistan.`,
