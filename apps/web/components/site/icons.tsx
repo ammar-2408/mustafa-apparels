@@ -182,6 +182,55 @@ export function BagIcon({ className }: IconProps) {
   );
 }
 
+// A suit with a small heart, for "Choose a suit". The heart is orange.
+export function SuitHeartIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M9 2.5l1.5 2h3L15 2.5l2.5 2.5-1.5 3v3.5l3 10H5l3-10V8L6.5 5 9 2.5z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M19 13.2c.8-1.3 3-1 3 .8 0 1.6-3 3.5-3 3.5s-3-1.9-3-3.5c0-1.8 2.2-2.1 3-.8z"
+        className="fill-accent-text"
+      />
+    </svg>
+  );
+}
+
+// A delivery van with speed lines, for "Courier delivery".
+export function TruckIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M7 6h9v10H7zM16 9h3l3 3.5V16h-6M1 8h4M2 11h3M3 14h2"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+      <circle
+        cx="10"
+        cy="17.5"
+        r="1.8"
+        className="fill-bg"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+      <circle
+        cx="18.5"
+        cy="17.5"
+        r="1.8"
+        className="fill-bg"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+    </svg>
+  );
+}
+
 type Icon = (props: IconProps) => JSX.Element;
 
 // Each collection's icon in the menu and on its Shop by Fabric card. A collection the owner adds

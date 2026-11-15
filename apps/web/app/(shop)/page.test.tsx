@@ -73,19 +73,42 @@ describe('home sections', () => {
     expect(within(region).getByRole('img', { name: 'Fabrics' })).toBeTruthy();
   });
 
-  it('lists how to order as three steps in order, and leaves empty parts out', () => {
-    render(<HowToOrder />);
-    const steps = within(screen.getByRole('list')).getAllByRole('listitem');
+  it('lists how to order as three numbered steps, each with its next move', () => {
+    render(<HowToOrder whatsapp="+923482799707" />);
+    const region = screen.getByRole('region', { name: 'How to Order' });
+    const steps = within(within(region).getByRole('list')).getAllByRole('listitem');
     expect(steps.map((s) => s.querySelector('h3')!.textContent)).toEqual([
       'Choose a suit',
       'Send it to us on WhatsApp',
       'Courier delivery',
     ]);
-    const { container } = render(
-      <>
-        <NewArrivals suits={[]} />
-      </>,
-    );
+    expect(steps.map((s) => s.textContent)).toEqual([
+      expect.stringContaining('Step 1'),
+      expect.stringContaining('Step 2'),
+      expect.stringContaining('Step 3'),
+    ]);
+    expect(
+      within(steps[0]!)
+        .getByRole('link', { name: /Browse Collections/ })
+        .getAttribute('href'),
+    ).toBe('#collections');
+    expect(
+      within(steps[1]!)
+        .getByRole('link', { name: /Order on WhatsApp/ })
+        .getAttribute('href'),
+    ).toMatch(/^https:\/\/wa\.me\/923482799707/);
+    // No tracking page exists, so the third step asks on WhatsApp (owner, 2026-11-15).
+    const ask = within(steps[2]!).getByRole('link', { name: /Ask on WhatsApp/ });
+    expect(decodeURIComponent(ask.getAttribute('href')!)).toContain('delivery');
+    expect(region.textContent).not.toMatch(/Track/);
+  });
+
+  it('keeps How to Order without its WhatsApp links when no number is set', () => {
+    render(<HowToOrder whatsapp={null} />);
+    expect(screen.getAllByRole('link').map((l) => l.textContent)).toEqual([
+      expect.stringContaining('Browse Collections'),
+    ]);
+    const { container } = render(<NewArrivals suits={[]} />);
     expect(container.innerHTML).toBe('');
   });
 });

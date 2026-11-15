@@ -44,3 +44,6 @@ export function socialLinks(socials: Socials | null | undefined): NavLink[] {
 
 // The greeting a general WhatsApp button opens with (a suit's own button names the suit, step 6.7).
 export const GENERAL_WHATSAPP_TEXT = "Hi! I'd like to ask about your unstitched suits.";
+
+// How to Order's third step: there's no tracking page, so customers ask about delivery in chat.
+export const DELIVERY_WHATSAPP_TEXT = "Hi! I'd like to ask about delivery for my order.";

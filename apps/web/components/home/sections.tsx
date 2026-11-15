@@ -6,18 +6,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { collectionList } from '../../lib/format';
-import { GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
+import { DELIVERY_WHATSAPP_TEXT, GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import type { SiteArt } from '../../lib/site-art';
 import type { Collection, SuitCard } from '../../lib/types';
 import { Carousel } from '../carousel/carousel';
 import { ProductCard } from '../product/product-card';
-import { Eyebrow, FlowerSprig, LeafBranch, Swash, Wave } from '../site/flourish';
+import { Eyebrow, FlowerSprig, LeafBranch, LotusOrnament, Swash, Wave } from '../site/flourish';
 import {
   ArrowIcon,
+  ChevronIcon,
   collectionIcon,
   LayersIcon,
   LotusIcon,
   ShirtIcon,
+  SuitHeartIcon,
+  TruckIcon,
   WhatsAppIcon,
 } from '../site/icons';
 
@@ -281,39 +284,96 @@ export function ExploreCollections({ collections }: { collections: CollectionPan
 
 const STEPS = [
   {
+    Icon: SuitHeartIcon,
     title: 'Choose a suit',
     text: 'Browse the collections and open any suit to see every piece, its fabric and its design code.',
+    link: 'Browse Collections',
   },
   {
+    Icon: WhatsAppIcon,
     title: 'Send it to us on WhatsApp',
     text: 'Tap Order on WhatsApp. The message names the suit, so we know which one you mean.',
+    link: 'Order on WhatsApp',
   },
   {
+    Icon: TruckIcon,
     title: 'Courier delivery',
     text: 'We confirm the price, delivery and payment with you in the chat, then send it by courier.',
+    link: 'Ask on WhatsApp',
   },
 ];
 
-// 6. How to order: the three steps, in order, on powder blue.
-export function HowToOrder() {
+// 5. How to order (the owner's mockup, 2026-11-15): three step cards on pale powder blue, each with
+// its next move. The WhatsApp links need the shop's number, so they're left out without it.
+export function HowToOrder({ whatsapp }: { whatsapp: string | null }) {
+  const hrefs = [
+    '#collections',
+    whatsapp ? whatsappLink(whatsapp, GENERAL_WHATSAPP_TEXT) : null,
+    whatsapp ? whatsappLink(whatsapp, DELIVERY_WHATSAPP_TEXT) : null,
+  ];
   return (
-    <section aria-labelledby="order-title" className="bg-primary py-section text-primary-fg">
-      <div className={wrap}>
-        <h2 id="order-title" className="mb-12 text-h2 font-light">
-          How to order
-        </h2>
-        <ol className="grid gap-12 md:grid-cols-3 md:gap-8">
-          {STEPS.map((step, i) => (
-            <li key={step.title} className="flex flex-col gap-4 border-t border-fg pt-6">
-              <span className="caps-tight">Step {i + 1}</span>
-              <h3 className="text-h3 font-light">{step.title}</h3>
-              <p className="text-body">{step.text}</p>
-            </li>
-          ))}
+    <section
+      aria-labelledby="order-title"
+      className="relative overflow-hidden bg-surface-soft py-16 md:py-24"
+    >
+      <LeafBranch className="absolute top-10 -left-8 hidden w-56 md:block" />
+      <LeafBranch className="absolute bottom-4 -left-6 hidden w-48 -scale-y-100 md:block" />
+      <FlowerSprig className="sway absolute top-0 right-0 hidden w-60 md:block" />
+      <Wave className="absolute bottom-0 left-0 h-20 w-full fill-primary/40" />
+      <div className={`${wrap} relative`}>
+        <div className="mb-12 flex flex-col items-center gap-3 text-center">
+          <LotusOrnament />
+          <h2 id="order-title" className="reveal text-h2 font-bold">
+            How to <span className="text-accent-text">Order</span>
+          </h2>
+          <p className="text-body-lg text-muted">
+            Follow these simple steps to get your favourite suit delivered at your doorstep.
+          </p>
+        </div>
+        <ol className="grid gap-6 lg:grid-cols-3 lg:gap-12">
+          {STEPS.map(({ Icon, title, text, link }, i) => {
+            const href = hrefs[i];
+            const external = href?.startsWith('https://');
+            return (
+              <li
+                key={title}
+                className="step-card relative flex flex-col gap-5 rounded-lg bg-bg p-6 shadow-soft md:p-8"
+              >
+                {i > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1/2 -left-6 hidden size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-surface-soft text-fg shadow-soft lg:flex"
+                  >
+                    <ChevronIcon className="size-5" />
+                  </span>
+                )}
+                <div className="flex items-center gap-5">
+                  <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-surface-soft">
+                    <Icon className="card-icon size-11" />
+                  </span>
+                  <div className="flex flex-col gap-2">
+                    <p className="caps-tight">
+                      Step {i + 1}
+                      <span aria-hidden="true" className="mt-1 block h-0.5 w-10 bg-accent" />
+                    </p>
+                    <h3 className="text-body-lg font-bold">{title}</h3>
+                  </div>
+                </div>
+                <p className="text-body">{text}</p>
+                {href && (
+                  <a
+                    href={href}
+                    {...(external ? { target: '_blank', rel: 'noopener' } : {})}
+                    className="mt-auto inline-flex items-center gap-2 self-start py-2 text-small underline decoration-accent-text decoration-2 underline-offset-8"
+                  >
+                    {link}
+                    <ArrowIcon className="nudge size-4" />
+                  </a>
+                )}
+              </li>
+            );
+          })}
         </ol>
-        <Link href="/how-to-order" className="link mt-12 inline-block py-2">
-          Delivery, payment and returns
-        </Link>
       </div>
     </section>
   );

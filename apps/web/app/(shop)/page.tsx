@@ -59,7 +59,7 @@ export default async function Home() {
       <About art={siteArt(SITE_ART.aboutFabric)} />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
       <ExploreCollections collections={panels} />
-      <HowToOrder />
+      <HowToOrder whatsapp={settings.whatsapp} />
     </>
   );
 }
