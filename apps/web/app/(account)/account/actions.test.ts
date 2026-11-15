@@ -39,7 +39,10 @@ vi.mock('../../../lib/auth', async () => {
     getAuth: () => ({ api: { verifyPassword } }),
   };
 });
-vi.mock('../../../lib/services', () => ({ withinLimit: async () => allowed.value }));
+const limitCalls = vi.hoisted(() => ({
+  check: vi.fn<(limit: unknown, key: string) => Promise<boolean>>(async () => allowed.value),
+}));
+vi.mock('../../../lib/services', () => ({ withinLimit: limitCalls.check }));
 
 import { deleteAccount, toggleWishlist, updateProfile } from './actions';
 
@@ -101,6 +104,22 @@ describe('who may use them (the full guard, ADR-020)', () => {
     }
     expect(account.setSaved).not.toHaveBeenCalled();
     expect(account.deleteAccount).not.toHaveBeenCalled();
+  });
+});
+
+describe('limits', () => {
+  it('counts each action against its own limit, keyed on the session’s user id', async () => {
+    const { ACCOUNT_LIMITS } = await import('../../../lib/account-limits');
+    limitCalls.check.mockClear();
+    await toggleWishlist({ productId: 'p1', saved: true });
+    await updateProfile({ name: 'Ayesha', phone: '' });
+    await deleteAccount({ confirm: 'DELETE', password: 'pw' });
+    expect(limitCalls.check.mock.calls).toEqual([
+      [ACCOUNT_LIMITS.wishlist, 'u1'],
+      [ACCOUNT_LIMITS.profile, 'u1'],
+      [ACCOUNT_LIMITS.deleteAccount, 'u1'],
+    ]);
+    expect(ACCOUNT_LIMITS.deleteAccount).toMatchObject({ max: 3, failMode: 'closed' });
   });
 });
 

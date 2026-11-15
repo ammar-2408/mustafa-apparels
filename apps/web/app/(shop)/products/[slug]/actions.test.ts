@@ -2,6 +2,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const allowed = vi.hoisted(() => ({ value: true }));
+const limitCalls = vi.hoisted(() => ({
+  check: vi.fn<(limit: unknown, key: string) => Promise<boolean>>(async () => allowed.value),
+}));
 const session = vi.hoisted(() => ({ value: null as unknown }));
 const send = vi.hoisted(() => vi.fn(async () => ({ ok: true })));
 const create = vi.hoisted(() =>
@@ -35,7 +38,7 @@ vi.mock('../../../../lib/auth', async () => {
   };
 });
 vi.mock('../../../../lib/services', () => ({
-  withinLimit: async () => allowed.value,
+  withinLimit: limitCalls.check,
   getMailer: () => send,
 }));
 
@@ -78,6 +81,14 @@ describe('submitInquiry', () => {
         subject: 'New question about Black Suit (DHN-01)',
       }),
     );
+  });
+
+  it('counts each try against the inquiry limit, keyed on the shopper’s IP', async () => {
+    const { INQUIRY_LIMIT } = await import('../../../../lib/inquiry-limits');
+    limitCalls.check.mockClear();
+    await submitInquiry(form());
+    expect(limitCalls.check).toHaveBeenCalledWith(INQUIRY_LIMIT, '203.0.113.9');
+    expect(INQUIRY_LIMIT).toMatchObject({ max: 5, windowSeconds: 600, failMode: 'open' });
   });
 
   it('refuses when over the limit, before reading the form', async () => {

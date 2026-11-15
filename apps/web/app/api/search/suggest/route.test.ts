@@ -8,7 +8,10 @@ const suggest = vi.hoisted(() =>
 );
 vi.mock('@mustafa/db/client', () => ({ getDb: () => 'db' }));
 vi.mock('@mustafa/core/search', () => ({ suggest }));
-vi.mock('../../../../lib/services', () => ({ withinLimit: async () => allowed.value }));
+const limitCalls = vi.hoisted(() => ({
+  check: vi.fn<(limit: unknown, key: string) => Promise<boolean>>(async () => allowed.value),
+}));
+vi.mock('../../../../lib/services', () => ({ withinLimit: limitCalls.check }));
 
 import { GET } from './route';
 
@@ -36,6 +39,18 @@ describe('GET /api/search/suggest', () => {
       expect(await (await get(q)).json()).toEqual({ collections: [], products: [] });
     }
     expect(suggest).not.toHaveBeenCalled();
+  });
+
+  it('counts each request against the suggest limit, keyed on the IP', async () => {
+    const { SEARCH_LIMITS } = await import('../../../../lib/search-limits');
+    limitCalls.check.mockClear();
+    await GET(
+      new NextRequest('http://localhost/api/search/suggest?q=dhanak', {
+        headers: { 'x-nf-client-connection-ip': '198.51.100.4' },
+      }),
+    );
+    expect(limitCalls.check).toHaveBeenCalledWith(SEARCH_LIMITS.suggest, '198.51.100.4');
+    expect(SEARCH_LIMITS.suggest).toMatchObject({ max: 30, windowSeconds: 60 });
   });
 
   it('refuses with 429 when over the limit', async () => {
