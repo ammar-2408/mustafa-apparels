@@ -95,7 +95,19 @@ export async function deleteAccount(raw: unknown) {
       await account.deleteAccount(getDb(), session.user.id);
       const jar = await cookies();
       for (const { name } of jar.getAll()) {
-        if (/^(__Secure-)?ma\./.test(name)) jar.delete(name);
+        // Expire each shop cookie. A __Secure- cookie is only replaced by one sent Secure too, so
+        // set it rather than delete() it (delete() sends no Secure flag, and browsers ignore it).
+        if (/^(__Secure-)?ma\./.test(name)) {
+          jar.set({
+            name,
+            value: '',
+            maxAge: 0,
+            path: '/',
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: name.startsWith('__Secure-'),
+          });
+        }
       }
       return ok({ deleted: true });
     },

@@ -3,7 +3,7 @@
 // one customer can never read or change another's (IDOR tests in account.int.test.ts).
 import type { Database } from '@mustafa/db/client';
 import { category, inquiry, product, productMedia, user, wishlistItem } from '@mustafa/db/schema';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 
 import { notFound } from '../errors';
 import { cardColumns, isPublic, toCard } from '../products';
@@ -54,11 +54,13 @@ export async function myInquiries(db: Database, userId: string) {
       message: inquiry.message,
       status: inquiry.status,
       createdAt: inquiry.createdAt,
-      suitName: product.name,
-      suitSlug: product.slug,
+      // The suit only while shoppers can open its page (published, not deleted, collection shown).
+      suitName: sql<string | null>`case when ${isPublic} then ${product.name} end`,
+      suitSlug: sql<string | null>`case when ${isPublic} then ${product.slug} end`,
     })
     .from(inquiry)
-    .leftJoin(product, and(eq(inquiry.productId, product.id), eq(product.status, 'published')))
+    .leftJoin(product, eq(inquiry.productId, product.id))
+    .leftJoin(category, eq(product.categoryId, category.id))
     .where(eq(inquiry.userId, userId))
     .orderBy(desc(inquiry.createdAt));
 }

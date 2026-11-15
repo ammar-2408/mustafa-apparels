@@ -79,6 +79,27 @@ describe('my questions', () => {
   });
 });
 
+describe('my questions, suits that are no longer public', () => {
+  it('drops the link to a deleted suit or one in a hidden collection, keeping the question', async () => {
+    const me = await makeUser(db);
+    const deleted = await makeProduct(db, { published: true, deletedAt: new Date() });
+    const hidden = await makeProduct(db, {
+      published: true,
+      categoryId: (await makeCategory(db, { isActive: false })).id,
+    });
+    await db.insert(inquiry).values([
+      { userId: me.id, productId: deleted.id, name: 'Me', phone: '+923001234567', message: 'A' },
+      { userId: me.id, productId: hidden.id, name: 'Me', phone: '+923001234567', message: 'B' },
+    ]);
+    const mine = await account.myInquiries(db, me.id);
+    expect(mine).toHaveLength(2);
+    expect(mine.map((q) => [q.suitName, q.suitSlug])).toEqual([
+      [null, null],
+      [null, null],
+    ]);
+  });
+});
+
 describe('profile and delete', () => {
   it('changes my name and phone only', async () => {
     const me = await makeUser(db);

@@ -4,7 +4,7 @@ import { inquiryListInput } from '@mustafa/validators/inquiry';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { makeProduct, makeUser } from '../test/factories';
+import { makeCategory, makeProduct, makeUser } from '../test/factories';
 import * as inquiries from './index';
 
 let db: TestDb;
@@ -129,5 +129,22 @@ describe('create', () => {
     expect(created.suit).toBeNull();
     const [row] = await db.select().from(inquiry).where(eq(inquiry.id, created.id));
     expect(row).toMatchObject({ productId: null, userId: user.id, email: 'sana@example.com' });
+  });
+
+  it('keeps a question about a deleted suit or one in a hidden collection, without the suit', async () => {
+    const deleted = await makeProduct(db, { published: true, deletedAt: new Date() });
+    const hidden = await makeProduct(db, {
+      published: true,
+      categoryId: (await makeCategory(db, { isActive: false })).id,
+    });
+    for (const suit of [deleted, hidden]) {
+      const created = await inquiries.create(db, {
+        productId: suit.id,
+        name: 'Sana',
+        phone: '+923001234567',
+        message: 'Hello',
+      });
+      expect(created.suit).toBeNull();
+    }
   });
 });

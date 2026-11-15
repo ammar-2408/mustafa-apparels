@@ -6,7 +6,7 @@ const allowed = vi.hoisted(() => ({ value: true }));
 const verifyPassword = vi.hoisted(() => vi.fn(async () => ({ status: true })));
 const jar = vi.hoisted(() => ({
   names: ['ma.session_token', '__Secure-ma.session_data', 'other'],
-  deleted: [] as string[],
+  cleared: [] as { name: string; maxAge: number; secure: boolean }[],
 }));
 const account = vi.hoisted(() => ({
   setSaved: vi.fn(async (_db: unknown, _id: string, input: { saved: boolean }) => ({
@@ -20,7 +20,7 @@ vi.mock('next/headers', () => ({
   headers: async () => new Headers(),
   cookies: async () => ({
     getAll: () => jar.names.map((name) => ({ name })),
-    delete: (name: string) => jar.deleted.push(name),
+    set: (cookie: { name: string; maxAge: number; secure: boolean }) => jar.cleared.push(cookie),
   }),
 }));
 vi.mock('@mustafa/db/client', () => ({ getDb: () => 'db' }));
@@ -51,7 +51,7 @@ const signedIn = (createdAgoMs = 60_000, user: Record<string, unknown> = {}, app
 beforeEach(() => {
   session.value = signedIn();
   allowed.value = true;
-  jar.deleted = [];
+  jar.cleared = [];
   verifyPassword.mockClear();
   Object.values(account).forEach((fn) => fn.mockClear());
 });
@@ -124,7 +124,11 @@ describe('deleteAccount', () => {
       expect.objectContaining({ body: { password: 'pw' } }),
     );
     expect(account.deleteAccount).toHaveBeenCalledWith('db', 'u1');
-    expect(jar.deleted).toEqual(['ma.session_token', '__Secure-ma.session_data']);
+    // Each shop cookie expires; the __Secure- one is sent Secure, or browsers would ignore it.
+    expect(jar.cleared.map(({ name, maxAge, secure }) => [name, maxAge, secure])).toEqual([
+      ['ma.session_token', 0, false],
+      ['__Secure-ma.session_data', 0, true],
+    ]);
   });
 
   it('refuses a wrong password, a missing DELETE, and a session older than a day', async () => {

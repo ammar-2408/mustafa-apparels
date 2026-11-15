@@ -1,11 +1,12 @@
 // Inquiries: the storefront form creates them (step 6.8), the admin inbox works through them.
 import type { Database } from '@mustafa/db/client';
-import { inquiry, product } from '@mustafa/db/schema';
+import { category, inquiry, product } from '@mustafa/db/schema';
 import type { InquiryListInput } from '@mustafa/validators/inquiry';
-import { and, count, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq } from 'drizzle-orm';
 
 import { type Actor, record } from '../audit';
 import { notFound } from '../errors';
+import { isPublic } from '../products';
 
 export const INQUIRY_PAGE_SIZE = 50;
 
@@ -101,13 +102,8 @@ export async function create(db: Database, input: NewInquiry) {
         designCode: product.designCode,
       })
       .from(product)
-      .where(
-        and(
-          eq(product.id, input.productId),
-          eq(product.status, 'published'),
-          isNull(product.deletedAt),
-        ),
-      );
+      .innerJoin(category, eq(product.categoryId, category.id))
+      .where(and(eq(product.id, input.productId), isPublic));
     suit = row ?? null;
   }
   const [row] = await db
