@@ -2,7 +2,7 @@
 // decision, 2026-11-02). The honeypot `website` and the time check are read by the action.
 import { z } from 'zod';
 
-import { blankToUndefined, id } from './common';
+import { blankToUndefined, id } from './fields';
 import { pkMobile } from './phone';
 import { page } from './search';
 

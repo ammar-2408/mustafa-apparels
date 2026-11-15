@@ -2,7 +2,7 @@
 // Rows from removed accounts (test admins, deleted customers) are hidden unless removed=1.
 import { z } from 'zod';
 
-import { id } from './common';
+import { id } from './fields';
 import { page } from './search';
 
 export const AUDIT_ENTITIES = ['product', 'category', 'setting', 'inquiry'] as const;

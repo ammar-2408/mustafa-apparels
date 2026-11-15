@@ -3,7 +3,7 @@ import './zod-config';
 
 import { z } from 'zod';
 
-import { blankToUndefined, id } from './common';
+import { blankToUndefined, id } from './fields';
 import { pkMobile } from './phone';
 
 export const wishlistInput = z.object({ productId: id, saved: z.boolean() }).strict();

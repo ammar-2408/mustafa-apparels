@@ -3,7 +3,7 @@
 import { z } from 'zod';
 
 import { noBannedTerms } from './banned-terms';
-import { cloudinaryUrl, id, unique } from './common';
+import { cloudinaryUrl, id, unique } from './fields';
 
 export type MediaKind = 'image' | 'video';
 
