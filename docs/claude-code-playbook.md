@@ -31,7 +31,7 @@ Change it from the model chip at the bottom of the Claude Code panel (it shows s
 
 ## 2. Before Claude Code (done)
 
-Git, Node, pnpm and GitHub CLI are installed, the kit is in the `Mustafa Apparels` folder, and the repo is at `ammar-06/mustafa-apparels`.
+Git, Node, pnpm and GitHub CLI are installed, the kit is in the `Mustafa Apparels` folder, and the repo is at `ammar-2408/mustafa-apparels`.
 
 You create the service accounts (Neon, Cloudinary, Resend, Upstash, Netlify, Google Analytics) when Claude Code asks for them, and you paste the keys into `.env.local` yourself. Claude Code is blocked from reading that file.
 

@@ -24,7 +24,9 @@ Netlify's pricing and limits change. Figures here were checked on 2026-11-01 aga
 
 ## 2. Create the two sites
 
-Do this at step 0.11. Netlify → **Add new project** → import `ammar-06/mustafa-apparels`, twice.
+Do this at step 0.11. Netlify → **Add new project** → import `ammar-2408/mustafa-apparels`, twice.
+
+**Repo moved (2026-11-15):** the first GitHub account (`ammar-06`) was suspended, so the code now lives at `ammar-2408/mustafa-apparels` (public), with the same history. Both Netlify sites must be linked to the new repo (Project configuration → Build & deploy → Link repository), and any GitHub Actions secrets added again. Neon, Resend, Upstash, Cloudinary and Spaceship are unchanged.
 
 | Setting | Web site | Admin site | Where |
 |---|---|---|---|
