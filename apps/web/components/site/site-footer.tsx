@@ -13,6 +13,7 @@ export async function SiteFooter() {
       ]}
       socials={socialLinks(settings.socials)}
       serviceArea={settings.service_area}
+      whatsapp={settings.whatsapp}
     />
   );
 }

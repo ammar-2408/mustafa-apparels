@@ -98,27 +98,55 @@ describe('menu panel', () => {
 describe('FooterView', () => {
   const shop = [{ href: '/shop', label: 'All suits' }];
 
-  it('shows the shop, help and legal links and the logo, with no social row when none are set', () => {
-    render(<FooterView shop={shop} socials={[]} serviceArea={null} />);
+  it('shows the logo, the shop, help and policy links, and only true promises', () => {
+    render(<FooterView shop={shop} socials={[]} serviceArea={null} whatsapp="+923482799707" />);
     const footer = screen.getByRole('contentinfo');
     expect(within(footer).getByRole('img', { name: 'MA Apparels by Mustafa Ahmed' })).toBeTruthy();
-    for (const name of ['All suits', 'How to Order', 'FAQ', 'Privacy', 'Terms']) {
+    for (const name of [
+      'All suits',
+      'How to Order',
+      'FAQ',
+      'Contact',
+      'About',
+      'Privacy',
+      'Terms',
+    ]) {
       expect(within(footer).getByRole('link', { name })).toBeTruthy();
     }
-    expect(within(footer).queryByRole('heading', { name: 'Follow' })).toBeNull();
+    for (const name of ['Shop', 'Help', 'Policies', 'Stay in Touch']) {
+      expect(within(footer).getByRole('heading', { name })).toBeTruthy();
+    }
     expect(footer.textContent).toContain('Courier delivery across Pakistan');
+    expect(footer.textContent).toContain('© Mustafa Apparels. All rights reserved.');
+    // What the shop really offers today (owner, 2026-11-15): no "secure payments" or "easy returns".
+    expect(footer.textContent).toContain('Pay in WhatsApp chat');
+    expect(footer.textContent).toContain('Nationwide Delivery');
+    expect(footer.textContent).toContain('Unstitched, ready to tailor');
+    expect(footer.textContent).not.toMatch(/Secure Payments|Easy Returns/);
+    // No email sign-up yet: Stay in Touch is WhatsApp only.
+    expect(within(footer).queryByRole('textbox')).toBeNull();
+    expect(
+      within(footer)
+        .getByRole('link', { name: /Order on WhatsApp/ })
+        .getAttribute('href'),
+    ).toMatch(/^https:\/\/wa\.me\/923482799707/);
+    expect(within(footer).queryByRole('link', { name: 'Instagram' })).toBeNull();
   });
 
-  it('lists the social profiles that are set, opening in a new tab', () => {
+  it('lists the social profiles that are set as icons opening in a new tab, and no WhatsApp without a number', () => {
     render(
       <FooterView
         shop={shop}
         socials={[{ href: 'https://instagram.com/ma', label: 'Instagram' }]}
         serviceArea="every city in Pakistan"
+        whatsapp={null}
       />,
     );
     const link = screen.getByRole('link', { name: 'Instagram' });
     expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.querySelector('svg')).not.toBeNull();
+    expect(screen.queryByRole('link', { name: 'Facebook' })).toBeNull();
+    expect(screen.queryByRole('link', { name: /Order on WhatsApp/ })).toBeNull();
     expect(screen.getByRole('contentinfo').textContent).toContain(
       'Courier delivery across every city in Pakistan.',
     );

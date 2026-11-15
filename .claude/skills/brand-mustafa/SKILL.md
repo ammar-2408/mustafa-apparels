@@ -63,7 +63,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in whic
 | Desktop header | Secondary, black | 40px (use 48px from `md`, 64px from `lg`) |
 | Mobile header | Submark, black | 24px (use 32px) |
 | Sticky header on scroll | Simplified, black | 28px |
-| Footer on powder blue | Primary, black | 120px (use 140px) |
+| Footer on pale powder blue | Primary, black | 120px |
 | About page, hero | Primary | 120px |
 
 - Black on light backgrounds, white on dark. Never put the black logo on a dark or busy photo.
