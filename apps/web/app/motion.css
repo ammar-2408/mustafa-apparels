@@ -6,8 +6,9 @@
  * moves. Hover effects need a real hover device. The continuous flower sway is desktop only.
  * Rules here are unlayered, so they win over the Tailwind utilities they extend (e.g. a
  * button's transition-colors).
- * Hook classes: hero-title, sway, lift, nudge, fabric-card, fabric-photo, card-icon,
- * header-control, control-label, menu-panel, menu-item (with --i), menu-row.
+ * Hook classes: hero-title, reveal (+ is-shown from RevealOnView), sway, lift, nudge,
+ * product-card, collection-card, product-photo, card-icon, wishlist-spot, carousel-arrow,
+ * carousel-dot, header-control, control-label, menu-panel, menu-item (with --i), menu-row.
  */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -31,15 +32,31 @@
     transition: translate 180ms ease-out;
   }
 
-  /* 4 and 5. Fabric cards lift 4px with a soft shadow, the photo grows a little inside its frame,
-     and the icon turns 5°. The icon also turns on keyboard focus. */
-  .fabric-card {
+  /* Section headings rise 8px and fade in once, when they first scroll into view. Hidden only
+     once the page's script has run (html.js), so without JavaScript they are simply there. */
+  .js .reveal {
+    transition:
+      opacity 220ms ease-out,
+      translate 220ms ease-out;
+  }
+
+  .js .reveal:not(.is-shown) {
+    opacity: 0;
+    translate: 0 8px;
+  }
+
+  /* 4 and 5. Cards in the carousels lift (suits 3px, collections 4px) with a soft shadow, the photo
+     grows a little inside its fixed frame, and a collection's icon turns 5°. Keyboard focus
+     inside a collection card does the same, so it isn't for the mouse only. */
+  .product-card,
+  .collection-card {
     transition:
       translate 220ms ease-out,
       box-shadow 220ms ease-out;
   }
 
-  .fabric-photo {
+  .product-card .product-photo,
+  .collection-card .product-photo {
     transition: scale 220ms ease-out;
   }
 
@@ -47,8 +64,30 @@
     transition: rotate 200ms ease-out;
   }
 
-  .fabric-card:focus-visible .card-icon {
+  .collection-card:focus-within {
+    translate: 0 -4px;
+  }
+
+  .collection-card:focus-within .card-icon {
     rotate: 5deg;
+  }
+
+  .wishlist-spot button,
+  .carousel-arrow {
+    transition:
+      scale 180ms ease-out,
+      opacity 180ms ease-out;
+  }
+
+  /* The current dot grows a little; the change itself is the feedback. */
+  .carousel-dot span {
+    transition:
+      scale 200ms ease-out,
+      background-color 200ms ease-out;
+  }
+
+  .carousel-dot[aria-current='true'] span {
+    scale: 1.3;
   }
 
   /* 6. Header controls: an orange line grows under the label, and the icon grows slightly. */
@@ -78,22 +117,37 @@
 
   @media (hover: hover) {
     .lift:hover .nudge,
-    .fabric-card:hover .nudge,
     .menu-row:hover .nudge {
       translate: 4px 0;
     }
 
-    .fabric-card:hover {
-      translate: 0 -4px;
-      box-shadow: var(--shadow-soft);
+    .product-card:hover {
+      translate: 0 -3px;
     }
 
-    .fabric-card:hover .fabric-photo {
+    .collection-card:hover {
+      translate: 0 -4px;
+    }
+
+    .product-card:hover,
+    .collection-card:hover {
+      box-shadow:
+        0 2px 4px rgb(17 17 17 / 0.05),
+        0 18px 40px -16px rgb(17 17 17 / 0.18);
+    }
+
+    .product-card:hover .product-photo,
+    .collection-card:hover .product-photo {
       scale: 1.025;
     }
 
-    .fabric-card:hover .card-icon {
+    .collection-card:hover .card-icon {
       rotate: 5deg;
+    }
+
+    .wishlist-spot button:hover,
+    .carousel-arrow:not(:disabled):hover {
+      scale: 1.05;
     }
 
     .header-control:hover svg {

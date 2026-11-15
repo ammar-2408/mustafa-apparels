@@ -50,3 +50,32 @@ test.describe('with reduced motion', () => {
     expect(await panel.locator('.menu-item').nth(1).evaluate(animationName)).toBe('none');
   });
 });
+
+test.describe('section headings', () => {
+  test('rise into view once they are scrolled to', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    const heading = page.locator('#collections-title');
+    await expect(heading).not.toHaveClass(/is-shown/);
+    await heading.scrollIntoViewIfNeeded();
+    await expect(heading).toHaveClass(/is-shown/);
+    await expect.poll(() => heading.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+  });
+
+  test('are simply there with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const heading = page.locator('#collections-title');
+    expect(await heading.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+  });
+});
+
+test('on a laptop, a new arrival lifts 3px on hover', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Phones have no hover.');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const card = page.locator('#new-arrivals article').first();
+  await card.scrollIntoViewIfNeeded();
+  await card.hover();
+  await expect.poll(() => card.evaluate((el) => getComputedStyle(el).translate)).toBe('0px -3px');
+});
