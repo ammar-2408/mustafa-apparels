@@ -45,7 +45,12 @@ export function ProfileForm({
   const [saved, setSaved] = useState('');
   const form = useActionForm(save, () => setSaved('Saved.'));
   return (
-    <form noValidate onSubmit={form.onSubmit} className="flex max-w-md flex-col gap-6">
+    <form
+      method="post"
+      noValidate
+      onSubmit={form.onSubmit}
+      className="flex max-w-md flex-col gap-6"
+    >
       <Input
         label="Name"
         name="name"
@@ -133,7 +138,7 @@ export function DeleteAccount({ remove }: { remove: Action<{ deleted: boolean }>
       </Button>
       {open && (
         <Dialog open={open} onClose={() => setOpen(false)} title="Delete your account?">
-          <form noValidate onSubmit={form.onSubmit} className="flex flex-col gap-6">
+          <form method="post" noValidate onSubmit={form.onSubmit} className="flex flex-col gap-6">
             <p className="text-body">
               This removes your account, your saved suits and your sign-in. Questions you sent stay
               with the shop, without your name or contact details. It can&rsquo;t be undone.

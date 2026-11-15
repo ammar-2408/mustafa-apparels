@@ -67,6 +67,7 @@ export function InquiryForm({ productId, suitName, submit }: Props) {
 
   return (
     <form
+      method="post"
       noValidate
       onSubmit={onSubmit}
       className="flex flex-col gap-6"

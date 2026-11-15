@@ -54,7 +54,7 @@ export function RegisterForm() {
   }
 
   return (
-    <form noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
+    <form method="post" noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
       <Input label="Name" name="name" autoComplete="name" required error={fieldErrors.name?.[0]} />
       <Input
         label="Email"
