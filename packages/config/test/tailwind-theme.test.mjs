@@ -163,9 +163,16 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
       'py-section',
       'max-w-content',
       'rounded-sm',
+      'rounded-md',
+      'rounded-lg',
       'shadow-soft',
       'rounded-xl',
     ]);
+    // Buttons 8px and cards 16px (owner's mockups, 2026-11-15); nothing rounder.
+    assert.match(out, /\.rounded-md\s*\{\s*border-radius: var\(--radius-md\)/);
+    assert.match(out, /\.rounded-lg\s*\{\s*border-radius: var\(--radius-lg\)/);
+    assert.match(out, /--radius-md:\s*8px/);
+    assert.match(out, /--radius-lg:\s*16px/);
     assert.match(out, /\.px-gutter\s*\{\s*padding-inline: var\(--spacing-gutter\)/);
     assert.match(out, /\.gap-grid\s*\{\s*gap: var\(--spacing-grid\)/);
     assert.match(out, /\.py-section\s*\{\s*padding-block: var\(--spacing-section\)/);

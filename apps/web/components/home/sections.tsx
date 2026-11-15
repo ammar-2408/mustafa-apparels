@@ -44,14 +44,14 @@ export function Hero({ whatsapp, photo }: { whatsapp: string | null; photo: Hero
             your favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/shop" className={buttonClass('primary', 'lift', 'bold')}>
+            <Link href="/shop" className={buttonClass('primary', undefined, 'bold')}>
               See All Suits
               <ArrowIcon className="nudge size-5" />
             </Link>
             {whatsapp && (
               <a
                 href={whatsappLink(whatsapp, GENERAL_WHATSAPP_TEXT)}
-                className={buttonClass('secondary', 'lift', 'bold')}
+                className={buttonClass('secondary', undefined, 'bold')}
                 target="_blank"
                 rel="noopener"
               >

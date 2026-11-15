@@ -25,20 +25,8 @@
     }
   }
 
-  /* 3. Buttons lift 2px and their arrow moves 4px on hover. They press in a little when tapped. */
-  .lift {
-    transition:
-      translate 180ms ease-out,
-      scale 120ms ease-out,
-      background-color 180ms ease-out,
-      color 180ms ease-out,
-      border-color 180ms ease-out;
-  }
-
-  .lift:active {
-    scale: 0.98;
-  }
-
+  /* 3. Buttons lift and press through the theme's `lift` utility (both apps). Here: the arrow
+     inside a button, card or menu row moves 4px on hover. */
   .nudge {
     transition: translate 180ms ease-out;
   }
@@ -89,10 +77,6 @@
   }
 
   @media (hover: hover) {
-    .lift:hover {
-      translate: 0 -2px;
-    }
-
     .lift:hover .nudge,
     .fabric-card:hover .nudge,
     .menu-row:hover .nudge {

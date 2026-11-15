@@ -83,6 +83,7 @@ From the owner's home and menu mockup:
 - **Slate grey text on pale powder blue** (6.74): taglines on the Shop by Fabric cards.
 - **Deep orange icons and lines** on white and on pale powder blue: card icons, the Explore underline, the lotus ornament and the swash under "New Arrivals" in the menu.
 - **Bold 700** joins Light 300 and Regular 400 (`docs/design.md` §1.2).
+- **Rounder corners:** 8px for buttons and 16px for cards. **Button hover:** every button ends on ink with white text, lifted 2px with a soft shadow.
 
 ## 5. Changing a colour
 

@@ -27,7 +27,7 @@ export function ContactList({
         <li>
           <a
             href={whatsappLink(contact.whatsapp, text)}
-            className={buttonClass('primary', 'lift w-full gap-3', label)}
+            className={buttonClass('primary', 'w-full gap-3', label)}
             target="_blank"
             rel="noopener"
           >
@@ -40,7 +40,7 @@ export function ContactList({
         <li>
           <a
             href={telLink(contact.phone)}
-            className={buttonClass('secondary', 'lift w-full gap-3', label)}
+            className={buttonClass('secondary', 'w-full gap-3', label)}
           >
             <PhoneIcon className="size-5" />
             Call {displayNumber(contact.phone)}

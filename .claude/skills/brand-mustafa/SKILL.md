@@ -52,7 +52,7 @@ Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `
 - Max content width: 1440px at `2xl` (`max-w-content`), 1760px at `4xl` (`max-w-content-wide`). Layout per breakpoint: `docs/design.md` §2.
 - Touch targets are at least 44×44px. Respect safe areas with `env(safe-area-inset-*)`.
 - Build with the shared primitives before writing new ones: `Button` / `buttonClass`, `Input`, `Dialog`, `Logo`, `FormError` and `LogoutButton` from `packages/ui` (`docs/design.md` §1.2). Every focused element gets the theme's orange focus ring, which turns ink inside a `bg-primary` element on its own (orange is too faint on powder blue).
-- Radius is small or none (`--radius-sm: 2px`), to match the logo's angular shapes. Use `--shadow-soft` sparingly.
+- Radius: `rounded-sm` (2px) for small parts, `rounded-md` (8px) for buttons, `rounded-lg` (16px) for cards; nothing rounder. Use `--shadow-soft` sparingly. Every button hovers the same way through `buttonClass` (ink, lifted 2px): don't add hover colours to buttons by hand.
 
 ## Logo
 

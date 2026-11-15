@@ -47,6 +47,9 @@
 
   --radius-*: initial;
   --radius-sm: 2px;
+  /* Buttons and cards from the owner's mockups (2026-11-15). Nothing rounder. */
+  --radius-md: 8px;
+  --radius-lg: 16px;
 
   --shadow-*: initial;
   --shadow-soft: 0 1px 2px rgb(17 17 17 / 0.04), 0 12px 32px -12px rgb(17 17 17 / 0.12);
@@ -81,6 +84,34 @@
   --text-small--line-height: 1.5;
   --text-label: 0.75rem;
   --text-label--line-height: 1.4;
+}
+
+/* Every button behaves the same (owner, 2026-11-15): on a hover device it lifts 2px with a soft
+   shadow, and it presses in to 98%. With reduced motion only the colours and shadow change. */
+@utility lift {
+  transition-property: background-color, color, border-color, box-shadow;
+  transition-duration: 180ms;
+  transition-timing-function: ease-out;
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: var(--shadow-soft);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: translate, scale, background-color, color, border-color, box-shadow;
+
+    &:active {
+      scale: 0.98;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        translate: 0 -2px;
+      }
+    }
+  }
 }
 
 /* Spaced capitals for labels, nav and buttons; caps-tight where 0.4em would wrap on phones. */

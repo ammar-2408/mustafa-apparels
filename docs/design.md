@@ -73,7 +73,9 @@ Headings pair a size with `font-light`, e.g. `text-h1 font-light`; `h1`–`h3` g
 - `FormError` (`@mustafa/ui/form-error`): the whole-form message, a `role="alert"` paragraph that is on the page from the start, hidden while empty.
 - `LogoutButton` (`@mustafa/ui/logout-button`): takes the app's `signOut` and a `redirectTo` (default `/login`). Each app has a one-line client wrapper (`components/…/logout-button.tsx`) that binds its own `authClient`, so server pages can render it.
 
-Radius: small or none (`--radius-sm: 2px`, the only radius token; `rounded-full` still works for round icons), to match the logo's angular shapes. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
+Radius: `--radius-sm: 2px` for small parts (badges, fields), `--radius-md: 8px` for buttons and `--radius-lg: 16px` for cards (the owner's mockups, 2026-11-15); `rounded-full` still works for round icons and dots. Nothing rounder.
+
+**Buttons** (`buttonClass` in `packages/ui`): every button ends its hover the same way, on ink with white text, lifted 2px with `--shadow-soft`, and presses in to 98% (the theme's `lift` utility, both apps). Primary is ink already; secondary is an ink outline that fills. With reduced motion only the colours and shadow change. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
 
 ### 1.3 Logo files
 
