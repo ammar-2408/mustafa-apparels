@@ -112,16 +112,19 @@ export function HeaderBar({ links, contact }: Props) {
   return (
     <>
       {/* The navbar (the owner's mockup, 2026-11-15): powder blue with a soft wave and a leaf. */}
-      <header ref={bandRef} className="relative overflow-hidden bg-primary text-primary-fg">
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 1440 40"
-          preserveAspectRatio="none"
-          className="pointer-events-none absolute bottom-0 left-0 h-5 w-full fill-bg/25"
-        >
-          <path d="M0 40V26c180-24 380-26 560-8s360 20 540 2 260-18 340-12v32z" />
-        </svg>
-        <LeafBranch className="absolute top-1 -right-4 hidden w-24 lg:block" />
+      {/* The bar itself doesn't clip, so the Collections list can hang below it over the page.
+          Only the decoration layer clips its wave and leaf. */}
+      <header ref={bandRef} className="relative z-30 bg-primary text-primary-fg">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <svg
+            viewBox="0 0 1440 40"
+            preserveAspectRatio="none"
+            className="absolute bottom-0 left-0 h-5 w-full fill-bg/25"
+          >
+            <path d="M0 40V26c180-24 380-26 560-8s360 20 540 2 260-18 340-12v32z" />
+          </svg>
+          <LeafBranch className="absolute top-1 -right-4 hidden w-24 lg:block" />
+        </div>
         <div className="relative mx-auto flex h-16 max-w-content-wide items-center justify-between gap-4 px-gutter md:h-20 lg:h-24">
           <HeaderLogo />
           <div className="hidden lg:block">

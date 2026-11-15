@@ -70,7 +70,9 @@ export function Hero({
       <div
         className={`${wrap} relative z-10 flex w-full flex-col items-center gap-6 py-16 text-center md:gap-7`}
       >
-        <Logo variant="submark" height={48} />
+        {/* Large, so the mark reads strongly (owner, 2026-11-15). The file itself is never
+            redrawn or thickened (docs/design.md §1.3), only shown bigger. */}
+        <Logo variant="submark" height={88} />
         <p className="flex items-center gap-4 caps-tight text-fg sm:caps">
           <span aria-hidden="true" className="h-px w-10 bg-deep/60 sm:w-16" />
           Mustafa Apparels

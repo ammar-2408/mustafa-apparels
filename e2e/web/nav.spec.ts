@@ -30,6 +30,14 @@ test('Collections opens by keyboard, closes on Esc, and takes you to a collectio
   await page.keyboard.press('Enter');
   const list = nav.getByRole('list', { name: 'Collections' });
   await expect(list).toBeVisible();
+  // Really on screen, not clipped by the bar: the point at the middle of its last link is that link.
+  const last = list.getByRole('link').last();
+  const box = (await last.boundingBox())!;
+  const hit = await page.evaluate(
+    ([x, y]) => document.elementFromPoint(x!, y!)?.textContent ?? '',
+    [box.x + box.width / 2, box.y + box.height / 2],
+  );
+  expect(hit).toBe(await last.textContent());
   await page.keyboard.press('Escape');
   await expect(list).toBeHidden();
   await expect(button).toBeFocused();
