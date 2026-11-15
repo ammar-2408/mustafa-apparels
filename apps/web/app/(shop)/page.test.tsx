@@ -8,54 +8,39 @@ import {
   HowToOrder,
   NewArrivals,
 } from '../../components/home/sections';
-import { SITE_ART } from '../../lib/site-art';
 
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 vi.mock('../(account)/account/actions', () => ({ toggleWishlist: vi.fn() }));
 
 describe('home sections', () => {
-  it('opens with one large heading, the submark, the fabric picture and the two ways in', () => {
-    const art = {
-      src: 'https://res.cloudinary.com/ma/image/upload/c_limit/site/home/hero-fabric',
-      alt: 'Folded embroidered fabrics',
-    };
+  it('is centred: the submark, the shop name, one large heading and two deep green buttons', () => {
     render(
-      <Hero
-        whatsapp="+923482799707"
-        collections={['Dhanak', 'Khaddar', 'Lajwanti', 'Lawn']}
-        art={art}
-      />,
+      <Hero whatsapp="+923482799707" collections={['Dhanak', 'Khaddar', 'Lajwanti', 'Lawn']} />,
     );
     const h1 = screen.getByRole('heading', { level: 1 });
     expect(h1.textContent).toBe('Elegant Unstitched Suits, Made for Every Occasion');
     expect(h1.querySelector('.text-accent-text')!.textContent).toBe('Made for Every Occasion');
-    expect(screen.getByRole('img', { name: 'MA Apparels' })).toBeTruthy();
-    expect(
-      decodeURIComponent(screen.getByRole('img', { name: art.alt }).getAttribute('src')!),
-    ).toContain('site/home/hero-fabric');
-    // The collections come from admin, so a new one never needs a code change.
-    expect(document.body.textContent).toContain('suits in Dhanak, Khaddar, Lajwanti and more.');
-    expect(screen.getByRole('link', { name: 'See All Suits' }).getAttribute('href')).toBe('/shop');
-    expect(screen.getByRole('link', { name: 'WhatsApp Us' }).getAttribute('href')).toMatch(
-      /^https:\/\/wa\.me\/923482799707/,
-    );
-  });
-
-  it('keeps the hero whole with no collections and no WhatsApp number, and its picture always', () => {
-    render(<Hero whatsapp={null} collections={[]} art={SITE_ART.heroFabric} />);
-    expect(screen.getByRole('heading', { level: 1 })).toBeTruthy();
-    // The picture never depends on an env setting (it once vanished when one was missing).
+    // No picture any more (owner's finalhero.png, 2026-11-15): only the MA submark.
     expect(screen.getAllByRole('img').map((img) => img.getAttribute('alt'))).toEqual([
       'MA Apparels',
-      SITE_ART.heroFabric.alt,
     ]);
-    expect(SITE_ART.heroFabric.src).toMatch(
-      /^https:\/\/res\.cloudinary\.com\/[a-z0-9]+\/image\/upload\//,
-    );
-    // The mockup has no rule after the MA mark (owner, 2026-11-15).
-    expect(document.querySelector('section .h-px')).toBeNull();
+    expect(screen.getByText('Mustafa Apparels')).toBeTruthy();
+    // The collections come from admin, so a new one never needs a code change.
+    expect(document.body.textContent).toContain('suits in Dhanak, Khaddar, Lajwanti and more.');
+    const all = screen.getByRole('link', { name: 'See All Suits' });
+    expect(all.getAttribute('href')).toBe('/shop');
+    expect(all.className).toContain('bg-deep');
+    const whatsapp = screen.getByRole('link', { name: 'WhatsApp Us' });
+    expect(whatsapp.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/923482799707/);
+    expect(whatsapp.className).toContain('border-deep');
+  });
+
+  it('keeps the hero whole with no collections and no WhatsApp number', () => {
+    render(<Hero whatsapp={null} collections={[]} />);
+    expect(screen.getByRole('heading', { level: 1 })).toBeTruthy();
     expect(document.body.textContent).toContain('Premium unstitched 2-piece and 3-piece suits.');
     expect(screen.queryByRole('link', { name: 'WhatsApp Us' })).toBeNull();
+    expect(screen.getByRole('link', { name: 'See All Suits' })).toBeTruthy();
   });
 
   it('states the plain facts about the shop as one sentence, with three points and the picture', () => {

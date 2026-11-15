@@ -180,3 +180,40 @@ export function Eyebrow({
     </div>
   );
 }
+
+// A sprig of soft filled leaves growing from the bottom left towards the top right (mirror it with
+// -scale-x-100 for a right-hand corner). For the home hero's corners.
+export function LeafSprig({ className }: Props) {
+  const leaves = [
+    [44, 150, -70],
+    [70, 122, 10],
+    [92, 100, -60],
+    [116, 76, 20],
+    [134, 58, -45],
+    [156, 36, 30],
+  ] as const;
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 200 200"
+      fill="none"
+      className={join('pointer-events-none', className)}
+    >
+      <path
+        d="M6 196C50 150 110 90 186 14"
+        className="stroke-border-strong/60"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      {leaves.map(([x, y, turn]) => (
+        <path
+          key={x}
+          d="M0 0c8-16 26-26 46-24-6 18-24 28-46 24z"
+          transform={`translate(${x} ${y}) rotate(${turn})`}
+          className="fill-primary/70 stroke-border-strong/50"
+          strokeWidth="0.8"
+        />
+      ))}
+    </svg>
+  );
+}

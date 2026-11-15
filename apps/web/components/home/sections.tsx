@@ -12,7 +12,15 @@ import type { Collection, SuitCard } from '../../lib/types';
 import { Carousel } from '../carousel/carousel';
 import { revealDelay } from '../motion/reveal';
 import { ProductCard } from '../product/product-card';
-import { Eyebrow, FlowerSprig, LeafBranch, LotusOrnament, Swash, Wave } from '../site/flourish';
+import {
+  Eyebrow,
+  FlowerSprig,
+  LeafBranch,
+  LeafSprig,
+  LotusOrnament,
+  Swash,
+  Wave,
+} from '../site/flourish';
 import {
   ArrowIcon,
   ChevronIcon,
@@ -27,71 +35,76 @@ import {
 
 const wrap = 'mx-auto max-w-content-wide px-gutter';
 
-// 1. Hero (docs/design.md §4, the owner's mockup of 2026-11-15): Bold headline with a deep orange
-// second line, the MA submark, the two ways in, and the mockup's fabric picture filling the right
-// half. The collection names come from admin, so new collections never need a code change.
+// 1. Hero (the owner's `finalhero.png`, 2026-11-15): centred on soft mint, no picture. The MA
+// submark, the shop's name between rules, the Bold headline with a deep orange second line, the
+// collections from admin (so new ones need no code change) and the two deep green buttons. At least
+// one screen tall (minus the navbar's fixed height), so nothing below shows on load.
 export function Hero({
   whatsapp,
   collections,
-  art,
 }: {
   whatsapp: string | null;
   collections: string[];
-  art: SiteArt;
 }) {
   const names = collectionList(collections);
   return (
-    // At least one screen tall (minus the navbar's fixed height), so nothing below shows on load.
     <section
       aria-labelledby="hero-title"
-      className="relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden bg-linear-to-br from-surface-soft via-surface-soft to-primary/40 text-fg md:min-h-[calc(100svh-5rem)] lg:flex-row lg:items-center lg:min-h-[calc(100svh-6rem)]"
+      className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-linear-to-b from-surface-soft via-surface-soft to-primary/25 text-fg md:min-h-[calc(100svh-5rem)] lg:min-h-[calc(100svh-6rem)]"
     >
-      <div className={`${wrap} w-full`}>
-        <div className="relative z-10 flex min-w-0 flex-col gap-8 py-12 md:py-16 lg:w-[55%] lg:py-20 lg:pr-8">
-          <Logo variant="submark" height={40} className="self-start" />
-          <h1 id="hero-title" className="hero-title text-hero font-bold">
-            <span className="block">Elegant Unstitched Suits,</span>{' '}
-            <span className="block text-accent-text">Made for Every Occasion</span>
-          </h1>
-          <p className="reveal max-w-xl text-body-lg" style={revealDelay(1)}>
-            Premium unstitched 2-piece and 3-piece suits{names ? ` in ${names}` : ''}. Choose your
-            favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
-          </p>
-          <div className="reveal flex flex-wrap gap-4" style={revealDelay(2)}>
-            <Link href="/shop" className={buttonClass('primary', undefined, 'bold')}>
-              See All Suits
-              <ArrowIcon className="nudge size-5" />
-            </Link>
-            {whatsapp && (
-              <a
-                href={whatsappLink(whatsapp, GENERAL_WHATSAPP_TEXT)}
-                className={buttonClass('secondary', undefined, 'bold')}
-                target="_blank"
-                rel="noopener"
-              >
-                <WhatsAppIcon className="size-5" />
-                WhatsApp Us
-              </a>
-            )}
-          </div>
+      {/* Soft sweeps of colour in two corners, as in the mockup. */}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 1440 800"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+      >
+        <path className="fill-primary/15" d="M0 0h620C470 70 250 150 0 300z" />
+        <path className="fill-bg/50" d="M0 0h360C250 60 120 110 0 150z" />
+        <path className="fill-primary/15" d="M1440 800H700c300-40 540-170 740-360z" />
+        <path className="fill-bg/50" d="M1440 800H1020c190-30 330-110 420-210z" />
+      </svg>
+      <LeafSprig className="absolute top-6 right-2 w-32 -scale-x-100 md:w-48 lg:w-56" />
+      <LeafSprig className="absolute bottom-2 left-0 hidden w-40 md:block lg:w-48" />
+
+      <div
+        className={`${wrap} relative z-10 flex w-full flex-col items-center gap-6 py-16 text-center md:gap-7`}
+      >
+        <Logo variant="submark" height={48} />
+        <p className="flex items-center gap-4 caps-tight text-fg sm:caps">
+          <span aria-hidden="true" className="h-px w-10 bg-deep/60 sm:w-16" />
+          Mustafa Apparels
+          <span aria-hidden="true" className="h-px w-10 bg-deep/60 sm:w-16" />
+        </p>
+        <h1 id="hero-title" className="hero-title text-hero font-bold">
+          <span className="block">Elegant Unstitched Suits,</span>{' '}
+          <span className="block text-accent-text">Made for Every Occasion</span>
+        </h1>
+        <p className="reveal max-w-4xl text-body-lg" style={revealDelay(1)}>
+          Premium unstitched 2-piece and 3-piece suits{names ? ` in ${names}` : ''}.{' '}
+          <br className="hidden md:block" />
+          Choose your favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
+        </p>
+        <div
+          className="reveal mt-2 flex flex-wrap justify-center gap-4 md:gap-6"
+          style={revealDelay(2)}
+        >
+          <Link href="/shop" className={buttonClass('deep', 'min-w-56', 'bold')}>
+            See All Suits
+            <ArrowIcon className="nudge size-5" />
+          </Link>
+          {whatsapp && (
+            <a
+              href={whatsappLink(whatsapp, GENERAL_WHATSAPP_TEXT)}
+              className={buttonClass('deep-outline', 'min-w-56', 'bold')}
+              target="_blank"
+              rel="noopener"
+            >
+              <WhatsAppIcon className="size-5" />
+              WhatsApp Us
+            </a>
+          )}
         </div>
-      </div>
-      {/* The picture fills the right side at full height; on phones it fills the rest of the screen. */}
-      <div className="relative min-h-72 w-full flex-1 lg:absolute lg:inset-y-0 lg:right-0 lg:w-[45%]">
-        <Image
-          src={art.src}
-          alt={art.alt}
-          fill
-          loading="eager"
-          fetchPriority="high"
-          sizes="(min-width: 64rem) 45vw, 100vw"
-          className="object-cover"
-        />
-        {/* Fades the picture into the band, so the text side stays calm. */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-y-0 left-0 hidden w-1/4 bg-linear-to-r from-surface-soft lg:block"
-        />
       </div>
     </section>
   );
