@@ -8,6 +8,7 @@ import {
   HowToOrder,
   NewArrivals,
 } from '../../components/home/sections';
+import { SITE_ART } from '../../lib/site-art';
 
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 vi.mock('../(account)/account/actions', () => ({ toggleWishlist: vi.fn() }));
@@ -40,12 +41,19 @@ describe('home sections', () => {
     );
   });
 
-  it('keeps the hero whole with no picture, no collections and no WhatsApp number', () => {
-    render(<Hero whatsapp={null} collections={[]} art={null} />);
+  it('keeps the hero whole with no collections and no WhatsApp number, and its picture always', () => {
+    render(<Hero whatsapp={null} collections={[]} art={SITE_ART.heroFabric} />);
     expect(screen.getByRole('heading', { level: 1 })).toBeTruthy();
+    // The picture never depends on an env setting (it once vanished when one was missing).
     expect(screen.getAllByRole('img').map((img) => img.getAttribute('alt'))).toEqual([
       'MA Apparels',
+      SITE_ART.heroFabric.alt,
     ]);
+    expect(SITE_ART.heroFabric.src).toMatch(
+      /^https:\/\/res\.cloudinary\.com\/[a-z0-9]+\/image\/upload\//,
+    );
+    // The mockup has no rule after the MA mark (owner, 2026-11-15).
+    expect(document.querySelector('section .h-px')).toBeNull();
     expect(document.body.textContent).toContain('Premium unstitched 2-piece and 3-piece suits.');
     expect(screen.queryByRole('link', { name: 'WhatsApp Us' })).toBeNull();
   });

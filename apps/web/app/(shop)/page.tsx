@@ -13,7 +13,7 @@ import { getSiteSettings, listCollections, listSuits } from '../../lib/catalog';
 import { collectionList } from '../../lib/format';
 import { socialLinks } from '../../lib/nav';
 import { buildMetadata } from '../../lib/seo';
-import { SITE_ART, siteArt } from '../../lib/site-art';
+import { SITE_ART } from '../../lib/site-art';
 import { onlineStore } from '../../lib/structured-data';
 
 // The description names the collections from admin (cached read), so new ones join it.
@@ -55,9 +55,9 @@ export default async function Home() {
       <Hero
         whatsapp={settings.whatsapp}
         collections={collections.map((c) => c.name)}
-        art={siteArt(SITE_ART.heroFabric)}
+        art={SITE_ART.heroFabric}
       />
-      <About art={siteArt(SITE_ART.aboutFabric)} />
+      <About art={SITE_ART.aboutFabric} />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
       <ExploreCollections collections={panels} />
       <HowToOrder whatsapp={settings.whatsapp} />

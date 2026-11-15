@@ -68,3 +68,10 @@ test('home describes the shop as an online store with no address or opening hour
   expect(store).not.toHaveProperty('openingHours');
   expect(store).not.toHaveProperty('openingHoursSpecification');
 });
+
+test('the first screen shows only the hero: About starts below it', async ({ page }) => {
+  await page.goto('/');
+  const about = page.locator('#about-title');
+  const top = await about.evaluate((el) => el.closest('section')!.getBoundingClientRect().top);
+  expect(top).toBeGreaterThanOrEqual(page.viewportSize()!.height - 1);
+});

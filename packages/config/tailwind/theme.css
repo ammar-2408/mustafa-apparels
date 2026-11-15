@@ -68,6 +68,10 @@
   --text-display: clamp(2.5rem, 6vw + 1rem, 7rem);
   --text-display--line-height: 1;
   --text-display--letter-spacing: -0.02em;
+  /* The home hero headline (owner's mockup, 2026-11-15): two Bold lines on a laptop. */
+  --text-hero: clamp(2.25rem, 2vw + 1rem, 3.75rem);
+  --text-hero--line-height: 1.1;
+  --text-hero--letter-spacing: -0.015em;
   --text-h1: clamp(2.25rem, 4vw + 1rem, 5rem);
   --text-h1--line-height: 1.05;
   --text-h1--letter-spacing: -0.015em;

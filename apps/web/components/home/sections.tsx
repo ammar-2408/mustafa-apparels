@@ -36,23 +36,19 @@ export function Hero({
 }: {
   whatsapp: string | null;
   collections: string[];
-  art: SiteArt | null;
+  art: SiteArt;
 }) {
   const names = collectionList(collections);
   return (
+    // At least one screen tall (minus the navbar's fixed height), so nothing below shows on load.
     <section
       aria-labelledby="hero-title"
-      className="relative overflow-hidden bg-surface-soft text-fg"
+      className="relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden bg-linear-to-br from-surface-soft via-surface-soft to-primary/40 text-fg md:min-h-[calc(100svh-5rem)] lg:flex-row lg:items-center lg:min-h-[calc(100svh-6rem)]"
     >
-      <div
-        className={`${wrap} grid items-center lg:min-h-[34rem] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]`}
-      >
-        <div className="relative z-10 flex min-w-0 flex-col gap-8 py-12 md:py-16 lg:py-20">
-          <div className="flex items-center gap-6">
-            <Logo variant="submark" height={40} />
-            <span aria-hidden="true" className="h-px w-24 bg-fg md:w-40" />
-          </div>
-          <h1 id="hero-title" className="hero-title text-h2 font-bold">
+      <div className={`${wrap} w-full`}>
+        <div className="relative z-10 flex min-w-0 flex-col gap-8 py-12 md:py-16 lg:w-[55%] lg:py-20 lg:pr-8">
+          <Logo variant="submark" height={40} className="self-start" />
+          <h1 id="hero-title" className="hero-title text-hero font-bold">
             <span className="block">Elegant Unstitched Suits,</span>{' '}
             <span className="block text-accent-text">Made for Every Occasion</span>
           </h1>
@@ -79,24 +75,23 @@ export function Hero({
           </div>
         </div>
       </div>
-      {art && (
-        <div className="relative aspect-[563/470] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:aspect-auto lg:w-[44%]">
-          <Image
-            src={art.src}
-            alt={art.alt}
-            fill
-            loading="eager"
-            fetchPriority="high"
-            sizes="(min-width: 64rem) 44vw, 100vw"
-            className="object-cover object-left"
-          />
-          {/* Fades the picture into the band, so the text side stays calm. */}
-          <span
-            aria-hidden="true"
-            className="absolute inset-y-0 left-0 hidden w-1/4 bg-linear-to-r from-surface-soft lg:block"
-          />
-        </div>
-      )}
+      {/* The picture fills the right side at full height; on phones it fills the rest of the screen. */}
+      <div className="relative min-h-72 w-full flex-1 lg:absolute lg:inset-y-0 lg:right-0 lg:w-[45%]">
+        <Image
+          src={art.src}
+          alt={art.alt}
+          fill
+          loading="eager"
+          fetchPriority="high"
+          sizes="(min-width: 64rem) 45vw, 100vw"
+          className="object-cover"
+        />
+        {/* Fades the picture into the band, so the text side stays calm. */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 hidden w-1/4 bg-linear-to-r from-surface-soft lg:block"
+        />
+      </div>
     </section>
   );
 }
@@ -109,7 +104,7 @@ const ABOUT_POINTS = [
 
 // 2. About (the owner's mockup, 2026-11-15): the plain facts about the shop (docs/seo-geo.md §7),
 // three short points, and the fabric picture. The heading reads as one sentence for search.
-export function About({ art }: { art: SiteArt | null }) {
+export function About({ art }: { art: SiteArt }) {
   return (
     <section aria-labelledby="about-title" className="relative overflow-hidden bg-bg">
       <Wave className="absolute bottom-0 left-0 h-24 w-full" />
@@ -140,17 +135,15 @@ export function About({ art }: { art: SiteArt | null }) {
             ))}
           </ul>
         </div>
-        {art && (
-          <div className="relative mx-auto aspect-[914/887] w-full max-w-xl [mask-image:linear-gradient(to_right,transparent,black_15%)]">
-            <Image
-              src={art.src}
-              alt={art.alt}
-              fill
-              sizes="(min-width: 64rem) 40vw, 100vw"
-              className="object-contain"
-            />
-          </div>
-        )}
+        <div className="relative mx-auto aspect-[914/887] w-full max-w-xl [mask-image:linear-gradient(to_right,transparent,black_15%)]">
+          <Image
+            src={art.src}
+            alt={art.alt}
+            fill
+            sizes="(min-width: 64rem) 40vw, 100vw"
+            className="object-contain"
+          />
+        </div>
       </div>
     </section>
   );

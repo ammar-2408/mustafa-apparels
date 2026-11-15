@@ -103,7 +103,7 @@ export function HeaderBar({ links, contact }: Props) {
   return (
     <>
       <header ref={bandRef} className="bg-primary text-primary-fg">
-        <div className="mx-auto flex max-w-content-wide items-center justify-between gap-4 px-gutter py-3 md:py-4">
+        <div className="mx-auto flex h-16 max-w-content-wide items-center justify-between gap-4 px-gutter md:h-20 lg:h-24">
           <HeaderLogo />
           <nav aria-label="Quick links" className="flex items-center gap-1 sm:gap-2">
             {actions}
