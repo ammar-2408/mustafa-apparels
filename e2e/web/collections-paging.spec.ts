@@ -66,3 +66,19 @@ test('a hidden collection is a 404 on both address shapes, even through an old a
     await db.delete(category).where(eq(category.id, hidden!.id));
   }
 });
+
+test('an address with capitals moves permanently to the lowercase one', async ({ request }) => {
+  for (const [from, to] of [
+    ['/collections/Lajwanti', '/collections/lajwanti'],
+    ['/collections/LAJWANTI/page/2', '/collections/lajwanti/page/2'],
+  ]) {
+    const response = await request.get(from!, { maxRedirects: 0 });
+    expect(response.status(), from).toBe(308);
+    expect(new URL(response.headers()['location']!, 'http://x').pathname).toBe(to);
+  }
+  const shop = await (await request.get('/shop')).text();
+  const slug = shop.match(/href="\/products\/([a-z0-9-]+)"/)![1]!;
+  const suit = await request.get(`/products/${slug.toUpperCase()}`, { maxRedirects: 0 });
+  expect(suit.status()).toBe(308);
+  expect(new URL(suit.headers()['location']!, 'http://x').pathname).toBe(`/products/${slug}`);
+});

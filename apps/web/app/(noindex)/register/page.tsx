@@ -7,7 +7,7 @@ import { buildMetadata } from '../../../lib/seo';
 export const metadata = buildMetadata({
   title: 'Create an account',
   description:
-    'Create a Mustafa Apparels account to save the unstitched suits you like and keep track of the questions you send us.',
+    'Create a Mustafa Apparels account to save the unstitched suits you like and keep track of every question you send us about them.',
   path: '/register',
   noindex: true,
   nofollow: true,

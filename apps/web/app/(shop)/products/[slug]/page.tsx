@@ -31,6 +31,8 @@ export async function generateStaticParams() {
 // (unknown, draft, archived, deleted) is a real 404 (docs/design.md §8.6).
 async function load(params: Props['params']) {
   const { slug } = await params;
+  // One address per suit: capitals move permanently to the lowercase one.
+  if (slug !== slug.toLowerCase()) permanentRedirect(`/products/${slug.toLowerCase()}`);
   const suit = await getSuit(slug);
   if (suit) return suit;
   const current = await suitRedirect(slug);

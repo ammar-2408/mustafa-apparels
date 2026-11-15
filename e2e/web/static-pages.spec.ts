@@ -65,3 +65,13 @@ test('a missing page or suit is a real 404 with the branded page, inside one mai
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   }
 });
+
+// Noindex pages still get a full description: some search tools show it anyway.
+for (const path of ['/login', '/register', '/forgot-password', '/account']) {
+  test(`${path} has a 120–160 character description`, async ({ request }) => {
+    const html = await (await request.get(path, { maxRedirects: 0 })).text();
+    const description = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
+    expect(description.length, description).toBeGreaterThanOrEqual(120);
+    expect(description.length, description).toBeLessThanOrEqual(160);
+  });
+}

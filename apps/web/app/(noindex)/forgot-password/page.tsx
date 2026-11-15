@@ -7,7 +7,7 @@ import { buildMetadata } from '../../../lib/seo';
 export const metadata = buildMetadata({
   title: 'Forgot your password',
   description:
-    'Forgot the password for your Mustafa Apparels account? Enter your email and we will send you a link to set a new one.',
+    'Forgot the password for your Mustafa Apparels account? Enter your email and we will send you a secure link to set a new one.',
   path: '/forgot-password',
   noindex: true,
   nofollow: true,

@@ -18,7 +18,7 @@ import { deleteAccount, toggleWishlist, updateProfile } from './actions';
 export const metadata = buildMetadata({
   title: 'Your account',
   description:
-    'Your Mustafa Apparels account: your details, the unstitched suits you saved and the questions you sent us about them.',
+    'Your Mustafa Apparels account: your details, the unstitched suits you saved and every question you have sent us about them.',
   path: '/account',
   noindex: true,
   nofollow: true,

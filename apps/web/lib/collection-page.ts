@@ -10,6 +10,10 @@ import { collectionRedirect, getCollection, listSuits } from './catalog';
  * permanently to the current one (308, same page number), anything else is a 404.
  */
 export async function loadCollectionPage(slug: string, page: number) {
+  // One address per collection: capitals move permanently to the lowercase one.
+  if (slug !== slug.toLowerCase()) {
+    permanentRedirect(`/collections/${slug.toLowerCase()}${page > 1 ? `/page/${page}` : ''}`);
+  }
   const collection = await getCollection(slug);
   if (!collection) {
     const current = await collectionRedirect(slug);
