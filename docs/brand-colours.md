@@ -16,6 +16,7 @@ Every colour the storefront, admin, emails and share images use, as of the end o
 | `fg` | `#111111` | Ink | All body text and headings; the logo colour | Everywhere |
 | `muted` | `#4B5757` | Slate grey | Secondary text, on white only | Breadcrumbs, "3 Piece" lines, suit counts, form hints |
 | `primary` | `#A8C9C8` | Powder blue | Large surfaces only, never text | Header band, footer, home hero, "How to order" band, admin sidebar, browser bar on phones, share image |
+| `teal` | `#86AFAE` | Deeper powder blue | The footer only (owner, 2026-11-15). Ink text only: 7.87:1. Grey (3.13) and orange (1.38) fail, so orange there is decoration (short heading underlines), never words or icons | Footer |
 | `primary-fg` | `#111111` | Ink | Text on powder blue | Header links, footer links, hero headline |
 | `action` | `#111111` | Ink | Main buttons | "See all suits", "WhatsApp us", "Send" |
 | `action-fg` | `#FFFFFF` | White | Main button labels | Text on the ink buttons |
@@ -66,6 +67,7 @@ The table gives each text colour's contrast against each background. Normal text
 | Grey green `#5F6F6E` | 5.27 | 4.74 | 2.97 ✗ | 3.58 |
 | Brick red `#A3271B` | 7.33 | 6.59 | 4.14 ✗ | 2.57 ✗ |
 | Forest green `#2E6B3F` | 6.38 | 5.74 | 3.60 ✗ | 2.96 ✗ |
+| Teal `#86AFAE` (as background) | ink 7.87 · slate grey 3.13 ✗ · racing orange 1.38 ✗ · deep orange 2.05 ✗ | | | |
 | Powder blue `#A8C9C8` | 1.77 ✗ | 1.59 ✗ | – | 10.66 |
 | White `#FFFFFF` | – | – | 1.77 ✗ | 18.88 |
 

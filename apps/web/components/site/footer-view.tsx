@@ -50,7 +50,7 @@ function Column({ title, links }: { title: string; links: NavLink[] }) {
           <li key={link.href}>
             <Link
               href={link.href}
-              className="menu-row flex items-center justify-between gap-6 py-2 text-body whitespace-nowrap hover:underline hover:decoration-accent hover:underline-offset-4"
+              className="menu-row flex items-center justify-between gap-6 py-2 text-body lg:whitespace-nowrap hover:underline hover:decoration-accent hover:underline-offset-4"
             >
               {link.label}
               <ChevronIcon className="nudge size-4" />
@@ -62,24 +62,35 @@ function Column({ title, links }: { title: string; links: NavLink[] }) {
   );
 }
 
-// The footer (the owner's mockup, 2026-11-15): pale powder blue under a white wave, with the
+// The footer (the owner's NEWFOOTER mockup, 2026-11-15): the deeper teal (ink text only) under
+// soft waves, with the
 // primary black logo (docs/design.md §1.3), Shop / Help / Policies, Stay in Touch on WhatsApp
 // (no email sign-up yet), the shop's true promises and the social profiles that are set.
 export function FooterView({ shop, socials, serviceArea, whatsapp }: Props) {
   return (
-    <footer className="relative overflow-hidden bg-surface-soft text-fg">
-      {/* A white wave along the top edge, flowing out of the page above. */}
+    <footer className="relative overflow-hidden bg-teal pb-10 text-fg">
+      {/* Waves: the page flows in over a lighter band at the top, and a deeper one runs along the
+          bottom. Drawn with existing tokens only. */}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 1440 120"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute top-0 left-0 h-16 w-full md:h-28"
+      >
+        <path className="fill-primary" d="M0 0h1440v96c-220-50-460-54-700-24S240 92 0 60z" />
+        <path className="fill-bg" d="M0 0h1440v40c-200 36-420 44-640 16S320 0 0 36z" />
+      </svg>
       <svg
         aria-hidden="true"
         viewBox="0 0 1440 80"
         preserveAspectRatio="none"
-        className="pointer-events-none absolute top-0 left-0 h-12 w-full fill-bg md:h-20"
+        className="pointer-events-none absolute bottom-0 left-0 h-10 w-full fill-fg/10 md:h-14"
       >
-        <path d="M0 0h1440v28c-200 40-420 52-640 20S340 4 0 44z" />
+        <path d="M0 80V44c240-40 520-44 760-14s460 24 680-10v60z" />
       </svg>
-      <LeafBranch className="absolute top-4 right-0 hidden w-44 -scale-x-100 lg:block" />
+      <LeafBranch className="absolute top-6 right-0 hidden w-44 -scale-x-100 lg:block" />
 
-      <div className="relative mx-auto grid max-w-content-wide gap-12 px-gutter pt-24 pb-12 md:pt-32 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1.2fr)] lg:gap-0">
+      <div className="relative mx-auto grid max-w-content-wide gap-12 px-gutter pt-28 pb-12 md:pt-40 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto_minmax(0,1.2fr)] lg:gap-0">
         <div className="lg:pr-10">
           <Link href="/" className="inline-block">
             <Logo variant="primary" height={120} />
@@ -90,22 +101,24 @@ export function FooterView({ shop, socials, serviceArea, whatsapp }: Props) {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:contents">
-          <div className="lg:border-l lg:border-border lg:px-8">
+          <div className="lg:border-l lg:border-fg/20 lg:px-8">
             <Column title="Shop" links={shop} />
           </div>
-          <div className="lg:border-l lg:border-border lg:px-8">
+          <div className="lg:border-l lg:border-fg/20 lg:px-8">
             <Column title="Help" links={HELP_LINKS} />
           </div>
-          <div className="lg:border-l lg:border-border lg:px-8">
+          <div className="lg:border-l lg:border-fg/20 lg:px-8">
             <Column title="Policies" links={LEGAL_LINKS} />
           </div>
         </div>
-        <div className="flex flex-col gap-4 lg:border-l lg:border-border lg:pl-10">
+        <div className="flex flex-col gap-4 lg:border-l lg:border-fg/20 lg:pl-10">
           <div className="flex items-start gap-4">
-            <WhatsAppIcon className="size-9" />
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-bg">
+              <WhatsAppIcon className="size-8" />
+            </span>
             <div>
               <h2 className="text-h3 font-bold">Stay in Touch</h2>
-              <p className="mt-1 text-small text-muted">
+              <p className="mt-1 text-small">
                 Get updates on new arrivals and collections on WhatsApp.
               </p>
             </div>
@@ -115,23 +128,24 @@ export function FooterView({ shop, socials, serviceArea, whatsapp }: Props) {
               href={whatsappLink(whatsapp, GENERAL_WHATSAPP_TEXT)}
               target="_blank"
               rel="noopener"
-              className="menu-row mt-2 inline-flex items-center gap-4 self-start border-t border-border pt-5 text-body-lg font-bold"
+              className="menu-row mt-2 inline-flex items-center gap-4 self-start border-t border-fg/20 pt-5 text-body-lg font-bold"
             >
-              <WhatsAppIcon className="size-8" />
-              <span aria-hidden="true" className="h-8 w-px bg-border-strong" />
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-bg">
+                <WhatsAppIcon className="size-8" />
+              </span>
               Order on WhatsApp
-              <ArrowIcon className="nudge size-5 text-accent-text" />
+              <ArrowIcon className="nudge size-5" />
             </a>
           )}
         </div>
       </div>
 
       <div className="relative mx-auto max-w-content-wide px-gutter">
-        <div className="flex flex-col gap-6 border-t border-border py-6 lg:flex-row lg:items-center lg:justify-between">
-          <p className="text-small text-muted">© Mustafa Apparels. All rights reserved.</p>
-          <ul className="flex flex-wrap gap-x-8 gap-y-3">
+        <div className="flex flex-col gap-6 border-t border-fg/20 py-6 lg:flex-row lg:items-center lg:justify-between">
+          <p className="text-small">© Mustafa Apparels. All rights reserved.</p>
+          <ul className="flex flex-wrap gap-x-8 gap-y-3 lg:gap-x-0 lg:divide-x lg:divide-fg/20">
             {PROMISES.map(({ Icon, text }) => (
-              <li key={text} className="flex items-center gap-3 text-small">
+              <li key={text} className="flex items-center gap-3 text-small lg:px-8 lg:last:pr-0">
                 <Icon className="size-6" />
                 {text}
               </li>

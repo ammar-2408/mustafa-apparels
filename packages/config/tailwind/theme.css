@@ -19,6 +19,8 @@
   --color-muted: #4b5757;
   --color-primary: #a8c9c8;
   --color-primary-fg: #111111;
+  /* A deeper powder blue for the footer only (owner's mockup, 2026-11-15). Ink text only on it. */
+  --color-teal: #86afae;
   --color-action: #111111;
   --color-action-fg: #ffffff;
   --color-accent: #f45b0b;

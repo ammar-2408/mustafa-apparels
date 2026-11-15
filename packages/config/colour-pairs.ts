@@ -16,6 +16,7 @@ export const ALLOWED_PAIRS: readonly Pair[] = [
   ['fg', 'surface', 'text', 'Text in form fields and white cards'],
   ['fg', 'surface-soft', 'text', 'The few words in an empty photo box ("Photo coming soon")'],
   ['primary-fg', 'primary', 'text', 'Text on the header band, sections, cards, footer, sidebar'],
+  ['fg', 'teal', 'text', 'All footer text: ink only on the deeper teal (7.87:1)'],
   ['muted', 'bg', 'text', 'Secondary text, on white only'],
   ['muted', 'surface', 'text', 'Hints and help text in white fields'],
   ['muted', 'surface-soft', 'text', 'Taglines on the Shop by Fabric cards and the home hero text'],
@@ -55,4 +56,8 @@ export const FORBIDDEN_TEXT: readonly (readonly [string, string])[] = [
   ['error', 'primary'],
   ['success', 'primary'],
   ['action-fg', 'accent'],
+  // The footer teal: ink only. Orange there is decoration (short underlines), never text or icons.
+  ['accent', 'teal'],
+  ['accent-text', 'teal'],
+  ['muted', 'teal'],
 ];
