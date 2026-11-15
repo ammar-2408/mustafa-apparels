@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 // Line icons for the header and contact buttons. Decorative: the control carries the name.
 type IconProps = { className?: string };
 
@@ -67,4 +69,129 @@ export function MailIcon({ className }: IconProps) {
       <path d="M3 6l9 7 9-7" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
+}
+
+export function ArrowIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path d="M4 12h16M14 6l6 6-6 6" stroke="currentColor" strokeWidth="1.75" />
+    </svg>
+  );
+}
+
+export function ChevronIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// A kurta shirt.
+export function ShirtIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M9 3l3 2.5L15 3l5.5 3.5-2.5 4-1.5-1V21h-9V9.5L6 10.5l-2.5-4L9 3z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M12 5.5V11" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// A woven diamond, for a textured fabric.
+export function LatticeIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 2.5L21.5 12 12 21.5 2.5 12 12 2.5zM7.25 7.25l9.5 9.5M16.75 7.25l-9.5 9.5M9.6 4.9l9.5 9.5M14.4 4.9l-9.5 9.5M4.9 9.6l9.5 9.5M19.1 9.6l-9.5 9.5"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+const PETALS = [0, 45, 90, 135, 180, 225, 270, 315];
+
+// An eight-petal flower.
+export function FlowerIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      {PETALS.map((angle) => (
+        <ellipse
+          key={angle}
+          cx="12"
+          cy="6.5"
+          rx="2.4"
+          ry="4"
+          transform={`rotate(${angle} 12 12)`}
+          stroke="currentColor"
+          strokeWidth="1.25"
+        />
+      ))}
+      <circle cx="12" cy="12" r="2.2" stroke="currentColor" strokeWidth="1.25" />
+    </svg>
+  );
+}
+
+// A lotus: three petals over a curved base.
+export function LotusIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 4c2.6 3 3.4 7.5 0 13-3.4-5.5-2.6-10 0-13zM12 17c-2-4.5-5.5-7-9-7 .5 4.5 4 7 9 7zM12 17c2-4.5 5.5-7 9-7-.5 4.5-4 7-9 7zM5 19.5c4.5 1.3 9.5 1.3 14 0"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// Folded fabric in a stack, for "All suits".
+export function LayersIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 3.5l9 4.5-9 4.5L3 8l9-4.5zM3 12l9 4.5 9-4.5M3 16l9 4.5 9-4.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+// A shopping bag, for "How to Order".
+export function BagIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M4.5 8h15l-1 13h-13l-1-13zM9 10V6.5a3 3 0 0 1 6 0V10"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+type Icon = (props: IconProps) => JSX.Element;
+
+// Each collection's icon in the menu and on its Shop by Fabric card. A collection the owner adds
+// later in admin gets the folded-fabric icon until it has its own.
+const COLLECTION_ICONS: Record<string, { menu: Icon; card: Icon }> = {
+  dhanak: { menu: ShirtIcon, card: FlowerIcon },
+  khaddar: { menu: LatticeIcon, card: LatticeIcon },
+  lajwanti: { menu: FlowerIcon, card: LotusIcon },
+};
+
+export function collectionIcon(slug: string, place: 'menu' | 'card'): Icon {
+  return COLLECTION_ICONS[slug]?.[place] ?? LayersIcon;
 }
