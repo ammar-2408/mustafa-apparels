@@ -12,6 +12,8 @@ Minimal and editorial: an angular, high-contrast MA monogram over widely spaced 
 
 Tokens live in `packages/config/tailwind/theme.css`, a Tailwind v4 `@theme static` block that each app's `apps/*/app/globals.css` imports right after Tailwind. It clears Tailwind's default colours, breakpoints, radii and shadows, so `bg-red-500` or `rounded-xl` produce nothing and only brand values exist. Every token is also a CSS variable on `:root`. Utilities follow the token names: `bg-bg`, `bg-primary`, `text-fg`, `text-muted`, `bg-action`, `text-action-fg`, `bg-accent`, `text-accent-text`, `decoration-accent`, `border-border-strong`, `text-error`.
 
+Every colour in one place, with where each is used and a contrast table: `docs/brand-colours.md`.
+
 | Token | Value | Use |
 |---|---|---|
 | `--color-bg`, `--color-surface` | `#FFFFFF` white | Page background, form fields, white cards |
