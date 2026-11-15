@@ -1,7 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
+const route = vi.hoisted(() => ({ path: '/' }));
+vi.mock('next/navigation', () => ({ usePathname: () => route.path }));
 
 import { menuLinks } from '../../lib/nav';
 import { displayNumber } from './contact-list';
@@ -36,6 +37,61 @@ describe('HeaderBar', () => {
     const bar = container.querySelector('[data-floating]')!;
     expect(bar.getAttribute('data-floating')).toBe('false');
     expect(bar.hasAttribute('inert')).toBe(true);
+  });
+});
+
+describe('menu panel', () => {
+  const all = menuLinks([
+    { slug: 'dhanak', name: 'Dhanak' },
+    { slug: 'khaddar', name: 'Khaddar' },
+  ]);
+  const panel = () => screen.getByRole('dialog', { hidden: true });
+
+  it('opens with New Arrivals, then each collection, All suits and How to Order, with icons', () => {
+    route.path = '/';
+    render(<HeaderBar links={all} contact={contact} />);
+    const nav = within(panel()).getByRole('navigation', { name: 'Main', hidden: true });
+    const names = within(nav)
+      .getAllByRole('link', { hidden: true })
+      .map((l) => l.textContent);
+    expect(names.slice(0, 5)).toEqual([
+      'New arrivals',
+      'Dhanak',
+      'Khaddar',
+      'All suits',
+      'How to Order',
+    ]);
+    // Every icon, chevron and flower is decoration.
+    for (const svg of panel().querySelectorAll('svg')) {
+      expect(svg.closest('[aria-hidden="true"]')).not.toBeNull();
+    }
+    expect(within(nav).queryAllByRole('link', { current: 'page', hidden: true })).toHaveLength(0);
+  });
+
+  it('marks the page you are on', () => {
+    route.path = '/collections/khaddar';
+    render(<HeaderBar links={all} contact={contact} />);
+    const current = within(panel()).getAllByRole('link', { current: 'page', hidden: true });
+    expect(current.map((l) => l.textContent)).toEqual(['Khaddar']);
+    route.path = '/';
+  });
+
+  it('ends with WhatsApp, Call and email, leaving out any the shop has not set', () => {
+    route.path = '/';
+    const { unmount } = render(<HeaderBar links={all} contact={contact} />);
+    expect(within(panel()).getByRole('link', { name: 'WhatsApp Us', hidden: true })).toBeTruthy();
+    expect(
+      within(panel()).getByRole('link', { name: 'Call +92 306 9558717', hidden: true }),
+    ).toBeTruthy();
+    expect(
+      within(panel()).getByRole('link', { name: 'shop@example.com', hidden: true }),
+    ).toBeTruthy();
+    unmount();
+    render(
+      <HeaderBar links={all} contact={{ whatsapp: '+923482799707', phone: null, email: null }} />,
+    );
+    expect(within(panel()).queryByRole('link', { name: /^Call/, hidden: true })).toBeNull();
+    expect(within(panel()).queryByRole('link', { name: /@/, hidden: true })).toBeNull();
   });
 });
 

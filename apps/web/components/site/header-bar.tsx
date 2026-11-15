@@ -5,14 +5,31 @@ import { Dialog } from '@mustafa/ui/dialog';
 import { Logo } from '@mustafa/ui/logo';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 
 import { GENERAL_WHATSAPP_TEXT, HELP_LINKS, type NavLink } from '../../lib/nav';
 import { HeaderLogo } from '../logo';
 import { type Contact, ContactList } from './contact-list';
-import { AccountIcon, MenuIcon, SearchIcon, WhatsAppIcon } from './icons';
+import { FlowerSprig, Swash } from './flourish';
+import {
+  AccountIcon,
+  BagIcon,
+  ChevronIcon,
+  collectionIcon,
+  LayersIcon,
+  MenuIcon,
+  SearchIcon,
+  WhatsAppIcon,
+} from './icons';
 
 type Props = { links: NavLink[]; contact: Contact };
+
+// Each menu row's icon: the collection's own, folded fabric for All suits, a bag for How to Order.
+function menuIcon(href: string) {
+  if (href.startsWith('/collections/'))
+    return collectionIcon(href.slice('/collections/'.length), 'menu');
+  return href === '/how-to-order' ? BagIcon : LayersIcon;
+}
 
 // A 44px icon control with a visible label from sm, so phones keep the header on one line.
 const control =
@@ -113,38 +130,78 @@ export function HeaderBar({ links, contact }: Props) {
         </div>
       </div>
 
+      {/* The side panel (the owner's mockup, 2026-11-15). No blur behind it: it's slow on phones. */}
       <Dialog
         open={open}
         onClose={close}
         title="Menu"
-        className="mr-0 h-dvh max-h-none w-full! max-w-md! rounded-none backdrop:bg-fg/40 md:backdrop:bg-fg/30 md:backdrop:backdrop-blur-sm"
+        className="menu-panel mr-0 h-dvh max-h-none w-full! max-w-md! rounded-none bg-linear-to-b from-bg from-60% to-surface-soft backdrop:bg-fg/40"
       >
-        <nav aria-label="Main">
-          <ul className="flex flex-col gap-1">
-            {links.map((link) => (
+        <span aria-hidden="true">
+          <FlowerSprig className="sway absolute top-16 right-0 w-24" />
+          <FlowerSprig className="sway absolute right-0 bottom-0 hidden w-40 -scale-y-100 sm:block" />
+        </span>
+        <nav aria-label="Main" className="relative">
+          <ul className="flex flex-col">
+            {links.map((link, i) => {
+              const current = pathname === link.href ? 'page' : undefined;
+              // The first link (New arrivals) is the panel's big heading; the rest are rows.
+              if (i === 0) {
+                return (
+                  <li
+                    key={link.href}
+                    className="menu-item mb-6"
+                    style={{ '--i': i } as CSSProperties}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={close}
+                      aria-current={current}
+                      className="inline-flex flex-col py-1 text-h2 font-bold"
+                    >
+                      {link.label}
+                      <Swash className="mt-1 h-3 w-40" />
+                    </Link>
+                  </li>
+                );
+              }
+              const Icon = menuIcon(link.href);
+              return (
+                <li
+                  key={link.href}
+                  className="menu-item border-b border-border"
+                  style={{ '--i': i } as CSSProperties}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={close}
+                    aria-current={current}
+                    className="menu-row flex min-h-14 items-center gap-4 py-2 text-body-lg font-bold aria-[current=page]:text-accent-text"
+                  >
+                    <Icon className="size-7" />
+                    {link.label}
+                    <ChevronIcon className="nudge ml-auto size-5" />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+            {HELP_LINKS.filter((l) => !links.some((m) => m.href === l.href)).map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   onClick={close}
-                  className="block py-2 text-h2 font-light hover:underline hover:decoration-accent"
+                  className="link inline-block py-2 text-small"
                 >
                   {link.label}
                 </Link>
               </li>
             ))}
           </ul>
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
-            {HELP_LINKS.filter((l) => !links.some((m) => m.href === l.href)).map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} onClick={close} className="link inline-block py-2">
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
         </nav>
-        <div className="mt-12 border-t border-border pt-8">
-          <ContactList contact={contact} />
+        <div className="relative mt-8 border-t border-border pt-8">
+          <ContactList contact={contact} bold />
         </div>
       </Dialog>
     </>
