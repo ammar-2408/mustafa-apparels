@@ -60,6 +60,21 @@ describe('ProductCard', () => {
     );
   });
 
+  it('can sit in a white card with a Bold price, keeping the same link and heart', () => {
+    const { container } = render(<ProductCard suit={suit()} framed />);
+    const card = container.querySelector('article')!;
+    expect(card.className).toMatch(/\bproduct-card\b/);
+    expect(card.className).toContain('rounded-lg');
+    expect(screen.getByText('PKR 4,999').closest('p')!.className).toContain('font-bold');
+    expect(screen.getByRole('link').getAttribute('href')).toBe(
+      '/products/black-embroidered-dhanak-3-piece-dhn-01',
+    );
+    expect(screen.getByRole('button', { name: /Save/ })).toBeTruthy();
+    // The plain grid card stays as it was.
+    const { container: plain } = render(<ProductCard suit={suit()} />);
+    expect(plain.querySelector('article')!.className).not.toContain('rounded-lg');
+  });
+
   it('asks Cloudinary for a 3:4 crop from the top, at grid widths', () => {
     render(<ProductCard suit={suit()} />);
     const img = screen.getByRole('img', { name: 'Model wearing a black 3-piece Dhanak suit' });

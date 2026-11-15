@@ -17,15 +17,23 @@ import { WishlistButton } from './wishlist-button';
 export const GRID_SIZES =
   '(min-width: 120rem) 20vw, (min-width: 80rem) 25vw, (min-width: 48rem) 33vw, 50vw';
 
-type Props = { suit: SuitCard; sizes?: string; priority?: boolean };
+type Props = {
+  suit: SuitCard;
+  sizes?: string;
+  priority?: boolean;
+  /** A white card with a soft shadow and a Bold price: the home carousel (owner's mockup). */
+  framed?: boolean;
+};
 
 // A suit in a grid (docs/design.md §9.2): photo, finish and fabric, name, pieces, price, heart.
 // Never a video (Cloudinary bandwidth, §5.2). The whole card opens the suit's page.
-export function ProductCard({ suit, sizes = GRID_SIZES, priority = false }: Props) {
+export function ProductCard({ suit, sizes = GRID_SIZES, priority = false, framed = false }: Props) {
   const stock = availabilityLabel(suit.availability);
   return (
-    <article className="@container relative flex flex-col">
-      <Link href={`/products/${suit.slug}`} className="group flex flex-col gap-3">
+    <article
+      className={`@container relative flex flex-col ${framed ? 'product-card h-full overflow-hidden rounded-lg bg-bg shadow-soft' : ''}`}
+    >
+      <Link href={`/products/${suit.slug}`} className="group flex h-full flex-col gap-3">
         <div className="relative aspect-3/4 overflow-hidden bg-surface-soft">
           {suit.image ? (
             <Image
@@ -34,7 +42,7 @@ export function ProductCard({ suit, sizes = GRID_SIZES, priority = false }: Prop
               fill
               sizes={sizes}
               priority={priority}
-              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
+              className="product-photo object-cover object-top transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
             />
           ) : (
             <span className="absolute inset-0 flex items-center justify-center caps-tight bg-surface-soft text-fg">
@@ -47,12 +55,12 @@ export function ProductCard({ suit, sizes = GRID_SIZES, priority = false }: Prop
             </span>
           )}
         </div>
-        <div className="flex flex-col gap-1 pr-12">
+        <div className={`flex flex-col gap-1 ${framed ? 'px-5 pb-5' : 'pr-12'}`}>
           <p className="caps-tight text-muted">{cardLine(suit)}</p>
           <h3 className="text-body @[14rem]:text-body-lg">{suit.name}</h3>
           <p className="text-small text-muted">{piecesLabel(suit.pieces)}</p>
           {suit.price !== null && (
-            <p className="text-body">
+            <p className={framed ? 'text-body-lg font-bold' : 'text-body'}>
               <span className="sr-only">Price </span>
               {formatPrice(suit.price)}
               {showCompareAt(suit.price, suit.compareAtPrice) && (
@@ -65,7 +73,7 @@ export function ProductCard({ suit, sizes = GRID_SIZES, priority = false }: Prop
           )}
         </div>
       </Link>
-      <div className="absolute top-3 right-3">
+      <div className="wishlist-spot absolute top-3 right-3">
         <WishlistButton productId={suit.id} name={suit.name} toggle={toggleWishlist} />
       </div>
     </article>

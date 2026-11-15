@@ -1,0 +1,49 @@
+import { expect, test } from '../support/users';
+
+// The home carousels (apps/web/components/carousel): native swipe, arrows, dots and mouse drag.
+const scrollLeft = (el: HTMLElement) => el.scrollLeft;
+
+test('the page never scrolls sideways, and phones swipe without arrows', async ({ page }) => {
+  await page.goto('/');
+  const row = page.getByRole('region', { name: 'Newest suits' });
+  await row.scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
+  const next = row.getByRole('button', { name: 'Next' });
+  // Arrows from tablet width (768px) up; phones swipe.
+  if (page.viewportSize()!.width < 768) await expect(next).toBeHidden();
+  else await expect(next).toBeVisible();
+});
+
+test.describe('on a laptop', () => {
+  test.skip(({ isMobile }) => isMobile, 'Arrows and mouse drag are for desktop.');
+
+  test('Next moves the row on by a card and turns Previous on', async ({ page }) => {
+    await page.goto('/');
+    const row = page.getByRole('region', { name: 'Newest suits' });
+    await row.scrollIntoViewIfNeeded();
+    const track = row.getByRole('list');
+    await expect(row.getByRole('button', { name: 'Previous' })).toBeDisabled();
+    await row.getByRole('button', { name: 'Next' }).click();
+    await expect.poll(() => track.evaluate(scrollLeft)).toBeGreaterThan(100);
+    await expect(row.getByRole('button', { name: 'Previous' })).toBeEnabled();
+  });
+
+  test('dragging the row with the mouse scrolls it and never opens a suit', async ({ page }) => {
+    await page.goto('/');
+    const row = page.getByRole('region', { name: 'Newest suits' });
+    await row.scrollIntoViewIfNeeded();
+    const track = row.getByRole('list');
+    const box = (await row.getByRole('listitem').nth(1).boundingBox())!;
+    const y = box.y + box.height / 3;
+    await page.mouse.move(box.x + box.width / 2, y);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 - 120, y, { steps: 8 });
+    await page.mouse.move(box.x + box.width / 2 - 260, y, { steps: 8 });
+    await page.mouse.up();
+    await expect.poll(() => track.evaluate(scrollLeft)).toBeGreaterThan(100);
+    await page.waitForTimeout(300);
+    await expect(page).toHaveURL(/\/$/);
+  });
+});

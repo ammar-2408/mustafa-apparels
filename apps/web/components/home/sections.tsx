@@ -8,9 +8,10 @@ import { collectionList } from '../../lib/format';
 import { GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import type { SiteArt } from '../../lib/site-art';
 import type { SuitCard } from '../../lib/types';
+import { Carousel } from '../carousel/carousel';
 import { ProductCard } from '../product/product-card';
-import { Eyebrow, Swash, Wave } from '../site/flourish';
-import { ArrowIcon, LayersIcon, ShirtIcon, WhatsAppIcon } from '../site/icons';
+import { Eyebrow, FlowerSprig, Swash, Wave } from '../site/flourish';
+import { ArrowIcon, LayersIcon, LotusIcon, ShirtIcon, WhatsAppIcon } from '../site/icons';
 
 const wrap = 'mx-auto max-w-content-wide px-gutter';
 
@@ -144,36 +145,52 @@ export function About({ art }: { art: SiteArt | null }) {
   );
 }
 
-// 3. New arrivals: a swipe row of the newest suits (pinned scroll comes with motion, Phase 8).
+// About 1.3 cards on phones (the next one peeks in), 2 on tablets, 3 on laptops, 4 from 1440px.
+const ARRIVAL_WIDTHS =
+  'w-[76%] md:w-[calc((100%_-_24px)/2)] lg:w-[calc((100%_-_48px)/3)] min-[90rem]:w-[calc((100%_-_72px)/4)]';
+const ARRIVAL_SIZES =
+  '(min-width: 90rem) 23vw, (min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 76vw';
+
+// 3. New arrivals (the owner's mockup, 2026-11-15): the newest suits in a carousel of framed cards.
+// The menu's "New arrivals" link lands here (#new-arrivals).
 export function NewArrivals({ suits }: { suits: SuitCard[] }) {
   if (suits.length === 0) return null;
   return (
     <section
       id="new-arrivals"
       aria-labelledby="new-arrivals-title"
-      className="scroll-mt-24 pb-section"
+      className="relative scroll-mt-24 overflow-hidden bg-bg py-16 md:py-24"
     >
-      <div className={`${wrap} mb-8 flex items-end justify-between gap-6`}>
-        <h2 id="new-arrivals-title" className="text-h2 font-light">
-          New arrivals
-        </h2>
-        <Link href="/shop" className="link caps-tight shrink-0 py-3">
-          All suits
-        </Link>
+      <FlowerSprig className="sway absolute top-0 right-[16%] hidden w-56 lg:block" />
+      <Wave className="absolute bottom-0 left-0 h-20 w-full" />
+      <div className={`${wrap} relative`}>
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+          <div className="flex min-w-0 flex-col gap-3">
+            <p className="flex items-center gap-3 caps-tight sm:caps">
+              <LotusIcon className="size-6 text-accent-text" />
+              Latest Collection
+              <span aria-hidden="true" className="h-px w-16 bg-fg md:w-56" />
+            </p>
+            <h2 id="new-arrivals-title" className="reveal text-h2 font-bold">
+              New <span className="text-accent-text">Arrivals</span>
+            </h2>
+            <p className="text-body-lg text-muted">
+              Explore our latest unstitched suits in premium fabrics and elegant prints.
+            </p>
+          </div>
+          <Link href="/shop" className={buttonClass('secondary', 'shrink-0')}>
+            All Suits
+            <ArrowIcon className="nudge size-5" />
+          </Link>
+        </div>
+        <Carousel
+          label="Newest suits"
+          itemClassName={ARRIVAL_WIDTHS}
+          items={suits.map((suit) => (
+            <ProductCard key={suit.id} suit={suit} sizes={ARRIVAL_SIZES} framed />
+          ))}
+        />
       </div>
-      <ul className="flex snap-x snap-mandatory gap-grid overflow-x-auto px-gutter pb-4 [scrollbar-width:thin] 2xl:mx-auto 2xl:max-w-content-wide">
-        {suits.map((suit) => (
-          <li
-            key={suit.id}
-            className="w-[70%] shrink-0 snap-start sm:w-[42%] md:w-[30%] xl:w-[22%]"
-          >
-            <ProductCard
-              suit={suit}
-              sizes="(min-width: 80rem) 22vw, (min-width: 48rem) 30vw, (min-width: 30rem) 42vw, 70vw"
-            />
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }
