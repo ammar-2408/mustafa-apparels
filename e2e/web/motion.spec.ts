@@ -89,7 +89,8 @@ test.describe('blocks across the page', () => {
   }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/');
-    const step = page.locator('.step-card').last();
+    // The reveal sits on each step's list item; the card inside it does the hover fill.
+    const step = page.locator('section[aria-labelledby="order-title"] li.reveal').last();
     await expect(step).not.toHaveClass(/is-shown/);
     await step.scrollIntoViewIfNeeded();
     await expect(step).toHaveClass(/is-shown/);
@@ -114,5 +115,40 @@ test.describe('blocks across the page', () => {
       .locator('.reveal')
       .evaluateAll((els) => els.map((el) => getComputedStyle(el).opacity));
     expect(opacities.every((o) => o === '1')).toBe(true);
+  });
+});
+
+test.describe('How to Order cards', () => {
+  test('fill with deep green from the bottom on hover, and the text turns white', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, 'Phones have no hover.');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    const card = page.locator('.step-card').first();
+    await card.scrollIntoViewIfNeeded();
+    const fill = () => card.evaluate((el) => getComputedStyle(el, '::before').scale);
+    expect(await fill()).toBe('1 0');
+    // The fill grows from the bottom edge: its origin's y is the card's height (inside the 1px border).
+    const [, originY] = await card.evaluate((el) =>
+      getComputedStyle(el, '::before').transformOrigin.split(' ').map(parseFloat),
+    );
+    const height = await card.evaluate((el) => el.getBoundingClientRect().height);
+    expect(Math.abs(originY! - height)).toBeLessThanOrEqual(2.5);
+    await card.hover();
+    await expect.poll(fill).toBe('1');
+    await expect
+      .poll(() => card.locator('h3').evaluate((el) => getComputedStyle(el).color))
+      .toBe('rgb(255, 255, 255)');
+  });
+
+  test('change colour at once with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const card = page.locator('.step-card').first();
+    expect(await card.evaluate((el) => getComputedStyle(el, '::before').transitionDuration)).toBe(
+      '0s',
+    );
   });
 });

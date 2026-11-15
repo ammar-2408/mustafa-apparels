@@ -29,7 +29,72 @@
   scale: 1 1;
 }
 
+/* How to Order cards (owner, 2026-11-15): on hover, or keyboard focus inside, a deep green layer
+   fills the card from the bottom up and the text turns white. The layer only scales, so nothing
+   moves in the layout. With reduced motion the colour changes at once. */
+.step-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.step-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-deep);
+  scale: 1 0;
+  transform-origin: bottom;
+}
+
+.step-card:focus-within::before {
+  scale: 1 1;
+}
+
+.step-card:focus-within {
+  color: var(--color-action-fg);
+}
+
+.step-card:focus-within .step-icon {
+  background: var(--color-bg);
+  color: var(--color-deep);
+}
+
+.step-card:focus-within a {
+  text-decoration-color: var(--color-accent);
+}
+
+@media (hover: hover) {
+  .step-card:hover::before {
+    scale: 1 1;
+  }
+
+  .step-card:hover {
+    color: var(--color-action-fg);
+  }
+
+  .step-card:hover .step-icon {
+    background: var(--color-bg);
+    color: var(--color-deep);
+  }
+
+  .step-card:hover a {
+    text-decoration-color: var(--color-accent);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .step-card::before {
+    transition: scale 300ms ease-out;
+  }
+
+  .step-card,
+  .step-card .step-icon {
+    transition:
+      color 200ms ease-out,
+      background-color 200ms ease-out;
+  }
+
   .nav-link::after {
     transition: scale 180ms ease-out;
   }
