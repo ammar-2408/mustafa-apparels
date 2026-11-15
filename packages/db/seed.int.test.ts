@@ -110,17 +110,17 @@ describe('seed', () => {
 });
 
 describe('seed --e2e', () => {
-  it('adds 12 demo suits: 10 published, 1 draft, 1 archived', async () => {
+  it('adds 36 demo suits: 34 published (24 of them only for paging), 1 draft, 1 archived', async () => {
     expect(await seed(db, { appEnv: 'test', e2e: true })).toEqual({
       categories: 3,
       settings: 5,
       admins: 0,
-      demoSuits: 12,
+      demoSuits: 36,
     });
     const rows = await db.select().from(product);
     const byStatus = (status: string) => rows.filter((p) => p.status === status).length;
     expect([rows.length, byStatus('published'), byStatus('draft'), byStatus('archived')]).toEqual([
-      12, 10, 1, 1,
+      36, 34, 1, 1,
     ]);
     expect(rows.every((p) => p.designCode?.startsWith('E2E-'))).toBe(true);
   });

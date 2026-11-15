@@ -79,7 +79,21 @@ const DEMO_SUITS: Demo[] = [
   ['E2E-10', 'lajwanti', 'Navy', 'Blue', 'Printed', 4200, 'published'],
   ['E2E-11', 'lajwanti', 'Purple', 'Purple', 'Printed', null, 'draft'],
   ['E2E-12', 'lajwanti', 'Brick red', 'Red', 'Printed', 6800, 'archived'],
+  // 24 more published Lajwanti suits, older than the ones above, so /shop and a collection have a
+  // real page 2 (24 a page) for the paging tests.
+  ...Array.from({ length: 24 }, (_, i): Demo => [
+    `E2E-L${String(i + 1).padStart(2, '0')}`,
+    'lajwanti',
+    ['Sand', 'Olive', 'Slate', 'Coral'][i % 4]!,
+    ['Beige', 'Green', 'Grey', 'Orange'][i % 4]!,
+    'Printed',
+    4500,
+    'published',
+  ]),
 ];
+
+/** Paging suits come before the others, so the newest suits and the first pages stay as they were. */
+const isPagingSuit = (code: string) => code.startsWith('E2E-L');
 
 const VIDEO_SUIT = 'E2E-02';
 const REDIRECTED_SUIT = 'E2E-03';
@@ -219,7 +233,8 @@ async function seedDemoSuits(db: Database, cloudName: string) {
     const pieces = twoPiece ? 2 : 3;
     const name = `${color} ${finish} ${fabric} ${pieces}-Piece Suit`;
     const slug = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${code.toLowerCase()}`;
-    const n = code.slice(-2);
+    // 01-12, or l01-l24 for the paging suits: unique media ids for each.
+    const n = code.slice(4).toLowerCase();
 
     const [suit] = await db
       .insert(product)
@@ -249,7 +264,12 @@ async function seedDemoSuits(db: Database, cloudName: string) {
         mainColor: color,
         colorFamily: family,
         status,
-        publishedAt: status === 'draft' ? null : new Date(Date.UTC(2026, 9, 1 + index)),
+        publishedAt:
+          status === 'draft'
+            ? null
+            : isPagingSuit(code)
+              ? new Date(Date.UTC(2026, 8, Number(code.slice(-2))))
+              : new Date(Date.UTC(2026, 9, 1 + index)),
       })
       .returning();
 
