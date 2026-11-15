@@ -26,7 +26,7 @@ Netlify's pricing and limits change. Figures here were checked on 2026-11-01 aga
 
 Do this at step 0.11. Netlify → **Add new project** → import `ammar-2408/mustafa-apparels`, twice.
 
-**Repo moved (2026-11-15):** the first GitHub account (`ammar-06`) was suspended, so the code now lives at `ammar-2408/mustafa-apparels` (public), with the same history. Both Netlify sites must be linked to the new repo (Project configuration → Build & deploy → Link repository), and any GitHub Actions secrets added again. Neon, Resend, Upstash, Cloudinary and Spaceship are unchanged.
+**Repo moved (2026-11-15):** the first GitHub account (`ammar-06`) was suspended, so the code now lives at `ammar-2408/mustafa-apparels` (public), with the same history. Both Netlify sites were relinked the same day through the Netlify API (`PATCH /api/v1/sites/<id>` with a `repo` object: `repo_path`, `repo_branch: main`, `installation_id` of the Netlify GitHub app on `ammar-2408` (182196850), package path, command and publish directory as in the table below, `allowed_branches: [main, develop]`), then `build_settings.skip_prs: true` set again, since the relink cleared it. The API route starts no production build. CI uses no GitHub secrets. Neon, Resend, Upstash, Cloudinary and Spaceship are unchanged.
 
 | Setting | Web site | Admin site | Where |
 |---|---|---|---|
