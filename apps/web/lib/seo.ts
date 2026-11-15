@@ -99,10 +99,24 @@ export function buildMetadata({
   };
 }
 
+// Characters that could end the script tag, start an HTML comment or entity, or break a line in
+// old JavaScript parsers. Built from char codes, so no escape in this source can be mangled.
+const UNSAFE_IN_SCRIPT = [0x3c, 0x3e, 0x26, 0x2028, 0x2029];
+const UNSAFE_PATTERN = new RegExp(
+  '[' + UNSAFE_IN_SCRIPT.map((code) => String.fromCharCode(code)).join('') + ']',
+  'g',
+);
+const BACKSLASH = String.fromCharCode(0x5c);
+
 /**
- * JSON-LD for a `<script type="application/ld+json">`: `<` is escaped so text from the database
- * can never close the script tag. The only allowed use of dangerouslySetInnerHTML (AGENTS.md §7).
+ * JSON-LD for a `<script type="application/ld+json">`. `<`, `>`, `&`, U+2028 and U+2029 become
+ * JSON unicode escapes, so text from the database can never close the script tag; JSON.parse
+ * reads them back as the same characters. The only allowed use of dangerouslySetInnerHTML
+ * (AGENTS.md §7).
  */
 export function serializeJsonLd(data: unknown) {
-  return JSON.stringify(data).replace(/</g, '\u003c');
+  return JSON.stringify(data).replace(
+    UNSAFE_PATTERN,
+    (char) => BACKSLASH + 'u' + char.charCodeAt(0).toString(16).padStart(4, '0'),
+  );
 }
