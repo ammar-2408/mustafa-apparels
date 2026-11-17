@@ -374,6 +374,20 @@ export function HomeIcon({ className }: IconProps) {
   );
 }
 
+// A funnel, on the Filters button.
+export function FunnelIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M4 5h16l-6.2 7.4V19l-3.6-1.8v-4.8L4 5z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 type Icon = (props: IconProps) => JSX.Element;
 
 // Each collection's icon in the side menu, on its card and in the navbar's Collections list.

@@ -84,4 +84,21 @@ describe('FilterableList', () => {
     expect(screen.queryByText('The server grid')).toBeNull();
     expect(fetch).toHaveBeenCalledTimes(2);
   });
+
+  it('shows the quick chips as pills with an icon each, the chosen one in deep green', () => {
+    query.value = '';
+    vi.stubGlobal('fetch', vi.fn());
+    render(<FilterableList facets={facets}>{serverGrid}</FilterableList>);
+    const group = screen.getByRole('group', { name: 'Quick filters' });
+    const chips = Array.from(group.querySelectorAll('button'));
+    expect(chips.length).toBeGreaterThan(2);
+    for (const chip of chips) {
+      // Every value gets a drawing, new ones from admin too, hidden from screen readers.
+      expect(chip.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
+      expect(chip.className).toContain('rounded-full');
+    }
+    const embroidered = screen.getByRole('button', { name: 'Embroidered' });
+    expect(embroidered.className).toContain('aria-pressed:bg-deep');
+    expect(screen.getByRole('button', { name: 'Filters' }).querySelector('svg')).not.toBeNull();
+  });
 });

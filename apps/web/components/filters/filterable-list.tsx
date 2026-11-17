@@ -22,6 +22,14 @@ import {
   visibleGroups,
 } from '../../lib/filters';
 import { ProductGrid } from '../product/product-grid';
+import {
+  BloomIcon,
+  collectionIcon,
+  FlowerIcon,
+  FunnelIcon,
+  LayersIcon,
+  ShirtIcon,
+} from '../site/icons';
 
 // One fetch of /api/suits per visit, shared by every list page (ADR-018). A failed load is
 // forgotten, so the next try fetches again; it never becomes an empty shop.
@@ -48,8 +56,19 @@ type Props = {
   children: ReactNode;
 };
 
+// Pills with a small drawing before the label, the chosen one deep green (the owner's collection
+// template, 2026-11-17). Shared with /shop.
 const chip =
-  'inline-flex min-h-11 shrink-0 items-center rounded-sm border border-border-strong px-3 caps-tight aria-pressed:bg-action aria-pressed:text-action-fg';
+  'inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border-strong bg-bg/70 px-5 caps-tight aria-pressed:border-deep aria-pressed:bg-deep aria-pressed:text-action-fg';
+
+// Each quick filter's drawing. A value the shop adds later still gets one of the floral drawings.
+function chipIcon(key: string, value: string) {
+  if (key === 'pieces') return ShirtIcon;
+  if (value === 'embroidered') return BloomIcon;
+  if (value.includes('geometric')) return LayersIcon;
+  if (value.includes('floral')) return FlowerIcon;
+  return collectionIcon(value, 'dropdown');
+}
 
 // The filter bar and, once something is chosen, the filtered grid with its own paging. With no
 // filter in the URL the server's grid shows, so the page works without JavaScript and crawlers
@@ -115,17 +134,21 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
             aria-label="Quick filters"
             className="-mx-gutter flex gap-2 overflow-x-auto px-gutter pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0"
           >
-            {chips.map((c) => (
-              <button
-                key={`${c.key}-${c.value}`}
-                type="button"
-                aria-pressed={state.selected[c.key]?.includes(c.value) ?? false}
-                onClick={() => go(toggle(state, c.key, c.value))}
-                className={chip}
-              >
-                {c.label}
-              </button>
-            ))}
+            {chips.map((c) => {
+              const Icon = chipIcon(c.key, c.value);
+              return (
+                <button
+                  key={`${c.key}-${c.value}`}
+                  type="button"
+                  aria-pressed={state.selected[c.key]?.includes(c.value) ?? false}
+                  onClick={() => go(toggle(state, c.key, c.value))}
+                  className={chip}
+                >
+                  <Icon className="size-5" />
+                  {c.label}
+                </button>
+              );
+            })}
           </div>
         )}
         <div className="flex flex-wrap items-center gap-3">
@@ -133,17 +156,19 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
             <button
               type="button"
               onClick={() => setPanel(true)}
-              className={buttonClass('secondary')}
+              className="lift inline-flex min-h-12 items-center gap-3 rounded-full border border-action px-6 caps-tight text-fg hover:bg-action hover:text-action-fg"
             >
+              <FunnelIcon className="size-5" />
               Filters{chosenCount > 0 ? ` (${chosenCount})` : ''}
             </button>
           )}
-          <label className="flex min-h-12 items-center gap-2">
-            <span className="caps-tight">Sort</span>
+          <span aria-hidden="true" className="hidden h-8 w-px bg-border-strong sm:block" />
+          <label className="flex min-h-12 items-center gap-3">
+            <span className="caps-tight text-muted">Sort</span>
             <select
               value={state.sort}
               onChange={(e) => go({ ...state, sort: e.target.value as Sort, page: 1 })}
-              className="min-h-12 rounded-sm border border-border-strong bg-surface px-3 text-body text-fg"
+              className="min-h-12 rounded-md border border-border-strong bg-surface px-4 text-body text-fg"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
