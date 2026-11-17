@@ -35,6 +35,10 @@ describe('MainNav', () => {
         .getAllByRole('link')
         .map((l) => l.textContent),
     ).toEqual(['Dhanak', 'Khaddar', 'Lawn']);
+    // Every row, a new collection's too, has its decorative icon and a chevron.
+    for (const row of within(list).getAllByRole('link')) {
+      expect(row.querySelectorAll('svg[aria-hidden="true"]').length).toBe(2);
+    }
     expect(within(list).getByRole('link', { name: 'Khaddar' }).getAttribute('aria-current')).toBe(
       'page',
     );

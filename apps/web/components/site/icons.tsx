@@ -289,16 +289,105 @@ export function HeartIcon({ className }: IconProps) {
   );
 }
 
+// A sprout: a stem with two leaves and a bud, for Khaddar in the Collections list.
+export function SproutIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 21V9M12 15c-3.5 0-6-2.2-6-5.5 3.5 0 6 2.2 6 5.5zM12 12c0-3.6 2.3-6.5 6-7 .2 3.8-2.3 6.6-6 7zM12 9c-1.4-1.3-1.6-3.6 0-5.5 1.6 1.9 1.4 4.2 0 5.5z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// A four-petal flower, for Lajwanti in the Collections list.
+export function PetalsIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      {[0, 90, 180, 270].map((angle) => (
+        <ellipse
+          key={angle}
+          cx="12"
+          cy="6.8"
+          rx="3.2"
+          ry="4.4"
+          transform={`rotate(${angle} 12 12)`}
+          stroke="currentColor"
+          strokeWidth="1.4"
+        />
+      ))}
+      <circle cx="12" cy="12" r="1.6" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
+// A five-petal bloom.
+export function BloomIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      {[0, 72, 144, 216, 288].map((angle) => (
+        <path
+          key={angle}
+          d="M12 12c-2.2-2.4-2.4-5.6 0-8.2 2.4 2.6 2.2 5.8 0 8.2z"
+          transform={`rotate(${angle} 12 12)`}
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
+      ))}
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+    </svg>
+  );
+}
+
+// A tulip on its stem.
+export function TulipIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M7.5 4.5l2.3 2.6L12 3.8l2.2 3.3 2.3-2.6V9a4.5 4.5 0 0 1-9 0V4.5zM12 13.5V21M12 18c-2.6 0-4.5-1.6-4.8-4 2.6 0 4.5 1.6 4.8 4z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 type Icon = (props: IconProps) => JSX.Element;
 
-// Each collection's icon in the menu and on its Shop by Fabric card. A collection the owner adds
-// later in admin gets the folded-fabric icon until it has its own.
-const COLLECTION_ICONS: Record<string, { menu: Icon; card: Icon }> = {
-  dhanak: { menu: ShirtIcon, card: FlowerIcon },
-  khaddar: { menu: LatticeIcon, card: LatticeIcon },
-  lajwanti: { menu: FlowerIcon, card: LotusIcon },
+// Each collection's icon in the side menu, on its card and in the navbar's Collections list.
+type Place = 'menu' | 'card' | 'dropdown';
+
+const COLLECTION_ICONS: Record<string, Record<Place, Icon>> = {
+  dhanak: { menu: ShirtIcon, card: FlowerIcon, dropdown: LotusIcon },
+  khaddar: { menu: LatticeIcon, card: LatticeIcon, dropdown: SproutIcon },
+  lajwanti: { menu: FlowerIcon, card: LotusIcon, dropdown: PetalsIcon },
 };
 
-export function collectionIcon(slug: string, place: 'menu' | 'card'): Icon {
-  return COLLECTION_ICONS[slug]?.[place] ?? LayersIcon;
+/** The drawings a new collection can get. */
+export const FLORAL_ICONS: readonly Icon[] = [
+  BloomIcon,
+  TulipIcon,
+  PetalsIcon,
+  SproutIcon,
+  LotusIcon,
+  FlowerIcon,
+];
+
+// A collection the owner adds in admin gets one of the floral drawings, picked from its slug, so it
+// keeps the same drawing everywhere and different collections get different ones.
+function floralFor(slug: string): Icon {
+  let sum = 0;
+  for (const char of slug) sum = (sum * 31 + char.charCodeAt(0)) % 9973;
+  return FLORAL_ICONS[sum % FLORAL_ICONS.length]!;
+}
+
+export function collectionIcon(slug: string, place: Place): Icon {
+  return COLLECTION_ICONS[slug]?.[place] ?? floralFor(slug);
 }

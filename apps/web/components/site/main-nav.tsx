@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import type { NavLink } from '../../lib/nav';
-import { ChevronIcon } from './icons';
+import { ChevronIcon, collectionIcon } from './icons';
 
 type Props = {
   collections: NavLink[];
@@ -85,24 +85,44 @@ export function MainNav({ collections, pathname, label = 'Primary' }: Props) {
               />
             </button>
             {open && (
-              <ul
-                id={listId}
-                aria-label="Collections"
-                className="dropdown absolute top-full left-1/2 z-50 mt-3 flex min-w-52 -translate-x-1/2 flex-col rounded-md bg-bg p-2 text-fg shadow-soft"
-              >
-                {collections.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      aria-current={current(link.href)}
-                      onClick={() => setOpen(false)}
-                      className="flex min-h-11 items-center rounded-sm px-3 text-body hover:bg-surface-soft aria-[current=page]:font-bold"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              // The owner's dropdown.png (2026-11-17): a white panel with a small pointer, one row per
+              // collection with its floral icon in a pale peach circle, the name and a chevron. The
+              // row under the pointer or for this page turns pale peach. New collections from admin
+              // join the list with a drawing of their own (collectionIcon).
+              <div className="absolute top-full left-1/2 z-50 mt-4 w-80 -translate-x-1/2">
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1.5 left-1/2 size-4 -translate-x-1/2 rotate-45 rounded-tl-sm bg-bg"
+                />
+                <ul
+                  id={listId}
+                  aria-label="Collections"
+                  className="dropdown relative flex flex-col rounded-lg bg-bg p-3 text-fg shadow-soft"
+                >
+                  {collections.map((link, i) => {
+                    const Icon = collectionIcon(
+                      link.href.slice('/collections/'.length),
+                      'dropdown',
+                    );
+                    return (
+                      <li key={link.href} className={i > 0 ? 'border-t border-border' : undefined}>
+                        <Link
+                          href={link.href}
+                          aria-current={current(link.href)}
+                          onClick={() => setOpen(false)}
+                          className="dropdown-row group my-1 flex min-h-14 items-center gap-4 rounded-md px-3 text-body-lg hover:bg-accent/10 focus-visible:bg-accent/10 aria-[current=page]:bg-accent/10"
+                        >
+                          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent-text">
+                            <Icon className="size-7" />
+                          </span>
+                          {link.label}
+                          <ChevronIcon className="nudge ml-auto size-5 text-muted group-hover:text-accent-text group-aria-[current=page]:text-accent-text" />
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             )}
           </div>
         </li>

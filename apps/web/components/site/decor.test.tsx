@@ -2,7 +2,16 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { FlowerSprig, LotusOrnament, Swash } from './flourish';
-import { collectionIcon, FlowerIcon, LatticeIcon, LayersIcon, LotusIcon, ShirtIcon } from './icons';
+import {
+  collectionIcon,
+  FLORAL_ICONS,
+  FlowerIcon,
+  LatticeIcon,
+  LotusIcon,
+  PetalsIcon,
+  ShirtIcon,
+  SproutIcon,
+} from './icons';
 
 describe('collectionIcon', () => {
   it('gives each collection its own icon in the menu and on its card', () => {
@@ -13,9 +22,23 @@ describe('collectionIcon', () => {
     expect(collectionIcon('lajwanti', 'card')).toBe(LotusIcon);
   });
 
-  it('gives a new collection from admin the folded-fabric icon', () => {
-    expect(collectionIcon('lawn', 'menu')).toBe(LayersIcon);
-    expect(collectionIcon('lawn', 'card')).toBe(LayersIcon);
+  it('gives the dropdown a lotus, a sprout and a four-petal flower', () => {
+    expect(collectionIcon('dhanak', 'dropdown')).toBe(LotusIcon);
+    expect(collectionIcon('khaddar', 'dropdown')).toBe(SproutIcon);
+    expect(collectionIcon('lajwanti', 'dropdown')).toBe(PetalsIcon);
+  });
+
+  it('gives a new collection from admin a floral icon of its own, the same every time', () => {
+    for (const place of ['menu', 'card', 'dropdown'] as const) {
+      const icon = collectionIcon('lawn', place);
+      expect(FLORAL_ICONS).toContain(icon);
+      expect(collectionIcon('lawn', place)).toBe(icon);
+    }
+    // Different new collections don't all get the same drawing.
+    const picks = new Set(
+      ['lawn', 'linen', 'chiffon', 'cotton', 'silk'].map((s) => collectionIcon(s, 'dropdown')),
+    );
+    expect(picks.size).toBeGreaterThan(1);
   });
 });
 
