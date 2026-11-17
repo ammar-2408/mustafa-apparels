@@ -73,14 +73,18 @@ test.describe('section headings', () => {
   });
 });
 
-test('on a laptop, a new arrival lifts 3px on hover', async ({ page, isMobile }) => {
+test('on a laptop, the front suit in the New Arrivals ring lifts 4px on hover', async ({
+  page,
+  isMobile,
+}) => {
   test.skip(isMobile, 'Phones have no hover.');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
-  const card = page.locator('#new-arrivals article').first();
+  const card = page.locator('#new-arrivals li[data-front="true"] a');
   await card.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1200);
   await card.hover();
-  await expect.poll(() => card.evaluate((el) => getComputedStyle(el).translate)).toBe('0px -3px');
+  await expect.poll(() => card.evaluate((el) => getComputedStyle(el).translate)).toBe('0px -4px');
 });
 
 test.describe('blocks across the page', () => {

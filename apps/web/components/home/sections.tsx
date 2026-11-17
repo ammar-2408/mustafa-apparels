@@ -9,8 +9,8 @@ import { DELIVERY_WHATSAPP_TEXT, GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import type { SiteArt } from '../../lib/site-art';
 import type { Collection, SuitCard } from '../../lib/types';
 import { Carousel } from '../carousel/carousel';
+import { CircleGallery } from '../circle-gallery/circle-gallery';
 import { revealDelay } from '../motion/reveal';
-import { ProductCard } from '../product/product-card';
 import { Eyebrow, FlowerSprig, LeafBranch, LeafSprig, LotusOrnament, Wave } from '../site/flourish';
 import {
   ArrowIcon,
@@ -177,13 +177,8 @@ export function About({ art, leaves }: { art: SiteArt; leaves?: SiteArt }) {
   );
 }
 
-// One card at a time on phones (owner, 2026-11-17), 2 on tablets, 3 on laptops, 4 from 1440px.
-const ARRIVAL_WIDTHS =
-  'w-full md:w-[calc((100%_-_24px)/2)] lg:w-[calc((100%_-_48px)/3)] min-[90rem]:w-[calc((100%_-_72px)/4)]';
-const ARRIVAL_SIZES =
-  '(min-width: 90rem) 23vw, (min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 100vw';
-
-// 3. New arrivals (the owner's mockup, 2026-11-15): the newest suits in a carousel of framed cards.
+// 3. New arrivals (the owner's mockup, 2026-11-15): the newest suits, in a ring you can spin
+// (owner, 2026-11-17: a "circle gallery").
 // The menu's "New arrivals" link lands here (#new-arrivals).
 export function NewArrivals({ suits }: { suits: SuitCard[] }) {
   if (suits.length === 0) return null;
@@ -216,13 +211,7 @@ export function NewArrivals({ suits }: { suits: SuitCard[] }) {
           </Link>
         </div>
         <div className="reveal" style={revealDelay(1)}>
-          <Carousel
-            label="Newest suits"
-            itemClassName={ARRIVAL_WIDTHS}
-            items={suits.map((suit) => (
-              <ProductCard key={suit.id} suit={suit} sizes={ARRIVAL_SIZES} framed />
-            ))}
-          />
+          <CircleGallery label="Newest suits" suits={suits} />
         </div>
       </div>
     </section>

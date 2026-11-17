@@ -26,7 +26,14 @@ test('home has the hero, about, new arrivals and how to order', async ({ page })
   ).toBeVisible();
 
   const arrivals = page.getByRole('region', { name: 'New arrivals' });
-  expect(await arrivals.getByRole('article').count()).toBeGreaterThanOrEqual(4);
+  // The newest suits in a ring, each a link to its page (circle-gallery.spec.ts).
+  expect(
+    await arrivals
+      .getByRole('group', { name: 'Newest suits' })
+      .getByRole('list')
+      .getByRole('link')
+      .count(),
+  ).toBeGreaterThanOrEqual(4);
 
   // One card per collection in the database, each linking to its page.
   const collections = page.getByRole('region', { name: 'Explore Our Collections' });

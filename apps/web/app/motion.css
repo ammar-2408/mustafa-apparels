@@ -8,7 +8,7 @@
  * button's transition-colors).
  * Hook classes: hero-title, reveal (+ is-shown from RevealOnView), sway, lift, nudge,
  * product-card, collection-card, product-photo, card-icon, wishlist-spot, carousel-arrow,
- * carousel-dot, header-control, control-label, menu-panel, menu-item (with --i), menu-row, sweep.
+ * carousel-dot, header-control, control-label, menu-panel, menu-item (with --i), menu-row, sweep, circle-card, circle-link.
  */
 
 /* The navbar's current page: an orange line under the link (orange text would be too faint on
@@ -167,6 +167,11 @@
     transition: translate 180ms ease-out;
   }
 
+  /* The New Arrivals ring: the card in front lifts 4px on hover (owner, 2026-11-17). */
+  .circle-link {
+    transition: translate 180ms ease-out;
+  }
+
   /* The hero buttons' fill takes half a second; the label turns white a moment after it starts. */
   .sweep {
     transition:
@@ -274,6 +279,10 @@
 
     .product-card:hover {
       translate: 0 -3px;
+    }
+
+    .circle-card[data-front='true'] .circle-link:hover {
+      translate: 0 -4px;
     }
 
     .collection-card:hover {
