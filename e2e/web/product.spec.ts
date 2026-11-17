@@ -1,6 +1,7 @@
 import { product, slugRedirect } from '@mustafa/db/schema';
 import { eq } from 'drizzle-orm';
 
+import { expectRedirectTo } from '../support/redirects';
 import { expect, test } from '../support/users';
 
 // The suit page (docs/design.md §9.2, §8.6). Demo suits: E2E-03 has an old slug that
@@ -68,8 +69,7 @@ test('an old slug moves permanently; unknown, draft and archived suits are real 
     .where(eq(slugRedirect.entity, 'product'));
   const moved = await request.get(`/products/${old!.oldSlug}`, { maxRedirects: 0 });
   expect(moved.status()).toBe(308);
-  expect(moved.headers()['location']).toMatch(new RegExp(`/products/${target}$`));
-  expect(moved.headers()['location']).not.toContain(',');
+  expectRedirectTo(moved, `/products/${target}`);
 
   for (const path of [
     '/products/no-such-suit',

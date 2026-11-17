@@ -31,6 +31,19 @@ const PAGES = [
 ];
 
 async function seriousViolations(page: Page) {
+  // Let the entrance motion finish first (the headline rise, the scroll reveals): measured
+  // mid-fade, text is partly transparent and fails contrast though it passes once shown.
+  // Endless decoration (the flower sway) is left running.
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(150);
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
   const { violations } = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();

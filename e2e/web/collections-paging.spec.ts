@@ -1,6 +1,7 @@
 import { category, slugRedirect } from '@mustafa/db/schema';
 import { and, eq } from 'drizzle-orm';
 
+import { expectRedirectTo } from '../support/redirects';
 import { expect, test } from '../support/users';
 
 // Collection paging and addresses (ADR-017, docs/design.md §8.6). Lajwanti has 25 published demo
@@ -34,10 +35,7 @@ test('an old collection address moves to the current one and keeps the page numb
   try {
     const page2 = await request.get(`/collections/${oldSlug}/page/2`, { maxRedirects: 0 });
     expect(page2.status()).toBe(308);
-    // The exact path: a Location header sent twice arrives joined with ", " and must fail here.
-    expect(new URL(page2.headers()['location']!, 'http://x').pathname).toBe(
-      '/collections/lajwanti/page/2',
-    );
+    expectRedirectTo(page2, '/collections/lajwanti/page/2');
   } finally {
     await db
       .delete(slugRedirect)
@@ -77,11 +75,11 @@ test('an address with capitals moves permanently to the lowercase one', async ({
   ]) {
     const response = await request.get(from!, { maxRedirects: 0 });
     expect(response.status(), from).toBe(308);
-    expect(new URL(response.headers()['location']!, 'http://x').pathname).toBe(to);
+    expectRedirectTo(response, to!);
   }
   const shop = await (await request.get('/shop')).text();
   const slug = shop.match(/href="\/products\/([a-z0-9-]+)"/)![1]!;
   const suit = await request.get(`/products/${slug.toUpperCase()}`, { maxRedirects: 0 });
   expect(suit.status()).toBe(308);
-  expect(new URL(suit.headers()['location']!, 'http://x').pathname).toBe(`/products/${slug}`);
+  expectRedirectTo(suit, `/products/${slug}`);
 });

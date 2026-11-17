@@ -1,6 +1,7 @@
 import { category, slugRedirect } from '@mustafa/db/schema';
 import { and, eq } from 'drizzle-orm';
 
+import { expectRedirectTo } from '../support/redirects';
 import { expect, test } from '../support/users';
 
 // Collection pages (ADR-017, docs/design.md §8.6). E2E data: dhanak has 5 published suits,
@@ -41,8 +42,7 @@ test('unknown collections and bad page numbers are real 404s; page 1 moves to th
   }
   const first = await request.get('/collections/khaddar/page/1', { maxRedirects: 0 });
   expect(first.status()).toBe(301);
-  expect(first.headers()['location']).toMatch(/\/collections\/khaddar$/);
-  expect(first.headers()['location']).not.toContain(',');
+  expectRedirectTo(first, '/collections/khaddar');
 });
 
 test('an old collection address moves permanently to the current one', async ({ db, request }) => {
@@ -52,8 +52,7 @@ test('an old collection address moves permanently to the current one', async ({ 
   try {
     const response = await request.get(`/collections/${oldSlug}`, { maxRedirects: 0 });
     expect(response.status()).toBe(308);
-    expect(response.headers()['location']).toMatch(/\/collections\/khaddar$/);
-    expect(response.headers()['location']).not.toContain(',');
+    expectRedirectTo(response, '/collections/khaddar');
   } finally {
     await db
       .delete(slugRedirect)

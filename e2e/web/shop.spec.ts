@@ -1,3 +1,4 @@
+import { expectRedirectTo } from '../support/redirects';
 import { expect, test } from '../support/users';
 
 // /shop and its path pages (ADR-017). The E2E database has 34 published suits: two pages of 24.
@@ -48,8 +49,7 @@ test('the server HTML has one absolute canonical to /shop, even with filter para
 test('/shop/page/1 moves permanently to /shop', async ({ request }) => {
   const response = await request.get('/shop/page/1', { maxRedirects: 0 });
   expect(response.status()).toBe(301);
-  expect(response.headers()['location']).toMatch(/\/shop$/);
-  expect(response.headers()['location']).not.toContain(',');
+  expectRedirectTo(response, '/shop');
 });
 
 test('page 2 is its own page: 200, its own canonical, the rest of the suits and links back', async ({

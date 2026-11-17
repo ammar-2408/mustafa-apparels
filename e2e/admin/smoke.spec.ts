@@ -23,5 +23,6 @@ test('admin login page is set in Montserrat, loaded in weights 300 and 400 only'
 }) => {
   await page.goto('/login');
   await expect(page.locator('body')).toHaveCSS('font-family', /Montserrat/);
-  expect(await montserratWeights(page)).toEqual(['300', '400']);
+  // Light, Regular and Bold (Bold since the owner's redesign, 2026-11-15).
+  expect(await montserratWeights(page)).toEqual(['300', '400', '700']);
 });
