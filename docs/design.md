@@ -81,6 +81,8 @@ Radius: `--radius-sm: 2px` for small parts (badges, fields), `--radius-md: 8px` 
 
 Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Use the files as they are; never redraw, stretch, recolour or add effects. Step 1.1 copies them, keeping the pack's folder names.
 
+**One owner change (2026-11-17), website copies only:** in `apps/web/public/brand/svg/`, the primary and secondary SVGs (black and white) have no line under APPARELS. "BY MUSTAFA AHMED" is scaled to the width of APPARELS and drawn slightly heavier, and the text block is re-centred. The outer viewBox is unchanged. The pack itself and its PNG/PDF exports (including `og-share-image-1200x630.png`) are as delivered. `packages/ui/src/logo.test.tsx` checks the website copies.
+
 | Goes into | Files |
 |---|---|
 | `apps/web/public/brand/svg/` | All 8 SVGs: `mustafa-apparels-{primary,secondary,simplified,submark}-{black,white}.svg` |

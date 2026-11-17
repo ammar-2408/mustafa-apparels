@@ -86,6 +86,42 @@ describe('Logo', () => {
     expect(LOGO_MIN_HEIGHT).toEqual({ primary: 120, secondary: 40, simplified: 28, submark: 24 });
   });
 
+  // Owner, 2026-11-17: the site's copies drop the line under APPARELS and show "BY MUSTAFA AHMED"
+  // bigger and bolder. Only the divider of the secondary logo (taller than wide) stays.
+  it.each(['primary', 'secondary'] as const)(
+    'the site’s %s logo has no line under APPARELS and a bigger tagline',
+    (variant) => {
+      for (const colour of ['black', 'white']) {
+        const svg = readFileSync(
+          join(
+            import.meta.dirname,
+            `../../../apps/web/public/brand/svg/mustafa-apparels-${variant}-${colour}.svg`,
+          ),
+          'utf8',
+        );
+        const rects = [...svg.matchAll(/<rect [^>]*width="([\d.]+)" height="([\d.]+)"/g)];
+        expect(rects.every(([, w, h]) => Number(h) > Number(w))).toBe(true);
+        // The tagline is the last path: scaled up and outlined to make it heavier.
+        const tagline = [...svg.matchAll(/<path [^>]*>/g)].at(-1)![0];
+        expect(Number(tagline.match(/scale\(([\d.]+)\)/)?.[1])).toBeGreaterThanOrEqual(1.4);
+        expect(tagline).toMatch(/stroke-width="[\d.]+"/);
+        // The outer box is unchanged, so the logo keeps its place and proportions on the site.
+        expect(
+          svg
+            .match(/viewBox="([^"]+)"/)![1]!
+            .split(/\s+/)
+            .map(Number)
+            .at(-2)! /
+            svg
+              .match(/viewBox="([^"]+)"/)![1]!
+              .split(/\s+/)
+              .map(Number)
+              .at(-1)!,
+        ).toBeCloseTo(viewBoxRatio(variant), 3);
+      }
+    },
+  );
+
   it('loads lazily unless asked to load eagerly', () => {
     const { unmount } = render(<Logo variant="primary" />);
     expect(img().getAttribute('loading')).toBe('lazy');

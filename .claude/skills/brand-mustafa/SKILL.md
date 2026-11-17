@@ -60,7 +60,7 @@ Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `
 
 ## Logo
 
-Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in which app: `docs/design.md` §1.3. **Use the files as they are:** never redraw, stretch, recolour or add effects.
+Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in which app: `docs/design.md` §1.3. **Use the files as they are:** never redraw, stretch, recolour or add effects. The website's primary and secondary copies have no line under APPARELS and a bigger, heavier "BY MUSTAFA AHMED" (owner, 2026-11-17, §1.3): copy them from `apps/web/public/brand/svg/`, not the pack.
 
 | Place | Logo | Minimum height |
 |---|---|---|

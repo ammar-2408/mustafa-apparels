@@ -33,6 +33,21 @@ const BRAND = {
   },
 };
 
+// Owner, 2026-11-17 (docs/design.md §1.3): the website's primary and secondary logos drop the line
+// under APPARELS, with "BY MUSTAFA AHMED" scaled up and slightly heavier.
+const OWNER_EDITED = new Set(
+  ['primary', 'secondary'].flatMap((variant) =>
+    ['black', 'white'].map((colour) => `svg/mustafa-apparels-${variant}-${colour}.svg`),
+  ),
+);
+const shapes = (svg) => [...svg.matchAll(/ d="([^"]+)"/g)].map((m) => m[1]);
+const fills = (svg) => [...new Set([...svg.matchAll(/fill="(#[0-9A-Fa-f]+)"/g)].map((m) => m[1]))];
+const viewBox = (svg) => svg.match(/viewBox="([^"]+)"/)[1];
+const horizontalRules = (svg) =>
+  [...svg.matchAll(/<rect [^>]*width="([\d.]+)" height="([\d.]+)"/g)].filter(
+    (m) => Number(m[1]) > Number(m[2]),
+  ).length;
+
 /** Every file under a folder, as paths relative to it. */
 const listFiles = (dir) =>
   readdirSync(fromRoot(dir), { recursive: true, withFileTypes: true })
@@ -61,6 +76,19 @@ for (const [app, folders] of Object.entries(BRAND)) {
 
   for (const [folder, files] of Object.entries(folders)) {
     for (const file of files) {
+      if (app === 'web' && OWNER_EDITED.has(`${folder}/${file}`)) {
+        test(`${app} serves ${folder}/${file} with the pack's own shapes, only re-arranged`, () => {
+          const copy = readFileSync(fromRoot(`${brandDir}/${folder}/${file}`), 'utf8');
+          const pack = readFileSync(fromRoot(`${PACK}/${folder}/${file}`), 'utf8');
+          // Every outline and colour is the pack's: nothing redrawn or recoloured.
+          assert.deepEqual(shapes(copy), shapes(pack));
+          assert.deepEqual(fills(copy), fills(pack));
+          assert.equal(viewBox(copy), viewBox(pack));
+          // The one difference: the line under APPARELS is gone.
+          assert.equal(horizontalRules(copy), 0);
+        });
+        continue;
+      }
       test(`${app} serves ${folder}/${file} unchanged from the logo pack`, () => {
         const copy = fromRoot(`${brandDir}/${folder}/${file}`);
         assert.ok(existsSync(copy), `${brandDir}/${folder}/${file} is missing`);
