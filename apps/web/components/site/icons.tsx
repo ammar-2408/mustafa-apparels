@@ -359,6 +359,21 @@ export function TulipIcon({ className }: IconProps) {
   );
 }
 
+// A house, before "Home" in breadcrumbs.
+export function HomeIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 type Icon = (props: IconProps) => JSX.Element;
 
 // Each collection's icon in the side menu, on its card and in the navbar's Collections list.

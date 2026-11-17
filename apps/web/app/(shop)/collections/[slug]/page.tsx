@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { CollectionHero } from '../../../../components/collection-hero';
 import { ListPage } from '../../../../components/list-page';
 import { getCollection, listCollections } from '../../../../lib/catalog';
 import {
@@ -38,6 +39,15 @@ export default async function CollectionPage({ params }: Props) {
       base={`/collections/${collection.slug}`}
       list={list}
       collectionSlug={collection.slug}
+      hero={
+        <CollectionHero
+          name={collection.name}
+          description={collection.description}
+          crumbs={collectionCrumbs(collection)}
+          total={list.total}
+          page={1}
+        />
+      }
     />
   );
 }

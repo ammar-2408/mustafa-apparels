@@ -59,3 +59,17 @@ test('an old collection address moves permanently to the current one', async ({ 
       .where(and(eq(slugRedirect.entity, 'category'), eq(slugRedirect.oldSlug, oldSlug)));
   }
 });
+
+test('a collection page has the template header: the serif title and the count badge', async ({
+  page,
+}) => {
+  await page.goto('/collections/khaddar');
+  const h1 = page.getByRole('heading', { level: 1, name: 'Khaddar' });
+  await expect(h1).toBeVisible();
+  // The serif is loaded on collection pages only, and the title really uses it.
+  expect(await h1.evaluate((el) => getComputedStyle(el).fontFamily)).toMatch(/DM Serif/i);
+  await expect(page.getByText(/^\d+ suits?$/)).toBeVisible();
+  await expect(
+    page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Home' }),
+  ).toHaveAttribute('href', '/');
+});

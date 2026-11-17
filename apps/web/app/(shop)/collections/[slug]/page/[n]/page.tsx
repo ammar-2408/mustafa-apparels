@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+import { CollectionHero } from '../../../../../../components/collection-hero';
 import { ListPage } from '../../../../../../components/list-page';
 import { getCollection, listCollections, listSuits } from '../../../../../../lib/catalog';
 import { collectionCrumbs, loadCollectionPage } from '../../../../../../lib/collection-page';
@@ -46,16 +47,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionLaterPage({ params }: Props) {
   const { collection, list } = await load(params);
   const base = `/collections/${collection.slug}`;
+  const crumbs = [
+    ...collectionCrumbs(collection),
+    { name: `Page ${list.page}`, path: `${base}/page/${list.page}` },
+  ];
   return (
     <ListPage
       title={collection.name}
-      crumbs={[
-        ...collectionCrumbs(collection),
-        { name: `Page ${list.page}`, path: `${base}/page/${list.page}` },
-      ]}
+      crumbs={crumbs}
       base={base}
       list={list}
       collectionSlug={collection.slug}
+      hero={
+        <CollectionHero
+          name={collection.name}
+          description={collection.description}
+          crumbs={crumbs}
+          total={list.total}
+          page={list.page}
+        />
+      }
     />
   );
 }

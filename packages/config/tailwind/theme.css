@@ -61,8 +61,6 @@
   /* Montserrat only, from next/font on <html>. Only 300, 400 and 700 are loaded, so no other weights. */
   --font-*: initial;
   --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
-  /* Collection page titles only (owner, 2026-11-17), loaded by app/fonts-serif.ts on those pages. */
-  --font-serif: var(--font-dm-serif), ui-serif, Georgia, serif;
   --font-weight-*: initial;
   --font-weight-light: 300;
   --font-weight-normal: 400;
@@ -122,6 +120,12 @@
       }
     }
   }
+}
+
+/* Collection page titles only (owner, 2026-11-17). Inline, so the font's variable is read on the
+   element: app/fonts-serif.ts sets it only on collection pages, not on <html>. */
+@theme inline {
+  --font-serif: var(--font-dm-serif), ui-serif, Georgia, serif;
 }
 
 /* Spaced capitals for labels, nav and buttons; caps-tight where 0.4em would wrap on phones. */

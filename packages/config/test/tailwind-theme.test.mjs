@@ -212,8 +212,8 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
     assert.match(out, /--font-sans:\s*var\(--font-montserrat\)/);
     assert.match(out, /\.font-sans\s*\{\s*font-family: var\(--font-sans\)/);
     // A serif for collection page titles only (owner, 2026-11-17); still no mono.
-    assert.match(out, /--font-serif:\s*var\(--font-dm-serif\)/);
-    assert.match(out, /\.font-serif\s*\{\s*font-family: var\(--font-serif\)/);
+    // Inline: the utility reads the font's own variable, which is set only on collection pages.
+    assert.match(out, /\.font-serif\s*\{\s*font-family: var\(--font-dm-serif\), ui-serif/);
     assert.doesNotMatch(out, /\.font-mono/);
   });
 
