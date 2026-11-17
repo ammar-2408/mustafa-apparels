@@ -52,7 +52,7 @@ export default async function Home() {
         })}
       />
       <Hero whatsapp={settings.whatsapp} />
-      <About art={SITE_ART.aboutStudio} />
+      <About art={SITE_ART.aboutBoutique} leaves={SITE_ART.aboutLeaves} />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
       <ExploreCollections collections={panels} />
       <HowToOrder whatsapp={settings.whatsapp} />

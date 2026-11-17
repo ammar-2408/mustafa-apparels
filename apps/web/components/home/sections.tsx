@@ -11,22 +11,14 @@ import type { Collection, SuitCard } from '../../lib/types';
 import { Carousel } from '../carousel/carousel';
 import { revealDelay } from '../motion/reveal';
 import { ProductCard } from '../product/product-card';
-import {
-  Eyebrow,
-  FlowerSprig,
-  LeafBranch,
-  LeafSprig,
-  LotusOrnament,
-  Swash,
-  Wave,
-} from '../site/flourish';
+import { Eyebrow, FlowerSprig, LeafBranch, LeafSprig, LotusOrnament, Wave } from '../site/flourish';
 import {
   ArrowIcon,
   ChevronIcon,
   collectionIcon,
   LayersIcon,
   LotusIcon,
-  ShirtIcon,
+  ShieldIcon,
   SuitHeartIcon,
   TruckIcon,
   WhatsAppIcon,
@@ -106,33 +98,51 @@ export function Hero({ whatsapp }: { whatsapp: string | null }) {
 }
 
 const ABOUT_POINTS = [
-  { Icon: ShirtIcon, title: 'Women’s Suits', text: 'Elegant collections' },
-  { Icon: LayersIcon, title: 'Premium Fabrics', text: 'Carefully selected' },
-  { Icon: WhatsAppIcon, title: 'Order on WhatsApp', text: 'Quick & convenient' },
+  { Icon: TruckIcon, title: 'Nationwide Delivery', text: 'Across Pakistan' },
+  { Icon: ShieldIcon, title: 'Premium Fabrics', text: 'Quality You Can Trust' },
+  { Icon: LayersIcon, title: 'Elegant Designs', text: 'For Every Occasion' },
 ];
 
-// 2. About (the owner's mockup, 2026-11-15): the plain facts about the shop (docs/seo-geo.md §7),
-// three short points, and the fabric picture. The heading reads as one sentence for search.
-export function About({ art }: { art: SiteArt }) {
+// 2. About (the owner's Boutique Showcase mockup, 2026-11-17): a warm peach wash with soft leaves
+// on the left, the plain facts about the shop as one sentence (docs/seo-geo.md §7), three points,
+// and the boutique picture fading in on the right.
+export function About({ art, leaves }: { art: SiteArt; leaves?: SiteArt }) {
   return (
-    // Like the hero: the text on the left, the picture filling the right side top to bottom
-    // (the owner's "Crafted in Style" mockup, 2026-11-15).
     <section
       aria-labelledby="about-title"
-      className="relative flex flex-col overflow-hidden bg-linear-to-r from-bg via-bg to-surface-soft lg:block"
+      className="relative flex flex-col overflow-hidden bg-linear-to-r from-accent/5 via-accent/5 to-bg lg:block"
     >
+      {leaves && (
+        <Image
+          src={leaves.src}
+          alt=""
+          width={250}
+          height={725}
+          sizes="10rem"
+          // Fades out to the right, so the picture's own background leaves no edge.
+          style={{ maskImage: 'linear-gradient(to right, black 40%, transparent)' }}
+          className="pointer-events-none absolute inset-y-0 left-0 hidden h-full w-auto mix-blend-multiply md:block"
+        />
+      )}
       <div className={`${wrap} relative z-10 w-full`}>
-        <div className="flex min-w-0 flex-col gap-6 py-16 md:py-24 lg:w-[54%] lg:py-28 lg:pr-8">
-          <Eyebrow label="About Mustafa Apparels" align="start" />
-          <h2 id="about-title" className="reveal text-h2 font-bold text-wrap">
+        <div className="flex min-w-0 flex-col gap-6 py-16 md:py-24 lg:w-[56%] lg:py-28 lg:pr-8 xl:pl-8">
+          <p aria-hidden="true" className="flex items-center gap-4">
+            <LotusIcon className="size-9 text-accent-text" />
+            <span className="flex items-center gap-3">
+              <span className="h-px w-6 bg-fg/50" />
+              <span className="h-px w-10 bg-fg/50" />
+              <span className="h-px w-14 bg-fg/50" />
+              <span className="h-px w-8 bg-fg/50" />
+            </span>
+          </p>
+          <h2 id="about-title" className="reveal text-hero font-bold text-wrap">
             <span className="block">Mustafa Apparels is an</span>{' '}
             <span className="block text-accent-text">online shop for women’s</span>{' '}
             <span className="block">unstitched suits in Pakistan.</span>
           </h2>
-          <Swash className="h-3 w-44" />
-          <p className="reveal max-w-xl text-body-lg" style={revealDelay(1)}>
-            Every suit comes as fabric for your own tailor, and every order is arranged with you on
-            WhatsApp.
+          <span aria-hidden="true" className="h-0.5 w-20 bg-accent" />
+          <p className="reveal max-w-xl text-body-lg text-muted" style={revealDelay(1)}>
+            Premium unstitched fabrics, elegant designs, and timeless styles for every occasion.
           </p>
           <ul
             className="reveal mt-2 grid max-w-2xl grid-cols-3 divide-x divide-border"
@@ -140,7 +150,7 @@ export function About({ art }: { art: SiteArt }) {
           >
             {ABOUT_POINTS.map(({ Icon, title, text }) => (
               <li key={title} className="flex flex-col items-center gap-2 px-2 text-center">
-                <span className="flex size-14 items-center justify-center rounded-full bg-surface-soft">
+                <span className="mb-2 flex size-14 items-center justify-center rounded-full bg-accent/10">
                   <Icon className="size-7" />
                 </span>
                 <span className="text-small font-bold">{title}</span>
@@ -152,19 +162,15 @@ export function About({ art }: { art: SiteArt }) {
       </div>
       <div
         style={revealDelay(1)}
-        className="reveal relative aspect-[1071/724] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:aspect-auto lg:w-[46%]"
+        className="reveal relative aspect-[1090/725] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:aspect-auto lg:w-[48%]"
       >
+        {/* The picture fades in from the left, so the text side stays calm. */}
         <Image
           src={art.src}
           alt={art.alt}
           fill
-          sizes="(min-width: 64rem) 46vw, 100vw"
-          className="object-cover"
-        />
-        {/* Fades the picture into the page, so the text side stays calm. */}
-        <span
-          aria-hidden="true"
-          className="absolute inset-y-0 left-0 hidden w-1/4 bg-linear-to-r from-bg lg:block"
+          sizes="(min-width: 64rem) 48vw, 100vw"
+          className="object-cover lg:[mask-image:linear-gradient(to_right,transparent,black_30%)]"
         />
       </div>
     </section>

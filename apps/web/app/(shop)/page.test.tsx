@@ -44,7 +44,7 @@ describe('home sections', () => {
 
   it('states the plain facts about the shop as one sentence, with three points and the picture', () => {
     const art = {
-      src: 'https://res.cloudinary.com/ma/image/upload/c_limit/site/home/about-fabric',
+      src: 'https://res.cloudinary.com/ma/image/upload/c_limit/site/home/about-boutique',
       alt: 'Fabrics',
     };
     render(<About art={art} />);
@@ -52,15 +52,18 @@ describe('home sections', () => {
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe(
       'Mustafa Apparels is an online shop for women’s unstitched suits in Pakistan.',
     );
-    expect(region.textContent).toContain('every order is arranged with you on WhatsApp');
+    // The owner's Boutique Showcase mockup (2026-11-17).
+    expect(region.textContent).toContain(
+      'Premium unstitched fabrics, elegant designs, and timeless styles for every occasion.',
+    );
     expect(
       within(region)
         .getAllByRole('listitem')
         .map((li) => li.textContent),
     ).toEqual([
-      'Women’s SuitsElegant collections',
-      'Premium FabricsCarefully selected',
-      'Order on WhatsAppQuick & convenient',
+      'Nationwide DeliveryAcross Pakistan',
+      'Premium FabricsQuality You Can Trust',
+      'Elegant DesignsFor Every Occasion',
     ]);
     expect(within(region).getByRole('img', { name: 'Fabrics' })).toBeTruthy();
   });

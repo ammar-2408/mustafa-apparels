@@ -463,6 +463,21 @@ export function ReturnBoxIcon({ className }: IconProps) {
   );
 }
 
+// A shield with a tick, for quality you can trust.
+export function ShieldIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6l-7-2.5zM9 12l2.2 2.2L15.5 10"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 type Icon = (props: IconProps) => JSX.Element;
 
 // Each collection's icon in the side menu, on its card and in the navbar's Collections list.

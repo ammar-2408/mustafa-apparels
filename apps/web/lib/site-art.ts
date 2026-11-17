@@ -38,6 +38,15 @@ export const SITE_ART = {
     src: shapedImageUrl(`${UPLOAD}site/home/about-studio`, 'whole'),
     alt: 'A tailoring table with a measuring tape, scissors, a pin cushion, an inlaid box and white flowers',
   },
+  // The owner's Boutique Showcase mockup (2026-11-17).
+  aboutBoutique: {
+    src: shapedImageUrl(`${UPLOAD}site/home/about-boutique`, 'whole'),
+    alt: 'A maroon suit with gold embroidery and a sheer dupatta on a dress form, beside folded embroidered fabrics and rails of suits',
+  },
+  aboutLeaves: {
+    src: shapedImageUrl(`${UPLOAD}site/home/about-leaves`, 'whole'),
+    alt: '',
+  },
   aboutFabric: {
     src: shapedImageUrl(`${UPLOAD}site/home/about-fabric`, 'whole'),
     alt: 'Embroidered fabrics in powder blue, cream and rose, folded on a marble stand',
