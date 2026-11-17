@@ -93,8 +93,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Use the files as they 
 
 | Place | Logo | Minimum height |
 |---|---|---|
-| Desktop header | Secondary, black | 40 px (use 48 px from `md`, 64 px from `lg`, so its small "by Mustafa Ahmed" line stays readable) |
-| Mobile header | Submark, black | 24 px (use 32 px) |
+| Header, every screen | Secondary, black | 48px on phones, 64px from md, 72px from lg, 80px from xl (owner, 2026-11-17: the full logo, so "BY MUSTAFA AHMED" can be read). Phones keep WhatsApp and Menu in the bar (Search from 360px); Account and Saved move into the Menu panel |
 | Sticky header on scroll | Simplified, black | 28 px |
 | Footer on pale powder blue | Primary, black | 120 px |
 | About page, hero | Primary | 120 px |

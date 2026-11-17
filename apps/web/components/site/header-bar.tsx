@@ -37,6 +37,8 @@ function menuIcon(href: string) {
 const control =
   'header-control inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-fg';
 const label = 'control-label hidden text-body sm:inline';
+// The WhatsApp word only from xl: between lg and xl the bar also holds the main links.
+const whatsappLabel = 'control-label hidden text-body xl:inline';
 
 // The header band, the floating bar that takes over once it scrolls away, and the side-panel menu.
 // No session read: Account is a plain link, so cached pages stay free of per-user work.
@@ -75,20 +77,20 @@ export function HeaderBar({ links, contact }: Props) {
   const actions = (
     <>
       <span aria-hidden="true" className="mr-3 hidden h-8 w-px bg-fg/30 lg:block" />
-      <Link href="/search" className={control} aria-label="Search">
+      <Link href="/search" className={`${control} max-[359px]:hidden`} aria-label="Search">
         <SearchIcon />
       </Link>
-      <Link href="/account" className={control} aria-label="Account">
+      <Link href="/account" className={`${control} max-md:hidden`} aria-label="Account">
         <AccountIcon />
       </Link>
       {whatsapp && (
         <a href={whatsapp} className={control} target="_blank" rel="noopener">
           <WhatsAppIcon />
-          <span className={label}>WhatsApp</span>
-          <span className="sr-only sm:hidden">WhatsApp</span>
+          <span className={whatsappLabel}>WhatsApp</span>
+          <span className="sr-only xl:hidden">WhatsApp</span>
         </a>
       )}
-      <Link href="/account#saved" className={control} aria-label="Saved suits">
+      <Link href="/account#saved" className={`${control} max-md:hidden`} aria-label="Saved suits">
         <HeartIcon />
       </Link>
       {/* Phones and tablets open the side panel; from lg the links sit in the bar instead. */}
@@ -123,14 +125,17 @@ export function HeaderBar({ links, contact }: Props) {
           >
             <path d="M0 40V26c180-24 380-26 560-8s360 20 540 2 260-18 340-12v32z" />
           </svg>
-          <LeafBranch className="absolute top-1 -right-4 hidden w-24 lg:block" />
+          <LeafBranch className="absolute top-1 -right-4 hidden w-24 2xl:block" />
         </div>
         <div className="relative mx-auto flex h-16 max-w-content-wide items-center justify-between gap-4 px-gutter md:h-20 lg:h-24">
           <HeaderLogo />
           <div className="hidden lg:block">
             <MainNav collections={collections} pathname={pathname} />
           </div>
-          <nav aria-label="Quick links" className="flex items-center gap-1 sm:gap-2 lg:pr-20">
+          <nav
+            aria-label="Quick links"
+            className="flex shrink-0 items-center gap-1 sm:gap-2 2xl:pr-20"
+          >
             {actions}
           </nav>
         </div>
@@ -216,6 +221,24 @@ export function HeaderBar({ links, contact }: Props) {
                 </li>
               );
             })}
+          </ul>
+          <ul className="mt-6 grid grid-cols-3 gap-2">
+            {[
+              { href: '/search', label: 'Search', Icon: SearchIcon },
+              { href: '/account', label: 'Account', Icon: AccountIcon },
+              { href: '/account#saved', label: 'Saved', Icon: HeartIcon },
+            ].map(({ href, label: name, Icon }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  onClick={close}
+                  className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-md border border-border text-small hover:bg-surface-soft"
+                >
+                  <Icon className="size-6" />
+                  {name}
+                </Link>
+              </li>
+            ))}
           </ul>
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
             {HELP_LINKS.filter((l) => !links.some((m) => m.href === l.href)).map((link) => (

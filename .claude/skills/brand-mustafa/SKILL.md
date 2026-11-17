@@ -64,8 +64,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Which files go in whic
 
 | Place | Logo | Minimum height |
 |---|---|---|
-| Desktop header | Secondary, black | 40px (use 48px from `md`, 64px from `lg`) |
-| Mobile header | Submark, black | 24px (use 32px) |
+| Header, every screen | Secondary, black | 48px on phones, 64px from md, 72px from lg, 80px from xl (owner, 2026-11-17: the full logo, so "BY MUSTAFA AHMED" can be read). Phones keep WhatsApp and Menu in the bar (Search from 360px); Account and Saved move into the Menu panel |
 | Sticky header on scroll | Simplified, black | 28px |
 | Footer on pale powder blue | Primary, black | 120px |
 | About page, hero | Primary | 120px |
