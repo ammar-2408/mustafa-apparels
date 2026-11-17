@@ -178,11 +178,11 @@ export function About({ art }: { art: SiteArt }) {
   );
 }
 
-// About 1.3 cards on phones (the next one peeks in), 2 on tablets, 3 on laptops, 4 from 1440px.
+// One card at a time on phones (owner, 2026-11-17), 2 on tablets, 3 on laptops, 4 from 1440px.
 const ARRIVAL_WIDTHS =
-  'w-[76%] md:w-[calc((100%_-_24px)/2)] lg:w-[calc((100%_-_48px)/3)] min-[90rem]:w-[calc((100%_-_72px)/4)]';
+  'w-full md:w-[calc((100%_-_24px)/2)] lg:w-[calc((100%_-_48px)/3)] min-[90rem]:w-[calc((100%_-_72px)/4)]';
 const ARRIVAL_SIZES =
-  '(min-width: 90rem) 23vw, (min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 76vw';
+  '(min-width: 90rem) 23vw, (min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 100vw';
 
 // 3. New arrivals (the owner's mockup, 2026-11-15): the newest suits in a carousel of framed cards.
 // The menu's "New arrivals" link lands here (#new-arrivals).
@@ -232,8 +232,8 @@ export function NewArrivals({ suits }: { suits: SuitCard[] }) {
 
 export type CollectionPanel = Collection & { cover: SuitCard['image'] };
 
-// About 1.1 cards on phones, 2 on tablets, 3 on laptops.
-const COLLECTION_WIDTHS = 'w-[88%] md:w-[calc((100%_-_24px)/2)] lg:w-[calc((100%_-_48px)/3)]';
+// One card at a time on phones (owner, 2026-11-17), 2 on tablets, 3 on laptops.
+const COLLECTION_WIDTHS = 'w-full md:w-[calc((100%_-_24px)/2)] lg:w-[calc((100%_-_48px)/3)]';
 
 // 4. Explore Our Collections (the owner's mockup, 2026-11-15): one card per active collection
 // from admin, newest suit as its cover, in the same carousel. A new collection joins with no code
@@ -276,7 +276,7 @@ export function ExploreCollections({ collections }: { collections: CollectionPan
                         src={shapedImageUrl(c.cover.url, 'cover')}
                         alt={c.cover.alt}
                         fill
-                        sizes="(min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 88vw"
+                        sizes="(min-width: 64rem) 31vw, (min-width: 48rem) 47vw, 100vw"
                         className="product-photo object-cover"
                       />
                     )}

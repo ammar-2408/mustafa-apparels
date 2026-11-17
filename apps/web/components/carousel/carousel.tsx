@@ -30,7 +30,9 @@ export function Carousel({ label, items, itemClassName }: Props) {
     const el = track.current;
     if (!el) return;
     const max = el.scrollWidth - el.clientWidth;
-    const pages = max <= 1 ? 1 : Math.ceil((el.scrollWidth - 1) / el.clientWidth);
+    // Count screens with the gap between cards, so 3 phone-wide cards make 3 dots, not 4.
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+    const pages = max <= 1 ? 1 : Math.ceil((el.scrollWidth + gap) / (el.clientWidth + gap) - 0.01);
     const page = max <= 1 ? 0 : Math.round((el.scrollLeft / max) * (pages - 1));
     setView({ atStart: el.scrollLeft <= 1, atEnd: el.scrollLeft >= max - 1, page, pages });
   }, []);

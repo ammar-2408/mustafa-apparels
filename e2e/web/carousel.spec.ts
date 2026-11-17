@@ -47,3 +47,21 @@ test.describe('on a laptop', () => {
     await expect(page).toHaveURL(/\/$/);
   });
 });
+
+test('on a phone each carousel shows one whole card at a time', async ({ page }) => {
+  test.skip(page.viewportSize()!.width >= 768, 'Tablets and up show two or more.');
+  await page.goto('/');
+  for (const name of ['Newest suits', 'Collections']) {
+    const track = page.getByRole('region', { name, exact: true }).getByRole('list');
+    await track.scrollIntoViewIfNeeded();
+    const [trackWidth, slideWidth] = await track.evaluate((el) => [
+      el.clientWidth,
+      (el.firstElementChild as HTMLElement).getBoundingClientRect().width,
+    ]);
+    expect(Math.abs(trackWidth! - slideWidth!), name).toBeLessThan(1);
+    // One dot per card: the dots count the gaps between cards too.
+    const region = page.getByRole('region', { name, exact: true });
+    const slides = await region.getByRole('listitem').count();
+    await expect(region.getByRole('button', { name: /^Page \d+ of / })).toHaveCount(slides);
+  }
+});
