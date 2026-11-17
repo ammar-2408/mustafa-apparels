@@ -51,7 +51,7 @@ export default async function Home() {
           socials: socialLinks(settings.socials).map((s) => s.href),
         })}
       />
-      <Hero whatsapp={settings.whatsapp} collections={collections.map((c) => c.name)} />
+      <Hero whatsapp={settings.whatsapp} />
       <About art={SITE_ART.aboutStudio} />
       <NewArrivals suits={newest?.items.slice(0, NEW_ARRIVALS) ?? []} />
       <ExploreCollections collections={panels} />

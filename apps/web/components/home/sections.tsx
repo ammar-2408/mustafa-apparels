@@ -5,7 +5,6 @@ import { Logo } from '@mustafa/ui/logo';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { collectionList } from '../../lib/format';
 import { DELIVERY_WHATSAPP_TEXT, GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import type { SiteArt } from '../../lib/site-art';
 import type { Collection, SuitCard } from '../../lib/types';
@@ -37,16 +36,9 @@ const wrap = 'mx-auto max-w-content-wide px-gutter';
 
 // 1. Hero (the owner's `finalhero.png`, 2026-11-15): centred on soft mint, no picture. The MA
 // submark, the shop's name between rules, the Bold headline with a deep orange second line, the
-// collections from admin (so new ones need no code change) and the two deep green buttons. At least
+// owner's paragraph (2026-11-17) and the two deep green buttons. At least
 // one screen tall (minus the navbar's fixed height), so nothing below shows on load.
-export function Hero({
-  whatsapp,
-  collections,
-}: {
-  whatsapp: string | null;
-  collections: string[];
-}) {
-  const names = collectionList(collections);
+export function Hero({ whatsapp }: { whatsapp: string | null }) {
   return (
     <section
       aria-labelledby="hero-title"
@@ -83,9 +75,10 @@ export function Hero({
           <span className="block text-accent-text">Made for Every Occasion</span>
         </h1>
         <p className="reveal max-w-4xl text-body-lg" style={revealDelay(1)}>
-          Premium unstitched 2-piece and 3-piece suits{names ? ` in ${names}` : ''}.{' '}
-          <br className="hidden md:block" />
-          Choose your favourite fabric, order on WhatsApp, and get delivery anywhere in Pakistan.
+          Your next favourite outfit starts here. Discover our premium collection of unstitched
+          suits, designer wear, and fancy ensembles, featuring exquisite fabrics, timeless designs,
+          and elegant detailing. Shop your favourite styles, place your order through WhatsApp, and
+          enjoy doorstep delivery anywhere in Pakistan.
         </p>
         <div
           className="reveal mt-2 flex flex-wrap justify-center gap-4 md:gap-6"

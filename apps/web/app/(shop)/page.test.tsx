@@ -14,9 +14,7 @@ vi.mock('../(account)/account/actions', () => ({ toggleWishlist: vi.fn() }));
 
 describe('home sections', () => {
   it('is centred: the submark, the shop name, one large heading and two deep green buttons', () => {
-    render(
-      <Hero whatsapp="+923482799707" collections={['Dhanak', 'Khaddar', 'Lajwanti', 'Lawn']} />,
-    );
+    render(<Hero whatsapp="+923482799707" />);
     const h1 = screen.getByRole('heading', { level: 1 });
     expect(h1.textContent).toBe('Elegant Unstitched Suits, Made for Every Occasion');
     expect(h1.querySelector('.text-accent-text')!.textContent).toBe('Made for Every Occasion');
@@ -25,8 +23,10 @@ describe('home sections', () => {
       'MA Apparels',
     ]);
     expect(screen.getByText('Mustafa Apparels')).toBeTruthy();
-    // The collections come from admin, so a new one never needs a code change.
-    expect(document.body.textContent).toContain('suits in Dhanak, Khaddar, Lajwanti and more.');
+    // The owner's own words (2026-11-17).
+    expect(document.body.textContent).toContain(
+      'Your next favourite outfit starts here. Discover our premium collection of unstitched suits, designer wear, and fancy ensembles, featuring exquisite fabrics, timeless designs, and elegant detailing. Shop your favourite styles, place your order through WhatsApp, and enjoy doorstep delivery anywhere in Pakistan.',
+    );
     const all = screen.getByRole('link', { name: 'See All Suits' });
     expect(all.getAttribute('href')).toBe('/shop');
     expect(all.className).toContain('bg-deep');
@@ -36,9 +36,8 @@ describe('home sections', () => {
   });
 
   it('keeps the hero whole with no collections and no WhatsApp number', () => {
-    render(<Hero whatsapp={null} collections={[]} />);
+    render(<Hero whatsapp={null} />);
     expect(screen.getByRole('heading', { level: 1 })).toBeTruthy();
-    expect(document.body.textContent).toContain('Premium unstitched 2-piece and 3-piece suits.');
     expect(screen.queryByRole('link', { name: 'WhatsApp Us' })).toBeNull();
     expect(screen.getByRole('link', { name: 'See All Suits' })).toBeTruthy();
   });

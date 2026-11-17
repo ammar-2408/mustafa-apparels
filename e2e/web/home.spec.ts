@@ -10,7 +10,7 @@ test('home has the hero, about, new arrivals and how to order', async ({ page })
   // The hero names the collections from the database, and its fabric picture (when a Cloudinary
   // cloud is set) is asked for at once, being the largest thing on screen.
   const hero = page.getByRole('region', { name: /^Elegant Unstitched Suits/ });
-  await expect(hero).toContainText('suits in Dhanak, ');
+  await expect(hero).toContainText('Your next favourite outfit starts here.');
   const picture = hero.locator('img[src*="hero-fabric"]');
   if ((await picture.count()) > 0) {
     await expect(picture).toHaveAttribute('loading', 'eager');
