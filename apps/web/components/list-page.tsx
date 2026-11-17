@@ -58,10 +58,10 @@ export function ListPage({
             <nav aria-label="Breadcrumb">
               <ol className="flex flex-wrap gap-2 text-small text-muted">
                 {crumbs.map((crumb, i) => (
-                  <li key={crumb.path} className="flex gap-2">
+                  <li key={crumb.path} className="flex items-center gap-2">
                     {i > 0 && <span aria-hidden="true">/</span>}
                     {i < crumbs.length - 1 ? (
-                      <Link href={crumb.path} className="link">
+                      <Link href={crumb.path} className="link inline-flex min-h-6 items-center">
                         {crumb.name}
                       </Link>
                     ) : (

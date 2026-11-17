@@ -76,7 +76,7 @@ export function StaticPage({ title, accent, path, lead, art, children }: Props) 
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2 text-small">
               <li>
-                <Link href="/" className="link inline-flex items-center gap-2">
+                <Link href="/" className="link inline-flex min-h-6 items-center gap-2">
                   <HomeIcon className="size-5" />
                   Home
                 </Link>

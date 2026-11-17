@@ -51,7 +51,7 @@ export function CollectionHero({ name, description, crumbs, total, page }: Props
                   </span>
                 )}
                 {i < crumbs.length - 1 ? (
-                  <Link href={crumb.path} className="link inline-flex items-center gap-2">
+                  <Link href={crumb.path} className="link inline-flex min-h-6 items-center gap-2">
                     {i === 0 && <HomeIcon className="size-5" />}
                     {crumb.name}
                   </Link>

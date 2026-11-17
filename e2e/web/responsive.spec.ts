@@ -20,6 +20,7 @@ const TEMPLATES = [
   '/terms',
   '/login',
   '/register',
+  '/forgot-password',
   '/no-such-page',
 ];
 
@@ -46,8 +47,32 @@ test('nothing scrolls sideways at 320px either', async ({ page, db }) => {
     .select({ slug: product.slug })
     .from(product)
     .where(eq(product.designCode, 'E2E-01'));
-  for (const path of ['/', '/shop', `/products/${suit!.slug}`, '/contact', '/search?q=dhanak']) {
+  const paths = [
+    '/',
+    '/shop',
+    '/collections/khaddar',
+    `/products/${suit!.slug}`,
+    '/about',
+    '/contact',
+    '/faq',
+    '/how-to-order',
+    '/search?q=dhanak',
+  ];
+  for (const path of paths) {
     await page.goto(path);
     expect(await overflow(page), path).toBeLessThanOrEqual(0);
+  }
+});
+
+// WCAG 2.5.8: breadcrumb links are separate targets, so each is at least 24px tall.
+test('breadcrumb links are big enough to tap', async ({ page }) => {
+  for (const path of ['/shop', '/collections/khaddar', '/about']) {
+    await page.goto(path);
+    const links = page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link');
+    await expect(links.first(), path).toBeVisible();
+    for (const link of await links.all()) {
+      const box = (await link.boundingBox())!;
+      expect(box.height, `${path}: ${await link.textContent()}`).toBeGreaterThanOrEqual(24);
+    }
   }
 });
