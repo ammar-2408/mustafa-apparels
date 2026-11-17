@@ -2,7 +2,6 @@
 
 import { whatsappLink } from '@mustafa/core/contact-links';
 import { Dialog } from '@mustafa/ui/dialog';
-import { Logo } from '@mustafa/ui/logo';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
@@ -111,56 +110,59 @@ export function HeaderBar({ links, contact }: Props) {
     </>
   );
 
-  return (
+  // The navbar (the owner's mockup, 2026-11-15): powder blue with a soft wave and a leaf. The bar
+  // itself doesn't clip, so the Collections list can hang below it over the page; only the
+  // decoration layer clips its wave and leaf. The floating bar is the same band (owner, 2026-11-17).
+  const band = (floatingCopy: boolean) => (
     <>
-      {/* The navbar (the owner's mockup, 2026-11-15): powder blue with a soft wave and a leaf. */}
-      {/* The bar itself doesn't clip, so the Collections list can hang below it over the page.
-          Only the decoration layer clips its wave and leaf. */}
-      <header ref={bandRef} className="relative z-30 bg-primary text-primary-fg">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <svg
-            viewBox="0 0 1440 40"
-            preserveAspectRatio="none"
-            className="absolute bottom-0 left-0 h-5 w-full fill-bg/25"
-          >
-            <path d="M0 40V26c180-24 380-26 560-8s360 20 540 2 260-18 340-12v32z" />
-          </svg>
-          <LeafBranch className="absolute top-1 -right-4 hidden w-24 2xl:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <svg
+          viewBox="0 0 1440 40"
+          preserveAspectRatio="none"
+          className="absolute bottom-0 left-0 h-5 w-full fill-bg/25"
+        >
+          <path d="M0 40V26c180-24 380-26 560-8s360 20 540 2 260-18 340-12v32z" />
+        </svg>
+        <LeafBranch className="absolute top-1 -right-4 hidden w-24 2xl:block" />
+      </div>
+      <div className="relative mx-auto flex h-16 max-w-content-wide items-center justify-between gap-4 px-gutter md:h-20 lg:h-24">
+        <HeaderLogo />
+        <div className="hidden lg:block">
+          <MainNav
+            collections={collections}
+            pathname={pathname}
+            label={floatingCopy ? 'Primary, on scroll' : undefined}
+          />
         </div>
-        <div className="relative mx-auto flex h-16 max-w-content-wide items-center justify-between gap-4 px-gutter md:h-20 lg:h-24">
-          <HeaderLogo />
-          <div className="hidden lg:block">
-            <MainNav collections={collections} pathname={pathname} />
-          </div>
+        {/* One "Quick links" landmark: the floating copy is a plain group. */}
+        {floatingCopy ? (
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2 2xl:pr-20">{actions}</div>
+        ) : (
           <nav
             aria-label="Quick links"
             className="flex shrink-0 items-center gap-1 sm:gap-2 2xl:pr-20"
           >
             {actions}
           </nav>
-        </div>
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      <header ref={bandRef} className="relative z-30 bg-primary text-primary-fg">
+        {band(false)}
       </header>
 
-      {/* The floating bar: frosted from md, solid on phones (blur is slow there). */}
+      {/* The floating bar: the same band, sliding in once the header scrolls away. */}
       <div
         aria-hidden={!floating}
         inert={!floating}
         data-floating={floating}
-        className="invisible fixed inset-x-0 top-0 z-40 -translate-y-full bg-bg shadow-soft transition-[translate,visibility] duration-300 data-[floating=true]:visible data-[floating=true]:translate-y-0 motion-reduce:transition-none md:bg-bg/85 md:backdrop-blur"
+        className="invisible fixed inset-x-0 top-0 z-40 -translate-y-full bg-primary text-primary-fg shadow-soft transition-[translate,visibility] duration-300 data-[floating=true]:visible data-[floating=true]:translate-y-0 motion-reduce:transition-none"
       >
-        <div className="mx-auto flex max-w-content-wide items-center justify-between gap-4 px-gutter py-2">
-          <Link
-            href="/"
-            aria-label="Mustafa Apparels home"
-            className="inline-flex min-h-11 items-center"
-          >
-            <Logo variant="simplified" height={28} />
-          </Link>
-          <div className="hidden lg:block">
-            <MainNav collections={collections} pathname={pathname} label="Primary, on scroll" />
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">{actions}</div>
-        </div>
+        {band(true)}
       </div>
 
       {/* The side panel (the owner's mockup, 2026-11-15). No blur behind it: it's slow on phones. */}

@@ -72,18 +72,30 @@ test.describe('side-panel menu', () => {
   });
 });
 
-test('the floating bar takes over once the header scrolls away', async ({ page }) => {
+// The owner (2026-11-17): the bar on scroll is the same navbar as at the top, not a different one.
+test('the floating bar takes over once the header scrolls away, looking the same', async ({
+  page,
+}) => {
   await page.goto('/');
+  const header = page.getByRole('banner');
+  const headerLogo = header.locator('img:visible');
+  const atTop = {
+    background: await header.evaluate((el) => getComputedStyle(el).backgroundColor),
+    height: (await header.boundingBox())!.height,
+    logo: (await headerLogo.boundingBox())!.height,
+  };
+
   await page.addStyleTag({ content: 'main { min-height: 400vh }' });
   // Not the mouse wheel: mobile WebKit has none in Playwright.
   await page.evaluate(() => window.scrollTo(0, 800));
   const bar = page.locator('[data-floating="true"]');
   await expect(bar).toBeVisible();
   await expect(bar.getByRole('link', { name: 'Mustafa Apparels home' })).toBeVisible();
-  await expect(bar.getByRole('img', { name: 'MA Apparels' })).toHaveAttribute(
-    'src',
-    /simplified-black\.svg$/,
-  );
+  const logo = bar.locator('img:visible');
+  await expect(logo).toHaveAttribute('src', /secondary-black\.svg$/);
+  expect((await logo.boundingBox())!.height).toBe(atTop.logo);
+  expect(await bar.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(atTop.background);
+  expect((await bar.boundingBox())!.height).toBe(atTop.height);
 });
 
 test('the skip link jumps to the main content', async ({ page, browserName }) => {

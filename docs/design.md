@@ -94,7 +94,7 @@ Source: `mustafa-apparels-logos/mustafa-apparels-logos/`. Use the files as they 
 | Place | Logo | Minimum height |
 |---|---|---|
 | Header, every screen | Secondary, black | 48px on phones, 64px from md, 72px from lg, 80px from xl (owner, 2026-11-17: the full logo, so "BY MUSTAFA AHMED" can be read). Phones keep WhatsApp and Menu in the bar (Search from 360px); Account and Saved move into the Menu panel |
-| Sticky header on scroll | Simplified, black | 28 px |
+| Sticky header on scroll | Secondary, black, the same as the header | The header's sizes: the floating bar is the same powder blue band (owner, 2026-11-17) |
 | Footer on pale powder blue | Primary, black | 120 px |
 | About page, hero | Primary | 120 px |
 
@@ -432,7 +432,7 @@ Each reference has one job. The four Pakistani stores are studied for **shopping
 
 **Patterns we adopt.** All four sell through a cart, and none puts WhatsApp in the buying area, so ordering here is deliberately different:
 
-- **Header (as built, step 6.1):** powder blue band with `HeaderLogo`, then Search, Account, WhatsApp and Menu (icons with spaced-capital labels from `sm`). Once the band scrolls away, a fixed bar with the simplified logo and the same controls slides in (solid white on phones, frosted from `md`). Account is a plain link: no session read on cached pages. The footer is the powder blue band with the primary logo, Shop, Help and Policies columns, and Follow only when a social link is set.
+- **Header (as built, step 6.1):** powder blue band with `HeaderLogo`, then Search, Account, WhatsApp and Menu (icons with spaced-capital labels from `sm`). Once the band scrolls away, a fixed copy of the same band (logo, links and controls) slides in (owner, 2026-11-17). Account is a plain link: no session read on cached pages. The footer is the powder blue band with the primary logo, Shop, Help and Policies columns, and Follow only when a social link is set.
 - **Menu:** short and collections-first: New arrivals, Dhanak, Khaddar, Lajwanti, All suits, How to Order, with Search close by, in the side panel from §9.1. No sale links or menu badges.
 - **Grid:** 2 columns on phones and 4 on desktop, with the number of suits shown. No layout-switching buttons.
 - **Quick filters:** a row of one-tap chips above the grid, such as `3 Piece`, `Embroidered` or `Floral Print`. They use only the values in `docs/catalog.md` §4 that a published suit has, and set the same browser filter (ADR-018). The row hides when it wouldn't narrow anything. Full filters open in a bottom sheet on phones and a sidebar on desktop.
