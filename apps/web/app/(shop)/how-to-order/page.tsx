@@ -91,14 +91,15 @@ export default async function HowToOrderPage() {
                 />
               )}
             </div>
-            <section className="flex min-w-0 flex-1 items-start gap-4 rounded-lg border border-border bg-bg/80 p-4 shadow-soft sm:gap-5 sm:p-5">
-              <span className="flex size-14 shrink-0 items-center justify-center rounded-md bg-accent/10 text-deep">
-                <Icon className="size-7" />
+            {/* Phones: the icon sits beside the title and the text uses the card's full width. */}
+            <section className="grid min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 rounded-lg border border-border bg-bg/80 p-4 shadow-soft sm:items-start sm:gap-x-5 sm:p-5">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-accent/10 text-deep sm:row-span-2 sm:size-14">
+                <Icon className="size-6 sm:size-7" />
               </span>
-              <div className="min-w-0">
-                <h2 className="font-serif text-h3 text-deep">{title}</h2>
-                <p className="mt-1 text-body">{text}</p>
-              </div>
+              <h2 className="font-serif text-h3 text-deep">{title}</h2>
+              <p className="col-span-2 mt-2 text-body sm:col-span-1 sm:col-start-2 sm:mt-1">
+                {text}
+              </p>
             </section>
           </li>
         ))}
