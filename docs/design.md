@@ -42,7 +42,7 @@ Error and success are deep tones for text and borders on white, and never the on
 | Small labels, nav, buttons | Regular 400 | Uppercase, `letter-spacing: 0.4em` (reduce to about `0.2em` where text would wrap on phones) |
 | Body | Regular 400 | Sentence case, no extra tracking |
 
-Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300, 400 and 700. Bold 700 is the owner's choice (2026-11-15, from their home and menu mockup): headings and button labels in the redesigned sections use it. Other pages keep Light headings until they are redesigned. The logo pack's readme suggests Light 300 for spaced capitals, but these labels are small, so Regular 400 is the deliberate choice here.
+Don't use Light 300 under about 20px, because it gets hard to read on phones. Load only weights 300, 400 and 700. Bold 700 is the owner's choice (2026-11-15, from their home and menu mockup): headings and button labels in the redesigned sections use it. Other pages keep Light headings until they are redesigned. Collection page titles use a serif, DM Serif Display (owner, 2026-11-17; `app/fonts-serif.ts`, `font-serif`), loaded only on those pages. The logo pack's readme suggests Light 300 for spaced capitals, but these labels are small, so Regular 400 is the deliberate choice here.
 
 Each app loads the font in `app/fonts.ts` (`next/font/google`, served from our own domain, `display: swap`) and puts its `--font-montserrat` variable on `<html>`. The theme clears Tailwind's other font families and weights, so only `font-sans`, `font-light` (300), `font-normal` (400) and `font-bold` (700) exist and nothing is faux-bolded. The type scale replaces Tailwind's sizes:
 

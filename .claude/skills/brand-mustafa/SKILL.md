@@ -33,7 +33,9 @@ Components use tokens, never hard-coded colours. Tokens live in `packages/config
 
 **Only allowed pairs.** `packages/config/colour-pairs.ts` lists every allowed text/background and UI pair, and tests fail on any pair that misses WCAG AA, or on a component class pair not in the list. On powder blue, text is always ink. To use a new pair, add it there first. Links use the `link` utility: ink text, and the underline turns orange on hover.
 
-## Type: Montserrat only
+## Type: Montserrat, plus one serif for collection titles
+
+Collection page titles use DM Serif Display (`font-serif`, loaded only by the collection header). Everything else is Montserrat.
 
 Self-hosted through `next/font`. Load only weights 300, 400 and 700.
 

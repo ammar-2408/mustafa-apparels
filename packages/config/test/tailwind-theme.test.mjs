@@ -207,11 +207,14 @@ describe.each(['web', 'admin'])('%s globals.css with the shared theme', (app) =>
     assert.match(out, /body\s*\{[^}]*color: var\(--color-fg\)/);
   });
 
-  test('sets Montserrat as the only font family', async () => {
+  test('sets Montserrat for everything, and a serif only for collection titles', async () => {
     const out = await build(['font-sans', 'font-serif', 'font-mono']);
     assert.match(out, /--font-sans:\s*var\(--font-montserrat\)/);
     assert.match(out, /\.font-sans\s*\{\s*font-family: var\(--font-sans\)/);
-    assert.doesNotMatch(out, /\.font-serif|\.font-mono/);
+    // A serif for collection page titles only (owner, 2026-11-17); still no mono.
+    assert.match(out, /--font-serif:\s*var\(--font-dm-serif\)/);
+    assert.match(out, /\.font-serif\s*\{\s*font-family: var\(--font-serif\)/);
+    assert.doesNotMatch(out, /\.font-mono/);
   });
 
   test('offers only the three loaded weights, so nothing is faux-bolded', async () => {
