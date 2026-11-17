@@ -73,3 +73,21 @@ test('a collection page has the template header: the serif title and the count b
     page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('link', { name: 'Home' }),
   ).toHaveAttribute('href', '/');
 });
+
+test('on a phone the filter bar fits: chips wrap, and Filters and Sort share a row', async ({
+  page,
+}) => {
+  test.skip(page.viewportSize()!.width >= 768, 'Phones only.');
+  await page.goto('/collections/dhanak');
+  const width = page.viewportSize()!.width;
+  const chips = page.getByRole('group', { name: 'Quick filters' }).getByRole('button');
+  for (const box of await chips.evaluateAll((els) =>
+    els.map((el) => el.getBoundingClientRect().right),
+  )) {
+    expect(box).toBeLessThanOrEqual(width);
+  }
+  const filters = (await page.getByRole('button', { name: /^Filters/ }).boundingBox())!;
+  const sort = (await page.getByRole('combobox', { name: 'Sort' }).boundingBox())!;
+  expect(Math.abs(filters.y + filters.height / 2 - (sort.y + sort.height / 2))).toBeLessThan(4);
+  expect(sort.x + sort.width).toBeLessThanOrEqual(width);
+});

@@ -59,7 +59,7 @@ type Props = {
 // Pills with a small drawing before the label, the chosen one deep green (the owner's collection
 // template, 2026-11-17). Shared with /shop.
 const chip =
-  'inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border-strong bg-bg/70 px-5 caps-tight aria-pressed:border-deep aria-pressed:bg-deep aria-pressed:text-action-fg';
+  'inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border-strong bg-bg/70 px-4 caps-tight sm:px-5 aria-pressed:border-deep aria-pressed:bg-deep aria-pressed:text-action-fg';
 
 // Each quick filter's drawing. A value the shop adds later still gets one of the floral drawings.
 function chipIcon(key: string, value: string) {
@@ -128,12 +128,8 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
     <div>
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         {chips.length > 0 && (
-          // One swipe row on phones, wrapping from md.
-          <div
-            role="group"
-            aria-label="Quick filters"
-            className="-mx-gutter flex gap-2 overflow-x-auto px-gutter pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0"
-          >
+          // Wrapping rows on every screen, so no chip runs off a phone (owner, 2026-11-17).
+          <div role="group" aria-label="Quick filters" className="flex flex-wrap gap-2">
             {chips.map((c) => {
               const Icon = chipIcon(c.key, c.value);
               return (
@@ -151,24 +147,24 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
             })}
           </div>
         )}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-3">
           {groups.length > 0 && (
             <button
               type="button"
               onClick={() => setPanel(true)}
-              className="lift inline-flex min-h-12 items-center gap-3 rounded-full border border-action px-6 caps-tight text-fg hover:bg-action hover:text-action-fg"
+              className="lift inline-flex min-h-12 shrink-0 items-center gap-2 rounded-full border border-action px-4 caps-tight text-fg hover:bg-action hover:text-action-fg sm:gap-3 sm:px-6"
             >
               <FunnelIcon className="size-5" />
               Filters{chosenCount > 0 ? ` (${chosenCount})` : ''}
             </button>
           )}
           <span aria-hidden="true" className="hidden h-8 w-px bg-border-strong sm:block" />
-          <label className="flex min-h-12 items-center gap-3">
+          <label className="flex min-h-12 min-w-0 flex-1 items-center gap-3 md:flex-none">
             <span className="caps-tight text-muted">Sort</span>
             <select
               value={state.sort}
               onChange={(e) => go({ ...state, sort: e.target.value as Sort, page: 1 })}
-              className="min-h-12 rounded-md border border-border-strong bg-surface px-4 text-body text-fg"
+              className="min-h-12 w-full min-w-0 rounded-md border border-border-strong bg-surface px-4 text-body text-fg md:w-auto"
             >
               {SORT_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
