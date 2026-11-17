@@ -86,9 +86,14 @@ describe('Button', () => {
     expect(buttonClass('deep')).toContain('bg-deep text-action-fg');
     expect(buttonClass('deep-outline')).toContain('border-deep');
     expect(buttonClass('deep-outline')).toContain('text-deep');
-    expect(buttonClass('deep-outline')).toContain('hover:bg-deep hover:text-action-fg');
+    // The hover fill (owner, 2026-11-17): ink over deep green, deep green over the outline.
+    expect(buttonClass('deep')).toContain('[--sweep:var(--color-action)]');
+    expect(buttonClass('deep-outline')).toContain('[--sweep:var(--color-deep)]');
+    // The fill does the hover, so the background never flips at once underneath it.
+    expect(buttonClass('deep-outline')).not.toContain('hover:bg-deep');
     for (const variant of ['deep', 'deep-outline'] as const) {
       expect(buttonClass(variant)).toMatch(/\blift\b/);
+      expect(buttonClass(variant)).toMatch(/\bsweep\b/);
     }
   });
 

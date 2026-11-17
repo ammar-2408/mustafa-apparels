@@ -8,7 +8,7 @@
  * button's transition-colors).
  * Hook classes: hero-title, reveal (+ is-shown from RevealOnView), sway, lift, nudge,
  * product-card, collection-card, product-photo, card-icon, wishlist-spot, carousel-arrow,
- * carousel-dot, header-control, control-label, menu-panel, menu-item (with --i), menu-row.
+ * carousel-dot, header-control, control-label, menu-panel, menu-item (with --i), menu-row, sweep.
  */
 
 /* The navbar's current page: an orange line under the link (orange text would be too faint on
@@ -58,6 +58,48 @@
 .step-card:focus-within .step-icon {
   background: var(--color-bg);
   color: var(--color-deep);
+}
+
+/* The hero's two buttons (owner, 2026-11-17): on hover, or keyboard focus, a large circle behind
+   the label fills with the --sweep colour from its rim inwards, so the colour closes in over the
+   button, and the label and border take the colour too. With reduced motion the fill is at once. */
+.sweep {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.sweep::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: -5em;
+  z-index: -1;
+  width: 20em;
+  height: 20em;
+  margin-block: auto;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sweep:focus-visible {
+  border-color: var(--sweep);
+  color: var(--color-action-fg);
+}
+
+.sweep:focus-visible::before {
+  box-shadow: inset 0 0 0 10em var(--sweep);
+}
+
+@media (hover: hover) {
+  .sweep:hover {
+    border-color: var(--sweep);
+    color: var(--color-action-fg);
+  }
+
+  .sweep:hover::before {
+    box-shadow: inset 0 0 0 10em var(--sweep);
+  }
 }
 
 .step-card:focus-within a {
@@ -123,6 +165,20 @@
      inside a button, card or menu row moves 4px on hover. */
   .nudge {
     transition: translate 180ms ease-out;
+  }
+
+  /* The hero buttons' fill takes half a second; the label turns white a moment after it starts. */
+  .sweep {
+    transition:
+      color 300ms ease-out 100ms,
+      border-color 300ms ease-out 100ms,
+      box-shadow 180ms ease-out,
+      translate 180ms ease-out,
+      scale 180ms ease-out;
+  }
+
+  .sweep::before {
+    transition: box-shadow 500ms ease-out;
   }
 
   /* Headings and blocks rise 8px and fade in once, when they first scroll into view; blocks with

@@ -75,7 +75,7 @@ Headings pair a size with `font-light`, e.g. `text-h1 font-light`; `h1`–`h3` g
 
 Radius: `--radius-sm: 2px` for small parts (badges, fields), `--radius-md: 8px` for buttons and `--radius-lg: 16px` for cards (the owner's mockups, 2026-11-15); `rounded-full` still works for round icons and dots. Nothing rounder.
 
-**Buttons** (`buttonClass` in `packages/ui`): every button ends its hover the same way, on ink with white text, lifted 2px with `--shadow-soft`, and presses in to 98% (the theme's `lift` utility, both apps). Primary is ink already; secondary is an ink outline that fills. With reduced motion only the colours and shadow change. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
+**Buttons** (`buttonClass` in `packages/ui`): every button ends its hover the same way, on ink with white text, lifted 2px with `--shadow-soft`, and presses in to 98% (the theme's `lift` utility, both apps). Primary is ink already; secondary is an ink outline that fills. The hero's `deep` and `deep-outline` pair (owner, 2026-11-17) fill with a colour that closes in from the edge (`sweep` in `apps/web/app/motion.css`): ink over See All Suits, deep green over WhatsApp Us, with the label turning white. Keyboard focus does the same. With reduced motion only the colours and shadow change. Shadows: `--shadow-soft` (the only shadow token), sparingly. Dark mode: not in v1, and `color-scheme: light` keeps form controls light.
 
 ### 1.3 Logo files
 

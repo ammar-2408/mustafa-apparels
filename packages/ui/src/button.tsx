@@ -18,9 +18,12 @@ const LABELS: Record<ButtonLabel, string> = {
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: 'border-action bg-action text-action-fg',
   secondary: 'border-action bg-transparent text-fg hover:bg-action hover:text-action-fg',
-  // The home hero's deep green pair (owner's mockup, 2026-11-15).
-  deep: 'border-deep bg-deep text-action-fg',
-  'deep-outline': 'border-deep bg-bg/60 text-deep hover:bg-deep hover:text-action-fg',
+  // The home hero's deep green pair (owner's mockup, 2026-11-15). On hover a colour fills them,
+  // closing in from the edge (owner, 2026-11-17): `sweep` in apps/web/app/motion.css, with the
+  // fill colour in --sweep. Ink over deep green ends like every other button; deep green fills
+  // the outline.
+  deep: 'sweep border-deep bg-deep text-action-fg [--sweep:var(--color-action)]',
+  'deep-outline': 'sweep border-deep bg-bg/60 text-deep [--sweep:var(--color-deep)]',
 };
 
 /** Button classes, also for links that act as buttons (WhatsApp, Call, Email). */

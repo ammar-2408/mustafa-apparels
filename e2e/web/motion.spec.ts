@@ -118,6 +118,45 @@ test.describe('blocks across the page', () => {
   });
 });
 
+// Owner, 2026-11-17: the hero's two buttons fill with colour on hover, closing in from the edge.
+test.describe('hero buttons', () => {
+  test('fill on hover: ink over See All Suits, deep green over WhatsApp Us', async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, 'Phones have no hover.');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    const hero = page.locator('section').first();
+    const fill = (name: RegExp) =>
+      hero.getByRole('link', { name }).evaluate((el) => getComputedStyle(el, '::before').boxShadow);
+    const colour = (name: RegExp) =>
+      hero.getByRole('link', { name }).evaluate((el) => getComputedStyle(el).color);
+
+    for (const [name, rgb] of [
+      [/See All Suits/, 'rgb(17, 17, 17)'],
+      [/WhatsApp Us/, 'rgb(22, 74, 69)'],
+    ] as const) {
+      expect(await fill(name)).toBe('none');
+      await hero.getByRole('link', { name }).hover();
+      await expect.poll(() => fill(name)).toContain(rgb);
+      await expect.poll(() => colour(name)).toBe('rgb(255, 255, 255)');
+    }
+  });
+
+  test('fill at once with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const button = page
+      .locator('section')
+      .first()
+      .getByRole('link', { name: /See All Suits/ });
+    expect(await button.evaluate((el) => getComputedStyle(el, '::before').transitionDuration)).toBe(
+      '0s',
+    );
+  });
+});
+
 test.describe('How to Order cards', () => {
   test('fill with deep green from the bottom on hover, and the text turns white', async ({
     page,
