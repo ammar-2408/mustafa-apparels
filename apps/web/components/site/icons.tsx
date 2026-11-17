@@ -388,6 +388,81 @@ export function FunnelIcon({ className }: IconProps) {
   );
 }
 
+// A clothes hanger, for "Choose a suit".
+export function HangerIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 8.5V7.6c0-.9.6-1.4 1.3-1.8A1.9 1.9 0 1 0 10.3 4M12 8.5 3.4 15a1.2 1.2 0 0 0 .7 2.2h15.8a1.2 1.2 0 0 0 .7-2.2L12 8.5z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// A shopping cart, for "How do I order?".
+export function CartIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M3 4h2.2l2 10.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.4-1.1L20.5 8H6.1M9.5 20a1 1 0 1 0 0-.01M17.5 20a1 1 0 1 0 0-.01"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// A payment card, for payment.
+export function CardIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M3.5 6.5h17v11h-17zM3.5 10h17M7 14.5h4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// A shop front, for "Do you have a shop?".
+export function ShopIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M4 9.5V20h16V9.5M3 9.5l1.6-5h14.8l1.6 5M3 9.5c0 1.4 1.1 2.5 2.5 2.5S8 10.9 8 9.5c0 1.4 1.1 2.5 2.5 2.5h3c1.4 0 2.5-1.1 2.5-2.5 0 1.4 1.1 2.5 2.5 2.5S21 10.9 21 9.5M10 20v-4.5h4V20"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// A parcel with a return arrow, for returns.
+export function ReturnBoxIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M4 8.5 12 4.5l8 4v7l-8 4-8-4v-7zM4 8.5l8 4 8-4M12 12.5v7M16 15.5h4.5m-2-2 2 2-2 2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 type Icon = (props: IconProps) => JSX.Element;
 
 // Each collection's icon in the side menu, on its card and in the navbar's Collections list.

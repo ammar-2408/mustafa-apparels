@@ -215,6 +215,8 @@ Motion for each section follows §9.1. Every section and the menu follow the own
 
 **Collection pages** (every collection, new ones from admin included; the owner's `collecion template.png`, 2026-11-17, in the site's colours): `components/collection-hero.tsx` puts a full-width header above the list. It has the breadcrumb with a home icon (the current page in deep orange on white), the name in DM Serif Display in deep green, a lotus between orange lines, the description, a "12 SUITS" pill, and draped fabric (`site/collections/fabric`) fading in on the right. The filter bar below (shared with `/shop`) has pill chips with a drawing each (bloom, layers, flower, shirt for pieces, a floral pick for any other value), the chosen chip in deep green, a Filters pill with a funnel, and Sort after a thin divider.
 
+**Information pages** (the owner's newabout, newcontact, newfaq and neworder mockups, 2026-11-17, in the site's colours): `components/static-page.tsx` gives About, Contact, FAQ, How to Order, Privacy and Terms a breadcrumb with a home icon, a DM Serif Display title in deep green whose last word is deep orange, the lotus rule and the lead. The first four also have a picture (`site/pages/*`) in a curved arch with an orange line on the right from `lg`, and a rounded band under the title below `lg`. About has two cards (`InfoCard`); Contact has a large deep green WhatsApp button, an outlined Call button and the email; FAQ is a native `<details>` accordion (every answer stays in the HTML); How to Order is five numbered steps joined by a dashed line.
+
 Removed on 2026-11-15 (owner): Shop by Fabric (it repeated the collections), the featured suit and the contact strip (the footer has WhatsApp). The home page now has no video.
 
 ## 5. Motion and video

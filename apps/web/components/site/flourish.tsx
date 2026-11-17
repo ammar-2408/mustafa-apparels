@@ -217,3 +217,19 @@ export function LeafSprig({ className }: Props) {
     </svg>
   );
 }
+
+// A filled lotus between two orange lines, under a page title (collection and information pages).
+export function LotusRule({ className }: Props) {
+  return (
+    <span aria-hidden="true" className={join('flex items-center gap-3', className)}>
+      <span className="h-0.5 w-20 bg-accent" />
+      <svg viewBox="0 0 24 24" fill="none" className="size-6 text-accent-text">
+        <path
+          d="M12 4c2.6 3 3.4 7.5 0 13-3.4-5.5-2.6-10 0-13zM12 17c-2-4.5-5.5-7-9-7 .5 4.5 4 7 9 7zM12 17c2-4.5 5.5-7 9-7-.5 4.5-4 7-9 7z"
+          fill="currentColor"
+        />
+      </svg>
+      <span className="h-0.5 w-20 bg-accent" />
+    </span>
+  );
+}
