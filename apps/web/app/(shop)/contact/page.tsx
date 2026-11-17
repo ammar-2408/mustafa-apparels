@@ -1,6 +1,6 @@
 import { JsonLd } from '../../../components/json-ld';
 import { ContactList } from '../../../components/site/contact-list';
-import { Part, StaticPage } from '../../../components/static-page';
+import { StaticPage } from '../../../components/static-page';
 import { getSiteSettings } from '../../../lib/catalog';
 import { socialLinks } from '../../../lib/nav';
 import { buildMetadata } from '../../../lib/seo';
@@ -34,13 +34,7 @@ export default async function ContactPage() {
           contact={{ whatsapp: settings.whatsapp, phone: settings.phone, email: settings.email }}
         />
       </div>
-      <Part title="Where we are">
-        <p>
-          We are an online shop with no store to visit. We deliver by courier across{' '}
-          {settings.service_area ?? 'Pakistan'}.
-        </p>
-        {settings.reply_note && <p>{settings.reply_note}</p>}
-      </Part>
+      {settings.reply_note && <p className="text-body-lg">{settings.reply_note}</p>}
     </StaticPage>
   );
 }

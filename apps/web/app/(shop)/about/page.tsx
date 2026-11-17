@@ -21,8 +21,11 @@ export default function AboutPage() {
       <Logo variant="primary" height={140} />
       <Part title="What we sell">
         <p>
-          Unstitched 2-piece and 3-piece suits in Dhanak, Khaddar and Lajwanti. Each suit comes as
-          fabric for your own tailor, so you choose the cut and the fit.
+          Discover our collection of unstitched suits, designer wear, and fancy ensembles, featuring
+          carefully selected fabrics, elegant designs, intricate detailing, and beautiful colours.
+          From everyday essentials to festive celebrations and special occasions, find the perfect
+          outfit that reflects your personal style. Explore our latest collections and shop your
+          favourites today.
         </p>
       </Part>
       <Part title="How we work">
@@ -30,11 +33,6 @@ export default function AboutPage() {
           We are online only, with no shop to visit. Every order is arranged with you on WhatsApp:
           we confirm the suit, the price, delivery and payment in the chat, then send it by courier
           anywhere in Pakistan.
-        </p>
-      </Part>
-      <Part title="Who we are">
-        <p>
-          Mustafa Apparels is run by Mustafa Ahmed. The logo reads MA Apparels by Mustafa Ahmed.
         </p>
       </Part>
     </StaticPage>

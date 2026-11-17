@@ -45,12 +45,6 @@ export default async function FaqPage() {
       <Part title="Do you have a shop I can visit?">
         <p>No. We are online only, so every order is arranged on WhatsApp, by phone or by email.</p>
       </Part>
-      <Part title="Which fabrics do you sell?">
-        <p>
-          Our collections are Dhanak, Khaddar and Lajwanti. Lajwanti suits are made in Dhanak
-          fabric. Each suit&rsquo;s page names the fabric of every piece.
-        </p>
-      </Part>
     </StaticPage>
   );
 }
