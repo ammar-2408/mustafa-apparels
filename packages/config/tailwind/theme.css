@@ -175,6 +175,26 @@
     color-scheme: light;
   }
 
+  /* Everything clickable shows the hand (owner, 2026-11-22). Tailwind's base gives buttons the
+     plain arrow; links already have the hand. A disabled control says it can't be used. Utilities
+     such as cursor-grab (the carousels and the New Arrivals ring) still win. */
+  button,
+  [role='button'],
+  summary,
+  select,
+  label[for],
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='file'],
+  input[type='submit'] {
+    cursor: pointer;
+  }
+
+  :is(button, select, input):disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
   body {
     background-color: var(--color-bg);
     color: var(--color-fg);

@@ -141,6 +141,7 @@ Nothing is rounder than 16px, except full circles.
 | Filter chips | Pill, grey green outline on white glass, spaced capitals | Selected: deep green with a white label |
 
 - **Building one:** `Button` adds the round arrow itself (`icon` swaps in another icon). A link styled with `buttonClass()` ends with `<ButtonCircle />` (`direction="back"` for Previous); `scripts/buttons.test.mjs` checks every one has it. The gloss and motion are in `packages/config/tailwind/buttons.css`, used by the storefront and the admin.
+- **Cursor:** everything clickable (links, buttons, the Collections menu, FAQ questions, dropdowns, checkboxes) shows the hand; a disabled button shows "not allowed"; the carousels and the New Arrivals ring show the grab hand (`packages/config/tailwind/theme.css`, owner 2026-11-22).
 - **Focus:** an orange ring on white, ink on powder blue.
 - **Links:** ink, underlined; on hover the underline turns orange and thicker.
 - **Reduced motion:** colours still change, but nothing moves.
