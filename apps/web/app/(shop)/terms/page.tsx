@@ -1,5 +1,7 @@
-import { Part, StaticPage } from '../../../components/static-page';
+import { CartIcon, CoinsIcon, PaletteIcon, UserCogIcon } from '../../../components/site/icons';
+import { PolicyCard, StaticPage } from '../../../components/static-page';
 import { buildMetadata } from '../../../lib/seo';
+import { SITE_ART } from '../../../lib/site-art';
 
 export const metadata = buildMetadata({
   title: 'Terms',
@@ -16,28 +18,33 @@ export default function TermsPage() {
       title="Terms"
       path="/terms"
       lead="These terms cover using this website and ordering suits from Mustafa Apparels."
+      sideArt={SITE_ART.policyFabric}
+      leaves="left"
     >
-      <Part title="Ordering">
-        <p>
-          This website shows our suits and their prices. An order is made only when we confirm it
-          with you on WhatsApp, by phone or by email.
-        </p>
-      </Part>
-      <Part title="Prices">
-        <p>
-          Prices are in Pakistani rupees. The price we confirm with you in the chat is the price you
-          pay for the suit; we tell you any delivery charge before you order.
-        </p>
-      </Part>
-      <Part title="Colours">
-        <p>
-          We show each suit as truly as we can, but colours can look a little different on different
-          screens.
-        </p>
-      </Part>
-      <Part title="Your account">
-        <p>Keep your password to yourself. You can delete your account at any time.</p>
-      </Part>
+      {/* The owner's NEWTERMS.png (2026-11-22): one card a row. */}
+      <div className="flex flex-col gap-5">
+        <PolicyCard icon={<CartIcon />} title="Ordering">
+          <p>
+            This website shows our suits and their prices. An order is made only when we confirm it
+            with you on WhatsApp, by phone or by email.
+          </p>
+        </PolicyCard>
+        <PolicyCard icon={<CoinsIcon />} title="Prices">
+          <p>
+            Prices are in Pakistani rupees. The price we confirm with you in the chat is the price
+            you pay for the suit; we tell you any delivery charge before you order.
+          </p>
+        </PolicyCard>
+        <PolicyCard icon={<PaletteIcon />} title="Colours">
+          <p>
+            We show each suit as truly as we can, but colours can look a little different on
+            different screens.
+          </p>
+        </PolicyCard>
+        <PolicyCard icon={<UserCogIcon />} title="Your account">
+          <p>Keep your password to yourself. You can delete your account at any time.</p>
+        </PolicyCard>
+      </div>
     </StaticPage>
   );
 }

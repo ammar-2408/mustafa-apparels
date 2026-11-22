@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { dmSerif } from '../app/fonts-serif';
-import type { SiteArt } from '../lib/site-art';
+import { SITE_ART, type SiteArt } from '../lib/site-art';
 import { breadcrumbList } from '../lib/structured-data';
 import { JsonLd } from './json-ld';
 import { LeafSprig, LotusRule } from './site/flourish';
@@ -17,14 +17,33 @@ type Props = {
   lead?: ReactNode;
   /** The page's picture, in a curved arch on the right from lg (the owner's mockups). */
   art?: SiteArt;
+  /**
+   * Privacy and Terms (owner's NEWPRIVACY.png and NEWTERMS.png, 2026-11-22): fabric on the right
+   * behind a curve with a thin gold line, soft leaves at the top (left or right), a green and
+   * orange wave at the bottom left, and a chevron in the breadcrumb.
+   */
+  sideArt?: SiteArt;
+  leaves?: 'left' | 'right';
   children: ReactNode;
 };
+
+// The curve's shape, in the picture's own box (0 to 1): from the top right down to the bottom left.
+const CURVE = 'M1,0.09 C0.78,0.25 0.55,0.44 0.46,0.6 S0.25,0.92 0.1,1';
 
 // About, Contact, How to Order, FAQ, Privacy and Terms (the owner's page mockups, 2026-11-17, in
 // the site's colours): a breadcrumb with a home icon, the title in the serif with its last word in
 // deep orange, the lotus between orange lines, the lead, the content, and the page's picture in a
 // curved arch on the right. Privacy and Terms have no picture and keep text no wider than ~70ch.
-export function StaticPage({ title, accent, path, lead, art, children }: Props) {
+export function StaticPage({
+  title,
+  accent,
+  path,
+  lead,
+  art,
+  sideArt,
+  leaves = 'right',
+  children,
+}: Props) {
   const name = accent ? `${title} ${accent}` : title;
   return (
     <article
@@ -71,8 +90,68 @@ export function StaticPage({ title, accent, path, lead, art, children }: Props) 
         </div>
       )}
 
+      {sideArt && (
+        <div aria-hidden="true" className="pointer-events-none">
+          <svg className="absolute size-0">
+            <clipPath id="policy-curve" clipPathUnits="objectBoundingBox">
+              <path d={`${CURVE} L1,1 Z`} />
+            </clipPath>
+          </svg>
+          <div className="absolute inset-y-0 right-0 hidden w-[24%] lg:block">
+            <div className="absolute inset-0 [clip-path:url(#policy-curve)]">
+              <Image
+                src={sideArt.src}
+                alt=""
+                fill
+                sizes="24vw"
+                loading="eager"
+                className="object-cover object-right-bottom"
+              />
+            </div>
+            <svg
+              viewBox="0 0 1 1"
+              preserveAspectRatio="none"
+              className="absolute inset-0 h-full w-full overflow-visible"
+            >
+              <path
+                d={CURVE}
+                className="fill-none stroke-gold"
+                strokeWidth="4"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          </div>
+          <Image
+            src={SITE_ART.authLeaves.src}
+            alt=""
+            width={262}
+            height={315}
+            sizes="16rem"
+            style={{
+              maskImage: `radial-gradient(ellipse at 50% 35%, black 25%, transparent 70%)`,
+            }}
+            className={`absolute top-0 w-40 mix-blend-multiply sm:w-56 ${leaves === 'left' ? 'left-0 -scale-x-100' : 'right-0 lg:right-[18%]'}`}
+          />
+          {/* A deep green wave edged in orange along the bottom left. */}
+          <svg
+            viewBox="0 0 600 60"
+            preserveAspectRatio="none"
+            className="absolute bottom-0 left-0 h-10 w-2/3 md:h-14 lg:w-1/2"
+          >
+            <path d="M0 60V28C150 4 320 14 600 60z" className="fill-deep" />
+            <path
+              d="M0 22C160 -2 330 8 600 54"
+              className="fill-none stroke-accent"
+              strokeWidth="4"
+            />
+          </svg>
+        </div>
+      )}
+
       <div className="relative mx-auto max-w-content-wide px-gutter pt-10 pb-section md:pt-14">
-        <div className={art ? 'lg:max-w-[58%]' : 'max-w-4xl'}>
+        <div
+          className={art ? 'lg:max-w-[58%]' : sideArt ? 'max-w-5xl lg:max-w-[72%]' : 'max-w-4xl'}
+        >
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2 text-small">
               <li>
@@ -82,7 +161,13 @@ export function StaticPage({ title, accent, path, lead, art, children }: Props) 
                 </Link>
               </li>
               <li aria-hidden="true" className="text-muted">
-                /
+                {sideArt ? (
+                  <svg data-separator="chevron" viewBox="0 0 24 24" fill="none" className="size-4">
+                    <path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="1.75" />
+                  </svg>
+                ) : (
+                  '/'
+                )}
               </li>
               <li>
                 <span aria-current="page" className="text-accent-text">
@@ -117,7 +202,9 @@ export function StaticPage({ title, accent, path, lead, art, children }: Props) 
               />
             </div>
           )}
-          <div className={`mt-12 flex flex-col gap-10 text-body ${art ? '' : 'max-w-prose'}`}>
+          <div
+            className={`mt-12 flex flex-col gap-10 text-body ${art || sideArt ? '' : 'max-w-prose'}`}
+          >
             {children}
           </div>
         </div>
@@ -159,6 +246,39 @@ export function InfoCard({
       <div className="relative flex flex-col gap-3">{children}</div>
       <span aria-hidden="true" className="mt-2 h-0.5 w-16 bg-accent" />
       <LeafSprig className="absolute right-2 bottom-2 w-20 opacity-40" />
+    </section>
+  );
+}
+
+// A point on Privacy or Terms (owner's NEWPRIVACY.png and NEWTERMS.png, 2026-11-22): a white card
+// with a deep green lower edge, an icon in a raised pale peach tile, a short orange divider, then
+// the serif heading and the text.
+export function PolicyCard({
+  icon,
+  title,
+  children,
+  className,
+}: {
+  icon: ReactNode;
+  title: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={`flex items-center gap-4 rounded-lg border border-border border-b-deep bg-bg/90 p-5 shadow-soft [border-bottom-width:3px] sm:gap-6 sm:p-6 ${className ?? ''}`}
+    >
+      <span
+        aria-hidden="true"
+        className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-deep shadow-soft sm:size-20 [&_svg]:size-8 sm:[&_svg]:size-10"
+      >
+        {icon}
+      </span>
+      <span aria-hidden="true" className="w-0.5 self-stretch bg-accent" />
+      <div className="flex min-w-0 flex-col gap-2">
+        <h2 className="font-serif text-h3 text-deep">{title}</h2>
+        <div className="text-body">{children}</div>
+      </div>
     </section>
   );
 }

@@ -71,6 +71,92 @@ export function MailIcon({ className }: IconProps) {
   );
 }
 
+// Privacy and Terms cards (owner's NEWPRIVACY.png and NEWTERMS.png, 2026-11-22).
+const line = {
+  stroke: 'currentColor',
+  strokeWidth: 1.5,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+} as const;
+
+// A speech bubble with three dots, for questions you send.
+export function ChatIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.1-2.9-.4L5 20l.9-3.6C4.4 15 3.5 13.1 3.5 11c0-3.9 3.8-7 8.5-7z"
+        {...line}
+      />
+      <path d="M8.5 11h.01M12 11h.01M15.5 11h.01" {...line} strokeWidth={2.2} />
+    </svg>
+  );
+}
+
+// Three rising bars, for analytics.
+export function ChartIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <rect x="4" y="13" width="4" height="7" rx="1" {...line} />
+      <rect x="10" y="9" width="4" height="11" rx="1" {...line} />
+      <rect x="16" y="4" width="4" height="16" rx="1" {...line} />
+    </svg>
+  );
+}
+
+// A framed picture, for photos and who sees your details.
+export function ImageIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2" {...line} />
+      <circle cx="15.5" cy="9" r="1.5" {...line} />
+      <path d="M3.5 17l5-5 4 4 3-3 5 5" {...line} />
+    </svg>
+  );
+}
+
+// A stack of coins, for prices.
+export function CoinsIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <ellipse cx="14" cy="6" rx="6" ry="2.5" {...line} />
+      <path
+        d="M8 6v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V6M8 10v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"
+        {...line}
+      />
+      <ellipse cx="9" cy="14" rx="5" ry="2.2" {...line} />
+      <path d="M4 14v3.5c0 1.2 2.2 2.2 5 2.2s5-1 5-2.2V14" {...line} />
+    </svg>
+  );
+}
+
+// A painter's palette, for colours.
+export function PaletteIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <path
+        d="M12 3.5c-4.9 0-8.5 3.5-8.5 8 0 4.2 3.3 8.5 7.5 8.5 1.4 0 2-.8 2-1.8 0-1.4-1.3-1.7-1.3-3 0-1 .8-1.7 2-1.7h2.3c2.6 0 4.5-1.6 4.5-4.3 0-3.2-3.6-5.7-8.5-5.7z"
+        {...line}
+      />
+      <path d="M8 11h.01M10 7.5h.01M14.5 7.5h.01M16.5 10.5h.01" {...line} strokeWidth={2.4} />
+    </svg>
+  );
+}
+
+// A person with a small cog, for your account settings.
+export function UserCogIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <circle cx="10" cy="7.5" r="3.5" {...line} />
+      <path d="M3.5 20c0-3.6 2.9-6.5 6.5-6.5 1 0 1.9.2 2.7.6" {...line} />
+      <circle cx="17.5" cy="17.5" r="2" {...line} />
+      <path
+        d="M17.5 13.5v1.5M17.5 20v1.5M13.5 17.5H15M20 17.5h1.5M14.7 14.7l1 1M19.3 19.3l1 1M14.7 20.3l1-1M19.3 15.7l1-1"
+        {...line}
+      />
+    </svg>
+  );
+}
+
 // A padlock, for password fields.
 export function LockIcon({ className }: IconProps) {
   return (

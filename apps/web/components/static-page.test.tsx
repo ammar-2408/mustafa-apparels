@@ -5,7 +5,7 @@ vi.mock('next/font/google', () => ({
   DM_Serif_Display: () => ({ variable: 'font-dm-serif-var', className: 'dm-serif' }),
 }));
 
-import { Part, StaticPage } from './static-page';
+import { Part, PolicyCard, StaticPage } from './static-page';
 
 const art = {
   src: 'https://res.cloudinary.com/ma/image/upload/c_limit/site/pages/about',
@@ -38,6 +38,35 @@ describe('StaticPage', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'What We Sell' }).className).toContain(
       'font-serif',
     );
+  });
+
+  // The owner's NEWPRIVACY.png and NEWTERMS.png (2026-11-22).
+  it('can show fabric behind a gold-edged curve on the right, with a chevron breadcrumb', () => {
+    render(
+      <StaticPage title="Privacy" path="/privacy" sideArt={art}>
+        <p>Text</p>
+      </StaticPage>,
+    );
+    const pictures = document.querySelectorAll('img');
+    expect(pictures.length).toBeGreaterThan(0);
+    for (const img of pictures) {
+      expect(img.getAttribute('alt')).toBe('');
+      expect(img.closest('[aria-hidden="true"]')).not.toBeNull();
+    }
+    const nav = screen.getByRole('navigation', { name: 'Breadcrumb' });
+    expect(nav.querySelector('svg[data-separator="chevron"]')).not.toBeNull();
+  });
+
+  it('lays a policy point out as a card: icon tile, orange divider, serif heading, text', () => {
+    render(
+      <PolicyCard icon={<svg data-testid="icon" />} title="Your account">
+        <p>We keep your name.</p>
+      </PolicyCard>,
+    );
+    const heading = screen.getByRole('heading', { level: 2, name: 'Your account' });
+    expect(heading.className).toContain('font-serif');
+    expect(screen.getByTestId('icon').closest('[aria-hidden="true"]')).not.toBeNull();
+    expect(document.body.textContent).toContain('We keep your name.');
   });
 
   it('works with no coloured word and no picture (Privacy, Terms)', () => {

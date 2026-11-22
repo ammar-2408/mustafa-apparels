@@ -60,6 +60,11 @@ export const SITE_ART = {
     src: shapedImageUrl(`${UPLOAD}site/auth/fabric`, 'whole'),
     alt: '',
   },
+  // Privacy and Terms (owner's NEWPRIVACY.png and NEWTERMS.png, 2026-11-22).
+  policyFabric: {
+    src: shapedImageUrl(`${UPLOAD}site/pages/policy-fabric`, 'whole'),
+    alt: '',
+  },
   aboutFabric: {
     src: shapedImageUrl(`${UPLOAD}site/home/about-fabric`, 'whole'),
     alt: 'Embroidered fabrics in powder blue, cream and rose, folded on a marble stand',
