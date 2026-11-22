@@ -1,6 +1,6 @@
 import * as audit from '@mustafa/core/audit';
 import { getDb } from '@mustafa/db/client';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import { Checkbox } from '@mustafa/ui/checkbox';
 import { Select } from '@mustafa/ui/select';
 import { auditListInput } from '@mustafa/validators/audit';
@@ -92,8 +92,9 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
           defaultValue={input.actor ?? ''}
           options={actors.map((a) => ({ value: a.id, label: a.name }))}
         />
-        <button type="submit" className={buttonClass('primary')}>
+        <button type="submit" className={buttonClass('primary', 'min-h-12')}>
           Show
+          <ButtonCircle />
         </button>
         <Checkbox
           label="Show removed accounts"
@@ -161,6 +162,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
           {result.page > 1 ? (
             <Link href={href(result.page - 1)} className={buttonClass('secondary')}>
               Newer
+              <ButtonCircle direction="back" />
             </Link>
           ) : null}
           <span className="text-small">
@@ -169,6 +171,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
           {result.page < result.pageCount ? (
             <Link href={href(result.page + 1)} className={buttonClass('secondary')}>
               Older
+              <ButtonCircle />
             </Link>
           ) : null}
         </nav>

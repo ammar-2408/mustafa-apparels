@@ -1,6 +1,6 @@
 import { whatsappLink } from '@mustafa/core/contact-links';
 import { shapedImageUrl } from '@mustafa/core/media-url';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import { Logo } from '@mustafa/ui/logo';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -207,7 +207,7 @@ export function NewArrivals({ suits }: { suits: SuitCard[] }) {
           </div>
           <Link href="/shop" className={buttonClass('secondary', 'shrink-0')}>
             All Suits
-            <ArrowIcon className="nudge size-5" />
+            <ButtonCircle />
           </Link>
         </div>
         <div className="reveal" style={revealDelay(1)}>
@@ -280,13 +280,10 @@ export function ExploreCollections({ collections }: { collections: CollectionPan
                     <Link
                       href={`/collections/${c.slug}`}
                       aria-label={`See the collection: ${c.name}`}
-                      className={buttonClass(
-                        'primary',
-                        'mt-auto self-start px-5 whitespace-nowrap',
-                      )}
+                      className={buttonClass('primary', 'mt-auto self-start whitespace-nowrap')}
                     >
                       See the collection
-                      <ArrowIcon className="nudge size-5" />
+                      <ButtonCircle />
                     </Link>
                   </div>
                 </article>

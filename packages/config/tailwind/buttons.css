@@ -1,0 +1,122 @@
+/*
+ * The glossy 3D buttons (owner's button-template.png and spec, 2026-11-22; docs/brand.md §8).
+ * Both apps import this after the theme. Layout (size, padding, label) is in buttonClass
+ * (packages/ui/src/button.tsx); this file paints the gloss and runs the interaction:
+ *   lift 3px with a deeper, softer shadow (220ms), one light sweep per hover (240ms),
+ *   the round arrow pushes 4px right and grows to 1.05 (180ms), and a press compresses (160ms).
+ * Only translate, scale, opacity-free gradients and shadows change: nothing moves the layout.
+ * Hover needs a real hover device; the press works on touch. Reduced motion: nothing moves and
+ * there is no sweep; the shadows still change. Rules are unlayered, so they win over utilities.
+ */
+
+.btn-3d {
+  --btn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --btn-shade: color-mix(in srgb, var(--color-deep) 70%, black);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* Emerald at the top fading into deep green; the label sits on the darker half (5:1 or more). */
+  background-image: linear-gradient(
+    180deg,
+    var(--color-gloss) 0%,
+    color-mix(in oklab, var(--color-gloss) 60%, var(--color-deep)) 28%,
+    color-mix(in oklab, var(--color-gloss) 30%, var(--color-deep)) 55%,
+    var(--color-deep) 85%,
+    var(--btn-shade) 100%
+  );
+  box-shadow:
+    inset 0 1.5px 0 rgb(255 255 255 / 0.35),
+    inset 0 -2px 3px rgb(0 0 0 / 0.22),
+    0 2px 4px color-mix(in srgb, var(--color-deep) 20%, transparent),
+    0 6px 14px -4px color-mix(in srgb, var(--color-deep) 30%, transparent);
+  transition:
+    translate 220ms var(--btn-ease),
+    scale 160ms var(--btn-ease),
+    box-shadow 220ms var(--btn-ease);
+}
+
+/* The light: a soft diagonal reflection, parked off the left edge until a hover sends it across. */
+.btn-3d::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgb(255 255 255 / 0.08) 38%,
+    rgb(255 255 255 / 0.26) 50%,
+    rgb(255 255 255 / 0.08) 62%,
+    transparent 75%
+  );
+  translate: -110% 0;
+}
+
+/* The round arrow: white into pale powder blue into powder blue, slightly raised. */
+.btn-circle {
+  position: relative;
+  z-index: 2;
+  background-image: linear-gradient(
+    180deg,
+    var(--color-bg) 0%,
+    var(--color-surface-soft) 55%,
+    var(--color-primary) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 3px 6px color-mix(in srgb, var(--btn-shade) 35%, transparent);
+  transition:
+    translate 180ms var(--btn-ease),
+    scale 180ms var(--btn-ease),
+    box-shadow 180ms var(--btn-ease);
+}
+
+@media (hover: hover) {
+  .btn-3d:hover {
+    box-shadow:
+      inset 0 1.5px 0 rgb(255 255 255 / 0.35),
+      inset 0 -2px 3px rgb(0 0 0 / 0.22),
+      0 4px 8px color-mix(in srgb, var(--color-deep) 14%, transparent),
+      0 12px 24px rgba(0, 55, 42, 0.18);
+  }
+
+  .btn-3d:hover .btn-circle {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      0 5px 10px color-mix(in srgb, var(--btn-shade) 45%, transparent);
+  }
+}
+
+/* The press: the outer shadow tightens and the surface takes a deeper inset. */
+.btn-3d:active {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    inset 0 2px 5px rgb(0 0 0 / 0.28),
+    0 1px 2px color-mix(in srgb, var(--color-deep) 25%, transparent);
+  transition-duration: 160ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) {
+    .btn-3d:hover {
+      translate: 0 -3px;
+    }
+
+    /* The sweep runs once on the way in; on the way out it jumps back unseen. */
+    .btn-3d:hover::after {
+      translate: 110% 0;
+      transition: translate 240ms ease-out;
+    }
+
+    .btn-3d:hover .btn-circle {
+      translate: 4px 0;
+      scale: 1.05;
+    }
+  }
+
+  .btn-3d:active {
+    translate: 0 1px;
+    scale: 0.985;
+  }
+}

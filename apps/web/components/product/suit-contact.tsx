@@ -1,5 +1,5 @@
 import { mailtoLink, telLink, whatsappLink } from '@mustafa/core/contact-links';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 
 import { emailBody, emailSubject, whatsappLabel, whatsappText } from '../../lib/inquiry-text';
 import type { Suit } from '../../lib/types';
@@ -29,30 +29,30 @@ export function SuitContact({ suit, contact }: Props) {
       {contact.whatsapp && (
         <a
           href={whatsappLink(contact.whatsapp, whatsappText(suit))}
-          className={`${buttonClass('primary')} w-full gap-3`}
+          className={`${buttonClass('primary')} w-full`}
           target="_blank"
           rel="noopener"
         >
-          <WhatsAppIcon className="size-5" />
           {whatsappLabel(suit)}
+          <ButtonCircle icon={<WhatsAppIcon />} />
         </a>
       )}
       <div className="flex flex-col gap-3 sm:flex-row">
         {contact.phone && (
-          <a href={telLink(contact.phone)} className={`${buttonClass('secondary')} flex-1 gap-3`}>
-            <PhoneIcon className="size-5" />
+          <a href={telLink(contact.phone)} className={`${buttonClass('secondary')} flex-1`}>
             <span>
               Call <span className="sr-only">{displayNumber(contact.phone)}</span>
             </span>
+            <ButtonCircle icon={<PhoneIcon />} />
           </a>
         )}
         {contact.email && (
           <a
             href={mailtoLink(contact.email, emailSubject(suit), emailBody(suit))}
-            className={`${buttonClass('secondary')} flex-1 gap-3`}
+            className={`${buttonClass('secondary')} flex-1`}
           >
-            <MailIcon className="size-5" />
             Email
+            <ButtonCircle icon={<MailIcon />} />
           </a>
         )}
       </div>
@@ -80,12 +80,12 @@ export function StickyWhatsApp({ suit, whatsapp }: { suit: Suit; whatsapp: strin
     >
       <a
         href={whatsappLink(whatsapp, whatsappText(suit))}
-        className={`${buttonClass('primary')} w-full gap-3`}
+        className={`${buttonClass('primary')} w-full`}
         target="_blank"
         rel="noopener"
       >
-        <WhatsAppIcon className="size-5" />
         {whatsappLabel(suit)}
+        <ButtonCircle icon={<WhatsAppIcon />} />
       </a>
     </div>
   );

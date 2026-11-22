@@ -24,7 +24,8 @@ Components use tokens, never hard-coded colours. Tokens live in `packages/config
 | `--color-teal` | `#86AFAE` | Footer background only; ink text only on it (orange and grey fail) |
 | `--color-fg` | `#111111` ink | All text |
 | `--color-muted` | `#4B5757` | Secondary text, on white only |
-| `--color-action` / `--color-action-fg` | `#111111` / `#FFFFFF` | Main buttons: ink with white text |
+| `--color-action` / `--color-action-fg` | `#111111` / `#FFFFFF` | Ink, and white labels on buttons |
+| `--color-gloss` | `#0AA383` | Emerald shine at the top of every button, fading into deep green; never behind text |
 | `--color-accent` / `--color-accent-fg` | `#F45B0B` racing orange / `#111111` | Badges with **ink** text, hover underlines, focus ring, small icons. Never body text (3.31:1) |
 | `--color-accent-text` | `#C34909` | Small orange text such as links, on white only (4.91:1) |
 | `--color-border-strong` | `#5F6F6E` | Form fields and UI borders on white |
@@ -55,6 +56,7 @@ Utilities (full table in `docs/design.md` §1.2): headings are `text-display`, `
 - Tokens: `--spacing-gutter` (`px-gutter`) for page side padding, `--spacing-grid` (`gap-grid`) between product cards, `--spacing-section` (`py-section`) between page sections.
 - Max content width: 1440px at `2xl` (`max-w-content`), 1760px at `4xl` (`max-w-content-wide`). Layout per breakpoint: `docs/design.md` §2.
 - Touch targets are at least 44×44px. Respect safe areas with `env(safe-area-inset-*)`.
+- Every button (both apps, except the home hero pair) is the owner's glossy green template pill (`docs/brand.md` §8): use `Button`, or `buttonClass()` on a link followed by `<ButtonCircle />`.
 - Build with the shared primitives before writing new ones: `Button` / `buttonClass`, `Input`, `Dialog`, `Logo`, `FormError` and `LogoutButton` from `packages/ui` (`docs/design.md` §1.2). Every focused element gets the theme's orange focus ring, which turns ink inside a `bg-primary` element on its own (orange is too faint on powder blue).
 - Radius: `rounded-sm` (2px) for small parts, `rounded-md` (8px) for buttons, `rounded-lg` (16px) for cards; nothing rounder. Use `--shadow-soft` sparingly. Every button hovers the same way through `buttonClass` (ink, lifted 2px): don't add hover colours to buttons by hand.
 

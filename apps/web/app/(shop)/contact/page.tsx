@@ -1,8 +1,9 @@
 import { mailtoLink, telLink, whatsappLink } from '@mustafa/core/contact-links';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 
 import { JsonLd } from '../../../components/json-ld';
 import { displayNumber } from '../../../components/site/contact-list';
-import { ArrowIcon, MailIcon, PhoneIcon, WhatsAppIcon } from '../../../components/site/icons';
+import { MailIcon, PhoneIcon, WhatsAppIcon } from '../../../components/site/icons';
 import { StaticPage } from '../../../components/static-page';
 import { getSiteSettings } from '../../../lib/catalog';
 import { GENERAL_WHATSAPP_TEXT, socialLinks } from '../../../lib/nav';
@@ -43,22 +44,16 @@ export default async function ContactPage() {
             href={whatsappLink(settings.whatsapp, GENERAL_WHATSAPP_TEXT)}
             target="_blank"
             rel="noopener"
-            className="lift flex min-h-16 items-center gap-4 rounded-lg bg-deep px-5 text-action-fg shadow-soft sm:gap-5 sm:px-7"
+            className={buttonClass('primary', 'w-full')}
           >
-            <WhatsAppIcon className="size-7" />
-            <span aria-hidden="true" className="h-8 w-px bg-action-fg/40" />
-            <span className="flex-1 caps-tight sm:caps">WhatsApp us</span>
-            <ArrowIcon className="nudge size-6" />
+            WhatsApp us
+            <ButtonCircle icon={<WhatsAppIcon />} />
           </a>
         )}
         {settings.phone && (
-          <a
-            href={telLink(settings.phone)}
-            className="lift flex min-h-16 items-center gap-4 rounded-lg border border-deep bg-bg/70 px-5 text-deep sm:gap-5 sm:px-7"
-          >
-            <PhoneIcon className="size-7" />
-            <span aria-hidden="true" className="h-8 w-px bg-deep/30" />
-            <span className="caps-tight sm:caps">Call {displayNumber(settings.phone)}</span>
+          <a href={telLink(settings.phone)} className={buttonClass('secondary', 'w-full')}>
+            Call {displayNumber(settings.phone)}
+            <ButtonCircle icon={<PhoneIcon />} />
           </a>
         )}
         {settings.email && (

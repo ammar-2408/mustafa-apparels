@@ -2,7 +2,7 @@ import * as categories from '@mustafa/core/categories';
 import { imageThumbUrl } from '@mustafa/core/media-url';
 import { adminList, type AdminListItem } from '@mustafa/core/products/admin-list';
 import { getDb } from '@mustafa/db/client';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import { Checkbox } from '@mustafa/ui/checkbox';
 import { Input } from '@mustafa/ui/input';
 import { Select } from '@mustafa/ui/select';
@@ -60,6 +60,7 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
         <h1 className="text-h2 font-light">Suits</h1>
         <Link href="/suits/new" className={buttonClass('primary')}>
           New suit
+          <ButtonCircle />
         </Link>
       </div>
 
@@ -106,12 +107,14 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
           defaultChecked={filters.needsPrice}
         />
         <div className="flex flex-wrap gap-4 md:col-span-2 md:justify-end">
-          <button type="submit" className={buttonClass('primary')}>
+          <button type="submit" className={buttonClass('primary', 'min-h-12')}>
             Show suits
+            <ButtonCircle />
           </button>
           {filtered ? (
-            <Link href="/suits" className={buttonClass('secondary')}>
+            <Link href="/suits" className={buttonClass('secondary', 'min-h-12')}>
               Clear
+              <ButtonCircle />
             </Link>
           ) : null}
         </div>
@@ -214,6 +217,7 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
           {result.page > 1 ? (
             <Link href={pageHref(result.page - 1)} className={buttonClass('secondary')} rel="prev">
               Previous
+              <ButtonCircle direction="back" />
             </Link>
           ) : null}
           <span className="text-small">
@@ -222,6 +226,7 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
           {result.page < result.pageCount ? (
             <Link href={pageHref(result.page + 1)} className={buttonClass('secondary')} rel="next">
               Next
+              <ButtonCircle />
             </Link>
           ) : null}
         </nav>

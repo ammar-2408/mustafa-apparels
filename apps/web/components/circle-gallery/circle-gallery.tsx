@@ -1,14 +1,14 @@
 'use client';
 
 import { shapedImageUrl } from '@mustafa/core/media-url';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 
 import { cardLine, formatPrice, piecesLabel } from '../../lib/format';
 import type { SuitCard } from '../../lib/types';
-import { ArrowIcon, ChevronIcon } from '../site/icons';
+import { ChevronIcon } from '../site/icons';
 import { frontIndex, ringPlacement, settle, stepFor } from './ring';
 
 type Props = {
@@ -348,7 +348,7 @@ function Ring({ label, suits }: Props) {
             className={buttonClass('secondary', 'mt-3 min-h-11', 'bold')}
           >
             View Suit
-            <ArrowIcon className="nudge size-5" />
+            <ButtonCircle />
           </Link>
         </div>
         <button type="button" aria-label="Next suit" onClick={() => turn(1)} className={arrow}>

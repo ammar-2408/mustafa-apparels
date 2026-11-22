@@ -1,4 +1,4 @@
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import Link from 'next/link';
 
 // The branded 404 (docs/design.md §8.6), shared by the root and the (shop) not-found pages.
@@ -14,9 +14,11 @@ export function NotFoundContent() {
       <div className="mt-12 flex flex-col gap-3 sm:flex-row">
         <Link href="/shop" className={buttonClass('primary')}>
           See all suits
+          <ButtonCircle />
         </Link>
         <Link href="/search" className={buttonClass('secondary')}>
           Search
+          <ButtonCircle />
         </Link>
       </div>
     </div>

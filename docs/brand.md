@@ -21,7 +21,8 @@ Calm powder blue and white, ink-black type, a deep green for the main actions, a
 | Powder blue | `#A8C9C8` | `primary` | The navbar band, large surfaces. **Never text** |
 | Pale powder blue | `#EEF4F4` | `surface-soft` | Behind suit photos, the hero and How to Order backgrounds |
 | Deeper teal | `#86AFAE` | `teal` | The footer only |
-| Deep green | `#164A45` | `deep` | Hero buttons, page titles, step numbers and icons, active filter chips |
+| Deep green | `#164A45` | `deep` | Every button (with the gloss), page titles, step numbers and icons, active filter chips |
+| Emerald gloss | `#0AA383` | `gloss` | The shine at the top of every button, fading into deep green. **Never behind text** |
 | Racing orange | `#F45B0B` | `accent` | Small accents: badges, underlines, the focus ring, short lines |
 | Deep orange | `#C34909` | `accent-text` | Orange **words**: the coloured word in headings, links, the current page |
 
@@ -130,13 +131,13 @@ Nothing is rounder than 16px, except full circles.
 
 | Button | Look | Hover |
 |---|---|---|
-| Primary | Ink with white label | Lifts 2px with the soft shadow |
-| Secondary | Ink outline, ink label | Fills ink, label turns white, lifts 2px |
+| Every button (`primary` and `secondary` look the same, owner 2026-11-22) | The owner's `button-template.png`: a glossy pill, emerald at the top into deep green, a white Bold spaced-capital label, and a round white-to-mint button on the right holding a deep green arrow, or the button's own icon (WhatsApp, phone, mail). At least 56px tall | Lifts 3px with a deeper, softer shadow (220ms); a soft light sweeps across once (240ms); the round arrow pushes 4px right and grows to 1.05 (180ms). Pressing sinks it 1px to 98.5% (160ms), on touch too. With reduced motion nothing moves |
 | Deep (home hero) | Deep green with white label | Ink fills in from the edge |
 | Deep outline (home hero) | Deep green outline and label on white glass | Deep green fills in from the edge, label turns white |
 | Round arrows (carousels, New Arrivals ring) | Ink circle with a white chevron | – |
 | Filter chips | Pill, grey green outline on white glass, spaced capitals | Selected: deep green with a white label |
 
+- **Building one:** `Button` adds the round arrow itself (`icon` swaps in another icon). A link styled with `buttonClass()` ends with `<ButtonCircle />` (`direction="back"` for Previous); `scripts/buttons.test.mjs` checks every one has it. The gloss and motion are in `packages/config/tailwind/buttons.css`, used by the storefront and the admin.
 - **Focus:** an orange ring on white, ink on powder blue.
 - **Links:** ink, underlined; on hover the underline turns orange and thicker.
 - **Reduced motion:** colours still change, but nothing moves.

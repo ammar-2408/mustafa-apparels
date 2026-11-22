@@ -1,7 +1,7 @@
 import * as categories from '@mustafa/core/categories';
 import { imageThumbUrl } from '@mustafa/core/media-url';
 import { getDb } from '@mustafa/db/client';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -27,6 +27,7 @@ export default async function CollectionsPage() {
         </div>
         <Link href="/collections/new" className={buttonClass('primary')}>
           New collection
+          <ButtonCircle />
         </Link>
       </div>
       <CollectionList

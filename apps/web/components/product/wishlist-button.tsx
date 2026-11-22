@@ -1,7 +1,7 @@
 'use client';
 
 import type { ActionResult } from '@mustafa/core/action-result';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import { Dialog } from '@mustafa/ui/dialog';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -80,9 +80,11 @@ export function WishlistButton({ productId, name, toggle }: Props) {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link href="/login" className={buttonClass('primary')}>
               Log in
+              <ButtonCircle />
             </Link>
             <Link href="/register" className={buttonClass('secondary')}>
               Create account
+              <ButtonCircle />
             </Link>
           </div>
         </Dialog>

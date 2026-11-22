@@ -1,5 +1,5 @@
 import { mailtoLink, telLink, whatsappLink } from '@mustafa/core/contact-links';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 
 import { GENERAL_WHATSAPP_TEXT } from '../../lib/nav';
 import { MailIcon, PhoneIcon, WhatsAppIcon } from './icons';
@@ -27,23 +27,20 @@ export function ContactList({
         <li>
           <a
             href={whatsappLink(contact.whatsapp, text)}
-            className={buttonClass('primary', 'w-full gap-3', label)}
+            className={buttonClass('primary', 'w-full', label)}
             target="_blank"
             rel="noopener"
           >
-            <WhatsAppIcon className="size-5" />
             {bold ? 'WhatsApp Us' : 'WhatsApp us'}
+            <ButtonCircle icon={<WhatsAppIcon />} />
           </a>
         </li>
       )}
       {contact.phone && (
         <li>
-          <a
-            href={telLink(contact.phone)}
-            className={buttonClass('secondary', 'w-full gap-3', label)}
-          >
-            <PhoneIcon className="size-5" />
+          <a href={telLink(contact.phone)} className={buttonClass('secondary', 'w-full', label)}>
             Call {displayNumber(contact.phone)}
+            <ButtonCircle icon={<PhoneIcon />} />
           </a>
         </li>
       )}

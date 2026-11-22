@@ -23,6 +23,9 @@
   --color-teal: #86afae;
   /* Deep green for the home hero buttons, How to Order icons and card fill (owner, 2026-11-15). */
   --color-deep: #164a45;
+  /* The bright emerald top of the glossy buttons (owner's button-template.png, 2026-11-22). It
+     fades into deep green; never behind text. */
+  --color-gloss: #0aa383;
   --color-action: #111111;
   --color-action-fg: #ffffff;
   --color-accent: #f45b0b;

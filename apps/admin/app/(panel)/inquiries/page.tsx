@@ -1,7 +1,7 @@
 import { mailtoLink, telLink, whatsappLink } from '@mustafa/core/contact-links';
 import * as inquiries from '@mustafa/core/inquiries';
 import { getDb } from '@mustafa/db/client';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import { INQUIRY_STATUSES, inquiryListInput } from '@mustafa/validators/inquiry';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -97,11 +97,13 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
                       rel="noopener noreferrer"
                     >
                       WhatsApp
+                      <ButtonCircle />
                     </a>
                   ) : null}
                   {item.phone ? (
                     <a href={telLink(item.phone)} className={buttonClass('secondary')}>
                       Call
+                      <ButtonCircle />
                     </a>
                   ) : null}
                   {item.email ? (
@@ -114,6 +116,7 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
                       className={buttonClass('secondary')}
                     >
                       Email
+                      <ButtonCircle />
                     </a>
                   ) : null}
                 </div>
@@ -129,6 +132,7 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
           {result.page > 1 ? (
             <Link href={href(input.status, result.page - 1)} className={buttonClass('secondary')}>
               Previous
+              <ButtonCircle direction="back" />
             </Link>
           ) : null}
           <span className="text-small">
@@ -137,6 +141,7 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
           {result.page < result.pageCount ? (
             <Link href={href(input.status, result.page + 1)} className={buttonClass('secondary')}>
               Next
+              <ButtonCircle />
             </Link>
           ) : null}
         </nav>

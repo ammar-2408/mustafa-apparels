@@ -1,6 +1,6 @@
 import * as customers from '@mustafa/core/customers';
 import { getDb } from '@mustafa/db/client';
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import { Input } from '@mustafa/ui/input';
 import { customerListInput } from '@mustafa/validators/search';
 import type { Metadata } from 'next';
@@ -59,8 +59,9 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
         />
         <div className="flex flex-col">
           <LabelSpacer />
-          <button type="submit" className={buttonClass('primary')}>
+          <button type="submit" className={buttonClass('primary', 'min-h-12')}>
             Search
+            <ButtonCircle />
           </button>
         </div>
       </form>
@@ -126,6 +127,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
           {result.page > 1 ? (
             <Link href={href(result.page - 1)} className={buttonClass('secondary')}>
               Previous
+              <ButtonCircle direction="back" />
             </Link>
           ) : null}
           <span className="text-small">
@@ -134,6 +136,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
           {result.page < result.pageCount ? (
             <Link href={href(result.page + 1)} className={buttonClass('secondary')}>
               Next
+              <ButtonCircle />
             </Link>
           ) : null}
         </nav>

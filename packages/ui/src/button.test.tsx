@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Button, buttonClass } from './button';
+import { Button, ButtonCircle, buttonClass } from './button';
 
 describe('Button', () => {
   it('is a plain button unless told to submit, so it never sends a form by accident', () => {
@@ -58,31 +58,59 @@ describe('Button', () => {
     );
   });
 
-  it('looks different for primary and secondary, and is primary by default', () => {
-    expect(buttonClass('primary')).not.toBe(buttonClass('secondary'));
+  // The owner's button-template.png (2026-11-22): every button but the home hero pair is the
+  // glossy green pill with white Bold spaced capitals and a round arrow on the right.
+  it('makes primary and secondary the same glossy green pill, primary by default', () => {
     expect(buttonClass()).toBe(buttonClass('primary'));
-  });
-
-  it('ends every hover the same way: ink with white text, lifted; orange stays out', () => {
-    expect(buttonClass('primary')).toContain('bg-action text-action-fg');
-    expect(buttonClass('primary')).not.toMatch(/hover:bg-transparent/);
-    expect(buttonClass('secondary')).toContain('hover:bg-action hover:text-action-fg');
     for (const variant of ['primary', 'secondary'] as const) {
-      expect(buttonClass(variant)).toMatch(/\blift\b/);
-      expect(buttonClass(variant)).toContain('rounded-md');
+      const cls = buttonClass(variant);
+      expect(cls).toMatch(/\bbtn-3d\b/);
+      expect(cls).toContain('rounded-full');
+      expect(cls).toContain('bg-deep text-action-fg');
+      expect(cls).toContain('font-bold uppercase');
+      // The 3D hover replaces the old lift, and orange stays out.
+      expect(cls).not.toMatch(/\blift\b/);
+      expect(cls).not.toMatch(/accent/);
     }
-    expect(buttonClass('primary') + buttonClass('secondary')).not.toMatch(/accent/);
+    expect(buttonClass('primary')).toBe(buttonClass('secondary'));
   });
 
-  it('can set its label in Bold sentence case instead of spaced capitals', () => {
-    const bold = buttonClass('primary', undefined, 'bold');
-    expect(bold).toContain('font-bold');
-    expect(bold).not.toMatch(/\bcaps/);
-    expect(buttonClass('primary')).toMatch(/\bcaps/);
-    expect(buttonClass('secondary', 'w-full', 'bold').endsWith(' w-full')).toBe(true);
+  it('is 56px tall, or the height of the field it sits beside', () => {
+    expect(buttonClass('primary')).toContain('min-h-14');
+    const beside = buttonClass('primary', 'min-h-12');
+    expect(beside).toContain('min-h-12');
+    expect(beside).not.toContain('min-h-14');
   });
 
-  it('has deep green variants for the home hero, with the same lift as every button', () => {
+  it('keeps the template label even when asked for Bold sentence case', () => {
+    expect(buttonClass('primary', undefined, 'bold')).toBe(buttonClass('primary'));
+  });
+
+  it('ends with the round arrow, hidden from screen readers, so the name is the label', () => {
+    render(<Button>Save</Button>);
+    const button = screen.getByRole('button', { name: 'Save' });
+    const circles = button.querySelectorAll('.btn-circle');
+    expect(circles).toHaveLength(1);
+    expect(circles[0]!.getAttribute('aria-hidden')).toBe('true');
+    expect(circles[0]!.querySelector('svg')).toBeTruthy();
+    expect(button.lastElementChild).toBe(circles[0]);
+  });
+
+  it('puts its own icon in the circle instead of the arrow', () => {
+    render(<Button icon={<svg data-testid="phone" />}>Call</Button>);
+    const circle = screen.getByRole('button', { name: 'Call' }).querySelector('.btn-circle')!;
+    expect(circle.querySelector('[data-testid="phone"]')).toBeTruthy();
+    expect(circle.querySelectorAll('svg')).toHaveLength(1);
+  });
+
+  it('points the arrow back for Previous', () => {
+    const { container } = render(<ButtonCircle direction="back" />);
+    expect(container.querySelector('svg')!.getAttribute('class')).toContain('rotate-180');
+    const forward = render(<ButtonCircle />).container.querySelector('svg')!;
+    expect(forward.getAttribute('class')).not.toContain('rotate-180');
+  });
+
+  it('keeps the home hero pair deep green, with its own hover fill', () => {
     expect(buttonClass('deep')).toContain('bg-deep text-action-fg');
     expect(buttonClass('deep-outline')).toContain('border-deep');
     expect(buttonClass('deep-outline')).toContain('text-deep');
@@ -94,6 +122,7 @@ describe('Button', () => {
     for (const variant of ['deep', 'deep-outline'] as const) {
       expect(buttonClass(variant)).toMatch(/\blift\b/);
       expect(buttonClass(variant)).toMatch(/\bsweep\b/);
+      expect(buttonClass(variant)).not.toMatch(/\bbtn-3d\b/);
     }
   });
 

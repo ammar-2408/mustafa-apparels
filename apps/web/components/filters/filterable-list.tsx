@@ -1,6 +1,6 @@
 'use client';
 
-import { buttonClass } from '@mustafa/ui/button';
+import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import { Dialog } from '@mustafa/ui/dialog';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
@@ -277,6 +277,7 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
                 className={`${buttonClass('primary')} flex-1`}
               >
                 Show suits
+                <ButtonCircle />
               </button>
               <button
                 type="button"
@@ -284,6 +285,7 @@ export function FilterableList({ facets, collectionSlug, children }: Props) {
                 className={buttonClass('secondary')}
               >
                 Clear
+                <ButtonCircle />
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, buttonClass } from '@mustafa/ui/button';
+import { Button, ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import Link from 'next/link';
 
 // A page that failed to render (500). Never shows the error itself: no stack, no message from
@@ -26,6 +26,7 @@ export default function ErrorPage({
         <Button onClick={reset}>Try again</Button>
         <Link href="/" className={buttonClass('secondary')}>
           Go to the home page
+          <ButtonCircle />
         </Link>
       </div>
     </main>
