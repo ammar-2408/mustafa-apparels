@@ -61,7 +61,9 @@ describe('ProductForm', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: 'Embroidered' }));
     type('Price (Rs)', '4,500');
     submit(/save as draft/i);
-    await waitFor(() => expect(router.push).toHaveBeenCalledWith('/suits/p9'));
+    await waitFor(() =>
+      expect(router.push).toHaveBeenCalledWith('/suits/p9?saved=1#media-heading'),
+    );
     const [input] = actions.createProduct.mock.calls[0]!;
     expect(input).toMatchObject({
       name: 'Black Embroidered Dhanak 3-Piece Suit',

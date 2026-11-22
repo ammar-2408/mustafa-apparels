@@ -118,6 +118,47 @@ describe('MediaManager', () => {
     await waitFor(() => expect(screen.queryByRole('list', { name: 'New uploads' })).toBeNull());
   });
 
+  // Quicker suit adding (owner, 2026-11-22): one click saves every upload that has its alt text.
+  it('saves every ready upload at once with Save all, and leaves the one without alt text', async () => {
+    actions.addProductMedia.mockResolvedValue({ ok: true, data: { id: 'x' } });
+    upload.uploadFile
+      .mockResolvedValueOnce('products/p1/one')
+      .mockResolvedValueOnce('products/p1/two')
+      .mockResolvedValueOnce('products/p1/three');
+    renderManager([]);
+    choose(
+      fileOf('one.jpg', 'image/jpeg'),
+      fileOf('two.jpg', 'image/jpeg'),
+      fileOf('three.jpg', 'image/jpeg'),
+    );
+    const uploads = await screen.findByRole('list', { name: 'New uploads' });
+    await waitFor(() =>
+      expect(within(uploads).getAllByRole('button', { name: 'Save photo' })).toHaveLength(3),
+    );
+    expect(screen.queryByRole('button', { name: /Save all/ })).toBeNull();
+    const alts = within(uploads).getAllByLabelText('Alt text');
+    fireEvent.change(alts[0]!, { target: { value: 'Black suit, front view' } });
+    expect(screen.queryByRole('button', { name: /Save all/ })).toBeNull();
+    fireEvent.change(alts[1]!, { target: { value: 'Black suit, back view' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save all 2 photos' }));
+    await waitFor(() => expect(actions.addProductMedia).toHaveBeenCalledTimes(2));
+    expect(actions.addProductMedia).toHaveBeenNthCalledWith(1, {
+      productId: 'p1',
+      kind: 'image',
+      publicId: 'products/p1/one',
+      alt: 'Black suit, front view',
+    });
+    expect(actions.addProductMedia).toHaveBeenNthCalledWith(2, {
+      productId: 'p1',
+      kind: 'image',
+      publicId: 'products/p1/two',
+      alt: 'Black suit, back view',
+    });
+    await waitFor(() =>
+      expect(within(uploads).getAllByRole('button', { name: 'Save photo' })).toHaveLength(1),
+    );
+  });
+
   it('shows the server’s reasons when Cloudinary’s figures fail the check', async () => {
     actions.addProductMedia.mockResolvedValue({
       ok: false,

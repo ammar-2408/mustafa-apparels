@@ -88,7 +88,8 @@ export function ProductForm({ collections, suit }: ProductFormProps) {
       setSaved('Changes saved.');
       router.refresh();
     } else {
-      router.push(`/suits/${result.data.id}`);
+      // Straight on to the photos: the next job (owner, 2026-11-22: quicker adding).
+      router.push(`/suits/${result.data.id}?saved=1#media-heading`);
     }
   }
 

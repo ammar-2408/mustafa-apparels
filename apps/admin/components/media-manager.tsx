@@ -119,6 +119,12 @@ export function MediaManager({ productId, cloudName, media }: MediaManagerProps)
     drop(item.key);
   }
 
+  // Uploads that can be saved now: uploaded, not saving, with alt text.
+  const ready = pending.filter((p) => p.publicId && !p.saving && p.alt.trim().length >= 3);
+  async function saveAll() {
+    for (const item of ready) await save(item);
+  }
+
   const onDrop = (event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
     setDragging(false);
@@ -162,6 +168,13 @@ export function MediaManager({ productId, cloudName, media }: MediaManagerProps)
         className="sr-only"
         onChange={(event) => addFiles(event.target.files)}
       />
+
+      {ready.length >= 2 ? (
+        // Quicker suit adding (owner, 2026-11-22): every upload with its alt text, in one click.
+        <Button onClick={saveAll} className="self-start">
+          {`Save all ${ready.length} ${ready.every((p) => p.kind === 'image') ? 'photos' : 'uploads'}`}
+        </Button>
+      ) : null}
 
       {pending.length > 0 ? (
         <ul aria-label="New uploads" className="flex flex-col gap-3">

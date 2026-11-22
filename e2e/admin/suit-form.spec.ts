@@ -60,8 +60,20 @@ test('fill every section, save as a draft, and find the values on the edit page'
   await page.getByLabel('Search title').fill('Sage green printed khaddar suit');
   await page.getByRole('button', { name: 'Save as draft' }).click();
 
-  // The edit page of the new suit (not /suits/new itself).
-  await expect(page).toHaveURL(/\/suits\/(?!new$)[^/]+$/, { timeout: 15_000 });
+  // The new suit's own page, at its photos: the next job (owner, 2026-11-22: quicker adding).
+  await expect(page).toHaveURL(/\/suits\/(?!new)[^/?]+\?saved=1#media-heading$/, {
+    timeout: 15_000,
+  });
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Saved. Now add photos.' }),
+  ).toBeVisible();
+  // The step bar: a draft with no price yet still has Details to finish, and no photos yet.
+  const steps = page.getByRole('navigation', { name: 'Steps to publish' });
+  await expect(steps.getByRole('link', { name: /Details/ })).toHaveAttribute(
+    'aria-current',
+    'step',
+  );
+  await expect(steps.getByRole('link', { name: /Photos/ })).not.toContainText('Done');
   const [row] = await db.select().from(product).where(eq(product.designCode, code));
   made.push(row!.id);
   expect(row).toMatchObject({

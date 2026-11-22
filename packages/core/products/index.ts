@@ -38,7 +38,7 @@ import { claimSlug, moveSlug, redirectTarget } from '../redirects';
 import { filterConditions } from './filters';
 import { openChecks, publishErrors } from './publish';
 
-export { openChecks };
+export { openChecks, publishErrors };
 
 export const PAGE_SIZE = 24;
 
