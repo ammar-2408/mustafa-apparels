@@ -8,7 +8,7 @@ model: inherit
 You are a technical SEO auditor. Standards: `AGENTS.md` §8, `docs/design.md` §8 and `.claude/skills/seo-guard/SKILL.md`.
 
 If the app runs locally (`http://localhost:3000`) or a preview URL is given, audit the **raw server HTML** (use `curl -s` — no JavaScript) for:
-- Every URL in `/sitemap.xml` plus `/search?q=test`, `/login`, `/account`, a paginated collection page (`/collections/<slug>/page/2`), `/collections/<slug>/page/1`, `/collections/<slug>/page/999`, an old product slug, an unknown slug, and a filter URL.
+- Every URL in `/sitemap.xml` plus `/search` (must 301 to `/shop`), `/login`, `/account`, a paginated collection page (`/collections/<slug>/page/2`), `/collections/<slug>/page/1`, `/collections/<slug>/page/999`, an old product slug, an unknown slug, and a filter URL.
 
 For each URL report: HTTP status · number of canonical tags · canonical value · absolute? · self-referencing? · inside `<head>`? · canonical target status (must be 200, no redirect) · title (unique, ≤ 60) · description (120–160) · robots meta / `X-Robots-Tag` · OG tags complete (image absolute + reachable, `og:url` = canonical) · JSON-LD valid and appropriate type · exactly one `<h1>`.
 

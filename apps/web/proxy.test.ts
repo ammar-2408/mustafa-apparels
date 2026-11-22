@@ -46,7 +46,6 @@ describe('web proxy matcher', () => {
       '/reset-password',
       '/account',
       '/account/wishlist',
-      '/search',
     ]) {
       expect(matches(path), path).toBe(true);
     }

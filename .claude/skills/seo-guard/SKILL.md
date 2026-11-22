@@ -58,14 +58,14 @@ Also: filter/sort params (`?pieces=`, `?sort=`) are read only in the browser, so
 | Page | robots |
 |---|---|
 | Home, shop, collections, product, static pages | `index, follow` |
-| `/search` | `noindex, follow` |
+| `/search` | 301 to `/shop` (search is a navbar box, no page) |
 | `/account/*`, `/login`, `/register`, reset pages | `noindex, nofollow` |
 | Admin app (all) | `X-Robots-Tag: noindex, nofollow` header + `Disallow: /` |
 | Preview deployments, and production before launch (`SITE_INDEXABLE=false`) | `X-Robots-Tag: noindex` header + `Disallow: /` |
 
 ## Files
 - `app/sitemap.ts`: absolute URLs, `lastModified` from `updated_at`, only published/active items, including paginated collection pages; revalidated with tag `products`.
-- `app/robots.ts`: live production allows all except `/api`; includes `Sitemap:`; `SITE_INDEXABLE=false` disallows all. **Never disallow `/search`, `/account` or auth pages**: a crawler blocked from a page can't read its `noindex`.
+- `app/robots.ts`: live production allows all except `/api`; includes `Sitemap:`; `SITE_INDEXABLE=false` disallows all. **Never disallow `/account` or auth pages**: a crawler blocked from a page can't read its `noindex`.
 - `app/llms.txt/route.ts`: `text/plain; charset=utf-8`; `# Mustafa Apparels`, `> summary`, `## Collections`, `## Key pages`, `## Optional`; every link absolute and 200.
 - OG images: default `/og/og-default-1200x630.png` (logo on powder blue); dynamic `opengraph-image.tsx` for collection and product (photo + name + price). **Cached**, because each generation costs compute credits.
 - IndexNow: the admin pings on publish, unpublish and slug change, and sends nothing unless `SITE_INDEXABLE=true`. A failure never blocks a save.

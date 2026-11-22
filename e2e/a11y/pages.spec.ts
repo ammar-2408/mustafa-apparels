@@ -13,7 +13,6 @@ const PAGES = [
   { name: 'all suits', url: 'http://localhost:3000/shop' },
   { name: 'all suits, filtered', url: 'http://localhost:3000/shop?design=embroidered' },
   { name: 'collection', url: 'http://localhost:3000/collections/dhanak' },
-  { name: 'search results', url: 'http://localhost:3000/search?q=dhanak' },
   { name: 'about', url: 'http://localhost:3000/about' },
   { name: 'contact', url: 'http://localhost:3000/contact' },
   { name: 'how to order', url: 'http://localhost:3000/how-to-order' },

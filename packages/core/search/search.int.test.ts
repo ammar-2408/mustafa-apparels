@@ -166,8 +166,18 @@ describe('suggest', () => {
     expect(many.collections.length + many.products.length).toBeLessThanOrEqual(6);
   });
 
-  it('returns only names, slugs and codes', async () => {
+  // The navbar search shows a small photo next to each suit (owner, 2026-11-22).
+  it('returns names, slugs, codes and the main photo, nothing more', async () => {
     const [first] = (await search.suggest(db, suggestInput.parse({ q: 'maroon' }))).products;
-    expect(Object.keys(first!).sort()).toEqual(['designCode', 'name', 'slug']);
+    expect(Object.keys(first!).sort()).toEqual(['designCode', 'image', 'name', 'slug']);
+    const all = (await search.suggest(db, suggestInput.parse({ q: 'suit' }))).products;
+    for (const suit of all) {
+      if (suit.image) {
+        expect(suit.image.url).toMatch(/^https:\/\//);
+        expect(typeof suit.image.alt).toBe('string');
+      } else {
+        expect(suit.image).toBeNull();
+      }
+    }
   });
 });

@@ -8,6 +8,7 @@ import { type CSSProperties, useEffect, useRef, useState } from 'react';
 
 import { GENERAL_WHATSAPP_TEXT, HELP_LINKS, type NavLink } from '../../lib/nav';
 import { HeaderLogo } from '../logo';
+import { SearchBox } from '../search/search-box';
 import { type Contact, ContactList } from './contact-list';
 import { FlowerSprig, LeafBranch, Swash } from './flourish';
 import {
@@ -22,6 +23,7 @@ import {
   WhatsAppIcon,
 } from './icons';
 import { MainNav } from './main-nav';
+import { OPEN_SEARCH } from './open-search';
 
 type Props = { links: NavLink[]; contact: Contact };
 
@@ -36,6 +38,9 @@ function menuIcon(href: string) {
 const control =
   'header-control inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-sm px-2 text-fg';
 const label = 'control-label hidden text-body sm:inline';
+// The Search, Account and Saved tiles in the menu panel.
+const tile =
+  'flex min-h-16 w-full flex-col items-center justify-center gap-1 rounded-md border border-border text-small hover:bg-surface-soft';
 // The WhatsApp word only from xl: between lg and xl the bar also holds the main links.
 const whatsappLabel = 'control-label hidden text-body xl:inline';
 
@@ -44,6 +49,10 @@ const whatsappLabel = 'control-label hidden text-body xl:inline';
 export function HeaderBar({ links, contact }: Props) {
   const [open, setOpen] = useState(false);
   const [floating, setFloating] = useState(false);
+  // The search box (owner, 2026-11-22: no search page). Mounted on first use only.
+  const [searching, setSearching] = useState(false);
+  const [searchUsed, setSearchUsed] = useState(false);
+  const searchOpener = useRef<HTMLElement | null>(null);
   const bandRef = useRef<HTMLElement>(null);
   // The button that opened the menu (the header's or the floating bar's), to give focus back to.
   const opener = useRef<HTMLButtonElement | null>(null);
@@ -54,7 +63,31 @@ export function HeaderBar({ links, contact }: Props) {
   if (shownFor !== pathname) {
     setShownFor(pathname);
     setOpen(false);
+    setSearching(false);
   }
+
+  const startSearch = (from: HTMLElement | null) => {
+    searchOpener.current = from;
+    setOpen(false);
+    setSearchUsed(true);
+    setSearching(true);
+  };
+  const closeSearch = () => {
+    setSearching(false);
+    searchOpener.current?.focus();
+  };
+
+  // Anything on the page can open the search box (open-search.tsx).
+  useEffect(() => {
+    const onOpen = () => {
+      searchOpener.current = null;
+      setOpen(false);
+      setSearchUsed(true);
+      setSearching(true);
+    };
+    window.addEventListener(OPEN_SEARCH, onOpen);
+    return () => window.removeEventListener(OPEN_SEARCH, onOpen);
+  }, []);
 
   useEffect(() => {
     const band = bandRef.current;
@@ -76,9 +109,16 @@ export function HeaderBar({ links, contact }: Props) {
   const actions = (
     <>
       <span aria-hidden="true" className="mr-3 hidden h-8 w-px bg-fg/30 lg:block" />
-      <Link href="/search" className={`${control} max-[359px]:hidden`} aria-label="Search">
+      <button
+        type="button"
+        className={`${control} max-[359px]:hidden`}
+        aria-label="Search"
+        aria-haspopup="dialog"
+        aria-expanded={searching}
+        onClick={(event) => startSearch(event.currentTarget)}
+      >
         <SearchIcon />
-      </Link>
+      </button>
       <Link href="/account" className={`${control} max-md:hidden`} aria-label="Account">
         <AccountIcon />
       </Link>
@@ -225,17 +265,23 @@ export function HeaderBar({ links, contact }: Props) {
             })}
           </ul>
           <ul className="mt-6 grid grid-cols-3 gap-2">
+            <li>
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                onClick={() => startSearch(opener.current)}
+                className={tile}
+              >
+                <SearchIcon className="size-6" />
+                Search
+              </button>
+            </li>
             {[
-              { href: '/search', label: 'Search', Icon: SearchIcon },
               { href: '/account', label: 'Account', Icon: AccountIcon },
               { href: '/account#saved', label: 'Saved', Icon: HeartIcon },
             ].map(({ href, label: name, Icon }) => (
               <li key={href}>
-                <Link
-                  href={href}
-                  onClick={close}
-                  className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-md border border-border text-small hover:bg-surface-soft"
-                >
+                <Link href={href} onClick={close} className={tile}>
                   <Icon className="size-6" />
                   {name}
                 </Link>
@@ -260,6 +306,19 @@ export function HeaderBar({ links, contact }: Props) {
           <ContactList contact={contact} bold />
         </div>
       </Dialog>
+
+      {searchUsed && (
+        <Dialog
+          open={searching}
+          onClose={closeSearch}
+          title="Search suits"
+          className="search-panel mt-0 mb-auto w-full! max-w-none! rounded-none rounded-b-lg bg-linear-to-b from-bg to-surface-soft backdrop:bg-fg/40"
+        >
+          <div className="mx-auto w-full max-w-3xl">
+            <SearchBox focusOnOpen={searching} />
+          </div>
+        </Dialog>
+      )}
     </>
   );
 }

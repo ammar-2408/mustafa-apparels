@@ -1,13 +1,27 @@
-import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 const route = vi.hoisted(() => ({ path: '/' }));
-vi.mock('next/navigation', () => ({ usePathname: () => route.path }));
+vi.mock('next/navigation', () => ({
+  usePathname: () => route.path,
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
+// jsdom has no showModal(); the browser's own dialog is covered by the E2E tests.
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function (this: HTMLDialogElement) {
+    this.open = true;
+  };
+  HTMLDialogElement.prototype.close = function (this: HTMLDialogElement) {
+    this.open = false;
+  };
+});
 
 import { menuLinks } from '../../lib/nav';
 import { displayNumber } from './contact-list';
 import { FooterView } from './footer-view';
 import { HeaderBar } from './header-bar';
+import { OPEN_SEARCH } from './open-search';
 
 const contact = { whatsapp: '+923482799707', phone: '+923069558717', email: 'shop@example.com' };
 const links = menuLinks([{ slug: 'dhanak', name: 'Dhanak' }]);
@@ -17,7 +31,9 @@ describe('HeaderBar', () => {
     render(<HeaderBar links={links} contact={contact} />);
     const band = screen.getByRole('banner');
     expect(within(band).getByRole('link', { name: 'Mustafa Apparels home' })).toBeTruthy();
-    expect(within(band).getByRole('link', { name: 'Search' }).getAttribute('href')).toBe('/search');
+    // Search opens a box from the navbar: there is no search page (owner, 2026-11-22).
+    const search = within(band).getByRole('button', { name: 'Search' });
+    expect(search.getAttribute('aria-haspopup')).toBe('dialog');
     expect(within(band).getByRole('link', { name: 'Account' }).getAttribute('href')).toBe(
       '/account',
     );
@@ -25,6 +41,22 @@ describe('HeaderBar', () => {
     expect(whatsapp.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/923482799707\?text=/);
     const menu = within(band).getByRole('button', { name: /Menu/ });
     expect(menu.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('opens the search box from the navbar, or from anywhere that asks for it', () => {
+    render(<HeaderBar links={links} contact={contact} />);
+    expect(screen.queryByRole('dialog', { name: 'Search suits' })).toBeNull();
+    fireEvent.click(within(screen.getByRole('banner')).getByRole('button', { name: 'Search' }));
+    const box = screen.getByRole('dialog', { name: 'Search suits' });
+    expect(within(box).getByRole('combobox')).toBeTruthy();
+    fireEvent.click(within(box).getByRole('button', { name: 'Close' }));
+    expect(box.hasAttribute('open')).toBe(false);
+    expect(screen.queryByRole('dialog', { name: 'Search suits' })).toBeNull();
+    // The menu panel's Search tile and the 404 page open it with this event.
+    act(() => {
+      window.dispatchEvent(new Event(OPEN_SEARCH));
+    });
+    expect(screen.getByRole('dialog', { name: 'Search suits' }).hasAttribute('open')).toBe(true);
   });
 
   it('leaves out WhatsApp when the shop has no number set', () => {

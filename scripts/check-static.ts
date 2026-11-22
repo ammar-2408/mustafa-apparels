@@ -34,14 +34,14 @@ export const CACHED_PATTERNS = [
   '/collections/[slug]/page/[n]',
   '/products/[slug]',
 ];
-// Per-request pages (proxy.ts nonce, session or live search): never served from the cache.
+// Per-request pages (proxy.ts nonce or session): never served from the cache. Search is a navbar
+// box, not a page (owner, 2026-11-22).
 export const PER_REQUEST = [
   '/login',
   '/register',
   '/forgot-password',
   '/reset-password',
   '/account',
-  '/search',
 ];
 
 const isCached = (route: Route | undefined) =>

@@ -1,6 +1,8 @@
 import { ButtonCircle, buttonClass } from '@mustafa/ui/button';
 import Link from 'next/link';
 
+import { OpenSearchButton } from './site/open-search';
+
 // The branded 404 (docs/design.md §8.6), shared by the root and the (shop) not-found pages.
 export function NotFoundContent() {
   return (
@@ -16,10 +18,10 @@ export function NotFoundContent() {
           See all suits
           <ButtonCircle />
         </Link>
-        <Link href="/search" className={buttonClass('secondary')}>
+        <OpenSearchButton className={buttonClass('secondary')}>
           Search
           <ButtonCircle />
-        </Link>
+        </OpenSearchButton>
       </div>
     </div>
   );

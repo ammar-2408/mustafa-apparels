@@ -70,7 +70,7 @@ Never "fix" by deleting a test, adding `any`, swallowing an error, or adding `se
 |---|---|---|
 | "Site not available" on both sites | 300 credits used; projects paused | Wait for the monthly reset, or owner upgrades. Review `docs/deployment.md` §3 |
 | Deploy "Skipped due to account credit usage exceeded" | Out of credits for deploys | Same. Don't keep retrying |
-| Credits draining fast | Compute: a public page stopped being cached, or bots on `/search`. Bandwidth: something heavy in `public/` | Usage insights by meter → find the source |
+| Credits draining fast | Compute: a public page stopped being cached, or bots on `/api/search/suggest`. Bandwidth: something heavy in `public/` | Usage insights by meter → find the source |
 | Site built though nothing relevant changed | `ignore` paths too wide, or a redeploy of the same commit, which always builds | Check `netlify.toml` |
 | Preview returns 401 with a "Login Redirect" page | Netlify team login protection, not the app | Open it logged in to the team, or change the setting (`docs/deployment.md` §2) |
 | Site didn't build though it should have | Changed file isn't in that site's `ignore` list | Add the path to `netlify.toml` |

@@ -39,9 +39,9 @@ describe('cacheProblems', () => {
     ).toEqual(['/products/[slug] is not prerendered (it renders per request)']);
   });
 
-  it('flags an account or search page served from the cache', () => {
-    expect(cacheProblems(manifest({ '/search': cached }), [], ['/search'], [])).toEqual([
-      '/search is cached but must render per request',
+  it('flags an account page served from the cache', () => {
+    expect(cacheProblems(manifest({ '/account': cached }), [], ['/account'], [])).toEqual([
+      '/account is cached but must render per request',
     ]);
   });
 });

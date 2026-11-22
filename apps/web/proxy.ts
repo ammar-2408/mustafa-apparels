@@ -26,6 +26,5 @@ export const config = {
     '/reset-password',
     '/account',
     '/account/:path*',
-    '/search',
   ],
 };

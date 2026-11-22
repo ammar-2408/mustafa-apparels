@@ -120,7 +120,7 @@ Step 3.9 tried **experimental SRI** first (`experimental.sri`, sha256) with `scr
 - **What it didn't:** Next's 3 inline bootstrap scripts were still blocked, giving 3 violations.
 - **Outcome:** SRI can't replace `'unsafe-inline'` on cached pages, so the policy above ships. Try again if Next starts hashing its inline scripts.
 
-**Tier B: dynamic pages** (`/search`, `/account/*`, `/login`, `/register`, password pages). `proxy.ts` sets a per-request nonce, and its `matcher` lists only these paths, so it never runs on cached pages:
+**Tier B: dynamic pages** (`/account/*`, `/login`, `/register`, password pages). `proxy.ts` sets a per-request nonce, and its `matcher` lists only these paths, so it never runs on cached pages:
 ```
 script-src 'self' 'nonce-{NONCE}' 'strict-dynamic';
 (other directives as Tier A)

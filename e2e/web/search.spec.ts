@@ -1,44 +1,85 @@
+import AxeBuilder from '@axe-core/playwright';
+
 import { expect, test } from '../support/users';
 
-// Search (docs/prd.md W6): typo-tolerant, noindex, follow; suggestions in a keyboard combobox.
-test('a typo still finds the Khaddar suits, and the page is noindex, follow', async ({ page }) => {
-  const response = await page.goto('/search?q=khadar');
-  expect(response?.status()).toBe(200);
-  await expect(page.getByRole('heading', { level: 1, name: 'Search' })).toBeVisible();
-  await expect(page.getByText(/^\d+ suits? for “khadar”$/)).toBeVisible();
-  const cards = page.getByRole('main').getByRole('article');
-  expect(await cards.count()).toBeGreaterThan(0);
-  await expect(cards.first()).toContainText('Khaddar');
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow');
+// Search opens as a box from the navbar (owner, 2026-11-22): no search page. Typo-tolerant
+// suggestions in a keyboard combobox (docs/prd.md W6); Enter opens the best match.
+async function openSearch(page: import('@playwright/test').Page) {
+  const header = page.getByRole('banner');
+  const button = header.getByRole('button', { name: 'Search' });
+  // Phones under 360px keep Search in the menu panel only.
+  if (await button.isVisible()) {
+    await button.click();
+  } else {
+    await header.getByRole('button', { name: /Menu/ }).click();
+    await page
+      .getByRole('dialog', { name: 'Menu' })
+      .getByRole('button', { name: 'Search' })
+      .click();
+  }
+  const panel = page.getByRole('dialog', { name: 'Search suits' });
+  await expect(panel).toBeVisible();
+  return panel;
+}
+
+test('the navbar search opens a box with the cursor in it, and Esc closes it', async ({ page }) => {
+  await page.goto('/about');
+  const panel = await openSearch(page);
+  const box = panel.getByRole('combobox', { name: 'Search suits' });
+  await expect(box).toBeFocused();
+  await expect(page).toHaveURL(/\/about$/);
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
 });
 
-test('suggestions appear as you type and open with the keyboard', async ({ page }) => {
-  await page.goto('/search');
-  const box = page.getByRole('combobox', { name: 'Search suits' });
-  await box.fill('khad');
-  await expect(page.getByRole('listbox', { name: 'Suggestions' })).toBeVisible();
-  await expect(page.getByRole('option').first()).toContainText('Khaddar');
+test('a typo still finds Khaddar, suits show a photo, and the keyboard opens one', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const panel = await openSearch(page);
+  const box = panel.getByRole('combobox', { name: 'Search suits' });
+  await box.fill('khadar');
+  await expect(panel.getByRole('listbox', { name: 'Suggestions' })).toBeVisible();
+  await expect(panel.getByRole('option').first()).toContainText('Khaddar');
+  await expect(panel.getByRole('option').last().locator('img')).toHaveCount(1);
   await box.press('ArrowDown');
   await box.press('Enter');
   await expect(page).toHaveURL(/\/collections\/khaddar$/);
+  // Moving to the page closes the box.
+  await expect(page.getByRole('dialog', { name: 'Search suits' })).toBeHidden();
 });
 
-test('an empty or too short search asks for more, and searching submits the form', async ({
-  page,
-}) => {
-  await page.goto('/search?q=k');
-  await expect(page.getByText('Type 2 to 60 letters or numbers to search.')).toBeVisible();
-  const box = page.getByRole('combobox', { name: 'Search suits' });
+test('Enter with nothing chosen opens the best match', async ({ page }) => {
+  await page.goto('/');
+  const panel = await openSearch(page);
+  const box = panel.getByRole('combobox', { name: 'Search suits' });
   await box.fill('dhanak');
-  await page.getByRole('button', { name: 'Search', exact: true }).click();
-  await expect(page).toHaveURL(/\/search\?q=dhanak$/);
-  await expect(page.getByText(/suits? for “dhanak”/)).toBeVisible();
+  await expect(panel.getByRole('option').first()).toBeVisible();
+  await box.press('Enter');
+  await expect(page).toHaveURL(/\/(collections|products)\//);
 });
 
-test('a results page past the end points back to the first page', async ({ page }) => {
-  await page.goto('/search?q=dhanak&page=99');
-  await expect(page.getByText(/There are only \d+ pages? of results/)).toBeVisible();
-  await page.getByRole('link', { name: 'See the first page' }).click();
-  await expect(page).toHaveURL(/\/search\?q=dhanak$/);
-  await expect(page.getByText(/suits? for “dhanak”/)).toBeVisible();
+test('nothing found says so and points to all suits', async ({ page }) => {
+  await page.goto('/');
+  const panel = await openSearch(page);
+  await panel.getByRole('combobox', { name: 'Search suits' }).fill('qqqqzz');
+  await expect(panel.getByText(/No suits match “qqqqzz”/)).toBeVisible();
+  await expect(panel.getByRole('link', { name: 'see all suits' })).toHaveAttribute('href', '/shop');
+});
+
+test('the open search box has no serious accessibility problems', async ({ page }) => {
+  await page.goto('/');
+  const panel = await openSearch(page);
+  await panel.getByRole('combobox', { name: 'Search suits' }).fill('khadar');
+  await expect(panel.getByRole('listbox')).toBeVisible();
+  const results = await new AxeBuilder({ page }).include('dialog[open]').analyze();
+  const serious = results.violations.filter((v) => ['serious', 'critical'].includes(v.impact!));
+  expect(serious.map((v) => v.id)).toEqual([]);
+});
+
+test('the old search page address goes to All Suits for good', async ({ request }) => {
+  const response = await request.get('/search?q=dhanak', { maxRedirects: 0 });
+  expect([301, 308]).toContain(response.status());
+  // Next keeps the query string; All Suits ignores it.
+  expect(response.headers().location).toMatch(/^\/shop(\?|$)/);
 });

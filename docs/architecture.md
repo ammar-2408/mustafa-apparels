@@ -153,7 +153,7 @@ Pages and server actions stay thin: check auth, validate input, call `core`, ret
 |---|---|---|
 | Home, shop, collections, `/page/<n>`, product, static pages | Cached (ISR with tagged `unstable_cache` reads, ADR-021), **no per-request work** | Admin changes trigger on-demand revalidation by tag (`products`, `product:<id>`, `category:<slug>`, `settings`) |
 | `/api/suits` | Cached, tagged `products` | Same |
-| `/search` | Dynamic per request | Live |
+| `/search` | Permanent redirect to `/shop` (search is a navbar box, owner 2026-11-22) | – |
 | Account and auth pages | Dynamic, per user, `no-store` | Live |
 | sitemap.xml, llms.txt | Cached, revalidated with `products` tag | On change |
 | Admin | Fully dynamic, `no-store` | Live |

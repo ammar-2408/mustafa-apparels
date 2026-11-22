@@ -128,7 +128,7 @@ Once a week: **Usage & billing → Account usage insights → Credits**, then lo
 |---|---|
 | 50% before mid-month | Look at which meter is highest |
 | 75% | **Stop merging to `main`** until the reset. Admin edits still work, because they don't deploy |
-| Compute is the top meter | Find what stopped being cached; check for bots hitting `/search` |
+| Compute is the top meter | Find what stopped being cached; check for bots hitting `/api/search/suggest` |
 | Bandwidth is the top meter | Check that nothing heavy is served from `public/` |
 | Close to 100% | **Owner decides** whether to wait or upgrade. The Personal plan has 1,000 credits a month, with packs of 500 credits for $5 ([price on Netlify's pricing page](https://www.netlify.com/pricing/)) |
 

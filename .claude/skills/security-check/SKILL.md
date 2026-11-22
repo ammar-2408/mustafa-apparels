@@ -59,7 +59,7 @@ Next.js nonces force dynamic rendering, which disables caching and costs Netlify
 | Tier | Pages | `script-src` | Set in |
 |---|---|---|---|
 | A: cached public | Home, shop, collections, products, static pages | `'self' 'unsafe-inline' https://www.googletagmanager.com` (step 3.9 tries experimental SRI first) | `next.config.ts` |
-| B: dynamic | `/search`, `/account/*`, `/login`, `/register`, password pages | `'self' 'nonce-{NONCE}' 'strict-dynamic'` | `apps/web/proxy.ts`, whose `matcher` lists **only** these paths |
+| B: dynamic | `/account/*`, `/login`, `/register`, password pages | `'self' 'nonce-{NONCE}' 'strict-dynamic'` | `apps/web/proxy.ts`, whose `matcher` lists **only** these paths |
 | Admin | Every route | `'self' 'nonce-{NONCE}' 'strict-dynamic'`, no GA4 | `apps/admin/proxy.ts` |
 
 - [ ] A new route is in the right tier, and the web `proxy.ts` matcher still excludes every cached page

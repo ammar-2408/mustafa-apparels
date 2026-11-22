@@ -111,13 +111,28 @@ export async function suggest(db: Database, input: SuggestInput) {
     .limit(2);
 
   const { where, order } = searchMatchers(input.q);
-  const products = await db
-    .select({ name: product.name, slug: product.slug, designCode: product.designCode })
+  const rows = await db
+    .select({
+      name: product.name,
+      slug: product.slug,
+      designCode: product.designCode,
+      imageUrl: productMedia.url,
+      imageAlt: productMedia.alt,
+    })
     .from(product)
     .innerJoin(category, eq(product.categoryId, category.id))
+    .leftJoin(
+      productMedia,
+      and(eq(productMedia.productId, product.id), eq(productMedia.isPrimary, true)),
+    )
     .where(and(isPublic, where))
     .orderBy(...order)
     .limit(SUGGESTION_LIMIT - collections.length);
 
+  // The main photo, for the small picture beside each suit in the navbar search.
+  const products = rows.map(({ imageUrl, imageAlt, ...suit }) => ({
+    ...suit,
+    image: imageUrl ? { url: imageUrl, alt: imageAlt ?? suit.name } : null,
+  }));
   return { collections, products };
 }

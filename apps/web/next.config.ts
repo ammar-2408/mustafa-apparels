@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
   // Page 1 of a list has no /page/1 URL (ADR-017): a permanent 301 to the clean URL.
   redirects: async () => [
     { source: '/shop/page/1', destination: '/shop', statusCode: 301 },
+    // Search is a box in the navbar now (owner, 2026-11-22), so the old page's address goes to
+    // All Suits.
+    { source: '/search', destination: '/shop', statusCode: 301 },
     {
       source: '/collections/:slug/page/1',
       destination: '/collections/:slug',

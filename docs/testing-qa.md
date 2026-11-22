@@ -129,7 +129,7 @@ For every URL in the sitemap plus representative noindex pages:
 - OG: `og:title`, `og:description`, `og:image` (absolute, 200, 1200×630), `og:url` = canonical; Twitter card present.
 - JSON-LD parses. Product has price, currency, availability, image and `seller`, and has **no `brand`**. Product with a video has `VideoObject`. Home and Contact have `OnlineStore` with **no address or opening hours**.
 - `sitemap.xml` valid XML, only 200 + indexable URLs, absolute; `llms.txt` returns 200 text/plain and links resolve.
-- `robots.txt` has the sitemap line and disallows `/api`, and does **not** disallow `/search`, `/account` or auth pages. With `SITE_INDEXABLE=false` it has `Disallow: /`.
+- `robots.txt` has the sitemap line and disallows `/api`, and does **not** disallow `/account` or auth pages. With `SITE_INDEXABLE=false` it has `Disallow: /`.
 - Search/account/auth pages: `noindex` readable by a crawler; admin: `X-Robots-Tag: noindex`.
 
 ### Analytics (`e2e/web/analytics.spec.ts`)

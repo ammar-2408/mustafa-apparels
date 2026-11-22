@@ -9,7 +9,12 @@ import { DEBOUNCE_MS, SearchBox } from './search-box';
 const found = {
   collections: [{ name: 'Khaddar', slug: 'khaddar' }],
   products: [
-    { name: 'Teal Embroidered Khaddar 3-Piece Suit', slug: 'teal-kdr-05', designCode: 'KDR-05' },
+    {
+      name: 'Teal Embroidered Khaddar 3-Piece Suit',
+      slug: 'teal-kdr-05',
+      designCode: 'KDR-05',
+      image: { url: 'https://res.cloudinary.com/ma/image/upload/kdr-05.jpg', alt: 'Teal suit' },
+    },
   ],
 };
 
@@ -75,12 +80,31 @@ describe('SearchBox', () => {
     expect(box.getAttribute('aria-activedescendant')).toBeNull();
   });
 
-  it('is a plain GET form to /search, so it works without JavaScript', () => {
-    render(<SearchBox defaultValue="dhanak" />);
-    const form = screen.getByRole('search');
-    expect(form.getAttribute('action')).toBe('/search');
-    expect(form.getAttribute('method')).toBe('get');
-    expect((screen.getByRole('combobox') as HTMLInputElement).name).toBe('q');
+  it('shows each suit with its small photo', async () => {
+    render(<SearchBox />);
+    await type('khadar');
+    const suit = screen.getAllByRole('option')[1]!;
+    expect(suit.querySelector('img')?.getAttribute('src')).toContain('kdr-05');
+  });
+
+  // There is no search page (owner, 2026-11-22): Enter opens the best match.
+  it('opens the first result on Enter when none is chosen', async () => {
+    render(<SearchBox />);
+    await type('khadar');
+    fireEvent.submit(screen.getByRole('search'));
+    expect(push).toHaveBeenCalledWith('/collections/khaddar');
+  });
+
+  it('says so when nothing matches, and points to all suits', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({ collections: [], products: [] }), { status: 200 }),
+    );
+    render(<SearchBox />);
+    await type('zzzz');
+    expect(screen.getByRole('status').textContent).toContain('No suits match “zzzz”');
+    expect(screen.getByRole('link', { name: /see all suits/i }).getAttribute('href')).toBe('/shop');
+    fireEvent.submit(screen.getByRole('search'));
+    expect(push).not.toHaveBeenCalled();
   });
 
   it('closes old suggestions when the next request is refused', async () => {

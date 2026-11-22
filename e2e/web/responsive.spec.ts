@@ -11,7 +11,6 @@ const TEMPLATES = [
   '/shop',
   '/shop?design=embroidered',
   '/collections/khaddar',
-  '/search?q=dhanak',
   '/about',
   '/contact',
   '/how-to-order',
@@ -56,7 +55,6 @@ test('nothing scrolls sideways at 320px either', async ({ page, db }) => {
     '/contact',
     '/faq',
     '/how-to-order',
-    '/search?q=dhanak',
   ];
   for (const path of paths) {
     await page.goto(path);

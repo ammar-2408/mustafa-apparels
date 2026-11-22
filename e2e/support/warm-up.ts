@@ -22,7 +22,6 @@ export default async function warmUp() {
     collection,
     collection && `${collection}/page/2`,
     suit,
-    '/search?q=dhanak',
     '/api/search/suggest?q=dhanak',
     '/login',
     '/account',
