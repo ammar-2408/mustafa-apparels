@@ -18,12 +18,14 @@ export default async function SetupTwoFactorPage() {
   return (
     <>
       <p className="caps-tight text-muted sm:caps">Admin</p>
-      <h1 className="mt-4 mb-6 text-h1 font-light">Set up two-step login</h1>
-      <p className="mb-12 text-body">
+      <h1 className="mt-4 mb-6 font-serif text-h1 text-deep">Set up two-step login</h1>
+      <p className="mb-8 text-body">
         Every admin login needs a code from your phone as well as your password. Confirm your
         password to begin.
       </p>
-      <TwoFactorSetup />
+      <div className="rounded-lg border border-border bg-bg p-6 shadow-soft sm:p-8">
+        <TwoFactorSetup />
+      </div>
     </>
   );
 }

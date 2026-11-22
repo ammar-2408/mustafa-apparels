@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useId } from 'react';
+import { createContext, type ReactNode, useContext, useId } from 'react';
 
 export type FieldProps = {
   /** Always shown: a placeholder is never the only label (docs/design.md §7). */
@@ -8,8 +8,28 @@ export type FieldProps = {
   hint?: string;
   error?: string;
   /** "card": the sign-up and login cards' Bold deep green label and rounder field (2026-11-22). */
-  look?: 'plain' | 'card';
+  look?: FieldLookName;
 };
+
+export type FieldLookName = 'plain' | 'card';
+
+const LookContext = createContext<FieldLookName>('plain');
+
+/** Sets the look of every field inside it (the admin uses the storefront's card look). */
+export function FieldLook({ look, children }: { look: FieldLookName; children: ReactNode }) {
+  return <LookContext.Provider value={look}>{children}</LookContext.Provider>;
+}
+
+/** The field's own look if set, else the one around it. */
+export function useLook(look?: FieldLookName): FieldLookName {
+  const around = useContext(LookContext);
+  return look ?? around;
+}
+
+/** The control's classes for a look: the card look has rounder corners. */
+export function controlClass(look: FieldLookName) {
+  return look === 'card' ? CONTROL_CLASS.replace('rounded-sm', 'rounded-md') : CONTROL_CLASS;
+}
 
 // Ids and ARIA for one labelled control, shared by Input, Textarea and Select.
 export function useField(id: string | undefined, hint?: string, error?: string) {

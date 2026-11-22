@@ -2,7 +2,7 @@
 
 import { type ComponentProps, useState } from 'react';
 
-import { CONTROL_CLASS, type FieldProps, FieldShell, useField } from './field';
+import { controlClass, type FieldProps, FieldShell, useField, useLook } from './field';
 
 type TextareaProps = ComponentProps<'textarea'> &
   FieldProps & {
@@ -16,23 +16,25 @@ export function Textarea({
   error,
   id,
   className,
+  look,
   showCount = false,
   rows = 4,
   onChange,
   ...props
 }: TextareaProps) {
   const { controlId, hintId, errorId, aria } = useField(id, hint, error);
+  const resolved = useLook(look);
   const initial = String(props.value ?? props.defaultValue ?? '').length;
   const [length, setLength] = useState(initial);
   const count = showCount && props.maxLength ? `${length} / ${props.maxLength}` : null;
 
   return (
-    <FieldShell {...{ label, hint, error, controlId, hintId, errorId, className }}>
+    <FieldShell {...{ label, hint, error, controlId, hintId, errorId, className }} look={resolved}>
       <textarea
         id={controlId}
         rows={rows}
         {...aria}
-        className={`py-3 ${CONTROL_CLASS}`}
+        className={`py-3 ${controlClass(resolved)}`}
         onChange={(event) => {
           setLength(event.target.value.length);
           onChange?.(event);

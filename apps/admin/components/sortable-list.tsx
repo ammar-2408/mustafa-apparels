@@ -129,8 +129,8 @@ function SortableRow({
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-2 rounded-sm border border-border bg-surface p-2 ${
-        isDragging ? 'relative z-10 shadow-soft' : ''
+      className={`flex items-center gap-2 rounded-lg border border-border bg-bg p-3 shadow-soft ${
+        isDragging ? 'relative z-10 border-border-strong' : ''
       }`}
     >
       <button

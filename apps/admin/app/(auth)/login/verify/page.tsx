@@ -11,11 +11,13 @@ export default function VerifyPage() {
   return (
     <>
       <p className="caps-tight text-muted sm:caps">Admin</p>
-      <h1 className="mt-4 mb-6 text-h1 font-light">Enter your code</h1>
-      <p className="mb-12 text-body">
+      <h1 className="mt-4 mb-6 font-serif text-h1 text-deep">Enter your code</h1>
+      <p className="mb-8 text-body">
         Open your authenticator app and enter the 6-digit code for Mustafa Apparels Admin.
       </p>
-      <VerifyCodeForm />
+      <div className="rounded-lg border border-border bg-bg p-6 shadow-soft sm:p-8">
+        <VerifyCodeForm />
+      </div>
     </>
   );
 }

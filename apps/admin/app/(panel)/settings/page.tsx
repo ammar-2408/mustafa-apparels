@@ -2,6 +2,7 @@ import * as settings from '@mustafa/core/settings';
 import { getDb } from '@mustafa/db/client';
 import type { Metadata } from 'next';
 
+import { PageHeader } from '../../../components/page-header';
 import { type SettingField, SettingsGroup } from '../../../components/settings-group';
 import { requireAdminPage } from '../../../lib/auth';
 
@@ -116,10 +117,10 @@ export default async function SettingsPage() {
   const values = (await settings.get(getDb())) as Record<string, unknown>;
   return (
     <>
-      <h1 className="mb-2 text-h2 font-light">Settings</h1>
-      <p className="mb-10 text-small text-muted">
-        Each box saves on its own. Changes show on the shop straight away.
-      </p>
+      <PageHeader
+        title="Settings"
+        subtitle="Each box saves on its own. Changes show on the shop straight away."
+      />
       <div className="flex max-w-3xl flex-col gap-8">
         {GROUPS.map((group) => (
           <SettingsGroup key={group.title} {...group} values={values} />

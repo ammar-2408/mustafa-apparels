@@ -24,7 +24,7 @@ export function OpenChecks({ id, checks }: { id: string; checks: string[] }) {
   return (
     <section
       aria-labelledby="checks-heading"
-      className="mb-12 flex flex-col gap-3 rounded-sm border border-accent p-4"
+      className="mb-12 flex flex-col gap-3 rounded-lg border border-accent bg-bg p-5 shadow-soft"
     >
       <h2 id="checks-heading" className="caps-tight">
         Open checks ({checks.length})

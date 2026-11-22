@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 
 import { MediaManager } from '../../../../components/media-manager';
 import { OpenChecks } from '../../../../components/open-checks';
+import { PageHeader } from '../../../../components/page-header';
 import { ProductForm } from '../../../../components/product-form';
 import { SuitStatus } from '../../../../components/suit-status';
 import { requireAdminPage } from '../../../../lib/auth';
@@ -26,8 +27,7 @@ export default async function EditSuitPage({ params }: { params: Promise<{ id: s
   const { media, ...fields } = suit;
   return (
     <>
-      <p className="caps-tight text-muted">{suit.designCode ?? 'No design code'}</p>
-      <h1 className="mt-2 mb-10 text-h2 font-light">{suit.name}</h1>
+      <PageHeader eyebrow={suit.designCode ?? 'No design code'} title={suit.name} />
       <SuitStatus
         id={suit.id}
         status={suit.status}
@@ -49,7 +49,7 @@ export default async function EditSuitPage({ params }: { params: Promise<{ id: s
           }))}
         />
       </div>
-      <h2 className="mb-6 text-h3 font-light">Details</h2>
+      <h2 className="mb-6 font-serif text-h3 text-deep">Details</h2>
       <ProductForm
         collections={collections.map((c) => ({
           value: c.id,

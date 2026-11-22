@@ -28,7 +28,12 @@ const BRAND = {
     social: ['og-share-image-1200x630.png'],
   },
   admin: {
-    svg: ['mustafa-apparels-submark-black.svg', 'mustafa-apparels-simplified-black.svg'],
+    // The full logo heads the admin sidebar too (owner, 2026-11-22: the storefront's look).
+    svg: [
+      'mustafa-apparels-submark-black.svg',
+      'mustafa-apparels-simplified-black.svg',
+      'mustafa-apparels-secondary-black.svg',
+    ],
     favicon: FAVICONS,
   },
 };
@@ -76,7 +81,7 @@ for (const [app, folders] of Object.entries(BRAND)) {
 
   for (const [folder, files] of Object.entries(folders)) {
     for (const file of files) {
-      if (app === 'web' && OWNER_EDITED.has(`${folder}/${file}`)) {
+      if (OWNER_EDITED.has(`${folder}/${file}`)) {
         test(`${app} serves ${folder}/${file} with the pack's own shapes, only re-arranged`, () => {
           const copy = readFileSync(fromRoot(`${brandDir}/${folder}/${file}`), 'utf8');
           const pack = readFileSync(fromRoot(`${PACK}/${folder}/${file}`), 'utf8');

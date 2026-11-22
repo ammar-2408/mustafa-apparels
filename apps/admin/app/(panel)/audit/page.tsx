@@ -7,6 +7,7 @@ import { auditListInput } from '@mustafa/validators/audit';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { PageHeader } from '../../../components/page-header';
 import { requireAdminPage } from '../../../lib/auth';
 import { formatDateTime } from '../../../lib/format';
 
@@ -65,10 +66,10 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
 
   return (
     <>
-      <h1 className="mb-2 text-h2 font-light">Audit log</h1>
-      <p className="mb-8 text-small text-muted">
-        Every change made in the admin, newest first. Entries can&apos;t be edited or removed.
-      </p>
+      <PageHeader
+        title="Audit log"
+        subtitle="Every change made in the admin, newest first. Entries can't be edited or removed."
+      />
       <form
         method="get"
         action="/audit"
@@ -124,7 +125,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Search
             return (
               <li
                 key={item.id}
-                className="flex flex-col gap-2 rounded-sm border border-border p-3 text-small"
+                className="flex flex-col gap-2 rounded-lg border border-border bg-bg shadow-soft p-4 text-small"
               >
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                   <time dateTime={item.createdAt.toISOString()} className="text-muted">

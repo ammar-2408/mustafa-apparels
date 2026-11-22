@@ -132,7 +132,7 @@ export function MediaManager({ productId, cloudName, media }: MediaManagerProps)
 
   return (
     <section aria-labelledby="media-heading" className="flex flex-col gap-6">
-      <h2 id="media-heading" className="text-h3 font-light">
+      <h2 id="media-heading" className="font-serif text-h3 text-deep">
         Photos and videos
       </h2>
       <label
@@ -166,7 +166,10 @@ export function MediaManager({ productId, cloudName, media }: MediaManagerProps)
       {pending.length > 0 ? (
         <ul aria-label="New uploads" className="flex flex-col gap-3">
           {pending.map((item) => (
-            <li key={item.key} className="flex gap-3 rounded-sm border border-border p-3">
+            <li
+              key={item.key}
+              className="flex gap-3 rounded-lg border border-border bg-bg shadow-soft p-4"
+            >
               <div className="flex aspect-[3/4] w-20 shrink-0 items-center justify-center rounded-sm border border-border bg-surface">
                 {item.previewUrl ? (
                   <Image

@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { LabelSpacer } from '../../../components/label-spacer';
+import { PageHeader } from '../../../components/page-header';
 import { requireAdminPage } from '../../../lib/auth';
 import { formatDate } from '../../../lib/format';
 
@@ -41,7 +42,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
 
   return (
     <>
-      <h1 className="mb-8 text-h2 font-light">Customers</h1>
+      <PageHeader title="Customers" />
       <form
         method="get"
         action="/customers"
@@ -75,7 +76,10 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
         <>
           <ul className="flex flex-col gap-3 md:hidden">
             {result.items.map((c) => (
-              <li key={c.id} className="flex flex-col gap-1 rounded-sm border border-border p-3">
+              <li
+                key={c.id}
+                className="flex flex-col gap-1 rounded-lg border border-border bg-bg shadow-soft p-4"
+              >
                 <span className="text-body">{c.name}</span>
                 <span className="text-small break-all">{c.email}</span>
                 <span className="text-small text-muted">
@@ -86,39 +90,41 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
               </li>
             ))}
           </ul>
-          <table className="hidden w-full border-collapse text-left text-small md:table">
-            <caption className="sr-only">Customers</caption>
-            <thead>
-              <tr className="border-b border-border-strong">
-                <th scope="col" className="caps-tight py-3 pr-3 font-normal">
-                  Name
-                </th>
-                <th scope="col" className="caps-tight py-3 pr-3 font-normal">
-                  Email
-                </th>
-                <th scope="col" className="caps-tight py-3 pr-3 font-normal">
-                  Joined
-                </th>
-                <th scope="col" className="caps-tight py-3 pr-3 font-normal">
-                  Inquiries
-                </th>
-                <th scope="col" className="caps-tight py-3 font-normal">
-                  Notes
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.items.map((c) => (
-                <tr key={c.id} className="border-b border-border">
-                  <td className="py-3 pr-3 text-body">{c.name}</td>
-                  <td className="py-3 pr-3 break-all">{c.email}</td>
-                  <td className="py-3 pr-3">{formatDate(c.createdAt)}</td>
-                  <td className="py-3 pr-3">{c.inquiries}</td>
-                  <td className="py-3 text-muted">{notes(c) || '—'}</td>
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-bg shadow-soft md:block">
+            <table className="w-full border-collapse text-left text-small">
+              <caption className="sr-only">Customers</caption>
+              <thead>
+                <tr className="bg-surface-soft">
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Name
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Email
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Joined
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Inquiries
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Notes
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {result.items.map((c) => (
+                  <tr key={c.id} className="border-t border-border hover:bg-surface-soft/60">
+                    <td className="px-4 py-3 text-body">{c.name}</td>
+                    <td className="px-4 py-3 break-all">{c.email}</td>
+                    <td className="px-4 py-3">{formatDate(c.createdAt)}</td>
+                    <td className="px-4 py-3">{c.inquiries}</td>
+                    <td className="px-4 py-3 text-muted">{notes(c) || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
 

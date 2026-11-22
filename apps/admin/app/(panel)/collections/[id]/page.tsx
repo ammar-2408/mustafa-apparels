@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 
 import { CollectionForm } from '../../../../components/collection-form';
 import { CollectionImage } from '../../../../components/collection-image';
+import { PageHeader } from '../../../../components/page-header';
 import { requireAdminPage } from '../../../../lib/auth';
 import { cloudNameForPreviews } from '../../../../lib/media';
 
@@ -17,7 +18,7 @@ export default async function EditCollectionPage({ params }: { params: Promise<{
   if (!row) notFound();
   return (
     <>
-      <h1 className="mb-8 text-h2 font-light">{row.name}</h1>
+      <PageHeader title={row.name} />
       <div className="mb-12">
         <CollectionImage
           collectionId={row.id}

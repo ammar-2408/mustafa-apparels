@@ -41,6 +41,19 @@ describe('AdminNav', () => {
     expect(screen.getByRole('link', { name: 'Dashboard' }).getAttribute('aria-current')).toBeNull();
   });
 
+  // The storefront's look (owner, 2026-11-22): a line icon per section, the current one a deep
+  // green pill with white text.
+  it('shows a hidden icon beside each section and the current one as a deep green pill', () => {
+    renderNav('/suits');
+    const suits = screen.getByRole('link', { name: 'Suits' });
+    expect(suits.className).toContain('bg-deep');
+    expect(suits.className).toContain('text-action-fg');
+    expect(screen.getByRole('link', { name: 'Dashboard' }).className).not.toContain('bg-deep');
+    for (const link of screen.getAllByRole('link')) {
+      expect(link.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    }
+  });
+
   it('opens and closes the phone menu, saying which it is', () => {
     renderNav('/');
     const button = screen.getByRole('button', { name: 'Menu' });

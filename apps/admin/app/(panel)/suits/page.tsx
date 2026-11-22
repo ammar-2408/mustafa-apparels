@@ -10,6 +10,7 @@ import { adminProductListInput } from '@mustafa/validators/product';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { PageHeader } from '../../../components/page-header';
 import { Thumb } from '../../../components/thumb';
 import { requireAdminPage } from '../../../lib/auth';
 import { formatPrice } from '../../../lib/format';
@@ -56,13 +57,15 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
 
   return (
     <>
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-h2 font-light">Suits</h1>
-        <Link href="/suits/new" className={buttonClass('primary')}>
-          New suit
-          <ButtonCircle />
-        </Link>
-      </div>
+      <PageHeader
+        title="Suits"
+        action={
+          <Link href="/suits/new" className={buttonClass('primary')}>
+            New suit
+            <ButtonCircle />
+          </Link>
+        }
+      />
 
       <form
         method="get"
@@ -139,7 +142,7 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
               <li key={item.id}>
                 <Link
                   href={`/suits/${item.id}`}
-                  className="flex gap-3 rounded-sm border border-border p-3 hover:border-border-strong"
+                  className="flex gap-3 rounded-lg border border-border bg-bg shadow-soft p-4 hover:border-border-strong"
                 >
                   <Thumb
                     src={item.mainImage ? imageThumbUrl(cloudName, item.mainImage, 120) : null}
@@ -157,58 +160,60 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
           </ul>
 
           {/* From md: a dense table. */}
-          <table className="hidden w-full border-collapse text-left text-small md:table">
-            <caption className="sr-only">Suits</caption>
-            <thead>
-              <tr className="border-b border-border-strong">
-                <th scope="col" className="py-3 pr-3 caps-tight font-normal">
-                  <span className="sr-only">Photo</span>
-                </th>
-                <th scope="col" className="py-3 pr-3 caps-tight font-normal">
-                  Suit
-                </th>
-                <th scope="col" className="py-3 pr-3 caps-tight font-normal">
-                  Code
-                </th>
-                <th scope="col" className="py-3 pr-3 caps-tight font-normal">
-                  Collection
-                </th>
-                <th scope="col" className="py-3 pr-3 caps-tight font-normal">
-                  Price
-                </th>
-                <th scope="col" className="py-3 caps-tight font-normal">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.items.map((item) => (
-                <tr key={item.id} className="border-b border-border">
-                  <td className="py-2 pr-3">
-                    <Thumb
-                      src={item.mainImage ? imageThumbUrl(cloudName, item.mainImage, 120) : null}
-                    />
-                  </td>
-                  <td className="py-2 pr-3">
-                    <Link
-                      href={`/suits/${item.id}`}
-                      className="text-body underline-offset-4 hover:underline"
-                    >
-                      {item.name}
-                    </Link>
-                  </td>
-                  <td className="py-2 pr-3">{item.designCode ?? '—'}</td>
-                  <td className="py-2 pr-3">{item.collection}</td>
-                  <td className="py-2 pr-3">
-                    {item.price === null ? <NeedsPrice /> : formatPrice(item.price)}
-                  </td>
-                  <td className="py-2">
-                    <StatusBadges item={item} />
-                  </td>
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-bg shadow-soft md:block">
+            <table className="w-full border-collapse text-left text-small">
+              <caption className="sr-only">Suits</caption>
+              <thead>
+                <tr className="bg-surface-soft">
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    <span className="sr-only">Photo</span>
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Suit
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Code
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Collection
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Price
+                  </th>
+                  <th scope="col" className="px-4 py-3 caps-tight font-normal text-fg">
+                    Status
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {result.items.map((item) => (
+                  <tr key={item.id} className="border-t border-border hover:bg-surface-soft/60">
+                    <td className="px-4 py-3">
+                      <Thumb
+                        src={item.mainImage ? imageThumbUrl(cloudName, item.mainImage, 120) : null}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/suits/${item.id}`}
+                        className="text-body underline-offset-4 hover:underline"
+                      >
+                        {item.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">{item.designCode ?? '—'}</td>
+                    <td className="px-4 py-3">{item.collection}</td>
+                    <td className="px-4 py-3">
+                      {item.price === null ? <NeedsPrice /> : formatPrice(item.price)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadges item={item} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
 
@@ -236,17 +241,17 @@ export default async function SuitsPage({ searchParams }: { searchParams: Search
 }
 
 const NeedsPrice = () => (
-  <span className="caps-tight rounded-sm bg-accent px-2 py-1 text-accent-fg">Needs price</span>
+  <span className="caps-tight rounded-full bg-accent px-2 py-1 text-accent-fg">Needs price</span>
 );
 
 function StatusBadges({ item }: { item: AdminListItem }) {
   return (
     <span className="flex flex-wrap gap-2">
-      <span className="caps-tight rounded-sm border border-border-strong px-2 py-1">
+      <span className="caps-tight rounded-full border border-border-strong px-2 py-1">
         {STATUS_LABEL[item.status]}
       </span>
       {item.openChecks > 0 ? (
-        <span className="caps-tight rounded-sm border border-border-strong px-2 py-1">
+        <span className="caps-tight rounded-full border border-border-strong px-2 py-1">
           {item.openChecks} {item.openChecks === 1 ? 'check' : 'checks'}
         </span>
       ) : null}

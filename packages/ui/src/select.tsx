@@ -2,7 +2,7 @@
 
 import type { ComponentProps } from 'react';
 
-import { CONTROL_CLASS, type FieldProps, FieldShell, useField } from './field';
+import { controlClass, type FieldProps, FieldShell, useField, useLook } from './field';
 
 export type SelectOption = { value: string; label: string };
 
@@ -20,14 +20,16 @@ export function Select({
   error,
   id,
   className,
+  look,
   options,
   placeholder,
   ...props
 }: SelectProps) {
   const { controlId, hintId, errorId, aria } = useField(id, hint, error);
+  const resolved = useLook(look);
   return (
-    <FieldShell {...{ label, hint, error, controlId, hintId, errorId, className }}>
-      <select id={controlId} {...aria} className={`min-h-12 ${CONTROL_CLASS}`} {...props}>
+    <FieldShell {...{ label, hint, error, controlId, hintId, errorId, className }} look={resolved}>
+      <select id={controlId} {...aria} className={`min-h-12 ${controlClass(resolved)}`} {...props}>
         {placeholder !== undefined ? <option value="">{placeholder}</option> : null}
         {options.map((option) => (
           <option key={option.value} value={option.value}>

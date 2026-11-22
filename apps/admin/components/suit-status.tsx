@@ -76,7 +76,7 @@ export function SuitStatus({ id, status, publishedOn }: SuitStatusProps) {
   return (
     <section
       aria-labelledby="status-heading"
-      className="mb-12 flex flex-col gap-4 rounded-sm border border-border p-4"
+      className="mb-12 flex flex-col gap-4 rounded-lg border border-border bg-bg shadow-soft p-5"
     >
       <h2 id="status-heading" className="caps-tight">
         Status

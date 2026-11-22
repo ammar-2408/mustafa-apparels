@@ -78,7 +78,7 @@ export function TwoFactorSetup() {
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col gap-4">
-        <h2 className="text-h3 font-light">1. Scan this code</h2>
+        <h2 className="font-serif text-h3 text-deep">1. Scan this code</h2>
         <p className="text-body">
           Use an authenticator app such as Google Authenticator, Microsoft Authenticator or
           1Password.
@@ -101,7 +101,7 @@ export function TwoFactorSetup() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-h3 font-light">2. Save your backup codes</h2>
+        <h2 className="font-serif text-h3 text-deep">2. Save your backup codes</h2>
         <p className="text-body">
           Each one works once, if you lose your phone. Keep them somewhere safe, such as a password
           manager. They won’t be shown again.
@@ -114,7 +114,7 @@ export function TwoFactorSetup() {
       </section>
 
       <form noValidate onSubmit={confirm} className="flex flex-col gap-6">
-        <h2 className="text-h3 font-light">3. Enter a code to finish</h2>
+        <h2 className="font-serif text-h3 text-deep">3. Enter a code to finish</h2>
         <Input
           label="Code from your app"
           name="code"

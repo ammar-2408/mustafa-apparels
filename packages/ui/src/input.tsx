@@ -2,7 +2,7 @@
 
 import { type ComponentProps, type ReactNode, useState } from 'react';
 
-import { CONTROL_CLASS, type FieldProps, FieldShell, useField } from './field';
+import { controlClass, type FieldProps, FieldShell, useField, useLook } from './field';
 
 type InputProps = ComponentProps<'input'> &
   FieldProps & {
@@ -40,11 +40,11 @@ export function Input({
   ...props
 }: InputProps) {
   const { controlId, hintId, errorId, aria } = useField(id, hint, error);
+  const resolved = useLook(look);
   const [shown, setShown] = useState(false);
   const control = [
     'min-h-12',
-    // The card look swaps the plain field's small corners for rounder ones.
-    look === 'card' ? CONTROL_CLASS.replace('rounded-sm', 'rounded-md') : CONTROL_CLASS,
+    controlClass(resolved),
     icon ? 'pl-12' : '',
     revealable ? 'pr-12' : '',
   ]
@@ -60,7 +60,7 @@ export function Input({
     />
   );
   return (
-    <FieldShell {...{ label, hint, error, controlId, hintId, errorId, className, look }}>
+    <FieldShell {...{ label, hint, error, controlId, hintId, errorId, className }} look={resolved}>
       {icon || revealable ? (
         <div className="relative">
           {icon && (

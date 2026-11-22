@@ -8,6 +8,7 @@
     "./checkbox": "./src/checkbox.tsx",
     "./dialog": "./src/dialog.tsx",
     "./form-error": "./src/form-error.tsx",
+    "./field": "./src/field.tsx",
     "./input": "./src/input.tsx",
     "./logo": "./src/logo.tsx",
     "./logout-button": "./src/logout-button.tsx",

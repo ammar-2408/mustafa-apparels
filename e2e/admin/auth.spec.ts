@@ -1,4 +1,4 @@
-import { expect, test } from '../support/users';
+import { AFTER_SIGN_IN, expect, test } from '../support/users';
 
 test.use({ baseURL: 'http://localhost:3001' });
 
@@ -34,7 +34,8 @@ test.describe('admin login', () => {
     await page.getByLabel('Password', { exact: true }).fill(admin.password);
     const signIn = page.waitForResponse('**/api/auth/sign-in/email');
     await page.getByRole('button', { name: 'Log in' }).click();
-    await expect(page).not.toHaveURL(/\/login$/);
+    // Sign-in, then the first admin page, can take more than 5s on a cold dev server.
+    await expect(page).not.toHaveURL(/\/login$/, AFTER_SIGN_IN);
 
     // The header the server sent: Playwright's WebKit on Windows and Linux reports every
     // cookie's SameSite as None in its cookie store, whatever the server said.

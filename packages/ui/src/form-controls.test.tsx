@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Checkbox } from './checkbox';
+import { FieldLook } from './field';
+import { Input } from './input';
 import { Select } from './select';
 import { Textarea } from './textarea';
 
@@ -77,5 +79,31 @@ describe('Checkbox', () => {
     fireEvent.click(box);
     expect(box.checked).toBe(true);
     expect(describedBy(box)).toEqual(['Drafts with no price']);
+  });
+});
+
+// The admin (owner, 2026-11-22): every field takes the storefront's card look, set once.
+describe('FieldLook', () => {
+  it('gives every field inside it the card look: Bold deep green label, rounder field', () => {
+    render(
+      <FieldLook look="card">
+        <Input label="Name" />
+        <Select label="Fabric" options={[{ value: 'dhanak', label: 'Dhanak' }]} />
+        <Textarea label="Care" />
+      </FieldLook>,
+    );
+    for (const name of ['Name', 'Fabric', 'Care']) {
+      const label = screen.getByText(name);
+      expect(label.className, name).toContain('font-bold');
+      expect(label.className, name).toContain('text-deep');
+      const control = screen.getByLabelText(name);
+      expect(control.className, name).toContain('rounded-md');
+      expect(control.className, name).not.toContain('rounded-sm');
+    }
+  });
+
+  it('leaves fields outside it plain', () => {
+    render(<Select label="Fabric" options={[]} />);
+    expect(screen.getByText('Fabric').className).toContain('caps-tight');
   });
 });

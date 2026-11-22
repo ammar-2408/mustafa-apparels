@@ -4,15 +4,29 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { type ReactNode, useState } from 'react';
 
+import {
+  ChatIcon,
+  CogIcon,
+  DashboardIcon,
+  HangerIcon,
+  LayersIcon,
+  ListIcon,
+  PeopleIcon,
+} from './nav-icons';
+
 export const NAV_ITEMS = [
-  { href: '/', label: 'Dashboard' },
-  { href: '/suits', label: 'Suits' },
-  { href: '/collections', label: 'Collections' },
-  { href: '/inquiries', label: 'Inquiries' },
-  { href: '/customers', label: 'Customers' },
-  { href: '/settings', label: 'Settings' },
-  { href: '/audit', label: 'Audit log' },
+  { href: '/', label: 'Dashboard', Icon: DashboardIcon },
+  { href: '/suits', label: 'Suits', Icon: HangerIcon },
+  { href: '/collections', label: 'Collections', Icon: LayersIcon },
+  { href: '/inquiries', label: 'Inquiries', Icon: ChatIcon },
+  { href: '/customers', label: 'Customers', Icon: PeopleIcon },
+  { href: '/settings', label: 'Settings', Icon: CogIcon },
+  { href: '/audit', label: 'Audit log', Icon: ListIcon },
 ] as const;
+
+// The current section is a deep green pill with white text; the others are ink.
+const CURRENT_LINK = 'bg-deep font-bold text-action-fg shadow-soft';
+const OTHER_LINK = 'text-fg hover:bg-bg/50';
 
 // The dashboard is current only on "/"; every other item also covers the pages under it.
 export const isCurrent = (pathname: string, href: string) =>
@@ -40,7 +54,7 @@ export function AdminNav({ mobileLogo, footer }: AdminNavProps) {
         {mobileLogo}
         <button
           type="button"
-          className="caps-tight min-h-11 px-3"
+          className="min-h-11 rounded-full px-4 text-body font-bold hover:bg-bg/50"
           aria-expanded={open}
           aria-controls="admin-menu"
           onClick={() => setOpen((value) => !value)}
@@ -54,17 +68,18 @@ export function AdminNav({ mobileLogo, footer }: AdminNavProps) {
       >
         <nav aria-label="Admin">
           <ul className="flex flex-col gap-1">
-            {NAV_ITEMS.map(({ href, label }) => {
+            {NAV_ITEMS.map(({ href, label, Icon }) => {
               const current = isCurrent(pathname, href);
               return (
                 <li key={href}>
                   <Link
                     href={href}
                     aria-current={current ? 'page' : undefined}
-                    className={`caps-tight flex min-h-11 items-center rounded-sm px-3 ${
-                      current ? 'bg-surface' : 'hover:underline hover:decoration-accent'
+                    className={`flex min-h-11 items-center gap-3 rounded-full px-4 text-body ${
+                      current ? CURRENT_LINK : OTHER_LINK
                     }`}
                   >
+                    <Icon />
                     {label}
                   </Link>
                 </li>

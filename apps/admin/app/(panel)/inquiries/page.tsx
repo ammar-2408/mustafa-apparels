@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { InquiryStatus } from '../../../components/inquiry-status';
+import { PageHeader } from '../../../components/page-header';
 import { requireAdminPage } from '../../../lib/auth';
 import { formatDateTime } from '../../../lib/format';
 
@@ -37,17 +38,17 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
 
   return (
     <>
-      <h1 className="mb-8 text-h2 font-light">Inquiries</h1>
+      <PageHeader title="Inquiries" />
       <nav aria-label="Inquiry status" className="mb-8 flex flex-wrap gap-2">
         {INQUIRY_STATUSES.map((status) => (
           <Link
             key={status}
             href={href(status)}
             aria-current={status === input.status ? 'page' : undefined}
-            className={`caps-tight inline-flex min-h-11 items-center rounded-sm border px-4 ${
+            className={`inline-flex min-h-11 items-center rounded-full border px-4 caps-tight ${
               status === input.status
-                ? 'border-action bg-action text-action-fg'
-                : 'border-border-strong'
+                ? 'border-deep bg-deep text-action-fg'
+                : 'border-border-strong bg-bg hover:bg-surface-soft'
             }`}
           >
             {TAB_LABEL[status]} ({counts[status]})
@@ -64,7 +65,10 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Se
           {result.items.map((item) => {
             const text = greeting(item.name, item.productName);
             return (
-              <li key={item.id} className="flex flex-col gap-3 rounded-sm border border-border p-4">
+              <li
+                key={item.id}
+                className="flex flex-col gap-3 rounded-lg border border-border bg-bg shadow-soft p-5"
+              >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h2 className="text-body">{item.name}</h2>
                   <time dateTime={item.createdAt.toISOString()} className="text-small text-muted">

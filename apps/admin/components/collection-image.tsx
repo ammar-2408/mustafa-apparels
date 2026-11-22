@@ -66,7 +66,7 @@ export function CollectionImage({ collectionId, name, cloudName, publicId }: Col
 
   return (
     <section aria-labelledby="collection-image" className="flex max-w-2xl flex-col gap-4">
-      <h2 id="collection-image" className="text-h3 font-light">
+      <h2 id="collection-image" className="font-serif text-h3 text-deep">
         Collection photo
       </h2>
       {publicId ? (

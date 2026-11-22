@@ -83,7 +83,7 @@ export function CollectionList({ collections }: { collections: CollectionRow[] }
               {item.productCount} {item.productCount === 1 ? 'suit' : 'suits'}
             </span>
             {item.isActive ? null : (
-              <span className="caps-tight rounded-sm bg-accent px-2 py-1 text-accent-fg">
+              <span className="caps-tight rounded-full bg-accent px-2 py-1 text-accent-fg">
                 Hidden
               </span>
             )}

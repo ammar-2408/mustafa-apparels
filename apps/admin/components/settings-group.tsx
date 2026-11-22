@@ -90,9 +90,9 @@ export function SettingsGroup({ title, description, fields, values }: SettingsGr
       noValidate
       onSubmit={onSubmit}
       aria-labelledby={`settings-${title}`}
-      className="flex flex-col gap-5 rounded-sm border border-border p-4"
+      className="flex flex-col gap-5 rounded-lg border border-border bg-bg shadow-soft p-5"
     >
-      <h2 id={`settings-${title}`} className="text-h3 font-light">
+      <h2 id={`settings-${title}`} className="font-serif text-h3 text-deep">
         {title}
       </h2>
       {description ? <p className="-mt-3 text-small text-muted">{description}</p> : null}

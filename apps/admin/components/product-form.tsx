@@ -228,7 +228,7 @@ export function ProductForm({ collections, suit }: ProductFormProps) {
     <form noValidate onSubmit={onSubmit} className="flex max-w-3xl flex-col gap-10">
       {SECTIONS.map((section) => (
         <fieldset key={section} className="flex flex-col gap-6">
-          <legend className="mb-6 text-h3 font-light">{section}</legend>
+          <legend className="mb-6 font-serif text-h3 text-deep">{section}</legend>
           {PRODUCT_FIELDS.filter((field) => field.section === section).map((field) => (
             <Fragment key={field.name}>{render(field)}</Fragment>
           ))}
@@ -273,7 +273,7 @@ function PiecesField({
           return (
             <div
               key={piece}
-              className="grid gap-3 rounded-sm border border-border p-3 sm:grid-cols-[8rem_1fr_1fr_7rem] sm:items-end"
+              className="grid gap-3 rounded-lg border border-border bg-bg shadow-soft p-4 sm:grid-cols-[8rem_1fr_1fr_7rem] sm:items-end"
             >
               <Checkbox
                 name={`piece-${piece}`}

@@ -3,6 +3,7 @@ import { getDb } from '@mustafa/db/client';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { PageHeader } from '../../components/page-header';
 import { requireAdminPage } from '../../lib/auth';
 
 export const metadata: Metadata = { title: 'Dashboard' };
@@ -47,10 +48,10 @@ export default async function Dashboard() {
 
   return (
     <>
-      <h1 className="mb-10 text-h2 font-light">Dashboard</h1>
+      <PageHeader title="Dashboard" />
       {groups.map(({ title, tiles }) => (
         <section key={title} aria-labelledby={`group-${title}`} className="mb-10">
-          <h2 id={`group-${title}`} className="caps-tight mb-4 text-muted sm:caps">
+          <h2 id={`group-${title}`} className="mb-4 font-serif text-h3 text-deep">
             {title}
           </h2>
           <ul className="grid grid-cols-2 gap-grid lg:grid-cols-4">
@@ -58,11 +59,14 @@ export default async function Dashboard() {
               <li key={label}>
                 <Link
                   href={href}
-                  className="flex h-full min-h-28 flex-col gap-3 rounded-sm border border-border p-4 hover:border-border-strong"
+                  className="flex h-full min-h-28 flex-col gap-3 rounded-lg border border-border bg-bg shadow-soft p-5 hover:border-border-strong"
                 >
                   <span className="caps-tight">{label}</span>
                   <span>
-                    <span className="block text-h2 font-light" data-testid={`count-${label}`}>
+                    <span
+                      className="block font-serif text-h2 text-deep"
+                      data-testid={`count-${label}`}
+                    >
                       {value}
                     </span>
                     {hint && <span className="text-small text-muted">{hint}</span>}
