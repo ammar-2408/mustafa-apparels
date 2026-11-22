@@ -72,7 +72,7 @@ describe('LoginForm', () => {
 describe('RegisterForm', () => {
   it('checks the password length before sending', async () => {
     render(<RegisterForm />);
-    type('Name', 'Ayesha');
+    type('Full Name', 'Ayesha');
     type('Email', 'ayesha@example.com');
     type('Password', 'short');
     submit(/create account/i);
@@ -83,7 +83,7 @@ describe('RegisterForm', () => {
   it('says to check email after signing up, whatever the server knows', async () => {
     client.signUp.email.mockResolvedValue({ data: {}, error: null });
     render(<RegisterForm />);
-    type('Name', 'Ayesha');
+    type('Full Name', 'Ayesha');
     type('Email', 'ayesha@example.com');
     type('Password', 'correct horse battery');
     submit(/create account/i);
@@ -99,7 +99,7 @@ describe('RegisterForm', () => {
   it('shows a safe message when sign-up fails', async () => {
     client.signUp.email.mockResolvedValue({ data: null, error: { status: 429 } });
     render(<RegisterForm />);
-    type('Name', 'Ayesha');
+    type('Full Name', 'Ayesha');
     type('Email', 'ayesha@example.com');
     type('Password', 'correct horse battery');
     submit(/create account/i);

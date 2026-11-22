@@ -71,6 +71,16 @@ export function MailIcon({ className }: IconProps) {
   );
 }
 
+// A padlock, for password fields.
+export function LockIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>
+      <rect x="5" y="10.5" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 export function ArrowIcon({ className }: IconProps) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={cls(className)}>

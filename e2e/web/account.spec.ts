@@ -7,7 +7,7 @@ import { AFTER_SIGN_IN, expect, test } from '../support/users';
 async function logIn(page: import('@playwright/test').Page, email: string, password: string) {
   await page.goto('/login');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await page.getByLabel('Password').fill(password);
+  await page.getByLabel('Password', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
 }
@@ -97,7 +97,7 @@ test('a customer deletes their account with their password, and can no longer lo
   await page.goto('/account');
   await expect(page).toHaveURL(/\/login$/);
   await page.getByRole('textbox', { name: 'Email' }).fill(customer.email);
-  await page.getByLabel('Password').fill(customer.password);
+  await page.getByLabel('Password', { exact: true }).fill(customer.password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByRole('main').getByRole('alert')).not.toBeEmpty();
 });

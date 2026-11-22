@@ -18,7 +18,7 @@ export default async function LoginPage() {
   // Only a session /account accepts, or a banned user would bounce between the two pages.
   if (await currentCustomer()) redirect('/account');
   return (
-    <>
+    <div className="mx-auto w-full max-w-md px-gutter pt-12 pb-section">
       <p className="caps-tight text-muted sm:caps">Account</p>
       <h1 className="mt-4 mb-12 text-h1 font-light">Log in</h1>
       <LoginForm />
@@ -33,6 +33,6 @@ export default async function LoginPage() {
           Create an account
         </Link>
       </p>
-    </>
+    </div>
   );
 }

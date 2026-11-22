@@ -26,7 +26,7 @@ test.describe('admin gate', () => {
     const customer = await users.create();
     await page.goto('http://localhost:3000/login');
     await page.getByLabel('Email').fill(customer.email);
-    await page.getByLabel('Password').fill(customer.password);
+    await page.getByLabel('Password', { exact: true }).fill(customer.password);
     await page.getByRole('button', { name: 'Log in' }).click();
     await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
 
@@ -46,7 +46,7 @@ test.describe('admin gate', () => {
     const admin = await users.create({ role: 'admin' });
     await page.goto('/login');
     await page.getByLabel('Email').fill(admin.email);
-    await page.getByLabel('Password').fill(admin.password);
+    await page.getByLabel('Password', { exact: true }).fill(admin.password);
     await page.getByRole('button', { name: 'Log in' }).click();
     await page.getByLabel('Your password').fill(admin.password);
     await page.getByRole('button', { name: 'Continue' }).click();

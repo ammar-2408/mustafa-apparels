@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Input } from './input';
@@ -56,5 +56,34 @@ describe('Input', () => {
     rerender(<Input label="Phone" error="Enter a phone number" />);
     expect(container.querySelector('[aria-live="polite"]')).toBe(region);
     expect(region?.textContent).toBe('Enter a phone number');
+  });
+  // The sign-up and login cards (owner's NEWSIGNUP.png and NEWLOGIN.png, 2026-11-22).
+  it('can show an icon inside the field, hidden from screen readers', () => {
+    const { container } = render(<Input label="Email" icon={<svg data-testid="mail" />} />);
+    const icon = screen.getByTestId('mail').parentElement!;
+    expect(icon.getAttribute('aria-hidden')).toBe('true');
+    expect(container.querySelector('input')!.className).toContain('pl-12');
+  });
+
+  it('lets a password be shown and hidden with a labelled toggle', () => {
+    render(<Input label="Password" type="password" revealable />);
+    const field = screen.getByLabelText('Password') as HTMLInputElement;
+    const toggle = screen.getByRole('button', { name: 'Show password' });
+    expect(field.type).toBe('password');
+    expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    fireEvent.click(toggle);
+    expect(field.type).toBe('text');
+    expect(screen.getByRole('button', { name: 'Hide password' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
+  });
+
+  it('has a card look with a Bold deep green label', () => {
+    render(<Input label="Email" look="card" />);
+    const label = screen.getByText('Email');
+    expect(label.className).toContain('font-bold');
+    expect(label.className).toContain('text-deep');
+    expect(screen.getByLabelText('Email').className).toContain('rounded-md');
+    expect(screen.getByLabelText('Email').className).not.toContain('rounded-sm');
   });
 });

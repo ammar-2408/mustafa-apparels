@@ -13,7 +13,7 @@ test('2FA is set up on the first admin login, then asked for at every login', as
   const logIn = async () => {
     await page.goto('/login');
     await page.getByLabel('Email').fill(admin.email);
-    await page.getByLabel('Password').fill(admin.password);
+    await page.getByLabel('Password', { exact: true }).fill(admin.password);
     await page.getByRole('button', { name: 'Log in' }).click();
   };
 

@@ -12,7 +12,7 @@ test.describe('email verification and password reset', () => {
     await page.goto('/register');
     await page.getByLabel('Name').fill('Ayesha');
     await page.getByLabel('Email').fill(email);
-    await page.getByLabel('Password').fill('e2e correct horse battery');
+    await page.getByLabel('Password', { exact: true }).fill('e2e correct horse battery');
     await page.getByRole('button', { name: 'Create account' }).click();
     await expect(page.getByRole('status')).toContainText('Check your email');
 
@@ -28,7 +28,7 @@ test.describe('email verification and password reset', () => {
     const customer = await users.create({ verified: false });
     await page.goto('/login');
     await page.getByLabel('Email').fill(customer.email);
-    await page.getByLabel('Password').fill(customer.password);
+    await page.getByLabel('Password', { exact: true }).fill(customer.password);
     await page.getByRole('button', { name: 'Log in' }).click();
     // Inside main: Next's route announcer is an alert too.
     await expect(page.getByRole('main').getByRole('alert')).toHaveText(
@@ -58,7 +58,7 @@ test.describe('email verification and password reset', () => {
 
     await page.goto('/login');
     await page.getByLabel('Email').fill(customer.email);
-    await page.getByLabel('Password').fill(NEW_PASSWORD);
+    await page.getByLabel('Password', { exact: true }).fill(NEW_PASSWORD);
     await page.getByRole('button', { name: 'Log in' }).click();
     await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
 

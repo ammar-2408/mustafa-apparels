@@ -82,7 +82,7 @@ test('the signed-in account page has no serious violations', async ({ page, user
   const customer = await users.create();
   await page.goto('/login');
   await page.getByRole('textbox', { name: 'Email' }).fill(customer.email);
-  await page.getByLabel('Password').fill(customer.password);
+  await page.getByLabel('Password', { exact: true }).fill(customer.password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
   expect(await seriousViolations(page)).toEqual([]);
@@ -95,7 +95,7 @@ test('admin 2FA setup, both the password step and the QR code step, has no serio
   const admin = await users.create({ role: 'admin' });
   await page.goto(`${ADMIN_URL}/login`);
   await page.getByRole('textbox', { name: 'Email' }).fill(admin.email);
-  await page.getByLabel('Password').fill(admin.password);
+  await page.getByLabel('Password', { exact: true }).fill(admin.password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page).toHaveURL(/\/setup-2fa$/, AFTER_SIGN_IN);
   expect(await seriousViolations(page)).toEqual([]);

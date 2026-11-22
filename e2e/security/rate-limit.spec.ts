@@ -49,7 +49,7 @@ test.describe('login rate limits', () => {
     }
     await page.goto('/login');
     await page.getByLabel('Email').fill(customer.email);
-    await page.getByLabel('Password').fill(customer.password);
+    await page.getByLabel('Password', { exact: true }).fill(customer.password);
     await page.getByRole('button', { name: 'Log in' }).click();
     await expect(page.getByRole('main').getByRole('alert')).toHaveText(
       'Too many attempts. Please try again in a few minutes.',
@@ -62,7 +62,7 @@ test('sign-up refuses a password known from a data breach', async ({ page, users
   await page.getByLabel('Name').fill('Ayesha');
   await page.getByLabel('Email').fill(users.freshEmail());
   // One of the mock list's breached passwords (packages/core/integrations/breached-passwords.ts).
-  await page.getByLabel('Password').fill('password1234');
+  await page.getByLabel('Password', { exact: true }).fill('password1234');
   await expect(page.getByText('Password strength: Weak')).toBeVisible();
   await page.getByRole('button', { name: 'Create account' }).click();
   await expect(page.getByRole('main').getByRole('alert')).toContainText(

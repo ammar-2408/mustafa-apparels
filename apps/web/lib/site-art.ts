@@ -47,6 +47,19 @@ export const SITE_ART = {
     src: shapedImageUrl(`${UPLOAD}site/home/about-leaves`, 'whole'),
     alt: '',
   },
+  // The sign-up and login pages (owner's NEWSIGNUP.png and NEWLOGIN.png, 2026-11-22).
+  authRack: {
+    src: shapedImageUrl(`${UPLOAD}site/auth/rack`, 'whole'),
+    alt: '',
+  },
+  authLeaves: {
+    src: shapedImageUrl(`${UPLOAD}site/auth/leaves`, 'whole'),
+    alt: '',
+  },
+  authFabric: {
+    src: shapedImageUrl(`${UPLOAD}site/auth/fabric`, 'whole'),
+    alt: '',
+  },
   aboutFabric: {
     src: shapedImageUrl(`${UPLOAD}site/home/about-fabric`, 'whole'),
     alt: 'Embroidered fabrics in powder blue, cream and rose, folded on a marble stand',

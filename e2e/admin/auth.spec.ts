@@ -17,7 +17,7 @@ test.describe('admin login', () => {
     const customer = await users.create();
     await page.goto('/login');
     await page.getByLabel('Email').fill(customer.email);
-    await page.getByLabel('Password').fill(customer.password);
+    await page.getByLabel('Password', { exact: true }).fill(customer.password);
     await page.getByRole('button', { name: 'Log in' }).click();
     await expect(page.getByRole('main').getByRole('alert')).toHaveText(
       'Email or password is incorrect.',
@@ -31,7 +31,7 @@ test.describe('admin login', () => {
     const admin = await users.create({ role: 'admin' });
     await page.goto('/login');
     await page.getByLabel('Email').fill(admin.email);
-    await page.getByLabel('Password').fill(admin.password);
+    await page.getByLabel('Password', { exact: true }).fill(admin.password);
     const signIn = page.waitForResponse('**/api/auth/sign-in/email');
     await page.getByRole('button', { name: 'Log in' }).click();
     await expect(page).not.toHaveURL(/\/login$/);

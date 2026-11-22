@@ -14,7 +14,7 @@ export async function loginAsAdmin(page: Page, users: Users): Promise<SignedInAd
   const admin = await users.create({ role: 'admin' });
   await page.goto(`${ADMIN_URL}/login`);
   await page.getByLabel('Email').fill(admin.email);
-  await page.getByLabel('Password').fill(admin.password);
+  await page.getByLabel('Password', { exact: true }).fill(admin.password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page).toHaveURL(/\/setup-2fa$/, AFTER_SIGN_IN);
   await page.getByLabel('Your password').fill(admin.password);

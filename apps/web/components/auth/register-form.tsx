@@ -13,6 +13,7 @@ import {
 import { type FormEvent, useState } from 'react';
 
 import { authClient } from '../../lib/auth-client';
+import { AccountIcon, LockIcon, MailIcon } from '../site/icons';
 import { PasswordStrengthMeter } from './password-strength-meter';
 
 // The answer is the same whether or not the email already has an account.
@@ -55,20 +56,36 @@ export function RegisterForm() {
 
   return (
     <form method="post" noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
-      <Input label="Name" name="name" autoComplete="name" required error={fieldErrors.name?.[0]} />
       <Input
+        look="card"
+        icon={<AccountIcon />}
+        label="Full Name"
+        name="name"
+        autoComplete="name"
+        placeholder="Enter your full name"
+        required
+        error={fieldErrors.name?.[0]}
+      />
+      <Input
+        look="card"
+        icon={<MailIcon />}
         label="Email"
         name="email"
         type="email"
         autoComplete="email"
+        placeholder="Enter your email address"
         required
         error={fieldErrors.email?.[0]}
       />
       <Input
+        look="card"
+        icon={<LockIcon />}
+        revealable
         label="Password"
         name="password"
         type="password"
         autoComplete="new-password"
+        placeholder="Create a password"
         required
         minLength={PASSWORD_MIN}
         maxLength={PASSWORD_MAX}
@@ -78,7 +95,7 @@ export function RegisterForm() {
       />
       <PasswordStrengthMeter password={password} />
       <FormError message={formError} />
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending} className="mt-2 w-full">
         {pending ? 'Creating account…' : 'Create account'}
       </Button>
     </form>

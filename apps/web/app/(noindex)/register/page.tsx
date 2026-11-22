@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { connection } from 'next/server';
 
+import { AuthShell } from '../../../components/auth/auth-shell';
 import { RegisterForm } from '../../../components/auth/register-form';
 import { buildMetadata } from '../../../lib/seo';
 
@@ -13,20 +14,25 @@ export const metadata = buildMetadata({
   nofollow: true,
 });
 
-// Per request, so proxy.ts's CSP nonce reaches Next's scripts (Tier B).
+// Per request, so proxy.ts's CSP nonce reaches Next's scripts (Tier B). The owner's
+// NEWSIGNUP.png (2026-11-22).
 export default async function RegisterPage() {
   await connection();
   return (
-    <>
-      <p className="caps-tight text-muted sm:caps">Account</p>
-      <h1 className="mt-4 mb-12 text-h1 font-light">Create an account</h1>
+    <AuthShell
+      title="Create an"
+      accent="Account"
+      lead="Join MA Apparels by Mustafa Ahmed and start your shopping journey."
+      footer={
+        <p>
+          Already have an account?{' '}
+          <Link href="/login" className="link font-bold text-accent-text">
+            Log in
+          </Link>
+        </p>
+      }
+    >
       <RegisterForm />
-      <p className="mt-12 text-body">
-        Already have one?{' '}
-        <Link href="/login" className="link">
-          Log in
-        </Link>
-      </p>
-    </>
+    </AuthShell>
   );
 }

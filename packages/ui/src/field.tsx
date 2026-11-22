@@ -7,6 +7,8 @@ export type FieldProps = {
   label: string;
   hint?: string;
   error?: string;
+  /** "card": the sign-up and login cards' Bold deep green label and rounder field (2026-11-22). */
+  look?: 'plain' | 'card';
 };
 
 // Ids and ARIA for one labelled control, shared by Input, Textarea and Select.
@@ -45,11 +47,17 @@ export function FieldShell({
   hintId,
   errorId,
   className,
+  look = 'plain',
   children,
 }: FieldShellProps) {
   return (
     <div className={['flex flex-col', className].filter(Boolean).join(' ')}>
-      <label htmlFor={controlId} className="mb-2 caps-tight text-fg">
+      <label
+        htmlFor={controlId}
+        className={
+          look === 'card' ? 'mb-2 text-body font-bold text-deep' : 'mb-2 caps-tight text-fg'
+        }
+      >
         {label}
       </label>
       {children}

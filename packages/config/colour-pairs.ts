@@ -54,7 +54,8 @@ export const ALLOWED_PAIRS: readonly Pair[] = [
 
 // Tokens that are only ever a surface or a decorative line, never text or a needed UI part.
 // `gloss` is the shine at the top of the buttons: the label sits lower, on the deep green.
-export const SURFACE_ONLY = ['primary', 'border', 'gloss'] as const;
+// `gold` is a thin decorative line along curved picture edges.
+export const SURFACE_ONLY = ['primary', 'border', 'gloss', 'gold'] as const;
 
 // Pairings that must never be allowed: each one fails AA, and some look tempting.
 export const FORBIDDEN_TEXT: readonly (readonly [string, string])[] = [

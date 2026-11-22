@@ -5,7 +5,7 @@ test.describe('sign-up, login and logout', () => {
     await page.goto('/register');
     await page.getByLabel('Name').fill('Ayesha');
     await page.getByLabel('Email').fill(users.freshEmail());
-    await page.getByLabel('Password').fill('a long new passphrase');
+    await page.getByLabel('Password', { exact: true }).fill('a long new passphrase');
     await page.getByRole('button', { name: 'Create account' }).click();
     await expect(page.getByRole('status')).toContainText('Check your email');
   });
@@ -14,7 +14,7 @@ test.describe('sign-up, login and logout', () => {
     await page.goto('/register');
     await page.getByLabel('Name').fill('Ayesha');
     await page.getByLabel('Email').fill('ayesha@example.com');
-    await page.getByLabel('Password').fill('short');
+    await page.getByLabel('Password', { exact: true }).fill('short');
     await page.getByRole('button', { name: 'Create account' }).click();
     await expect(page.getByText('Use at least 10 characters')).toBeVisible();
   });
@@ -23,7 +23,7 @@ test.describe('sign-up, login and logout', () => {
     const customer = await users.create();
     await page.goto('/login');
     await page.getByLabel('Email').fill(customer.email);
-    await page.getByLabel('Password').fill(customer.password);
+    await page.getByLabel('Password', { exact: true }).fill(customer.password);
     await page.getByRole('button', { name: 'Log in' }).click();
 
     await expect(page).toHaveURL(/\/account$/, AFTER_SIGN_IN);
@@ -41,7 +41,7 @@ test.describe('sign-up, login and logout', () => {
     const messageFor = async (email: string) => {
       await page.goto('/login');
       await page.getByLabel('Email').fill(email);
-      await page.getByLabel('Password').fill('not the right password');
+      await page.getByLabel('Password', { exact: true }).fill('not the right password');
       await page.getByRole('button', { name: 'Log in' }).click();
       const alert = page.getByRole('alert').filter({ hasText: /\S/ });
       await expect(alert).toBeVisible();

@@ -23,7 +23,7 @@ export default async function ResetPasswordPage({
   const usable = parsed.success;
   const token = parsed.success ? parsed.data.token : '';
   return (
-    <>
+    <div className="mx-auto w-full max-w-md px-gutter pt-12 pb-section">
       <p className="caps-tight text-muted sm:caps">Account</p>
       <h1 className="mt-4 mb-12 text-h1 font-light">Set a new password</h1>
       {usable ? (
@@ -36,6 +36,6 @@ export default async function ResetPasswordPage({
           </Link>
         </div>
       )}
-    </>
+    </div>
   );
 }

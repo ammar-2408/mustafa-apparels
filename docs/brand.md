@@ -22,6 +22,7 @@ Calm powder blue and white, ink-black type, a deep green for the main actions, a
 | Pale powder blue | `#EEF4F4` | `surface-soft` | Behind suit photos, the hero and How to Order backgrounds |
 | Deeper teal | `#86AFAE` | `teal` | The footer only |
 | Deep green | `#164A45` | `deep` | Every button (with the gloss), page titles, step numbers and icons, active filter chips |
+| Gold line | `#C9A45C` | `gold` | A thin line along curved picture edges (sign-up and login). **Decoration only** |
 | Emerald gloss | `#0AA383` | `gloss` | The shine at the top of every button, fading into deep green. **Never behind text** |
 | Racing orange | `#F45B0B` | `accent` | Small accents: badges, underlines, the focus ring, short lines |
 | Deep orange | `#C34909` | `accent-text` | Orange **words**: the coloured word in headings, links, the current page |
@@ -66,7 +67,8 @@ These aren't new colours: they are the tokens above at part strength, so they al
 | **About, Contact, FAQ, How to Order pages** | Deep green serif title with a deep orange last word, orange lotus between orange lines, peach icon tiles, deep green number circles and buttons, a fabric picture inside a thin orange arch |
 | **Collection pages** | Deep green serif title, white into pale powder blue background, deep green active filter chips, fabric picture fading in |
 | **Suit cards and the suit page** | Pale powder blue photo frames, ink text, orange stock badge with ink text, ink price |
-| **Forms** (login, register, inquiry) | White fields with grey green borders, an orange focus ring, brick red errors, forest green success notes |
+| **Sign-up and login** (owner's NEWSIGNUP.png and NEWLOGIN.png, 2026-11-22; `AuthShell`) | Peach wash; on large screens a photo of suits on a brass rail on the left, ending in a curve with a thin gold line; soft leaves top right and green embroidered fabric bottom right (`site/auth/*`). Our secondary logo, a deep green serif title with a deep orange last word and swash, and a white card whose fields have a Bold deep green label, an icon and rounder corners (`Input look="card"`, `icon`, `revealable` for the password eye) |
+| **Forms** (inquiry, password pages) | White fields with grey green borders, an orange focus ring, brick red errors, forest green success notes |
 
 ## 4. Pairing rules
 

@@ -17,7 +17,7 @@ export const metadata = buildMetadata({
 export default async function ForgotPasswordPage() {
   await connection();
   return (
-    <>
+    <div className="mx-auto w-full max-w-md px-gutter pt-12 pb-section">
       <p className="caps-tight text-muted sm:caps">Account</p>
       <h1 className="mt-4 mb-6 text-h1 font-light">Forgot your password</h1>
       <p className="mb-12 text-body">
@@ -30,6 +30,6 @@ export default async function ForgotPasswordPage() {
           Log in
         </Link>
       </p>
-    </>
+    </div>
   );
 }

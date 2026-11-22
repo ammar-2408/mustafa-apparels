@@ -26,6 +26,9 @@
   /* The bright emerald top of the glossy buttons (owner's button-template.png, 2026-11-22). It
      fades into deep green; never behind text. */
   --color-gloss: #0aa383;
+  /* A thin gold line along the curved picture edges (owner's sign-up and login mockups, 2026-11-22).
+     Decoration only, never text. */
+  --color-gold: #c9a45c;
   --color-action: #111111;
   --color-action-fg: #ffffff;
   --color-accent: #f45b0b;
