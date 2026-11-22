@@ -1,6 +1,6 @@
 # Brand colours
 
-Every colour the storefront, admin, emails and share images use, as of the end of Phase 6 (2026-11-15). Use this file as the starting point for the redesign.
+Every colour the storefront, admin, emails and share images used at the end of Phase 6 (2026-11-15). **For the site as it looks now, with the colours added in the redesign (deep green, teal, peach tints) and where each appears, see `docs/brand.md`.** This file keeps the first palette's full contrast table.
 
 - **Source of truth:** `packages/config/tailwind/theme.css`. Tailwind's own colours are cleared, so a colour that isn't a token there can't be used in a class.
 - **Allowed text and background pairs:** `packages/config/colour-pairs.ts`. Tests check each pair against WCAG 2.2 AA.

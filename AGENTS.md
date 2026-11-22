@@ -170,7 +170,7 @@ Full details: `docs/design.md` §8, `docs/seo-geo.md` and `.claude/skills/seo-gu
 | Schema, migrations, queries | `docs/database.md` |
 | Server actions, route handlers | `docs/api.md` |
 | Login, roles, uploads, headers | `docs/auth-security.md` |
-| UI, brand, logo, motion, video, 3D, responsive, SEO tags | `docs/design.md` |
+| UI, brand, logo, motion, video, 3D, responsive, SEO tags | `docs/design.md` (colours, type and logo at a glance: `docs/brand.md`) |
 | Tests | `docs/testing-qa.md` |
 | Something is broken | `docs/debugging.md` |
 | Third-party services, Cloudinary video | `docs/integrations.md` |
