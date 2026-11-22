@@ -29,7 +29,10 @@ export default async function LoginPage() {
           <Link href="/forgot-password" className="link font-bold text-deep">
             Forgot your password?
           </Link>
-          <p className="my-6 flex items-center gap-4 caps-tight text-muted" aria-hidden="true">
+          <p
+            className="my-[clamp(0.5rem,1.6svh,1.5rem)] flex items-center gap-4 caps-tight text-muted"
+            aria-hidden="true"
+          >
             <span className="h-px flex-1 bg-border-strong" />
             Or
             <span className="h-px flex-1 bg-border-strong" />

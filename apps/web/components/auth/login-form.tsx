@@ -38,7 +38,12 @@ export function LoginForm() {
   }
 
   return (
-    <form method="post" noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
+    <form
+      method="post"
+      noValidate
+      onSubmit={onSubmit}
+      className="flex flex-col gap-[clamp(0.75rem,2svh,1.5rem)]"
+    >
       <Input
         look="card"
         icon={<MailIcon />}

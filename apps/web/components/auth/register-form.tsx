@@ -55,28 +55,35 @@ export function RegisterForm() {
   }
 
   return (
-    <form method="post" noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
-      <Input
-        look="card"
-        icon={<AccountIcon />}
-        label="Full Name"
-        name="name"
-        autoComplete="name"
-        placeholder="Enter your full name"
-        required
-        error={fieldErrors.name?.[0]}
-      />
-      <Input
-        look="card"
-        icon={<MailIcon />}
-        label="Email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        placeholder="Enter your email address"
-        required
-        error={fieldErrors.email?.[0]}
-      />
+    <form
+      method="post"
+      noValidate
+      onSubmit={onSubmit}
+      className="flex flex-col gap-[clamp(0.75rem,2svh,1.5rem)]"
+    >
+      <div className="grid gap-[clamp(0.75rem,2svh,1.5rem)] sm:grid-cols-2">
+        <Input
+          look="card"
+          icon={<AccountIcon />}
+          label="Full Name"
+          name="name"
+          autoComplete="name"
+          placeholder="Enter your full name"
+          required
+          error={fieldErrors.name?.[0]}
+        />
+        <Input
+          look="card"
+          icon={<MailIcon />}
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Enter your email"
+          required
+          error={fieldErrors.email?.[0]}
+        />
+      </div>
       <Input
         look="card"
         icon={<LockIcon />}

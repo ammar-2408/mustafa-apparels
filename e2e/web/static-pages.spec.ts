@@ -75,3 +75,25 @@ for (const path of ['/login', '/register', '/forgot-password', '/account']) {
     expect(description.length, description).toBeLessThanOrEqual(160);
   });
 }
+
+// The owner (2026-11-22): the title area and the first row of cards show on the first screen at
+// every size; the rest of the cards follow on scroll. Window sizes as in auth.spec.ts.
+test('Privacy and Terms show the title and the first cards on the first screen', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  for (const [width, height] of [
+    [390, 740],
+    [1366, 657],
+    [1280, 610],
+    [1920, 940],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    for (const path of ['/privacy', '/terms']) {
+      await page.goto(path);
+      const firstCard = page.getByRole('main').locator('section').first();
+      const box = (await firstCard.boundingBox())!;
+      expect(box.y + box.height, `${path} at ${width}×${height}`).toBeLessThanOrEqual(height);
+    }
+  }
+});

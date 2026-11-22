@@ -53,13 +53,40 @@ test.describe('sign-up, login and logout', () => {
     expect(unknownEmail).toBe(wrongPassword);
   });
 
+  // The owner (2026-11-22): like every hero, the whole form shows on the first screen, at any size.
+  // Sizes are browser windows minus their toolbars: a phone, a 1366×768 laptop, a 1280×720 one,
+  // and a 1920×1080 desktop.
+  test('sign-up and login fit the first screen, card and all, at every size', async ({ page }) => {
+    test.setTimeout(90_000);
+    for (const [width, height] of [
+      [390, 740],
+      [1366, 657],
+      [1280, 610],
+      [1920, 940],
+    ] as const) {
+      await page.setViewportSize({ width, height });
+      for (const [path, last] of [
+        ['/login', 'Create an account'],
+        ['/register', 'Log in'],
+      ] as const) {
+        await page.goto(path);
+        const link = page.getByRole('main').getByRole('link', { name: last, exact: true });
+        const box = (await link.boundingBox())!;
+        expect(box.y + box.height, `${path} at ${width}×${height}`).toBeLessThanOrEqual(height);
+      }
+    }
+  });
+
   // The owner's NEWLOGIN.png (2026-11-22).
   test('the login page has our logo, the welcome line, the password eye and both links', async ({
     page,
   }) => {
     await page.goto('/login');
     const main = page.getByRole('main');
-    await expect(main.getByRole('img', { name: 'MA Apparels by Mustafa Ahmed' })).toBeVisible();
+    // Our logo heads the card from tablet width up; on phones the navbar's logo sits just above.
+    const logo = main.getByRole('img', { name: 'MA Apparels by Mustafa Ahmed' });
+    if (page.viewportSize()!.width >= 640) await expect(logo).toBeVisible();
+    else await expect(logo).toBeHidden();
     await expect(main.getByText('Welcome back to MA Apparels by Mustafa Ahmed.')).toBeVisible();
     const password = main.getByLabel('Password', { exact: true });
     await password.fill('secret words');

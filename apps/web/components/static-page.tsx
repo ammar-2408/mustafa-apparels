@@ -97,7 +97,7 @@ export function StaticPage({
               <path d={`${CURVE} L1,1 Z`} />
             </clipPath>
           </svg>
-          <div className="absolute inset-y-0 right-0 hidden w-[24%] lg:block">
+          <div className="absolute top-0 right-0 hidden h-[calc(100svh-6rem)] w-[24%] lg:block">
             <div className="absolute inset-0 [clip-path:url(#policy-curve)]">
               <Image
                 src={sideArt.src}
@@ -148,9 +148,11 @@ export function StaticPage({
         </div>
       )}
 
-      <div className="relative mx-auto max-w-content-wide px-gutter pt-10 pb-section md:pt-14">
+      <div
+        className={`relative mx-auto max-w-content-wide px-gutter pb-section ${sideArt ? 'pt-[clamp(1rem,3svh,3.5rem)]' : 'pt-10 md:pt-14'}`}
+      >
         <div
-          className={art ? 'lg:max-w-[58%]' : sideArt ? 'max-w-5xl lg:max-w-[72%]' : 'max-w-4xl'}
+          className={art ? 'lg:max-w-[58%]' : sideArt ? 'max-w-5xl lg:max-w-[76%]' : 'max-w-4xl'}
         >
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2 text-small">
@@ -176,7 +178,9 @@ export function StaticPage({
               </li>
             </ol>
           </nav>
-          <h1 className="mt-6 font-serif text-h1 text-deep">
+          <h1
+            className={`font-serif text-deep ${sideArt ? 'mt-[clamp(0.5rem,1.6svh,1.5rem)] text-[clamp(2.25rem,7svh,5rem)] leading-[1.05]' : 'mt-6 text-h1'}`}
+          >
             {title}
             {accent && (
               <>
@@ -185,8 +189,14 @@ export function StaticPage({
               </>
             )}
           </h1>
-          <LotusRule className="mt-4" />
-          {lead && <div className="mt-6 max-w-3xl text-body-lg">{lead}</div>}
+          <LotusRule className={sideArt ? 'mt-[clamp(0.5rem,1.4svh,1rem)]' : 'mt-4'} />
+          {lead && (
+            <div
+              className={`max-w-3xl text-body-lg ${sideArt ? 'mt-[clamp(0.5rem,1.8svh,1.5rem)]' : 'mt-6'}`}
+            >
+              {lead}
+            </div>
+          )}
           {art && (
             // Phones and tablets: the picture as a soft band under the title.
             <div
@@ -203,7 +213,7 @@ export function StaticPage({
             </div>
           )}
           <div
-            className={`mt-12 flex flex-col gap-10 text-body ${art || sideArt ? '' : 'max-w-prose'}`}
+            className={`flex flex-col gap-10 text-body ${sideArt ? 'mt-[clamp(1rem,3svh,3rem)]' : 'mt-12'} ${art || sideArt ? '' : 'max-w-prose'}`}
           >
             {children}
           </div>
@@ -266,7 +276,7 @@ export function PolicyCard({
 }) {
   return (
     <section
-      className={`flex items-center gap-4 rounded-lg border border-border border-b-deep bg-bg/90 p-5 shadow-soft [border-bottom-width:3px] sm:gap-6 sm:p-6 ${className ?? ''}`}
+      className={`flex items-center gap-4 rounded-lg border border-border border-b-deep bg-bg/90 p-5 shadow-soft [border-bottom-width:3px] sm:gap-6 sm:px-6 sm:py-[clamp(1rem,2.4svh,1.5rem)] ${className ?? ''}`}
     >
       <span
         aria-hidden="true"
