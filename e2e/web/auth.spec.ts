@@ -53,6 +53,28 @@ test.describe('sign-up, login and logout', () => {
     expect(unknownEmail).toBe(wrongPassword);
   });
 
+  // The owner's NEWLOGIN.png (2026-11-22).
+  test('the login page has our logo, the welcome line, the password eye and both links', async ({
+    page,
+  }) => {
+    await page.goto('/login');
+    const main = page.getByRole('main');
+    await expect(main.getByRole('img', { name: 'MA Apparels by Mustafa Ahmed' })).toBeVisible();
+    await expect(main.getByText('Welcome back to MA Apparels by Mustafa Ahmed.')).toBeVisible();
+    const password = main.getByLabel('Password', { exact: true });
+    await password.fill('secret words');
+    await main.getByRole('button', { name: 'Show password' }).click();
+    await expect(password).toHaveAttribute('type', 'text');
+    await expect(main.getByRole('link', { name: 'Forgot your password?' })).toHaveAttribute(
+      'href',
+      '/forgot-password',
+    );
+    await expect(main.getByRole('link', { name: 'Create an account' })).toHaveAttribute(
+      'href',
+      '/register',
+    );
+  });
+
   test('the account page sends a signed-out visitor to log in', async ({ page }) => {
     await page.goto('/account');
     await expect(page).toHaveURL(/\/login$/);

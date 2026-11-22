@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
 import { authClient } from '../../lib/auth-client';
+import { LockIcon, MailIcon } from '../site/icons';
 
 export function LoginForm() {
   const router = useRouter();
@@ -39,23 +40,30 @@ export function LoginForm() {
   return (
     <form method="post" noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
       <Input
+        look="card"
+        icon={<MailIcon />}
         label="Email"
         name="email"
         type="email"
         autoComplete="email"
+        placeholder="Enter your email"
         required
         error={fieldErrors.email?.[0]}
       />
       <Input
+        look="card"
+        icon={<LockIcon />}
+        revealable
         label="Password"
         name="password"
         type="password"
         autoComplete="current-password"
+        placeholder="Enter your password"
         required
         error={fieldErrors.password?.[0]}
       />
       <FormError message={formError} />
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending} className="mt-2 w-full">
         {pending ? 'Logging in…' : 'Log in'}
       </Button>
     </form>
